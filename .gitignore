@@ -1,8 +1,10 @@
 # Object files
 *.o
+*.o.d
 *.ko
 *.obj
 *.elf
+*.map
 
 # Precompiled Headers
 *.gch
@@ -31,3 +33,8 @@
 # Debug files
 *.dSYM/
 *.su
+*.zip
+build
+debug
+dist
+production

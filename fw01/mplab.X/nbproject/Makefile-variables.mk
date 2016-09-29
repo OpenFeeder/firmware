@@ -1,0 +1,27 @@
+#
+# Generated - do not edit!
+#
+# NOCDDL
+#
+CND_BASEDIR=`pwd`
+# PIC24FJ128GB204_CodeModel_default configuration
+CND_ARTIFACT_DIR_PIC24FJ128GB204_CodeModel_default=dist/PIC24FJ128GB204_CodeModel_default/production
+CND_ARTIFACT_NAME_PIC24FJ128GB204_CodeModel_default=mplab.X.production.hex
+CND_ARTIFACT_PATH_PIC24FJ128GB204_CodeModel_default=dist/PIC24FJ128GB204_CodeModel_default/production/mplab.X.production.hex
+CND_PACKAGE_DIR_PIC24FJ128GB204_CodeModel_default=${CND_DISTDIR}/PIC24FJ128GB204_CodeModel_default/package
+CND_PACKAGE_NAME_PIC24FJ128GB204_CodeModel_default=mplab.x.tar
+CND_PACKAGE_PATH_PIC24FJ128GB204_CodeModel_default=${CND_DISTDIR}/PIC24FJ128GB204_CodeModel_default/package/mplab.x.tar
+# PIC24FJ128GB204_CodeModel_Large configuration
+CND_ARTIFACT_DIR_PIC24FJ128GB204_CodeModel_Large=dist/PIC24FJ128GB204_CodeModel_Large/production
+CND_ARTIFACT_NAME_PIC24FJ128GB204_CodeModel_Large=mplab.X.production.hex
+CND_ARTIFACT_PATH_PIC24FJ128GB204_CodeModel_Large=dist/PIC24FJ128GB204_CodeModel_Large/production/mplab.X.production.hex
+CND_PACKAGE_DIR_PIC24FJ128GB204_CodeModel_Large=${CND_DISTDIR}/PIC24FJ128GB204_CodeModel_Large/package
+CND_PACKAGE_NAME_PIC24FJ128GB204_CodeModel_Large=mplab.x.tar
+CND_PACKAGE_PATH_PIC24FJ128GB204_CodeModel_Large=${CND_DISTDIR}/PIC24FJ128GB204_CodeModel_Large/package/mplab.x.tar
+# PIC24FJ256GB406 configuration
+CND_ARTIFACT_DIR_PIC24FJ256GB406=dist/PIC24FJ256GB406/production
+CND_ARTIFACT_NAME_PIC24FJ256GB406=mplab.X.production.hex
+CND_ARTIFACT_PATH_PIC24FJ256GB406=dist/PIC24FJ256GB406/production/mplab.X.production.hex
+CND_PACKAGE_DIR_PIC24FJ256GB406=${CND_DISTDIR}/PIC24FJ256GB406/package
+CND_PACKAGE_NAME_PIC24FJ256GB406=mplab.x.tar
+CND_PACKAGE_PATH_PIC24FJ256GB406=${CND_DISTDIR}/PIC24FJ256GB406/package/mplab.x.tar
