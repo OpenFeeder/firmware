@@ -34,6 +34,7 @@
 *.dSYM/
 *.su
 *.zip
+*.xwatch
 build
 debug
 dist

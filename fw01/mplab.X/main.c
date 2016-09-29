@@ -59,10 +59,10 @@
 
 /**
  * @brief Development of a test program with PIC24FJ128GB204 MCU on OpenFeeder prototype board.
- * @see [OpenFeeder prototype v0-1-0](https://docs.google.com/document/d/1MuPXdwcBcdYiER29TY8erCPw7mGYlfRxIeXWazllpBY/edit?usp=sharing)
+ * @see [OpenFeeder - Board01](https://docs.google.com/document/d/1MuPXdwcBcdYiER29TY8erCPw7mGYlfRxIeXWazllpBY/edit?usp=sharing)
  * Author: OpenFeeder Team <https://github.com/orgs/OpenFeeder/people> 
- * @version fw002
- * @revision c
+ * @version fw01
+ * @revision 
  * @date 17/09/2016
  */
 
@@ -201,76 +201,75 @@
 //#include "led_status.h"
 //#include "em4095.h"
 
-
 /*
                          Main application
 
  */
 
-int main(void)
+int main( void )
 {
     /* Initialize the device. */
-    SYSTEM_Initialize();
+    SYSTEM_Initialize( );
 
     /* Stop the peripherals that we do not need. */
     //TMR2_Stop( );
-    EX_INT3_InterruptDisable(); /* Disable RDY/CLK reading. */
+    EX_INT3_InterruptDisable( ); /* Disable RDY/CLK reading. */
 
     /* Initialize peripheral driver. */
-    RFID_Initialize();
-    SERVO_Initialize();
-    IRSensor_Initialize();
+    RFID_Initialize( );
+    SERVO_Initialize( );
+    IRSensor_Initialize( );
 
     /* Initialize the file IO system. */
-    FILEIO_Initialize();
-    FILEIO_RegisterTimestampGet(GetTimestamp);
+    FILEIO_Initialize( );
+    FILEIO_RegisterTimestampGet( GetTimestamp );
 
     /* Initialize the USB Host API. */
-    if (!USBHostInit(0))
+    if ( !USBHostInit( 0 ) )
     {
 #if defined (DISPLAY_USB_INFO)
-        printf("\nFailure to initialize USB Host API!\n");
+        printf( "\nFailure to initialize USB Host API!\n" );
 #endif
-        doLedsStatusBlink(LEDS_ERROR, 3, 83, 250);
+        doLedsStatusBlink( LEDS_ERROR, 3, 83, 250 );
     }
     else
     {
-        doLedsStatusBlink(LED_GREEN, 3, 83, 250);
+        doLedsStatusBlink( LED_GREEN, 3, 83, 250 );
     }
 
     /* Initialize the application. */
-    APP_Initialize();
+    APP_Initialize( );
 
     /* Display information on serial terminal. */
     // TODO: copie in DisplayBootMessage() routine in app_debug.c...
 #if defined (USE_UART1_SERIAL_INTERFACE)
-    printf("\n\n=== Openfeeder prototype v0-1-0 ===\n");
-    printf("   Firmware: Ver. fw002 - Rev. c\n");
+    printf( "\n\n=== Openfeeder prototype v0-1-0 ===\n" );
+    printf( "   Firmware: Ver. fw002 - Rev. c\n" );
     //    printf( "DEBUG_UART defined: Display information during main application.\n" ); /* see: \scr\app.h */
-    printf("===================================\n\n");
+    printf( "===================================\n\n" );
 #if defined (DISPLAY_USB_INFO)
-    printf("DISPLAY_USB_INFO defined: Display USB information.\n"); /* see: \scr\app.h */
+    printf( "DISPLAY_USB_INFO defined: Display USB information.\n" ); /* see: \scr\app.h */
 #endif
 #if defined (DEBUG_RFID_WORKING_ON_LED_STATUS)
-    printf("DEBUG_RFID_WORKING_ON_LED_STATUS defined: Display information on status LED during RFID decoding routine.\n"); /* see: \scr\app.h */
+    printf( "DEBUG_RFID_WORKING_ON_LED_STATUS defined: Display information on status LED during RFID decoding routine.\n" ); /* see: \scr\app.h */
 #endif
 #endif
 
     /* Main loop. */
-    while (1)
+    while ( 1 )
     {
         /* Maintain Device Drivers. */
         //        USBHostTasks( );
         //        USBHostMSDTasks( );
-        USBTasks();
+        USBTasks( );
 
         /* Maintain the application's state machine. */
-        APP_Tasks(); /* application specific tasks */
+        APP_Tasks( ); /* application specific tasks */
     }
 
     /* Execution should not come here during normal operation. */
-    setLedsStatusColor(LED_RED);
-    return ( EXIT_FAILURE);
+    setLedsStatusColor( LED_RED );
+    return ( EXIT_FAILURE );
 }
 
 

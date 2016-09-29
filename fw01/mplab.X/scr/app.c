@@ -33,8 +33,6 @@
 //       necessite de reboucler la sortie RTCC_OUT sur une entrée d'interruption externe
 // TODO: faire clignotter rapidement la LED status blue lorsque l'on accède à la clé USB
 // TODO: When no USB key the Blue LED status set High! Must only have Red LED toggle every 200 ms!
-// TODO: Make Power Management (USB powered)
-// TODO: L'affichage du boitier télécommande est bloqué sur "8   " ! 
 // TODO: Debugging RFID: voie 1 DMOD_OUT, voie 2 INT4 event on LED_STATUS_B, voie 3 read DMOD_OUT event from TMR4 on LED_STATUS_G
 // TODO: Si il n'y a pas de clé USB la machine d'état reste bloqué en APP_STATE_USB_WAITING_FOR_ATTACH
 //       après affichage du message de l'APP_STATE_INIT et 9
@@ -51,6 +49,7 @@
 //            printf( "USB_HostInterruptHandler()\n" ); // display Sleeping message
 //#endif 
 
+// DONE: Make Power Management (USB powered)
 // DONE: Mettre en paramètre dans le fichier de config pour la valeur de g_timeout_taking_reward (waiting timeout in sec)
 // DONE: CMD_VDD_APP_V_USB on RB5
 // DONE: Mise en place la mise à jour de l'heure par l'interface de debug
@@ -107,7 +106,6 @@ APP_DATA_EVENT appDataEvent;
 
 /* Binary to Ascii text converter with simple lookup array */
 const char bin2ascii_tab[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-
 
 /******************************************************************************
   Function:
@@ -276,7 +274,7 @@ void APP_Tasks( void )
                 appData.state = APP_STATE_BATTERY_LOW;
                 break;
             }
-            
+
             /* If VDD_APP_V_USB power is ON, check if USB key is detached by user.
              *  - if true go to APP_STATE_ERROR
              */
@@ -780,7 +778,6 @@ void APP_Tasks( void )
             break;
     }
 }
-
 
 void APP_Initialize( void )
 {
