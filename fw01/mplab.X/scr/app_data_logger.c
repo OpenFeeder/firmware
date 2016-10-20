@@ -8,6 +8,8 @@
 #include "app.h"
 #include "app_data_logger.h"
 
+#include  "ctype.h"
+
 // *****************************************************************************
 // PopulateBuffer - Ajout de donnees dans le buffer
 // *****************************************************************************
@@ -215,16 +217,21 @@ bool dataLog(void)
 bool setLogFileName(void)
 {
 
-    /* Set log file name => 20yymmdd.CSV */
+    /* Clear filename buffer */
+    memset(appDataLog.filename, 0, sizeof(appDataLog.filename));
+    
+    /* Get current date */
     while (!RTCC_TimeGet(&appData.current_time))
     {
         Nop();
     }
-
-    if (sprintf(appDataLog.filename, "20%02d%02d%02d.CSV",
+      
+    /* Set log file name => 20yymmdd.CSV */
+    if (snprintf(appDataLog.filename, 13, "20%02d%02d%02d.CSV",
                 appData.current_time.tm_year,
                 appData.current_time.tm_mon,
                 appData.current_time.tm_mday) <= 0)
+
     {
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO )
         printf("Unable to set log file name\n");
@@ -243,8 +250,6 @@ bool setLogFileName(void)
 }
 
 // Placeholder function to get the timestamp for FILEIO operations
-
-
 void GetTimestamp(FILEIO_TIMESTAMP * timestamp)
 {
     /* help_mla_fileio.pdf 

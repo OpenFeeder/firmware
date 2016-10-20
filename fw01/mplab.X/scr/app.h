@@ -254,7 +254,7 @@ typedef struct
 
 typedef struct
 {
-    /* Log file name */
+    /* Log file name - 8.3 convention - Upper case only */
     char filename[13];
     /* Data separator in log file */
     char separator[2];
