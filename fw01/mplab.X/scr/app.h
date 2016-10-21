@@ -74,6 +74,7 @@
 #include "app_alarm.h"
 #include "app_datetime.h"
 #include "app_error.h"
+#include "app_event.h"
 #include "app_data_logger.h"
 #include "app_remote.h"
 #if defined (USE_UART1_SERIAL_INTERFACE)
@@ -229,6 +230,9 @@ typedef struct
     bool openfeeder_state;
     bool rtcc_alarm_action;
 
+    /* Battery level*/
+    uint16_t battery_level;
+    
 
 } APP_DATA;
 

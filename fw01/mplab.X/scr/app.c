@@ -105,7 +105,8 @@ APP_DATA_EVENT appDataEvent;
 
 
 /* Binary to Ascii text converter with simple lookup array */
-const char bin2ascii_tab[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+const char bin2ascii_tab[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+
 
 /******************************************************************************
   Function:
@@ -114,13 +115,13 @@ const char bin2ascii_tab[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
   Remarks:
     See prototype in app.h.
  */
-void APP_Tasks( void )
+void APP_Tasks(void)
 {
     static bool button_user_state;
     static bool previous_button_user_state = BUTTON_NOT_PRESSED;
 
     /* Check the Application State. */
-    switch ( appData.state )
+    switch (appData.state)
     {
         case APP_STATE_INIT:
             /**
@@ -128,11 +129,11 @@ void APP_Tasks( void )
              * (en) Application initialization when starting the main power.
              * (fr) Initialisation de l'application lors du démarrage de l'alimentation principale.
              */
-            if ( appData.state != appData.previous_state )
+            if (appData.state != appData.previous_state)
             {
                 appData.previous_state = appData.state;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
-                printf( "> APP_STATE_INIT\n" );
+                printf("> APP_STATE_INIT\n");
 #endif
                 DSCONbits.RELEASE = 0; /* DS30005009C-page 165 */
             }
@@ -141,7 +142,7 @@ void APP_Tasks( void )
              * Set log file name => 20yymmdd.CSV
              * One log file per day.
              */
-            if ( false == setLogFileName( ) )
+            if (false == setLogFileName())
             {
                 appData.state = APP_STATE_ERROR;
                 break;
@@ -150,7 +151,7 @@ void APP_Tasks( void )
             //#if defined (USE_UART1_SERIAL_INTERFACE)
             //            printf( "%s\n", appDataLog.filename );
             //#endif
-            setLedsStatusColor( LEDS_OFF );
+            setLedsStatusColor(LEDS_OFF);
             appData.state = APP_STATE_INIT_MOUNT_USB_KEY;
             break;
             /* -------------------------------------------------------------- */
@@ -161,21 +162,21 @@ void APP_Tasks( void )
              *  - waiting for USB key monting
              *  - if USB key monting go to APP_STATE_INIT_CONFIG_SYS
              */
-            if ( appData.state != appData.previous_state )
+            if (appData.state != appData.previous_state)
             {
                 appData.previous_state = appData.state;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
-                printf( "> APP_STATE_INIT_MOUNT_USB_KEY\n" );
+                printf("> APP_STATE_INIT_MOUNT_USB_KEY\n");
 #endif
                 appDataUsb.usbDriveStatus = USB_DRIVE_NOT_MOUNTED;
-                CMD_VDD_APP_V_USB_SetHigh( ); /* Powering VDD APP for USB and RFID. */
+                CMD_VDD_APP_V_USB_SetHigh(); /* Powering VDD APP for USB and RFID. */
                 appDataUsb.key_is_nedded = true;
             }
 
-            if ( appDataUsb.getValidDeviceAdress )
+            if (appDataUsb.getValidDeviceAdress)
             {
                 /* Configure the system if a USB key is plugged. */
-                if ( USB_DRIVE_MOUNTED == usbMountDrive( ) )
+                if (USB_DRIVE_MOUNTED == usbMountDrive())
                 {
                     appData.state = APP_STATE_INIT_CONFIG_SYS;
                     break;
@@ -183,63 +184,69 @@ void APP_Tasks( void )
             }
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
-            APP_SerialDebugTasks( );
+            APP_SerialDebugTasks();
             // TODO: Display all event on serial terminal for test accessoire.
 #endif
             /* Red status LED blinks until the user plug a USB key */
-            LedsStatusBlink( LED_RED, 25, 1975 );
+            LedsStatusBlink(LED_RED, 25, 1975);
             break;
             /* -------------------------------------------------------------- */
 
         case APP_STATE_INIT_CONFIG_SYS:
             /* APP_STATE_INIT_CONFIG_SYS run only one time. */
-            if ( appData.state != appData.previous_state )
+            if (appData.state != appData.previous_state)
             {
                 appData.previous_state = appData.state;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
-                printf( "> APP_STATE_INIT_CONFIG_SYS\n" );
+                printf("> APP_STATE_INIT_CONFIG_SYS\n");
 #endif
             }
 
             /* Blue status LED blinks as long USB key is acessed. */
-            LedsStatusBlink( LED_BLUE, 25, 475 );
+            LedsStatusBlink(LED_BLUE, 25, 475);
 
             /* System configuration. */
-            appData.flags.bit_value.systemInit = config_set( );
+            appData.flags.bit_value.systemInit = config_set();
 
-            if ( true == appData.flags.bit_value.systemInit )
+            if (true == appData.flags.bit_value.systemInit)
             {
 #if defined (USE_UART1_SERIAL_INTERFACE)
-                printf( "System initialized\n" );
+                printf("System initialized\n");
 #endif
                 /* Servomotor power command enable. */
-                servomotorPowerEnable( );
+                servomotorPowerEnable();
                 appData.reward_door_status = DOOR_CLOSING;
                 // TODO: Check door position or wainting for timeout closing
-                while ( DOOR_IDLE != appData.reward_door_status );
+                while (DOOR_IDLE != appData.reward_door_status);
                 /* Servomotor power command disable. */
-                servomotorPowerDisable( );
+                servomotorPowerDisable();
 
-                setLedsStatusColor( LEDS_OFF );
+                setLedsStatusColor(LEDS_OFF);
                 appData.state = APP_STATE_IDLE;
             }
             else
             {
 #if defined (USE_UART1_SERIAL_INTERFACE)
-                printf( "System not initialized\n" );
+                printf("System not initialized\n");
 #endif
-                sprintf( appError.message, "Unable to initialize the system" );
+                sprintf(appError.message, "Unable to initialize the system");
                 appError.currentLineNumber = __LINE__;
-                sprintf( appError.currentFileName, "%s", __FILE__ );
+                sprintf(appError.currentFileName, "%s", __FILE__);
                 appData.state = APP_STATE_ERROR;
             }
 
-            if ( usbUnmountDrive( ) == USB_DRIVE_MOUNTED )
+            if (FILEIO_RESULT_FAILURE == logBatteryLevel())
+            {
+                appData.state = APP_STATE_ERROR;
+                break;
+            }
+            
+            if (usbUnmountDrive() == USB_DRIVE_MOUNTED)
             {
                 appData.state = APP_STATE_ERROR;
             }
 
-            USBHostShutdown( );
+            USBHostShutdown();
 
             break;
             /* -------------------------------------------------------------- */
@@ -252,24 +259,24 @@ void APP_Tasks( void )
              *  - event PIR sensor, detecting movement near the system
              *  - after the timeout period go into sleep mode
              */
-            if ( appData.state != appData.previous_state )
+            if (appData.state != appData.previous_state)
             {
                 appData.previous_state = appData.state;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
-                printf( "> APP_STATE_IDLE\n" );
+                printf("> APP_STATE_IDLE\n");
 #endif
-                setDelayMs( 30000 ); /* waiting 30 sec timeout before going to sleep mode */
+                setDelayMs(30000); /* waiting 30 sec timeout before going to sleep mode */
             }
 
             /* Green status LED blinks in idle mode. */
-            LedsStatusBlink( LED_GREEN, 25, 1975 );
+            LedsStatusBlink(LED_GREEN, 25, 1975);
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
             /* Get interaction with the serial terminal. */
-            APP_SerialDebugTasks( );
+            APP_SerialDebugTasks();
 #endif
 
-            if ( false == isPowerBatteryGood( ) )
+            if (false == isPowerBatteryGood())
             {
                 appData.state = APP_STATE_BATTERY_LOW;
                 break;
@@ -291,17 +298,17 @@ void APP_Tasks( void )
              *  - recording the time of detected of the bird
              *  - if true go to APP_STATE_ERROR
              */
-            if ( is_bird_sensor_detected( ) )
+            if (is_bird_sensor_detected())
             {
-                while ( !RTCC_TimeGet( &appDataLog.bird_arrived_time ) )
+                while (!RTCC_TimeGet(&appDataLog.bird_arrived_time))
                 {
-                    Nop( );
+                    Nop();
                 }
 #if defined (USE_UART1_SERIAL_INTERFACE)
-                printf( "Bird detected\n" );
+                printf("Bird detected\n");
 #endif
                 /* Inizialised global variable datalogging. */
-                clear_bird_sensor_detected( );
+                clear_bird_sensor_detected();
                 appDataLog.is_reward_taken = false;
                 appData.state = APP_STATE_RFID_READING_PIT_TAG;
                 break;
@@ -310,22 +317,22 @@ void APP_Tasks( void )
             /* Check USER BUTTON detected.
              *  - if true go to ...
              */
-            button_user_state = USER_BUTTON_GetValue( );
+            button_user_state = USER_BUTTON_GetValue();
 
-            if ( button_user_state != previous_button_user_state )
+            if (button_user_state != previous_button_user_state)
             {
                 previous_button_user_state = button_user_state;
-                if ( BUTTON_PRESSED == button_user_state )
+                if (BUTTON_PRESSED == button_user_state)
                 {
                     //#if defined (USE_UART1_SERIAL_INTERFACE)
                     //                    printf("User button pressed - ");
                     //#endif
-                    if ( APP_isRemoteControlConnected( ) )
+                    if (APP_isRemoteControlConnected())
                     {
                         appData.flags.bit_value.RemoteControlConnected = true; // FIXME: same of appData.mcp23017.status_bit.found
                         //appData.mcp23017.status_bit.found = true;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
-                        printf( "Remote control found.\n" );
+                        printf("Remote control found.\n");
 #endif
                         appData.state = APP_STATE_REMOTE_CONTROL;
                         break;
@@ -335,7 +342,7 @@ void APP_Tasks( void )
                         appData.mcp23017.status_bit.found = false;
                         appData.mcp23017.status_bit.initialized = false;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
-                        printf( "Remote control not found.\n" );
+                        printf("Remote control not found.\n");
 #endif
                     }
                 }
@@ -356,13 +363,13 @@ void APP_Tasks( void )
             // appDataAttractiveLeds.sleep_time.tm_min
 
 
-            if ( appData.openfeeder_state == OPENFEEDER_IS_AWAKEN && appData.rtcc_alarm_action == GO_TO_SLEEP )
+            if (appData.openfeeder_state == OPENFEEDER_IS_AWAKEN && appData.rtcc_alarm_action == GO_TO_SLEEP)
             {
                 appData.state = APP_STATE_GO_TO_SLEEP_MODE;
                 break;
             }
 
-            if ( appData.openfeeder_state == OPENFEEDER_IS_SLEEPING && appData.rtcc_alarm_action == WAKE_UP )
+            if (appData.openfeeder_state == OPENFEEDER_IS_SLEEPING && appData.rtcc_alarm_action == WAKE_UP)
             {
                 appData.state = APP_STATE_WAKE_UP_FROM_SLEEP;
                 break;
@@ -371,9 +378,9 @@ void APP_Tasks( void )
             /* Check TIMEOUT IDLE MODE endding.
              *  - if false go to APP_STATE_SLEEP
              */
-            if ( false == appData.flags.bit_value.attractive_leds_status )
+            if (false == appData.flags.bit_value.attractive_leds_status)
             {
-                if ( isDelayMsEnding( ) )
+                if (isDelayMsEnding())
                 {
                     appData.state = APP_STATE_SLEEP;
                 }
@@ -386,42 +393,42 @@ void APP_Tasks( void )
              * Application idle state.
              *  - 
              */
-            if ( appData.state != appData.previous_state )
+            if (appData.state != appData.previous_state)
             {
                 appData.previous_state = appData.state;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
-                printf( "> APP_STATE_REMOTE_CONTROL\n" ); // GREEN LED for AB proto
+                printf("> APP_STATE_REMOTE_CONTROL\n"); // GREEN LED for AB proto
 #endif
-                APP_remoteControlInitialize( );
+                APP_remoteControlInitialize();
             }
 
             /* Blue status LED blinks when the remote control is plugged. */
-            LedsStatusBlink( LED_BLUE, 500, 500 );
+            LedsStatusBlink(LED_BLUE, 500, 500);
 
             /* Check USER BUTTON detected.
              *  - if true RemoteControlConnected = false and go to APP_STATE_IDLE
              */
-            button_user_state = USER_BUTTON_GetValue( );
+            button_user_state = USER_BUTTON_GetValue();
 
-            if ( button_user_state != previous_button_user_state )
+            if (button_user_state != previous_button_user_state)
             {
                 previous_button_user_state = button_user_state;
-                if ( BUTTON_PRESSED == button_user_state )
+                if (BUTTON_PRESSED == button_user_state)
                 {
                     //#if defined (USE_UART1_SERIAL_INTERFACE)
                     //                    printf("USER BUTTON PRESSED\n");
                     //#endif
-                    clearRemoteControlDisplay( );
+                    clearRemoteControlDisplay();
                     appData.flags.bit_value.RemoteControlConnected = false;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
-                    printf( "Remote control disconnected\n" );
+                    printf("Remote control disconnected\n");
 #endif
                 }
             }
 
-            if ( appData.flags.bit_value.RemoteControlConnected )
+            if (appData.flags.bit_value.RemoteControlConnected)
             {
-                APP_remoteControlTask( );
+                APP_remoteControlTask();
             }
             else
             {
@@ -440,11 +447,11 @@ void APP_Tasks( void )
              *  - passer à l'état APP_STATE_IDLE
              */
 
-            if ( appData.state != appData.previous_state )
+            if (appData.state != appData.previous_state)
             {
                 appData.previous_state = appData.state;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
-                printf( "> APP_STATE_SLEEP\n" );
+                printf("> APP_STATE_SLEEP\n");
 #endif
             }
 
@@ -452,7 +459,7 @@ void APP_Tasks( void )
             //            printf("APP_STATE_SLEEP\n");
             //#endif
             //            appData.previous_state = APP_STATE_SLEEP;
-            setLedsStatusColor( LEDS_OFF );
+            setLedsStatusColor(LEDS_OFF);
 
             /* Sequence to enter Deep Sleep mode. */
             //            _DSEN = 1; /* Deep Sleep */
@@ -466,10 +473,10 @@ void APP_Tasks( void )
             //            asm("mov #8000, w2"); // enable DS
             //            asm("mov w2, DSCON");
             //            asm("mov w2, DSCON");
-            Sleep( );
+            Sleep();
 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
-            printf( "\n" );
+            printf("\n");
 #endif
 
             //appData.state = APP_STATE_IDLE;
@@ -481,37 +488,37 @@ void APP_Tasks( void )
             /* 
              * TODO: comment APP_STATE_RFID_READING_PIT_TAG
              */
-            if ( appData.state != appData.previous_state )
+            if (appData.state != appData.previous_state)
             {
                 appData.previous_state = appData.state;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
-                printf( "> APP_STATE_RFID_READING_PIT_TAG\n" );
+                printf("> APP_STATE_RFID_READING_PIT_TAG\n");
 #endif
-                APP_Rfid_Init( );
+                APP_Rfid_Init();
 
             }
 
-            APP_Rfid_Task( );
+            APP_Rfid_Task();
 
-            if ( appData.flags.bit_value.NewValidPitTag )
+            if (appData.flags.bit_value.NewValidPitTag)
             {
 
-                if ( appDataPitTag.numPitTagDenied > 0 )
+                if (appDataPitTag.numPitTagDenied > 0)
                 {
-                    appDataLog.is_pit_tag_denied = checkPitTagDenied( );
+                    appDataLog.is_pit_tag_denied = checkPitTagDenied();
                 }
                 else
                 {
                     appDataLog.is_pit_tag_denied = false;
                 }
 
-                RFID_Disable( );
-                clear_bird_sensor_detected( );
+                RFID_Disable();
+                clear_bird_sensor_detected();
 
-                if ( true == appDataLog.is_pit_tag_denied )
+                if (true == appDataLog.is_pit_tag_denied)
                 {
 #if defined (USE_UART1_SERIAL_INTERFACE)
-                    printf( "PIT Tag denied\n" );
+                    printf("PIT Tag denied\n");
 #endif
                     appData.state = APP_STATE_DATA_LOG;
                 }
@@ -524,41 +531,41 @@ void APP_Tasks( void )
 
             /* Test if delay detect PIT Tags in ending. (20x 160 ms) */
             //++detect_bird_counter; // do in tmr4.c
-            if ( g_timeout_reading_pit_tag == 0 )
+            if (g_timeout_reading_pit_tag == 0)
             {
-                RFID_Disable( );
-                clear_bird_sensor_detected( );
-                sprintf( appDataLog.bird_pit_tag_str, "0" );
+                RFID_Disable();
+                clear_bird_sensor_detected();
+                sprintf(appDataLog.bird_pit_tag_str, "0");
                 appDataLog.is_reward_taken = false;
                 appDataLog.is_pit_tag_denied = false;
-                clearPitTagBuffers( );
+                clearPitTagBuffers();
                 appData.state = APP_STATE_DATA_LOG;
             }
             break;
             /* -------------------------------------------------------------- */
 
         case APP_STATE_OPENING_REWARD_DOOR:
-            if ( appData.state != appData.previous_state )
+            if (appData.state != appData.previous_state)
             {
                 appData.previous_state = appData.state;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
-                printf( "> APP_STATE_OPENING_REWARD_DOOR\n" );
+                printf("> APP_STATE_OPENING_REWARD_DOOR\n");
 #endif
                 /* Servomotor power command enable. */
-                servomotorPowerEnable( );
+                servomotorPowerEnable();
                 appData.reward_door_status = DOOR_OPENING;
                 //#if defined (USE_UART1_SERIAL_INTERFACE)
                 //                printf( "Opening reward door in action.\n" );
                 //#endif
                 appDataLog.is_reward_taken = false;
-                setDoorLedsColor( );
+                setDoorLedsColor();
             }
 
             // TODO: Check door position or wait for timeout closing
-            if ( DOOR_IDLE == appData.reward_door_status )
+            if (DOOR_IDLE == appData.reward_door_status)
             {
                 /* Servomotor power command enable. */
-                servomotorPowerDisable( );
+                servomotorPowerDisable();
                 appData.state = APP_STATE_WAITING_CATCH_REWARD;
             }
             break;
@@ -566,22 +573,22 @@ void APP_Tasks( void )
 
         case APP_STATE_WAITING_CATCH_REWARD:
             /* Waiting for the catch of a reward. */
-            if ( appData.state != appData.previous_state )
+            if (appData.state != appData.previous_state)
             {
                 appData.previous_state = appData.state;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
-                printf( "> APP_STATE_WAITING_CATCH_REWARD\n" );
+                printf("> APP_STATE_WAITING_CATCH_REWARD\n");
 #endif
-                IRSensorEnable( );
+                IRSensorEnable();
                 g_timeout_taking_reward = appData.timeout_taking_reward;
                 appData.bird_is_taking_reward = false;
             }
 
-            if ( ( g_flag_ir1_sensor == true ) && ( appData.bird_is_taking_reward == false ) )
+            if ((g_flag_ir1_sensor == true) && (appData.bird_is_taking_reward == false))
             {
                 /* REWARD_IR_SENSOR true. */
 #if defined (USE_UART1_SERIAL_INTERFACE)
-                printf( "Taking reward detected.\n" );
+                printf("Taking reward detected.\n");
 #endif
                 g_flag_ir1_sensor = false;
                 appData.bird_is_taking_reward = true;
@@ -589,12 +596,12 @@ void APP_Tasks( void )
             }
 
             /* low --> coupure de la barrière infra rouge */
-            if ( ( BAR_IR1_OUT_GetValue( ) == 0 ) && ( appData.bird_is_taking_reward == true ) )
+            if ((BAR_IR1_OUT_GetValue() == 0) && (appData.bird_is_taking_reward == true))
             {
 #if defined (USE_UART1_SERIAL_INTERFACE)
-                printf( "Reward taken.\n" );
+                printf("Reward taken.\n");
 #endif
-                IRSensorDisable( );
+                IRSensorDisable();
                 appData.bird_is_taking_reward = false;
                 appDataLog.is_reward_taken = true;
                 appData.state = APP_STATE_CLOSING_REWARD_DOOR;
@@ -602,62 +609,62 @@ void APP_Tasks( void )
             }
 
             /* Timeout endding */
-            if ( g_timeout_taking_reward == 0 && BAR_IR1_OUT_GetValue( ) == 0 )
+            if (g_timeout_taking_reward == 0 && BAR_IR1_OUT_GetValue() == 0)
             {
 #if defined (USE_UART1_SERIAL_INTERFACE)
-                printf( "Reward timeout.\n" );
+                printf("Reward timeout.\n");
 #endif
-                IRSensorDisable( );
+                IRSensorDisable();
                 appData.state = APP_STATE_CLOSING_REWARD_DOOR;
             }
             break;
             /* -------------------------------------------------------------- */
 
         case APP_STATE_CLOSING_REWARD_DOOR:
-            if ( appData.state != appData.previous_state )
+            if (appData.state != appData.previous_state)
             {
                 appData.previous_state = appData.state;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
-                printf( "> APP_STATE_CLOSING_REWARD_DOOR\n" );
+                printf("> APP_STATE_CLOSING_REWARD_DOOR\n");
 #endif
                 /* Servomotor power command enable. */
-                servomotorPowerEnable( );
+                servomotorPowerEnable();
                 appData.reward_door_status = DOOR_CLOSING;
 #if defined (USE_UART1_SERIAL_INTERFACE) 
-                printf( "Closing reward door in action.\n" );
+                printf("Closing reward door in action.\n");
 #endif
             }
 
             /* Enregistrement de l'heure de fin de détection de l'oiseau. */
             // TODO: Get current Time when the RFID signal 
-            while ( !RTCC_TimeGet( &appDataLog.bird_quit_time ) )
+            while (!RTCC_TimeGet(&appDataLog.bird_quit_time))
             {
-                Nop( );
+                Nop();
             }
 
             // TODO: Check door position or wainting for timeout closing
-            if ( DOOR_IDLE == appData.reward_door_status )
+            if (DOOR_IDLE == appData.reward_door_status)
             {
                 /* Servomotor power command enable. */
-                servomotorPowerDisable( );
-                setAttractiveLedsColor( );
+                servomotorPowerDisable();
+                setAttractiveLedsColor();
                 appData.state = APP_STATE_DATA_LOG;
             }
             break;
             /* -------------------------------------------------------------- */
 
         case APP_STATE_DATA_LOG:
-            if ( appData.state != appData.previous_state )
+            if (appData.state != appData.previous_state)
             {
                 appData.previous_state = appData.state;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
-                printf( "> APP_STATE_DATA_LOG\n" );
+                printf("> APP_STATE_DATA_LOG\n");
 #endif
             }
 
-            LedsStatusBlink( LED_BLUE, 50, 250 );
+            LedsStatusBlink(LED_BLUE, 50, 250);
 
-            if ( false == dataLog( ) )
+            if (false == dataLog())
             {
                 appData.state = APP_STATE_ERROR;
             }
@@ -669,20 +676,20 @@ void APP_Tasks( void )
             /* -------------------------------------------------------------- */
 
         case APP_STATE_GO_TO_SLEEP_MODE:
-            if ( appData.state != appData.previous_state )
+            if (appData.state != appData.previous_state)
             {
                 appData.previous_state = appData.state;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
-                printf( "> APP_STATE_GO_TO_SLEEP_MODE\n" );
+                printf("> APP_STATE_GO_TO_SLEEP_MODE\n");
 #endif
             }
 
             //            EX_INT0_InterruptDisable( ); /* For deep sleep only */
 
-            rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec );
+            rtcc_set_alarm(appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec);
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
-            printf( "Go into sleep mode...\n" );
+            printf("Go into sleep mode...\n");
 #endif 
             appData.openfeeder_state = OPENFEEDER_IS_SLEEPING;
             appData.state = APP_STATE_SLEEP;
@@ -690,18 +697,18 @@ void APP_Tasks( void )
             /* -------------------------------------------------------------- */
 
         case APP_STATE_WAKE_UP_FROM_SLEEP:
-            if ( appData.state != appData.previous_state )
+            if (appData.state != appData.previous_state)
             {
                 appData.previous_state = appData.state;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
-                printf( "> APP_STATE_WAKE_UP_FROM_SLEEP\n" );
+                printf("> APP_STATE_WAKE_UP_FROM_SLEEP\n");
 #endif
             }
 
-            rtcc_set_alarm( appDataAlarmSleep.time.tm_hour, appDataAlarmSleep.time.tm_min, appDataAlarmSleep.time.tm_sec );
+            rtcc_set_alarm(appDataAlarmSleep.time.tm_hour, appDataAlarmSleep.time.tm_min, appDataAlarmSleep.time.tm_sec);
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
-            printf( "Awaken from sleep mode!\n" );
+            printf("Awaken from sleep mode!\n");
 #endif 
             appData.openfeeder_state = OPENFEEDER_IS_AWAKEN;
             //            EX_INT0_InterruptEnable( );
@@ -722,22 +729,22 @@ void APP_Tasks( void )
 
         case APP_STATE_BATTERY_LOW:
             /* APP_STATE_BATTERY_LOW run only one time. */
-            if ( appData.state != appData.previous_state )
+            if (appData.state != appData.previous_state)
             {
                 appData.previous_state = appData.state;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
-                printf( "> APP_STATE_BATTERY_LOW\n" );
+                printf("> APP_STATE_BATTERY_LOW\n");
 #endif
                 /* Set peripherals Off. */
-                setLedsStatusColor( LEDS_OFF );
-                setAttractiveLedsOff( );
-                EX_INT0_InterruptDisable( );
-                RFID_Disable( );
-                CMD_VDD_APP_V_USB_SetLow( ); /* Shut down VDD APP for USB and RFID. */
-                IRSensorDisable( );
+                setLedsStatusColor(LEDS_OFF);
+                setAttractiveLedsOff();
+                EX_INT0_InterruptDisable();
+                RFID_Disable();
+                CMD_VDD_APP_V_USB_SetLow(); /* Shut down VDD APP for USB and RFID. */
+                IRSensorDisable();
             }
 
-            Sleep( );
+            Sleep();
             break;
             /* -------------------------------------------------------------- */
 
@@ -745,24 +752,24 @@ void APP_Tasks( void )
             /* Step in APP_Tasks( ) failed.
              * TODO: APP_STATE_ERROR - This state should not be blocking!
              */
-            if ( appData.state != appData.previous_state )
+            if (appData.state != appData.previous_state)
             {
                 appData.previous_state = appData.state;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
-                printf( "> APP_STATE_ERROR\n" );
+                printf("> APP_STATE_ERROR\n");
 #endif
 #if defined (USE_UART1_SERIAL_INTERFACE) 
-                printError( );
+                printError();
 #endif
-                clearError( );
+                clearError();
             }
 
             /* Red status LED blinks until the user plug a USB key */
-            LedsStatusBlink( LED_RED, 50, 450 );
+            LedsStatusBlink(LED_RED, 50, 450);
 
-            if ( USBHostDeviceStatus( appDataUsb.deviceAddress ) == USB_DEVICE_DETACHED )
+            if (USBHostDeviceStatus(appDataUsb.deviceAddress) == USB_DEVICE_DETACHED)
             {
-                setLedsStatusColor( LEDS_OFF );
+                setLedsStatusColor(LEDS_OFF);
                 appData.state = APP_STATE_INIT_MOUNT_USB_KEY;
             }
 
@@ -770,22 +777,23 @@ void APP_Tasks( void )
             /* -------------------------------------------------------------- */
 
         default:
-            Nop( );
+            Nop();
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
-            printf( "> APP_STATE_DEFAULT\n" );
+            printf("> APP_STATE_DEFAULT\n");
 #endif
-            setLedsStatusColor( LED_RED );
+            setLedsStatusColor(LED_RED);
             break;
     }
 }
 
-void APP_Initialize( void )
+
+void APP_Initialize(void)
 {
     /* Status LED */
-    setLedsStatusColor( LED_RED );
+    setLedsStatusColor(LED_RED);
 
     /* Attractive LEDs initialize */
-    setAttractiveLedsOff( );
+    setAttractiveLedsOff();
 
     /* APP state task initialize */
     appData.state = APP_STATE_INIT;
@@ -799,7 +807,7 @@ void APP_Initialize( void )
     appData.flags.reg = 0;
 
     /* I2C */
-    memset( appData.i2c_add_found, 0, MAX_OF_UNKNOWN_I2C_8_BIT_SLAVE_ADD ); // clear tab i2c_add_found
+    memset(appData.i2c_add_found, 0, MAX_OF_UNKNOWN_I2C_8_BIT_SLAVE_ADD); // clear tab i2c_add_found
     appData.mcp23017.status_reg = 0;
     /* Set all digit Off. */
     appData.digit[0] = 0xFF;
