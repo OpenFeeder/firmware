@@ -312,8 +312,8 @@ void APP_SerialDebugTasks( void )
                 }
 
                 /* Dynamic configuration date, example 22/08/2016 and time to 15:59:30 */
-                // APP_SetDateTime( 22, 8, 16, 15, 59, 30 ); /* Set date and time. */
-                setDateTime( mday, mon, year, hour, min, sec ); /* Set date and time. */
+                // SetDateTime( 16, 8, 22, 15, 59, 30 ); /* Set date and time. */
+                setDateTime( year, mon, mday, hour, min, sec ); /* Set date and time. */
                 printCurrentDate( );
                 break;
             }
