@@ -312,9 +312,8 @@ void APP_SerialDebugTasks( void )
                 }
 
                 /* Dynamic configuration date, example 22/08/2016 and time to 15:59:30 */
-                // SetDateTime( 16, 8, 22, 15, 59, 30 ); /* Set date and time. */
+                // setDateTime( 16, 8, 22, 15, 59, 30 ); /* Set date and time. */
                 setDateTime( year, mon, mday, hour, min, sec ); /* Set date and time. */
-                printCurrentDate( );
                 break;
             }
                 /* -------------------------------------------------------------- */
@@ -323,10 +322,8 @@ void APP_SerialDebugTasks( void )
             case 'T':
             {
                 /* Display date and time from RTCC module. */
-                struct tm current_time;
-                getDateTime( &current_time ); /* Get date and time. */
-                printf( "Current date %02u/%02u/%02u, ", current_time.tm_mday, current_time.tm_mon, current_time.tm_year );
-                printf( "time %02u:%02u:%02u\n\n", current_time.tm_hour, current_time.tm_min, current_time.tm_sec );
+                printCurrentDate( );
+                putchar( '\n' );
                 break;
             }
                 /* -------------------------------------------------------------- */
