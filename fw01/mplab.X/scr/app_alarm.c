@@ -8,7 +8,7 @@
 #include "app_alarm.h"
 
 
-void rtcc_set_alarm( int hour, int minute, int second )
+void rtcc_set_alarm( int hour, int minute, int second, int alarmMask )
 {
     RCFGCALbits.RTCWREN = 1; // RTCVALH and RTCVALL registers can be written to by the user
     // PIC24FJ256GB406    
@@ -27,7 +27,7 @@ void rtcc_set_alarm( int hour, int minute, int second )
     //TODO: set the alarm to EVERY_DAY in code production
 //        ALCFGRPT = EVERY_10_SECONDS;
 //         ALCFGRPT = EVERY_MINUTE;
-    ALCFGRPT = EVERY_DAY;
+    ALCFGRPT = alarmMask;
 
     RCFGCALbits.RTCWREN = 0;
 }

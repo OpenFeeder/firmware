@@ -26,7 +26,7 @@ typedef struct
 } APP_DATA_ALARM;
 
 
-void rtcc_set_alarm( int, int, int );
+void rtcc_set_alarm( int, int, int, int );
 
 
 #endif /* APP_ALARM_H */

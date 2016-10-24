@@ -348,7 +348,7 @@ void config_set_parameters( void )
     //#endif 
 
     /* Set RTCC alarm */
-    rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec );
+    rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_DAY );
     //#if defined (USE_UART1_SERIAL_INTERFACE)
     //    printf( "\tAlarm: set\n" );
     //#endif 

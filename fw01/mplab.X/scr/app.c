@@ -686,7 +686,7 @@ void APP_Tasks(void)
 
             //            EX_INT0_InterruptDisable( ); /* For deep sleep only */
 
-            rtcc_set_alarm(appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec);
+            rtcc_set_alarm(appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_DAY);
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
             printf("Go into sleep mode...\n");
@@ -705,7 +705,7 @@ void APP_Tasks(void)
 #endif
             }
 
-            rtcc_set_alarm(appDataAlarmSleep.time.tm_hour, appDataAlarmSleep.time.tm_min, appDataAlarmSleep.time.tm_sec);
+            rtcc_set_alarm(appDataAlarmSleep.time.tm_hour, appDataAlarmSleep.time.tm_min, appDataAlarmSleep.time.tm_sec, EVERY_DAY);
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
             printf("Awaken from sleep mode!\n");
