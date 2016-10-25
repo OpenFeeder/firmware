@@ -29,6 +29,7 @@
 
 void getBatteryLevel(void);
 bool isPowerBatteryGood( void );
+FILEIO_RESULT logBatteryLevel(void);
 
 #endif	/* APP_POWER_H */
 

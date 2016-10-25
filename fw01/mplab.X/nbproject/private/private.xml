@@ -19,6 +19,21 @@
         </file>
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/D:/dev/github/openfeeder/firmwares/fw01/mplab.X/scr/app_config.c</file>
+            <file>file:/D:/dev/github/openfeeder/firmwares/fw01/mplab.X/scr/min_ini.c</file>
+            <file>file:/D:/dev/github/openfeeder/firmwares/fw01/mplab.X/scr/app_datetime.c</file>
+            <file>file:/D:/dev/github/openfeeder/firmwares/fw01/mplab.X/scr/app_alarm.c</file>
+            <file>file:/D:/dev/github/openfeeder/firmwares/fw01/mplab.X/scr/app.c</file>
+            <file>file:/D:/dev/github/openfeeder/firmwares/fw01/mplab.X/mcc_generated_files/tmr4.c</file>
+            <file>file:/D:/dev/github/openfeeder/firmwares/fw01/mplab.X/mcc_generated_files/tmr2.c</file>
+            <file>file:/D:/dev/github/openfeeder/firmwares/fw01/mplab.X/mcc_generated_files/rtcc.c</file>
+            <file>file:/D:/dev/github/openfeeder/firmwares/fw01/mplab.X/scr/app_alarm.h</file>
+            <file>file:/D:/dev/github/openfeeder/firmwares/fw01/mplab.X/scr/app_attractive_leds.c</file>
+            <file>file:/D:/dev/github/openfeeder/firmwares/fw01/mplab.X/scr/app_event.c</file>
+            <file>file:/D:/dev/github/openfeeder/firmwares/fw01/mplab.X/scr/app_power.c</file>
+            <file>file:/D:/dev/github/openfeeder/firmwares/fw01/mplab.X/scr/app_event.h</file>
+            <file>file:/D:/dev/github/openfeeder/firmwares/fw01/mplab.X/scr/app_power.h</file>
+        </group>
     </open-files>
 </project-private>

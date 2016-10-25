@@ -10,9 +10,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include "app_power.h"
 
-FILEIO_RESULT logBatteryLevel(void);
 
 #endif /* APP_EVENT_H */
 
