@@ -761,7 +761,9 @@ void APP_Tasks(void)
 
             CMD_VDD_APP_V_USB_SetHigh(); /* Power up VDD APP for USB and RFID. */
 
-            RFID_Enable();
+            EM4095_SHD_ENABLE();
+            /* Set-up time after a sleep period - Tset: 35ms */
+            /* Tableau page 5 - datasheet EM4095*/
             setDelayMsEM4095(60);
             while (isDelayMsEndingEM4095() == false)
             {
@@ -770,22 +772,20 @@ void APP_Tasks(void)
 
             while (EM4095_SHD_GetValue() == false)
             {
-                printf("EM4095_SHD_GetValue()\n");
                 Nop();
             }
             EX_INT3_InterruptEnable();
             while (g_new_value_of_em4095_rdyclk_measurement == false)
             {
-                printf("g_new_value_of_em4095_rdyclk_measurement\n");
                 Nop();
             }
             EX_INT3_InterruptDisable();
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
-            printf("RDY/CLK signal frequency: %u\n", rdyclk_count_in_10ms * 5);
+            printf("RDY/CLK signal frequency: %u (x10Hz)\n", rdyclk_count_in_10ms * 5);
 #endif    
             g_new_value_of_em4095_rdyclk_measurement = false;
-            RFID_Disable();
+            //            RFID_Disable();
             CMD_VDD_APP_V_USB_SetLow(); /* Shut down VDD APP for USB and RFID. */
 
             appData.state = APP_STATE_IDLE;
@@ -866,7 +866,7 @@ void APP_Tasks(void)
 void APP_Initialize(void)
 {
     /* Status LED */
-    setLedsStatusColor(LED_RED);
+    //    setLedsStatusColor(LED_RED);
 
     /* Attractive LEDs initialize */
     setAttractiveLedsOff();

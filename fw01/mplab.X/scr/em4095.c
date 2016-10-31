@@ -148,7 +148,8 @@ void __attribute__( ( weak ) ) RFID_DecodingTasks( void )
     {
         case MANCHESTER_CODE_DECODING_STATE_IDLE:
 #if defined (DEBUG_RFID_WORKING_ON_LED_STATUS)
-            LED_STATUS_R_SetLow( ); // FIXME: Debug display
+            setLedsStatusColor( LED_RED );
+//            LED_STATUS_R_SetLow( ); // FIXME: Debug display
 #endif            
             /* -1- Step "Validate stop bit" Waiting first event */
             // (en) An interrupt on the rising edge has been produced on the signal DEMOD_OUT
@@ -162,7 +163,8 @@ void __attribute__( ( weak ) ) RFID_DecodingTasks( void )
 
         case MANCHESTER_CODE_DECODING_STATE_DETECTING_STOP_BIT_OF_PREVIOUS_FRAME:
 #if defined (DEBUG_RFID_WORKING_ON_LED_STATUS)
-            LED_STATUS_R_SetLow( ); // FIXME: Debug display
+//            setLedsStatusColor( LED_YELLOW );
+//            LED_STATUS_R_SetLow( ); // FIXME: Debug display
 #endif            
             /* -1- Step "Validate stop bit" waiting delay overflow */
             if ( g_counter_delay_overflow == 1 )
@@ -173,8 +175,9 @@ void __attribute__( ( weak ) ) RFID_DecodingTasks( void )
                 EX_INT4_PositiveEdgeSet( ); // set the edge of external interrupt to handle positive edge interrupts
                 count_one_seq = 1; // initialized counter of one sequence in Header data frame
 #if defined (DEBUG_RFID_WORKING_ON_LED_STATUS)
-                LED_STATUS_R_SetHigh( ); // FIXME: Debug display
-#endif
+//            setLedsStatusColor( LED_BLUE );
+//            LED_STATUS_R_SetLow( ); // FIXME: Debug display
+#endif       
                 fsm_datastream_decoding_state = MANCHESTER_CODE_DECODING_STATE_HEADER_DATA_DETECTION;
             }
             else
@@ -210,8 +213,9 @@ void __attribute__( ( weak ) ) RFID_DecodingTasks( void )
                     bit_counter_column[3] = 0;
                     /* Go to next step for decoding raw RFID frame. */
 #if defined (DEBUG_RFID_WORKING_ON_LED_STATUS)
-                    LED_STATUS_R_SetLow( ); // FIXME: Debug display
-#endif                    
+//            setLedsStatusColor( LED_BLUE );
+//            LED_STATUS_R_SetLow( ); // FIXME: Debug display
+#endif                     
                     fsm_datastream_decoding_state = MANCHESTER_CODE_DECODING_STATE_READ_BIT_DATASTREAM;
                     break;
                 }
@@ -223,8 +227,9 @@ void __attribute__( ( weak ) ) RFID_DecodingTasks( void )
             else
             {
 #if defined (DEBUG_RFID_WORKING_ON_LED_STATUS)
-                LED_STATUS_R_SetLow( ); // FIXME: Debug display
-#endif                    
+//            setLedsStatusColor( LED_BLUE );
+//            LED_STATUS_R_SetLow( ); // FIXME: Debug display
+#endif                     
                 //!\ if (( g_counter_delay_overflow < 1 ) || ( g_counter_delay_overflow >= 2 ))
                 SynchroWithTimerDelayCount( ); // timer synchronization
                 g_counter_delay_overflow = 0; // clear delay overflow counter
@@ -356,8 +361,10 @@ void __attribute__( ( weak ) ) RFID_DecodingTasks( void )
         case MANCHESTER_CODE_DECODING_STATE_ERROR:
         default:
             /* if nothing else matches, do the default. */
-            //            LED_STATUS_R_SetLow( ); // FIXME: Debug display
-            //setLedsStatusColor( LED_RED ); // FIXME: Debug display
+//#if defined (DEBUG_RFID_WORKING_ON_LED_STATUS)
+//            setLedsStatusColor( LED_RED );
+////            LED_STATUS_R_SetLow( ); // FIXME: Debug display
+//#endif   
             //DecodingRfidInitializeStateMachine( );
             //EX_INT4_PositiveEdgeSet( ); /* Set the edge of external interrupt to handle positive edge interrupts. */
             fsm_datastream_decoding_state = MANCHESTER_CODE_DECODING_STATE_IDLE;

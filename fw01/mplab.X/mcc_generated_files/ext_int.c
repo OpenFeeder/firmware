@@ -121,9 +121,10 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _INT4Interrupt( void )
     //#endif 
     /* Event on EM4095_DEMOD_OUT RFID signal. */
     /* EM4095_DEMOD_OUT interrupt on edge detect */
-#if defined (DEBUG_RFID_WORKING_ON_LED_STATUS)
-    LED_STATUS_B_SetHigh( );
-#endif
+//#if defined (DEBUG_RFID_WORKING_ON_LED_STATUS)
+//    setLedsStatusColor( LED_YELLOW );
+////    LED_STATUS_B_SetHigh( );
+//#endif
     RFID_DecodingTasks( ); /* Call state machine decoding RFID. */
 
     //***User Area End->code: INT4 - External Interrupt 4***
