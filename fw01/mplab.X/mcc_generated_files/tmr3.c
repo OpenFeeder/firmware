@@ -61,6 +61,7 @@
 volatile uint16_t rdyclk_count_in_10ms; /* variable to display the number of positive edge counter on RDY/CLK in (10 ms ! --> 20 ms) */
 volatile bool g_new_value_of_em4095_rdyclk_measurement; // new value of a frequency measurement RDY/CLK of the EM4095 signal available
 volatile uint16_t g_timeout_x20ms;
+volatile uint16_t g_timeout_em4095_x20ms;
 volatile uint16_t g_timeout_leds_status_x20ms;
 //volatile uint8_t g_timeout_x100ms;
 volatile uint8_t g_timeout_taking_reward;
@@ -167,6 +168,11 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _T3Interrupt( )
     if ( g_timeout_x20ms )
     {
         --g_timeout_x20ms;
+    }
+    
+    if ( g_timeout_em4095_x20ms )
+    {
+        --g_timeout_em4095_x20ms;
     }
     
     if ( g_timeout_leds_status_x20ms )

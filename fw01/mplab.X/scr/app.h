@@ -32,6 +32,7 @@
 //#define DISPLAY_ISR_IR                 // uncomment to display interruption event
 //#define DISPLAY_ISR_I2C                // uncomment to display interruption event
 #define DISPLAY_CURRENT_STATE            // uncomment to display the current state
+#define DISPLAY_RFID_STATE            // uncomment to display the current state
 #define DISPLAY_LOG_BUFFER_INFO 
 #define DISPLAY_PIT_TAG_INFO 
 #define DISPLAY_REMOTE_CONTROL_INFO 
@@ -329,7 +330,8 @@ extern const char bin2ascii_tab[];
 
 extern const FILEIO_DRIVE_CONFIG gUSBDrive;
 extern volatile uint16_t counter_positive_edge_rdyclk;
-
+extern volatile uint16_t rdyclk_count_in_10ms;
+extern volatile bool g_new_value_of_em4095_rdyclk_measurement;
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Callback Routines

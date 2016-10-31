@@ -222,7 +222,8 @@ void APP_Tasks(void)
                 servomotorPowerDisable();
 
                 setLedsStatusColor(LEDS_OFF);
-                appData.state = APP_STATE_IDLE;
+                //                appData.state = APP_STATE_IDLE;
+                appData.state = APP_STATE_RFID_MESURING_RDYCLK;
             }
             else
             {
@@ -240,7 +241,7 @@ void APP_Tasks(void)
                 appData.state = APP_STATE_ERROR;
                 break;
             }
-            
+
             if (usbUnmountDrive() == USB_DRIVE_MOUNTED)
             {
                 appData.state = APP_STATE_ERROR;
@@ -748,6 +749,81 @@ void APP_Tasks(void)
             break;
             /* -------------------------------------------------------------- */
 
+        case APP_STATE_RFID_MESURING_RDYCLK:
+
+            if (appData.state != appData.previous_state)
+            {
+                appData.previous_state = appData.state;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
+                printf("APP_STATE_RFID_MESURING_RDYCLK\n");
+#endif
+            }
+
+            CMD_VDD_APP_V_USB_SetHigh(); /* Power up VDD APP for USB and RFID. */
+
+            RFID_Enable();
+            setDelayMsEM4095(60);
+            while (isDelayMsEndingEM4095() == false)
+            {
+                Nop();
+            }
+
+            while (EM4095_SHD_GetValue() == false)
+            {
+                printf("EM4095_SHD_GetValue()\n");
+                Nop();
+            }
+            EX_INT3_InterruptEnable();
+            while (g_new_value_of_em4095_rdyclk_measurement == false)
+            {
+                printf("g_new_value_of_em4095_rdyclk_measurement\n");
+                Nop();
+            }
+            EX_INT3_InterruptDisable();
+
+#if defined (USE_UART1_SERIAL_INTERFACE)
+            printf("RDY/CLK signal frequency: %u\n", rdyclk_count_in_10ms * 5);
+#endif    
+            g_new_value_of_em4095_rdyclk_measurement = false;
+            RFID_Disable();
+            CMD_VDD_APP_V_USB_SetLow(); /* Shut down VDD APP for USB and RFID. */
+
+            appData.state = APP_STATE_IDLE;
+
+            /* New frequency value to display on PC interface
+             * read 1860 à 123.9 kHz
+             */
+            //            if (EM4095_SHD_GetValue() == true)
+            //            {
+            //                //LED_STATUS_R_SetLow( ); // erasing red LED status during frequency measurement of the RDY/CLK signal
+            //
+            //                // New frequency value to display on PC interface
+            //                if (g_new_value_of_em4095_rdyclk_measurement == true)
+            //                {
+            //                    printf("%u\n", rdyclk_count_in_10ms);
+            //                    g_new_value_of_em4095_rdyclk_measurement = false;
+            //                }
+            //
+            //                // Checking the validity of the frequency interval (in Hz x100) of RDY/CLK signal for 125 kHz
+            //                if ((rdyclk_count_in_10ms > 1245) && (rdyclk_count_in_10ms < 1255))
+            //                {
+            //                    // LED_STATUS_G_SetHigh( ); // light on green status LED if correct frequency
+            //                    setLedsStatusColor(LED_GREEN);
+            //                }
+            //                else
+            //                {
+            //                    // LED_STATUS_G_SetLow( ); // light off green status LED if frequency is out of range
+            //                    setLedsStatusColor(LEDS_OFF);
+            //                }
+            //            }
+            //            else
+            //            {
+            //                appData.state = APP_STATE_IDLE;
+            //                //                /* Only light on red status LED during idle state. */
+            //                //                setLedsStatusColor( LED_RED );
+            //            }
+            break;
+
         case APP_STATE_ERROR:
             /* Step in APP_Tasks( ) failed.
              * TODO: APP_STATE_ERROR - This state should not be blocking!
@@ -835,45 +911,3 @@ void APP_Initialize(void)
 /*******************************************************************************
  End of File
  */
-
-//        case APP_STATE_RFID_MESURING_RDYCLK:
-//            if ( appData.state != appData.previous_state )
-//            {
-//                appData.previous_state = appData.state;
-//#if defined (DEBUG_UART) && defined (DISPLAY_CURRENT_STATE)
-//                printf( "APP_STATE_RFID_MESURING_RDYCLK\n" );
-//#endif
-//            }
-//            /* New frequency value to display on PC interface
-//             * read 1860 à 123.9 kHz
-//             */
-//            if ( EM4095_SHD_GetValue( ) == true )
-//            {
-//                //LED_STATUS_R_SetLow( ); // erasing red LED status during frequency measurement of the RDY/CLK signal
-//
-//                // New frequency value to display on PC interface
-//                if ( g_new_value_of_em4095_rdyclk_measurement == true )
-//                {
-//                    printf( "%u\n", rdyclk_count_in_10ms );
-//                    g_new_value_of_em4095_rdyclk_measurement = false;
-//                }
-//
-//                // Checking the validity of the frequency interval (in Hz x100) of RDY/CLK signal for 125 kHz
-//                if ( ( rdyclk_count_in_10ms > 1245 ) && ( rdyclk_count_in_10ms < 1255 ) )
-//                {
-//                    // LED_STATUS_G_SetHigh( ); // light on green status LED if correct frequency
-//                    setLedsStatusColor( LED_GREEN );
-//                }
-//                else
-//                {
-//                    // LED_STATUS_G_SetLow( ); // light off green status LED if frequency is out of range
-//                    setLedsStatusColor( LEDS_OFF );
-//                }
-//            }
-//            else
-//            {
-//                appData.state = APP_STATE_IDLE;
-//                //                /* Only light on red status LED during idle state. */
-//                //                setLedsStatusColor( LED_RED );
-//            }
-//            break;

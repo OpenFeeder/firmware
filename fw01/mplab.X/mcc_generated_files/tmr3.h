@@ -69,6 +69,7 @@ extern "C"
     extern volatile uint16_t rdyclk_count_in_10ms; // variable to display the number of positive edge counter on RDY/CLK in 10 ms
     extern volatile bool g_new_value_of_em4095_rdyclk_measurement; // new value of a frequency measurement RDY/CLK of the EM4095 signal available
     extern volatile uint16_t g_timeout_x20ms;
+    extern volatile uint16_t g_timeout_em4095_x20ms;
     extern volatile uint16_t g_timeout_leds_status_x20ms;
     extern volatile uint8_t g_timeout_taking_reward;
     /**

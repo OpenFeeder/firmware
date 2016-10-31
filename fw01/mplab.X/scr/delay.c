@@ -38,6 +38,30 @@ bool isDelayMsEnding( void )
     }
 }
 
+void setDelayMsEM4095( uint16_t timeout_ms )
+{
+    if ( timeout_ms < 20 )
+    {
+        g_timeout_em4095_x20ms = 1;
+    }
+    else
+    {
+        g_timeout_em4095_x20ms = timeout_ms / 20;
+    }
+}
+
+bool isDelayMsEndingEM4095( void )
+{
+    if ( g_timeout_em4095_x20ms == 0 )
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 void setDelayMsLEDsStatus( uint16_t timeout_ms )
 {
     if ( timeout_ms < 20 )

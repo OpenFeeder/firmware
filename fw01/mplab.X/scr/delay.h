@@ -15,9 +15,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-void setDelayMs( uint16_t timeout_ms );
+void setDelayMs( uint16_t );
 bool isDelayMsEnding( void );
-void setDelayMsLEDsStatus( uint16_t timeout_ms );
+void setDelayMsEM4095( uint16_t );
+bool isDelayMsEndingEM4095( void );
+void setDelayMsLEDsStatus( uint16_t );
 bool isDelayMsEndingLEDsStatus( void );
 
 

@@ -9,7 +9,9 @@
 #include "app_rfid.h"
 
 RFID_STATES g_rfid_reading_status = DISPLAY_RFID_INIT;
+RFID_STATES g_rfid_reading_status_previous = DISPLAY_RFID_ERROR;
 volatile uint8_t g_timeout_reading_pit_tag = 0;
+
 
 void APP_Rfid_Init(void)
 {
@@ -18,6 +20,7 @@ void APP_Rfid_Init(void)
     appData.flags.bit_value.NewValidPitTag = false;
     RFID_Enable();
     g_timeout_reading_pit_tag = DEFAULT_TIMEOUT_READING_PIT_TAG;
+    g_rfid_reading_status = DISPLAY_RFID_INIT;
 }
 
 
@@ -27,20 +30,39 @@ bool APP_Rfid_Task(void)
     switch (g_rfid_reading_status)
     {
         case DISPLAY_RFID_INIT:
-//#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_PIT_TAG_INFO)
-//            printf("Display RFID init\n");
-//#endif
+            if (g_rfid_reading_status != g_rfid_reading_status_previous)
+            {
+                g_rfid_reading_status_previous = g_rfid_reading_status;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_RFID_STATE)
+                printf("\t> DISPLAY_RFID_INIT\n");
+#endif
+            }
             number_of_valid_pit_tag = 0;
             g_rfid_reading_status = RFID_IDLE;
             break;
 
         case RFID_IDLE:
+            if (g_rfid_reading_status != g_rfid_reading_status_previous)
+            {
+                g_rfid_reading_status_previous = g_rfid_reading_status;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_RFID_STATE)
+                printf("\t> RFID_IDLE\n");
+#endif
+            }
             // waiting for signal from DEMOD_OUT pin of EM4095...
             // --> process decoding call in _INT4Interrupt() ISR routine
             break;
 
         case RFID_DETECT_FALSE_DATASTREAM:
         {
+            if (g_rfid_reading_status != g_rfid_reading_status_previous)
+            {
+                g_rfid_reading_status_previous = g_rfid_reading_status;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_RFID_STATE)
+                printf("\t> RFID_DETECT_FALSE_DATASTREAM\n");
+#endif
+            }
+
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_PIT_TAG_INFO)
             printf("Wrong PIT Tag: ");
             displayPitTag();
@@ -53,6 +75,14 @@ bool APP_Rfid_Task(void)
 
         case RFID_DETECT_COMPLET_DATASTREAM:
         {
+            if (g_rfid_reading_status != g_rfid_reading_status_previous)
+            {
+                g_rfid_reading_status_previous = g_rfid_reading_status;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_RFID_STATE)
+                printf("\t> RFID_DETECT_COMPLET_DATASTREAM\n");
+#endif
+            }
+
 #if defined( USE_UART1_SERIAL_INTERFACE ) && defined (DISPLAY_PIT_TAG_INFO)
             printf("Correct PIT Tag: ");
             displayPitTag();
@@ -65,9 +95,13 @@ bool APP_Rfid_Task(void)
 
         case DISPLAY_RFID_ERROR:
         default:
-#if defined( USE_UART1_SERIAL_INTERFACE ) && defined (DISPLAY_PIT_TAG_INFO)
-            printf("RFID_STATE_ERROR\n"); // No Signal Available
+            if (g_rfid_reading_status != g_rfid_reading_status_previous)
+            {
+                g_rfid_reading_status_previous = g_rfid_reading_status;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_RFID_STATE)
+                printf("\t> DISPLAY_RFID_ERROR\n");
 #endif
+            }
     }
 
     if (new_pit_tag_found)
