@@ -48,6 +48,9 @@
 #define DATASTREAM_BUFFER_SIZE 55 /* number of bit after header data in RFID raw frame */
 #define SynchroWithTimerDelayCount() {g_counter_delay_read_bit = 0;} /* timer synchronization */
 
+/* Set-up time after a sleep period - Tset: 35ms */
+/* Tableau page 5 - datasheet EM4095*/
+#define EM4095_TSET_DELAY_MS 40 
 /**
  * Enable EM4095 device.
  *  When SHD is low the circuit is enabled to emit RF field. 
@@ -77,8 +80,7 @@
 // *****************************************************************************
 // *****************************************************************************
 
-typedef enum
-{
+typedef enum {
     /* In this state, the application initialize the decoding state machine */
     // DECODING_CODE_DECODING_STATE_INITIALIZE_STATE_MACHINE, // if UNINITIALIZED
 
@@ -107,8 +109,7 @@ typedef enum
 
 extern volatile MANCHESTER_CODE_DECODING_STATES fsm_datastream_decoding_state;
 
-typedef enum
-{
+typedef enum {
     INT_DELAY_OVERFLOW,
     INT_FALLING_EDGE
 
@@ -176,11 +177,11 @@ extern volatile uint8_t number_of_valid_pit_tag;
   Remarks:
     None.
  */
-void RFID_Initialize( void );
-void RFID_Enable( void );
-void RFID_Disable( void );
+void RFID_Initialize(void);
+void RFID_Enable(void);
+void RFID_Disable(void);
 
-void RFID_DecodingTasks( void );
+void RFID_DecodingTasks(void);
 
 /*******************************************************************************
   Function:
@@ -214,9 +215,9 @@ void RFID_DecodingTasks( void );
  */
 //void SerialDisplayRfidTask( void );
 
-void displayPitTag( void );
+void displayPitTag(void);
 
-void EM4095_PrintDataTab( uint8_t * p_datastream, uint8_t data_len );
+void EM4095_PrintDataTab(uint8_t * p_datastream, uint8_t data_len);
 
 //void DecodingRfidInitializeStateMachine( void );
 

@@ -764,7 +764,7 @@ void APP_Tasks(void)
             EM4095_SHD_ENABLE();
             /* Set-up time after a sleep period - Tset: 35ms */
             /* Tableau page 5 - datasheet EM4095*/
-            setDelayMsEM4095(60);
+            setDelayMsEM4095(EM4095_TSET_DELAY_MS);
             while (isDelayMsEndingEM4095() == false)
             {
                 Nop();
