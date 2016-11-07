@@ -233,6 +233,7 @@ typedef struct
 
     /* Battery level*/
     uint16_t battery_level;
+    uint16_t vbat_level;
     
 
 } APP_DATA;
