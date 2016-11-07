@@ -201,6 +201,7 @@
 //#include "led_status.h"
 //#include "em4095.h"
 
+
 /*
                          Main application
 
@@ -241,19 +242,7 @@ int main( void )
     APP_Initialize( );
 
     /* Display information on serial terminal. */
-    // TODO: copie in DisplayBootMessage() routine in app_debug.c...
-#if defined (USE_UART1_SERIAL_INTERFACE)
-    printf( "\n\n=== Openfeeder prototype v0-1-0 ===\n" );
-    printf( "   Firmware: Ver. fw002 - Rev. c\n" );
-    //    printf( "DEBUG_UART defined: Display information during main application.\n" ); /* see: \scr\app.h */
-    printf( "===================================\n\n" );
-#if defined (DISPLAY_USB_INFO)
-    printf( "DISPLAY_USB_INFO defined: Display USB information.\n" ); /* see: \scr\app.h */
-#endif
-#if defined (DEBUG_RFID_WORKING_ON_LED_STATUS)
-    printf( "DEBUG_RFID_WORKING_ON_LED_STATUS defined: Display information on status LED during RFID decoding routine.\n" ); /* see: \scr\app.h */
-#endif
-#endif
+    displayBootMessage( );
 
     /* Main loop. */
     while ( 1 )

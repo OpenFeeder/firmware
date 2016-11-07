@@ -11,28 +11,44 @@
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
 
-/* Interface firmware terminal (Debug) - Idem in main.c */
-// a or A: analogic measure of the current postion of the servomotor, battery voltage and VBat voltage
-// b or B: set blue color value of attractive LEDs
-// c or C: close reward door
-// d or D: display current state of the datalogger buffer
-// e or E: mesuring RDY/CLK period of EM4095
-// f or F: display configuration parameters (CONFIG.INI) 
-// g or G: set green color value of attractive LEDs
-// i or I: enable IR 
-// j or J: disable IR 
-// m or M: measure Ready/Clock frequency (EM4095)
-// o or O: open reward door
-// p or P: change servomotor position
-// r or R: set red color value of attractive LEDs
-// s or S: set RTCC module date and time value
-// t or T: display date and time from RTCC module
-// u or U: display USB device status 
-// v or V: set status of servomotor power command
+/* Display information on serial terminal. */
+void displayBootMessage( void )
+{
+    printf( "\n\n=== Openfeeder prototype v0-1-0 ===\n" );
+    printf( "   Firmware: Ver. fw002 - Rev. c\n" );
+    //    printf( "DEBUG_UART defined: Display information during main application.\n" ); /* see: \scr\app.h */
+    printf( "===================================\n\n" );
+#if defined (DISPLAY_USB_INFO)
+    printf( "DISPLAY_USB_INFO defined: Display USB information.\n" ); /* see: \scr\app.h */
+#endif
+#if defined (DEBUG_RFID_WORKING_ON_LED_STATUS)
+    printf( "DEBUG_RFID_WORKING_ON_LED_STATUS defined: Display information on status LED during RFID decoding routine.\n" ); /* see: \scr\app.h */
+#endif
 
+}
 
 void APP_SerialDebugTasks( void )
 {
+
+    /* Interface firmware terminal (Debug) - Idem in main.c */
+    // a or A: analogic measure of the current postion of the servomotor, battery voltage and VBat voltage
+    // b or B: set blue color value of attractive LEDs
+    // c or C: close reward door
+    // d or D: display current state of the datalogger buffer
+    // e or E: mesuring RDY/CLK period of EM4095
+    // f or F: display configuration parameters (CONFIG.INI) 
+    // g or G: set green color value of attractive LEDs
+    // i or I: enable IR 
+    // j or J: disable IR 
+    // m or M: measure Ready/Clock frequency (EM4095)
+    // o or O: open reward door
+    // p or P: change servomotor position
+    // r or R: set red color value of attractive LEDs
+    // s or S: set RTCC module date and time value
+    // t or T: display date and time from RTCC module
+    // u or U: display USB device status 
+    // v or V: set status of servomotor power command
+
     uint16_t dc_pwm;
 
     if ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) )
@@ -47,7 +63,7 @@ void APP_SerialDebugTasks( void )
             {
                 /* analogic measure of the current postion of the servomotor. */
                 uint16_t servomotor_position_analog;
-//                uint16_t battery_measuring_analog;
+                //                uint16_t battery_measuring_analog;
                 uint16_t i;
 
                 ADC1_ChannelSelect( ADC1_CHANNEL_AN1_MA_SERVO );
@@ -67,10 +83,10 @@ void APP_SerialDebugTasks( void )
 
                 getBatteryLevel( );
                 printBatteryLevel( );
-                
+
                 getVBatLevel( );
                 printVBatLevel( );
-                
+
                 break;
             }
                 /* -------------------------------------------------------------- */
@@ -491,7 +507,6 @@ void printUSBHostDeviceStatus( void )
             break;
     }
 } /* End of printUSBHostDeviceStatus( ) */
-
 
 #endif
 

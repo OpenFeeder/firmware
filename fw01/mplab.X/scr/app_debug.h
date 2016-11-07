@@ -17,7 +17,7 @@
  */
 #define UART1_BUFFER_SIZE  4
 
-
+void displayBootMessage( void );
 void APP_SerialDebugTasks( void );
 void printUSBHostDeviceStatus( void );
 uint16_t readIntFromUart1( void );
