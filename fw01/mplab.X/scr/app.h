@@ -279,7 +279,10 @@ typedef struct
     bool bird_pir_sensor_status;
     bool is_pit_tag_denied;
     bool is_reward_taken;
-
+    
+    /* Attractive LEDs color*/
+    uint16_t attractive_leds_rgb[3];
+    
 } APP_DATA_LOG;
 
 typedef struct

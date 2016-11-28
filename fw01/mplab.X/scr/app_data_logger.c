@@ -15,7 +15,7 @@
 // *****************************************************************************
 
 
-static int populateLogBuffer(void)
+static int populateLogBuffer( void )
 {
     int flag;
     char line[MAX_CHAR_PER_LINE];
@@ -26,21 +26,21 @@ static int populateLogBuffer(void)
     //    printf(" - Populate buffer\n");
     //#endif
 
-    if (0 == strcmp(appDataLog.bird_pit_tag_str, "0"))
+    if ( 0 == strcmp( appDataLog.bird_pit_tag_str, "0" ) )
     {
         appDataLog.is_reward_taken = false;
     }
 
-    if (true == appDataLog.is_pit_tag_denied)
+    if ( true == appDataLog.is_pit_tag_denied )
     {
         appDataLog.is_reward_taken = false;
     }
 
     /* Durée stationnement oiseau en secondes */
-    if (true == appDataLog.is_reward_taken)
+    if ( true == appDataLog.is_reward_taken )
     {
-        delayS = (appDataLog.bird_quit_time.tm_hour - appDataLog.bird_arrived_time.tm_hour)*60 * 60 +
-            (appDataLog.bird_quit_time.tm_min - appDataLog.bird_arrived_time.tm_min)*60 +
+        delayS = ( appDataLog.bird_quit_time.tm_hour - appDataLog.bird_arrived_time.tm_hour )*60 * 60 +
+            ( appDataLog.bird_quit_time.tm_min - appDataLog.bird_arrived_time.tm_min )*60 +
             appDataLog.bird_quit_time.tm_sec - appDataLog.bird_arrived_time.tm_sec;
     }
     else
@@ -48,34 +48,46 @@ static int populateLogBuffer(void)
         delayS = 0;
     }
 
-    flag = sprintf(line, "%02d/%02d/%02d%s%02d:%02d:%02u%s"
-                   /* bird_pit_tag_str  */ "%s"
-                   /* separator         */ "%s"
-                   /* is_pit_tag_denied */ "%u"
-                   /* separator         */ "%s"
-                   /* is_pit_tag_denied */ "%u"
-                   /* separator         */ "%s"
-                   /* reward            */ "%lu\n",
-                   appDataLog.bird_arrived_time.tm_mday,
-                   appDataLog.bird_arrived_time.tm_mon,
-                   appDataLog.bird_arrived_time.tm_year,
-                   appDataLog.separator,
-                   appDataLog.bird_arrived_time.tm_hour,
-                   appDataLog.bird_arrived_time.tm_min,
-                   appDataLog.bird_arrived_time.tm_sec,
-                   appDataLog.separator,
-                   appDataLog.bird_pit_tag_str,
-                   appDataLog.separator,
-                   appDataLog.is_pit_tag_denied,
-                   appDataLog.separator,
-                   appDataLog.is_reward_taken,
-                   appDataLog.separator,
-                   delayS);
+    flag = sprintf( line, "%02d/%02d/%02d%s%02d:%02d:%02d%s"
+                    /* bird_pit_tag_str     */ "%s"
+                    /* separator            */ "%s"
+                    /* is_pit_tag_denied    */ "%u"
+                    /* separator            */ "%s"
+                    /* is_reward_taken      */ "%u"
+                    /* separator            */ "%s"
+                    /* attractive LED red   */ "%d"
+                    /* separator            */ "%s"
+                    /* attractive LED green */ "%d"
+                    /* separator            */ "%s"
+                    /* attractive LED blue  */ "%d"
+                    /* separator            */ "%s"
+                    /* delayS               */ "%lu\n",
+                    appDataLog.bird_arrived_time.tm_mday,
+                    appDataLog.bird_arrived_time.tm_mon,
+                    appDataLog.bird_arrived_time.tm_year,
+                    appDataLog.separator,
+                    appDataLog.bird_arrived_time.tm_hour,
+                    appDataLog.bird_arrived_time.tm_min,
+                    appDataLog.bird_arrived_time.tm_sec,
+                    appDataLog.separator,
+                    appDataLog.bird_pit_tag_str,
+                    appDataLog.separator,
+                    appDataLog.is_pit_tag_denied,
+                    appDataLog.separator,
+                    appDataLog.is_reward_taken,
+                    appDataLog.separator,
+                    appDataLog.attractive_leds_rgb[0],
+                    appDataLog.separator,
+                    appDataLog.attractive_leds_rgb[1],
+                    appDataLog.separator,
+                    appDataLog.attractive_leds_rgb[2],
+                    appDataLog.separator,
+                    delayS );
 
-    if (flag > 0)
+    if ( flag > 0 )
     {
         /* Concatenation de chaines de caracteres dans le buffer. */
-        strcat(appDataLog.buffer, line);
+        strcat( appDataLog.buffer, line );
     }
 
     //#if defined (USE_UART1_SERIAL_INTERFACE)
@@ -90,94 +102,94 @@ static int populateLogBuffer(void)
 // *****************************************************************************
 
 
-static int writeLogFile(void)
+static int writeLogFile( void )
 {
     FILEIO_OBJECT file;
     FILEIO_ERROR_TYPE errF;
     size_t numDataWritten;
 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-    printf("Write data to file - ");
+    printf( "Write data to file - " );
 #endif 
 
-    if (FILEIO_RESULT_FAILURE == FILEIO_Open(&file, appDataLog.filename, FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND))
+    if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, appDataLog.filename, FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND ) )
     {
-        errF = FILEIO_ErrorGet('A');
+        errF = FILEIO_ErrorGet( 'A' );
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-        printf("unable to open log file (%u)", errF);
+        printf( "unable to open log file (%u)", errF );
 #endif 
-        sprintf(appError.message, "Unable to open log file (%u)", errF);
+        sprintf( appError.message, "Unable to open log file (%u)", errF );
         appError.currentLineNumber = __LINE__;
-        sprintf(appError.currentFileName, "%s", __FILE__);
-        FILEIO_ErrorClear('A');
+        sprintf( appError.currentFileName, "%s", __FILE__ );
+        FILEIO_ErrorClear( 'A' );
         return FILEIO_RESULT_FAILURE;
     }
 
-    numDataWritten = FILEIO_Write(appDataLog.buffer, 1, appDataLog.nCharBuffer, &file);
+    numDataWritten = FILEIO_Write( appDataLog.buffer, 1, appDataLog.nCharBuffer, &file );
 
-    if (numDataWritten < appDataLog.nCharBuffer)
+    if ( numDataWritten < appDataLog.nCharBuffer )
     {
-        errF = FILEIO_ErrorGet('A');
+        errF = FILEIO_ErrorGet( 'A' );
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-        printf("unable to write data in log file (%u)", errF);
+        printf( "unable to write data in log file (%u)", errF );
 #endif 
-        sprintf(appError.message, "Unable to write data in log file (%u)", errF);
+        sprintf( appError.message, "Unable to write data in log file (%u)", errF );
         appError.currentLineNumber = __LINE__;
-        sprintf(appError.currentFileName, "%s", __FILE__);
-        FILEIO_ErrorClear('A');
+        sprintf( appError.currentFileName, "%s", __FILE__ );
+        FILEIO_ErrorClear( 'A' );
         return FILEIO_RESULT_FAILURE;
     }
 
-    if (FILEIO_RESULT_FAILURE == FILEIO_Close(&file))
+    if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
     {
-        errF = FILEIO_ErrorGet('A');
+        errF = FILEIO_ErrorGet( 'A' );
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-        printf("unable to close log file (%u)", errF);
+        printf( "unable to close log file (%u)", errF );
 #endif 
-        sprintf(appError.message, "Unable to close log file (%u)", errF);
+        sprintf( appError.message, "Unable to close log file (%u)", errF );
         appError.currentLineNumber = __LINE__;
-        sprintf(appError.currentFileName, "%s", __FILE__);
-        FILEIO_ErrorClear('A');
+        sprintf( appError.currentFileName, "%s", __FILE__ );
+        FILEIO_ErrorClear( 'A' );
         return FILEIO_RESULT_FAILURE;
     }
 
-    clearLogBuffer();
+    clearLogBuffer( );
 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-    printf("data to log file success\n");
+    printf( "data to log file success\n" );
 #endif 
 
     return FILEIO_RESULT_SUCCESS;
 }
 
 
-void clearLogBuffer(void)
+void clearLogBuffer( void )
 {
     /* Vidage du buffer. */
-    memset(appDataLog.buffer, '\0', sizeof ( appDataLog.buffer));
+    memset( appDataLog.buffer, '\0', sizeof ( appDataLog.buffer ) );
     appDataLog.nCharBuffer = 0;
 
 }
 
 
-bool dataLog(void)
+bool dataLog( void )
 {
     unsigned int nChar = 0;
 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-    printf("Data logging - ");
+    printf( "Data logging - " );
 #endif 
 
-    nChar = populateLogBuffer();
+    nChar = populateLogBuffer( );
 
-    if (nChar < 0)
+    if ( nChar < 0 )
     {
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-        printf("unable to populate log buffer\n");
+        printf( "unable to populate log buffer\n" );
 #endif 
-        sprintf(appError.message, "Unable to populate log buffer");
+        sprintf( appError.message, "Unable to populate log buffer" );
         appError.currentLineNumber = __LINE__;
-        sprintf(appError.currentFileName, "%s", __FILE__);
+        sprintf( appError.currentFileName, "%s", __FILE__ );
         return false;
     }
     else
@@ -185,79 +197,81 @@ bool dataLog(void)
         appDataLog.nCharBuffer += nChar;
         appDataLog.numDataStored += 1;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO )
-        printf("data to buffer (%u/%u)\n", appDataLog.numDataStored, MAX_NUM_DATA_TO_STORE);
+        printf( "data to buffer (%u/%u)\n", appDataLog.numDataStored, MAX_NUM_DATA_TO_STORE );
 #endif 
     }
 
     /* Quantite donnees suffisantes => ecriture dans fichier LOG */
-    if (appDataLog.numDataStored == MAX_NUM_DATA_TO_STORE)
+    if ( appDataLog.numDataStored == MAX_NUM_DATA_TO_STORE )
     {
 
-        if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
+        if ( USB_DRIVE_NOT_MOUNTED == usbMountDrive( ) )
         {
             return false;
         }
 
         /* Ecriture fichier LOG. */
-        if (FILEIO_RESULT_FAILURE == writeLogFile())
+        if ( FILEIO_RESULT_FAILURE == writeLogFile( ) )
         {
-            usbUnmountDrive();
-            CMD_VDD_APP_V_USB_SetLow();
+            usbUnmountDrive( );
+            CMD_VDD_APP_V_USB_SetLow( );
             return false;
         }
         appDataLog.numDataStored = 0;
-        usbUnmountDrive();
-        CMD_VDD_APP_V_USB_SetLow();
+        usbUnmountDrive( );
+        CMD_VDD_APP_V_USB_SetLow( );
     }
 
     return true;
 }
 
 
-bool setLogFileName(void)
+bool setLogFileName( void )
 {
 
     /* Clear filename buffer */
-    memset(appDataLog.filename, 0, sizeof(appDataLog.filename));
-    
+    memset( appDataLog.filename, 0, sizeof (appDataLog.filename ) );
+
     /* Get current date */
-    while (!RTCC_TimeGet(&appData.current_time))
+    while ( !RTCC_TimeGet( &appData.current_time ) )
     {
-        Nop();
+        Nop( );
     }
-      
+
     /* Set log file name => 20yymmdd.CSV */
-    if (snprintf(appDataLog.filename, 13, "20%02d%02d%02d.CSV",
-                appData.current_time.tm_year,
-                appData.current_time.tm_mon,
-                appData.current_time.tm_mday) <= 0)
+    if ( snprintf( appDataLog.filename, 13, "20%02d%02d%02d.CSV",
+                   appData.current_time.tm_year,
+                   appData.current_time.tm_mon,
+                   appData.current_time.tm_mday ) <= 0 )
 
     {
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO )
-        printf("Unable to set log file name\n");
+        printf( "Unable to set log file name\n" );
 #endif 
-        sprintf(appError.message, "Unable to set log file name");
+        sprintf( appError.message, "Unable to set log file name" );
         appError.currentLineNumber = __LINE__;
-        sprintf(appError.currentFileName, "%s", __FILE__);
+        sprintf( appError.currentFileName, "%s", __FILE__ );
         return false;
     }
 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO )
-    printf("Log file name: %s\n", appDataLog.filename);
+    printf( "Log file name: %s\n", appDataLog.filename );
 #endif 
 
     return true;
 }
 
 // Placeholder function to get the timestamp for FILEIO operations
-void GetTimestamp(FILEIO_TIMESTAMP * timestamp)
+
+
+void GetTimestamp( FILEIO_TIMESTAMP * timestamp )
 {
     /* help_mla_fileio.pdf 
      * 1.7.1.3.32 FILEIO_TimestampGet Type */
 
-    while (!RTCC_TimeGet(&appData.current_time))
+    while ( !RTCC_TimeGet( &appData.current_time ) )
     {
-        Nop();
+        Nop( );
     }
 
     timestamp->date.bitfield.day = appData.current_time.tm_mday;

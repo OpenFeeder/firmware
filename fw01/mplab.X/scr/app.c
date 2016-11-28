@@ -312,6 +312,11 @@ void APP_Tasks( void )
                 /* Inizialised global variable datalogging. */
                 clear_bird_sensor_detected( );
                 appDataLog.is_reward_taken = false;
+
+                appDataLog.attractive_leds_rgb[0] = appDataAttractiveLeds.red;
+                appDataLog.attractive_leds_rgb[1] = appDataAttractiveLeds.green;
+                appDataLog.attractive_leds_rgb[2] = appDataAttractiveLeds.blue;
+
                 appData.state = APP_STATE_RFID_READING_PIT_TAG;
                 break;
             }
@@ -900,6 +905,9 @@ void APP_Initialize( void )
     /* Data logger */
     appDataLog.nCharBuffer = 0;
     appDataLog.numDataStored = 0;
+    appDataLog.attractive_leds_rgb[0] = 0;
+    appDataLog.attractive_leds_rgb[1] = 0;
+    appDataLog.attractive_leds_rgb[2] = 0;
 
     appData.bird_is_taking_reward = false;
 
