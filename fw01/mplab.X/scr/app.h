@@ -227,6 +227,9 @@ typedef struct
     uint16_t open_door_green;
     uint16_t open_door_blue;
 
+    uint16_t dooropendelay;
+    uint16_t doorclosedelay;
+    
     bool bird_is_taking_reward;
 
     bool openfeeder_state;

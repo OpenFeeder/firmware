@@ -558,6 +558,12 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_OPENING_REWARD_DOOR\n" );
 #endif
+                /* Delay before door open */
+                setDelayMs( appData.dooropendelay*1000 );
+                while (false == isDelayMsEnding( )) {
+                    Nop();
+                }
+                
                 /* Servomotor power command enable. */
                 servomotorPowerEnable( );
                 appData.reward_door_status = DOOR_OPENING;
@@ -634,6 +640,13 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_CLOSING_REWARD_DOOR\n" );
 #endif
+                
+                /* Delay before door close */
+                setDelayMs( appData.doorclosedelay*1000 );
+                while (false == isDelayMsEnding( )) {
+                    Nop();
+                }
+                
                 /* Servomotor power command enable. */
                 servomotorPowerEnable( );
                 appData.reward_door_status = DOOR_CLOSING;

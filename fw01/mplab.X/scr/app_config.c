@@ -333,6 +333,27 @@ int8_t config_read_ini( void )
     {
         appData.open_door_blue = ( uint8_t ) read_parameter;
     }
+    /* Door open/closee delays. */
+    read_parameter = ini_getl( "doordelays", "opendelay", -1, "CONFIG.INI" );
+    --error_id;
+    if ( read_parameter == -1 )
+    {
+        return error_id;
+    }
+    else
+    {
+        appData.dooropendelay = ( uint8_t ) read_parameter;
+    }
+    read_parameter = ini_getl( "doordelays", "closedelay", -1, "CONFIG.INI" );
+    --error_id;
+    if ( read_parameter == -1 )
+    {
+        return error_id;
+    }
+    else
+    {
+        appData.doorclosedelay = ( uint8_t ) read_parameter;
+    }
     return CONFIG_INI_READ_OK;
 }
 
@@ -403,6 +424,11 @@ void config_print( void )
             appData.open_door_green,
             appData.open_door_blue );
 
+    printf( "\tDoor delays\n" );
+    printf( "\t\tOpen: %d s\nClose: %d s\n",
+            appData.dooropendelay,
+            appData.doorclosedelay);
+    
     printf( "\tPIT Tags denied\n" );
     if ( true == g_pitTagDeniedFoundInConfigIni )
     {
