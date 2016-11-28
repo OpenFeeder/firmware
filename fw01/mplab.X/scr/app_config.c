@@ -10,6 +10,7 @@
 
 bool g_pitTagDeniedFoundInConfigIni = false;
 
+
 bool config_set( void )
 {
     /* Search for the CONFIG.INI file. */
@@ -57,6 +58,7 @@ bool config_set( void )
     return true;
 }
 
+
 int config_find_ini( void )
 {
     FILEIO_SEARCH_RECORD searchRecord;
@@ -64,22 +66,15 @@ int config_find_ini( void )
     return FILEIO_Find( "CONFIG.INI", FILEIO_ATTRIBUTE_ARCHIVE, &searchRecord, true );
 }
 
+
 int8_t config_read_ini( void )
 {
     int8_t error_id = 0;
     int16_t read_parameter;
 
     /* Site identification. */
-    read_parameter = ini_getl( "siteid", "zone", -1, "CONFIG.INI" );
-    --error_id;
-    if ( read_parameter == -1 )
-    {
-        return error_id;
-    }
-    else
-    {
-        appData.siteidzone = ( uint8_t ) read_parameter;
-    }
+    // TODO check site ID validity 
+    ini_gets( "siteid", "zone", "XXXX", appData.siteid, sizearray( appData.siteid ), "CONFIG.INI" );
 
     /* Wake up time. */
     read_parameter = ini_getl( "wakeuptime", "hour", -1, "CONFIG.INI" );
@@ -341,6 +336,7 @@ int8_t config_read_ini( void )
     return CONFIG_INI_READ_OK;
 }
 
+
 void config_set_parameters( void )
 {
     //#if defined (USE_UART1_SERIAL_INTERFACE)
@@ -363,14 +359,15 @@ void config_set_parameters( void )
     // No need to affect
 }
 
+
 void config_print( void )
 {
     int i; /* For loop indice */
 
     printf( "Configuration parameters:\n" );
 
-    printf( "\tSite ID\n\t\tzone: %d\n",
-            appData.siteidzone );
+    printf( "\tSite ID\n\t\tzone: %s\n",
+            appData.siteid );
 
     printf( "\tRTCC\n" );
     printf( "\t\tWake up time: %02d:%02d\n",

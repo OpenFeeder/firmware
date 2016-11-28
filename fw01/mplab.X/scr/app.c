@@ -914,6 +914,8 @@ void APP_Initialize( void )
     /* USB host */
     appDataUsb.getValidDeviceAdress = false;
     appDataUsb.key_is_nedded = false;
+    
+    memset(appData.siteid, '\0', 5);
 }
 
 

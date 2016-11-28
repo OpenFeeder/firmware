@@ -171,8 +171,9 @@ typedef enum
 
 typedef struct
 {
-    uint8_t siteidzone;
-
+    //uint8_t siteidzone;
+    char siteid[5];
+    
     /* Application current state */
     APP_STATES state; /* current state */
     APP_STATES previous_state; /* save previous state */

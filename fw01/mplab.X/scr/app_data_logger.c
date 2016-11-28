@@ -49,6 +49,8 @@ static int populateLogBuffer( void )
     }
 
     flag = sprintf( line, "%02d/%02d/%02d%s%02d:%02d:%02d%s"
+                    /* siteid               */ "%s"
+                    /* separator            */ "%s"
                     /* bird_pit_tag_str     */ "%s"
                     /* separator            */ "%s"
                     /* is_pit_tag_denied    */ "%u"
@@ -69,6 +71,8 @@ static int populateLogBuffer( void )
                     appDataLog.bird_arrived_time.tm_hour,
                     appDataLog.bird_arrived_time.tm_min,
                     appDataLog.bird_arrived_time.tm_sec,
+                    appDataLog.separator,
+                    appData.siteid,
                     appDataLog.separator,
                     appDataLog.bird_pit_tag_str,
                     appDataLog.separator,
