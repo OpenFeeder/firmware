@@ -34,14 +34,17 @@ bool servomotorOpenTheDoor( void )
         if ( appDataServo.ton_cmd >= appDataServo.ton_max )
         {
             appDataServo.ton_cmd = appDataServo.ton_max;
+            appData.reward_door_status = DOOR_IDLE;
             return true;
         }
 
         /* Set DC of PWM5. */
         OC5_SingleCompareValueSet( appDataServo.ton_cmd );
+        
+        return false;
     }
 
-    return false;
+    return true;
 }
 
 /**
@@ -58,14 +61,17 @@ bool servomotorCloseTheDoor( void )
         if ( appDataServo.ton_cmd <= appDataServo.ton_min )
         {
             appDataServo.ton_cmd = appDataServo.ton_min;
+            appData.reward_door_status = DOOR_IDLE;
             return true;
         }
 
         /* Set DC of PWM5. */
         OC5_SingleCompareValueSet( appDataServo.ton_cmd );
+        
+        return false;
     }
 
-    return false;
+    return true;
 }
 
 void servomotorPowerEnable( void )

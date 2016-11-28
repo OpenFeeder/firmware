@@ -11,6 +11,7 @@
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
 
+
 /* Display information on serial terminal. */
 void displayBootMessage( void )
 {
@@ -26,6 +27,7 @@ void displayBootMessage( void )
 #endif
 
 }
+
 
 void APP_SerialDebugTasks( void )
 {
@@ -115,8 +117,21 @@ void APP_SerialDebugTasks( void )
             case 'c':
             case 'C':
                 /* Close reward door */
-                appData.reward_door_status = DOOR_CLOSING;
-                printf( "Closing reward door in action.\n" );
+                if ( CMD_VCC_SERVO_GetValue( ) == 0 )
+                {
+                    servomotorPowerEnable( );
+                    appData.reward_door_status = DOOR_CLOSING;
+                    printf( "Closing reward door in action.\n" );
+                    while ( DOOR_IDLE != appData.reward_door_status );
+                    servomotorPowerDisable( );
+
+                }
+                else
+                {
+                    appData.reward_door_status = DOOR_CLOSING;
+                    printf( "Closing reward door in action.\n" );
+                    while ( DOOR_IDLE != appData.reward_door_status );
+                }
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -244,8 +259,23 @@ void APP_SerialDebugTasks( void )
             case 'o':
             case 'O':
                 /* Open reward door */
-                appData.reward_door_status = DOOR_OPENING;
-                printf( "Opening reward door in action.\n" );
+
+                if ( CMD_VCC_SERVO_GetValue( ) == 0 )
+                {
+                    servomotorPowerEnable( );
+                    appData.reward_door_status = DOOR_OPENING;
+                    printf( "Opening reward door in action.\n" );
+                    while ( DOOR_IDLE != appData.reward_door_status );
+                    servomotorPowerDisable( );
+
+                }
+                else
+                {
+                    appData.reward_door_status = DOOR_OPENING;
+                    printf( "Opening reward door in action.\n" );
+                    while ( DOOR_IDLE != appData.reward_door_status );
+                }
+
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -378,6 +408,8 @@ void APP_SerialDebugTasks( void )
 
             case 'v':
             case 'V':
+
+                printf( "%d\n", appData.reward_door_status );
                 /* Set status of servomotor power command. */
                 CMD_VCC_SERVO_Toggle( ); /* Change servomotor command setting. */
                 Nop( );
@@ -391,6 +423,7 @@ void APP_SerialDebugTasks( void )
                 {
                     printf( "Servomotor power command disable.\n" );
                 }
+                appData.reward_door_status = DOOR_IDLE;
                 break;
                 /* -------------------------------------------------------------- */
 
