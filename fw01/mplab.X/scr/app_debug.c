@@ -40,6 +40,7 @@ void APP_SerialDebugTasks( void )
     // e or E: mesuring RDY/CLK period of EM4095
     // f or F: display configuration parameters (CONFIG.INI) 
     // g or G: set green color value of attractive LEDs
+    // h or H: toggle door remain open parameter
     // i or I: enable IR 
     // j or J: disable IR 
     // m or M: measure Ready/Clock frequency (EM4095)
@@ -121,7 +122,15 @@ void APP_SerialDebugTasks( void )
                 {
                     servomotorPowerEnable( );
                     appDataDoor.reward_door_status = DOOR_CLOSING;
-                    printf( "Closing reward door in action.\n" );
+                    if ( 1 == appDataDoor.remain_open )
+                    {
+                        appDataDoor.remain_open = 0;
+                        printf( "Closing reward door in action. Remain door open set to off\n" );
+                    }
+                    else
+                    {
+                        printf( "Closing reward door in action.\n" );
+                    }
                     while ( DOOR_CLOSED != appDataDoor.reward_door_status );
                     servomotorPowerDisable( );
 
@@ -129,7 +138,15 @@ void APP_SerialDebugTasks( void )
                 else
                 {
                     appDataDoor.reward_door_status = DOOR_CLOSING;
-                    printf( "Closing reward door in action.\n" );
+                    if ( 1 == appDataDoor.remain_open )
+                    {
+                        appDataDoor.remain_open = 0;
+                        printf( "Closing reward door in action. Remain door open set to off\n" );
+                    }
+                    else
+                    {
+                        printf( "Closing reward door in action.\n" );
+                    }
                     while ( DOOR_OPENED != appDataDoor.reward_door_status );
                 }
                 break;
@@ -194,6 +211,21 @@ void APP_SerialDebugTasks( void )
                 break;
                 /* -------------------------------------------------------------- */
 
+            case 'h':
+            case 'H':
+                if ( 1 == appDataDoor.remain_open )
+                {
+                    appDataDoor.remain_open = 0;
+                    printf( "Remain door open: off\n" );
+                }
+                else
+                {
+                    appDataDoor.remain_open = 1;
+                    printf( "Remain door open: on\n" );
+                }
+
+                break;
+                /* -------------------------------------------------------------- */
             case 'i':
             case 'I':
                 /* Enable IR */
