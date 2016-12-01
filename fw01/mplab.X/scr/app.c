@@ -280,7 +280,7 @@ void APP_Tasks( void )
                 printf( "> APP_STATE_IDLE\n" );
 #endif
                 /* Timeout before going to sleep mode */
-                setDelayMs( appData.timeout_sleep ); 
+                setDelayMs( appData.timeout_sleep );
             }
 
             /* Green status LED blinks in idle mode. */
@@ -605,8 +605,11 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_WAITING_CATCH_REWARD\n" );
 #endif
+
                 IRSensorEnable( );
-                g_timeout_taking_reward = appData.timeout_taking_reward;
+                /* Timeout before door closing if reward is not taken */
+                setDelayMs( appData.timeout_taking_reward );
+                //                g_timeout_taking_reward = appData.timeout_taking_reward;
                 appData.bird_is_taking_reward = false;
             }
 
@@ -634,8 +637,9 @@ void APP_Tasks( void )
                 break;
             }
 
-            /* Timeout endding */
-            if ( g_timeout_taking_reward == 0 && BAR_IR1_OUT_GetValue( ) == 0 )
+            /* Timeout elapsed and reward is not taken */
+            if ( true == isDelayMsEnding( ) && BAR_IR1_OUT_GetValue( ) == 0 )
+                //            if ( g_timeout_taking_reward == 0 && BAR_IR1_OUT_GetValue( ) == 0 )
             {
 #if defined (USE_UART1_SERIAL_INTERFACE)
                 printf( "Reward timeout.\n" );
