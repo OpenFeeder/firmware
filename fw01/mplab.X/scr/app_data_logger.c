@@ -61,9 +61,11 @@ static int populateLogBuffer( void )
                     /* separator            */ "%s"
                     /* attractive LED green */ "%d"
                     /* separator            */ "%s"
-                    /* attractive LED blue  */ "%d"
-                    /* separator            */ "%s"
-                    /* delayS               */ "%lu\n",
+                    /* attractive LED blue           */ "%d"
+                    /* separator                     */ "%s"
+                    /* door_status_when_bird_arrived */ "%d"
+                    /* separator                     */ "%s"
+                    /* delayS                        */ "%lu\n",
                     appDataLog.bird_arrived_time.tm_mday,
                     appDataLog.bird_arrived_time.tm_mon,
                     appDataLog.bird_arrived_time.tm_year,
@@ -85,6 +87,8 @@ static int populateLogBuffer( void )
                     appDataLog.attractive_leds_rgb[1],
                     appDataLog.separator,
                     appDataLog.attractive_leds_rgb[2],
+                    appDataLog.separator,
+                    appDataLog.door_status_when_bird_arrived,
                     appDataLog.separator,
                     delayS );
 

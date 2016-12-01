@@ -334,6 +334,15 @@ void APP_Tasks( void )
                 appDataLog.attractive_leds_rgb[1] = appDataAttractiveLeds.green[appDataAttractiveLeds.current_color_index];
                 appDataLog.attractive_leds_rgb[2] = appDataAttractiveLeds.blue[appDataAttractiveLeds.current_color_index];
 
+                if ( DOOR_OPENED == appDataDoor.reward_door_status )
+                {
+                    appDataLog.door_status_when_bird_arrived = 1;
+                }
+                else
+                {
+                    appDataLog.door_status_when_bird_arrived = 0;
+                }
+                
                 appData.state = APP_STATE_RFID_READING_PIT_TAG;
                 break;
             }
@@ -584,7 +593,7 @@ void APP_Tasks( void )
             {
                 RFID_Disable( );
                 clear_bird_sensor_detected( );
-                sprintf( appDataLog.bird_pit_tag_str, "0" );
+                sprintf( appDataLog.bird_pit_tag_str, "XXXXXXXXXX" );
                 appDataLog.is_reward_taken = false;
                 appDataLog.is_pit_tag_denied = false;
                 clearPitTagBuffers( );

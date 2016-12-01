@@ -332,6 +332,8 @@ typedef struct
 
     /* Attractive LEDs color*/
     uint16_t attractive_leds_rgb[3];
+    
+    uint8_t door_status_when_bird_arrived;
 
 } APP_DATA_LOG;
 
