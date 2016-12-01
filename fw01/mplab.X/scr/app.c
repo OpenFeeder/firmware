@@ -145,6 +145,18 @@ void APP_Tasks( void )
                 break;
             }
 
+            /* Check food level */
+            IRSensorEnable( );
+            if ( BAR_IR2_OUT_GetValue( ) == 0 )
+            {
+                printf( "Enough food\n" );
+            }
+            else
+            {
+                printf( "Not enough food\n" );
+            }
+            IRSensorDisable( );
+
             /* Set log file name => 20yymmdd.CSV (one log file per day). */
             if ( false == setLogFileName( ) )
             {
@@ -267,7 +279,8 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_IDLE\n" );
 #endif
-                setDelayMs( 30000 ); /* waiting 30 sec timeout before going to sleep mode */
+                /* Timeout before going to sleep mode */
+                setDelayMs( appData.timeout_sleep ); 
             }
 
             /* Green status LED blinks in idle mode. */
@@ -313,9 +326,9 @@ void APP_Tasks( void )
                 clear_bird_sensor_detected( );
                 appDataLog.is_reward_taken = false;
 
-                appDataLog.attractive_leds_rgb[0] = appDataAttractiveLeds.red;
-                appDataLog.attractive_leds_rgb[1] = appDataAttractiveLeds.green;
-                appDataLog.attractive_leds_rgb[2] = appDataAttractiveLeds.blue;
+                appDataLog.attractive_leds_rgb[0] = appDataAttractiveLeds.red[appDataAttractiveLeds.current_color_index];
+                appDataLog.attractive_leds_rgb[1] = appDataAttractiveLeds.green[appDataAttractiveLeds.current_color_index];
+                appDataLog.attractive_leds_rgb[2] = appDataAttractiveLeds.blue[appDataAttractiveLeds.current_color_index];
 
                 appData.state = APP_STATE_RFID_READING_PIT_TAG;
                 break;
@@ -537,7 +550,6 @@ void APP_Tasks( void )
             }
 
             /* Test if delay detect PIT Tags in ending. (20x 160 ms) */
-            //++detect_bird_counter; // do in tmr4.c
             if ( g_timeout_reading_pit_tag == 0 )
             {
                 RFID_Disable( );
@@ -559,11 +571,12 @@ void APP_Tasks( void )
                 printf( "> APP_STATE_OPENING_REWARD_DOOR\n" );
 #endif
                 /* Delay before door open */
-                setDelayMs( appData.dooropendelay*1000 );
-                while (false == isDelayMsEnding( )) {
-                    Nop();
+                setDelayMs( appData.dooropendelay );
+                while ( false == isDelayMsEnding( ) )
+                {
+                    Nop( );
                 }
-                
+
                 /* Servomotor power command enable. */
                 servomotorPowerEnable( );
                 appData.reward_door_status = DOOR_OPENING;
@@ -571,7 +584,7 @@ void APP_Tasks( void )
                 //                printf( "Opening reward door in action.\n" );
                 //#endif
                 appDataLog.is_reward_taken = false;
-                setDoorLedsColor( );
+                //                setDoorLedsColor( );
             }
 
             // TODO: Check door position or wait for timeout closing
@@ -640,13 +653,14 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_CLOSING_REWARD_DOOR\n" );
 #endif
-                
+
                 /* Delay before door close */
-                setDelayMs( appData.doorclosedelay*1000 );
-                while (false == isDelayMsEnding( )) {
-                    Nop();
+                setDelayMs( appData.doorclosedelay );
+                while ( false == isDelayMsEnding( ) )
+                {
+                    Nop( );
                 }
-                
+
                 /* Servomotor power command enable. */
                 servomotorPowerEnable( );
                 appData.reward_door_status = DOOR_CLOSING;
@@ -704,8 +718,6 @@ void APP_Tasks( void )
 #endif
             }
 
-            //            EX_INT0_InterruptDisable( ); /* For deep sleep only */
-
             rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_DAY );
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
@@ -731,18 +743,6 @@ void APP_Tasks( void )
             printf( "Awaken from sleep mode!\n" );
 #endif 
             appData.openfeeder_state = OPENFEEDER_IS_AWAKEN;
-            //            EX_INT0_InterruptEnable( );
-            //            CMD_VDD_APP_V_USB_SetHigh( ); /* Enable the 5 V regulator. */
-
-            // le delais de 10 sec ne change pas l'erreur: ERROR: In (0)
-            //            setDelayMs( 10000 );
-            //            while ( false == isDelayMsEnding( ) );
-
-            //                        while (  )
-            //            {
-            //
-            //            }
-
             appData.state = APP_STATE_IDLE;
             break;
             /* -------------------------------------------------------------- */
@@ -809,38 +809,6 @@ void APP_Tasks( void )
 
             appData.state = APP_STATE_IDLE;
 
-            /* New frequency value to display on PC interface
-             * read 1860 à 123.9 kHz
-             */
-            //            if (EM4095_SHD_GetValue() == true)
-            //            {
-            //                //LED_STATUS_R_SetLow( ); // erasing red LED status during frequency measurement of the RDY/CLK signal
-            //
-            //                // New frequency value to display on PC interface
-            //                if (g_new_value_of_em4095_rdyclk_measurement == true)
-            //                {
-            //                    printf("%u\n", rdyclk_count_in_10ms);
-            //                    g_new_value_of_em4095_rdyclk_measurement = false;
-            //                }
-            //
-            //                // Checking the validity of the frequency interval (in Hz x100) of RDY/CLK signal for 125 kHz
-            //                if ((rdyclk_count_in_10ms > 1245) && (rdyclk_count_in_10ms < 1255))
-            //                {
-            //                    // LED_STATUS_G_SetHigh( ); // light on green status LED if correct frequency
-            //                    setLedsStatusColor(LED_GREEN);
-            //                }
-            //                else
-            //                {
-            //                    // LED_STATUS_G_SetLow( ); // light off green status LED if frequency is out of range
-            //                    setLedsStatusColor(LEDS_OFF);
-            //                }
-            //            }
-            //            else
-            //            {
-            //                appData.state = APP_STATE_IDLE;
-            //                //                /* Only light on red status LED during idle state. */
-            //                //                setLedsStatusColor( LED_RED );
-            //            }
             break;
 
         case APP_STATE_ERROR:
@@ -889,6 +857,7 @@ void APP_Initialize( void )
 
     /* Attractive LEDs initialize */
     setAttractiveLedsOff( );
+    appDataAttractiveLeds.current_color_index = 0;
 
     /* APP state task initialize */
     appData.state = APP_STATE_INIT;
@@ -927,8 +896,8 @@ void APP_Initialize( void )
     /* USB host */
     appDataUsb.getValidDeviceAdress = false;
     appDataUsb.key_is_nedded = false;
-    
-    memset(appData.siteid, '\0', 5);
+
+    memset( appData.siteid, '\0', 5 );
 }
 
 

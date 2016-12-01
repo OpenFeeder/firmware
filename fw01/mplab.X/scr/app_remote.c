@@ -562,17 +562,17 @@ void getCurrentMenuValue( void )
             break;
 
         case N4_LEDS_R:
-            sprintf( appDataRc.digitBuffer, "r%03u ", appDataAttractiveLeds.red );
+            sprintf( appDataRc.digitBuffer, "r%03u ", appDataAttractiveLeds.red[appDataAttractiveLeds.current_color_index] );
             strncpy( currentMenuValue, appDataRc.digitBuffer, 5 );
             break;
 
         case N4_LEDS_G:
-            sprintf( appDataRc.digitBuffer, "G%03u ", appDataAttractiveLeds.green );
+            sprintf( appDataRc.digitBuffer, "G%03u ", appDataAttractiveLeds.green[appDataAttractiveLeds.current_color_index] );
             strncpy( currentMenuValue, appDataRc.digitBuffer, 5 );
             break;
 
         case N4_LEDS_B:
-            sprintf( appDataRc.digitBuffer, "b%03u ", appDataAttractiveLeds.blue );
+            sprintf( appDataRc.digitBuffer, "b%03u ", appDataAttractiveLeds.blue[appDataAttractiveLeds.current_color_index] );
             strncpy( currentMenuValue, appDataRc.digitBuffer, 5 );
             break;
 
@@ -640,18 +640,18 @@ void storeCurrentMenu( void )
             break;
 
         case N4_LEDS_R:
-            appDataAttractiveLeds.red = ( uint16_t ) ( 100 * ( appDataRc.digitBuffer[1] - 48 ) + 10 * ( appDataRc.digitBuffer[2] - 48 ) + ( appDataRc.digitBuffer[3] - 48 ) );
-            OC1_SingleCompareValueSet( appDataAttractiveLeds.red );
+            appDataAttractiveLeds.red[appDataAttractiveLeds.current_color_index] = ( uint16_t ) ( 100 * ( appDataRc.digitBuffer[1] - 48 ) + 10 * ( appDataRc.digitBuffer[2] - 48 ) + ( appDataRc.digitBuffer[3] - 48 ) );
+            OC1_SingleCompareValueSet( appDataAttractiveLeds.red[appDataAttractiveLeds.current_color_index] );
             break;
 
         case N4_LEDS_G:
-            appDataAttractiveLeds.green = ( uint16_t ) ( 100 * ( appDataRc.digitBuffer[1] - 48 ) + 10 * ( appDataRc.digitBuffer[2] - 48 ) + ( appDataRc.digitBuffer[3] - 48 ) );
-            OC2_SingleCompareValueSet( appDataAttractiveLeds.green );
+            appDataAttractiveLeds.green[appDataAttractiveLeds.current_color_index] = ( uint16_t ) ( 100 * ( appDataRc.digitBuffer[1] - 48 ) + 10 * ( appDataRc.digitBuffer[2] - 48 ) + ( appDataRc.digitBuffer[3] - 48 ) );
+            OC2_SingleCompareValueSet( appDataAttractiveLeds.green[appDataAttractiveLeds.current_color_index] );
             break;
 
         case N4_LEDS_B:
-            appDataAttractiveLeds.blue = ( uint16_t ) ( 100 * ( appDataRc.digitBuffer[1] - 48 ) + 10 * ( appDataRc.digitBuffer[2] - 48 ) + ( appDataRc.digitBuffer[3] - 48 ) );
-            OC3_SingleCompareValueSet( appDataAttractiveLeds.blue );
+            appDataAttractiveLeds.blue[appDataAttractiveLeds.current_color_index] = ( uint16_t ) ( 100 * ( appDataRc.digitBuffer[1] - 48 ) + 10 * ( appDataRc.digitBuffer[2] - 48 ) + ( appDataRc.digitBuffer[3] - 48 ) );
+            OC3_SingleCompareValueSet( appDataAttractiveLeds.blue[appDataAttractiveLeds.current_color_index] );
             break;
 
         case N3_SITE_ID:

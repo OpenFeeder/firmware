@@ -91,6 +91,10 @@
 #define WAKE_UP 1
 #define GO_TO_SLEEP 0
 
+#define SLEEP_TIMEOUT_X1000MS_DEFAULT   60
+#define PIR_TIMEOUT_X1000MS_DEFAULT   10
+#define TAKING_REWARD_TIMEOUT_X1000MS_DEFAULT   10
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Type Definitions
@@ -221,6 +225,8 @@ typedef struct
 
     /* Servomotor structure */
     DOOR_STATUS reward_door_status;
+    uint16_t timeout_sleep;
+    uint16_t timeout_pir;
     uint16_t timeout_taking_reward;
 
     uint16_t open_door_red;
@@ -244,12 +250,16 @@ typedef struct
 
 typedef struct
 {
-    uint16_t red;
-    uint16_t green;
-    uint16_t blue;
+    uint16_t red[2];
+    uint16_t green[2];
+    uint16_t blue[2];
 
     struct tm wake_up_time;
     struct tm sleep_time;
+    
+    uint16_t alt_delay;
+    
+    uint8_t current_color_index;
 
 } APP_DATA_LEDS;
 

@@ -25,8 +25,6 @@
 #define SERVO_START_POSITION_DEFAULT    1500    /* initial servomotor position at the middle */
 #define SERVO_SPEED_INC_DEFAULT         10      /* servomotor position increment every 20 ms */
 
-#define TAKING_REWARD_TIMEOUT_X100MS_DEFAULT   10
-
 /** [Clockwise](https://en.wikipedia.org/wiki/Clockwise)
  * A clockwise (typically abbreviated as CW) motion is one that proceeds in the same direction as a clock's hands.
  * The opposite sense of rotation or revolution is (in Commonwealth English) anticlockwise (ACW),

@@ -16,7 +16,7 @@ void setAttractiveRedLedsColor( uint16_t );
 void setAttractiveGreenLedsColor( uint16_t );
 void setAttractiveBlueLedsColor( uint16_t );
 
-void setDoorLedsColor( void );
+//void setDoorLedsColor( void );
 
 #endif /* APP_ATTRACT_LEDS_H */
 
