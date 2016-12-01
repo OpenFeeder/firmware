@@ -8,6 +8,8 @@
 #ifndef APP_ATTRACT_LEDS_H
 #define APP_ATTRACT_LEDS_H
 
+#define ATTRACTIVE_LEDS_ON 1
+#define ATTRACTIVE_LEDS_OFF 0
 
 void setAttractiveLedsOff( void );
 void setAttractiveLedsOn( void );

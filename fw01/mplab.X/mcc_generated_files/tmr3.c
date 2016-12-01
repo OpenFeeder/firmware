@@ -137,14 +137,15 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _T3Interrupt( )
         }
     }
 
-    switch ( appData.reward_door_status )
+    switch ( appDataDoor.reward_door_status )
     {
         case DOOR_OPENING:
             /* Opening in action. */
             //if ( servomotorOpenTheDoor( &appDataServo ) )
             if ( servomotorOpenTheDoor( ) )
             {
-                appData.reward_door_status = DOOR_IDLE;
+//                appData.reward_door_status = DOOR_IDLE;
+                appDataDoor.reward_door_status = DOOR_OPENED;
             }
             break;
 
@@ -152,7 +153,8 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _T3Interrupt( )
             /* Closing in action. */
             if ( servomotorCloseTheDoor( ) )
             {
-                appData.reward_door_status = DOOR_IDLE;
+//                appData.reward_door_status = DOOR_IDLE;
+                appDataDoor.reward_door_status = DOOR_CLOSED;
             }
             break;
 

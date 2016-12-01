@@ -307,7 +307,7 @@ int8_t config_read_ini( void )
     }
     else
     {
-        appData.dooropendelay = ( uint16_t ) read_parameter * 1000;
+        appDataDoor.open_delay = ( uint16_t ) read_parameter * 1000;
     }
     read_parameter = ini_getl( "door", "closedelay", -1, "CONFIG.INI" );
     --error_id;
@@ -317,8 +317,66 @@ int8_t config_read_ini( void )
     }
     else
     {
-        appData.doorclosedelay = ( uint16_t ) read_parameter * 1000;
+        appDataDoor.close_delay = ( uint16_t ) read_parameter * 1000;
     }
+    /* Door remain open */
+    read_parameter = ini_getl( "door", "remainopen", -1, "CONFIG.INI" );
+    --error_id;
+    if ( read_parameter == -1 )
+    {
+        return error_id;
+    }
+    else
+    {
+        appDataDoor.remain_open = ( uint8_t ) read_parameter;
+    }
+    /* Door open time. */
+    read_parameter = ini_getl( "door", "open_hour", -1, "CONFIG.INI" );
+    --error_id;
+    if ( read_parameter == -1 )
+    {
+        return error_id;
+    }
+    else
+    {
+        appDataDoor.open_time.tm_hour = ( int ) read_parameter;
+    }
+    read_parameter = ini_getl( "door", "open_minute", -1, "CONFIG.INI" );
+    --error_id;
+    if ( read_parameter == -1 )
+    {
+        return error_id;
+    }
+    else
+    {
+        appDataDoor.open_time.tm_min = ( int ) read_parameter;
+    }
+
+    appDataDoor.open_time.tm_sec = 0;
+
+    /* Door close time. */
+    read_parameter = ini_getl( "door", "close_hour", -1, "CONFIG.INI" );
+    --error_id;
+    if ( read_parameter == -1 )
+    {
+        return error_id;
+    }
+    else
+    {
+        appDataDoor.close_time.tm_hour = ( int ) read_parameter;
+    }
+    read_parameter = ini_getl( "door", "close_minute", -1, "CONFIG.INI" );
+    --error_id;
+    if ( read_parameter == -1 )
+    {
+        return error_id;
+    }
+    else
+    {
+        appDataDoor.close_time.tm_min = ( int ) read_parameter;
+    }
+
+    appDataDoor.close_time.tm_sec = 0;
 
     /* PIT Tags denied, bird banning. */
     /* (fr) Lecture des PIT tags à ignorer. */
@@ -430,13 +488,14 @@ void config_set_parameters( void )
     //#endif 
 
     /* Set RTCC alarm */
-    rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_DAY );
+    //    rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_DAY );
+    rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_SECOND );
     //#if defined (USE_UART1_SERIAL_INTERFACE)
     //    printf( "\tAlarm: set\n" );
     //#endif 
 
     /* Set attractive LEDs color */
-    setAttractiveLedsOn( );
+    //    setAttractiveLedsOn( );
     //#if defined (USE_UART1_SERIAL_INTERFACE)
     //    printf( "\tAttractive LEDs color: set\n" );
     //#endif 
@@ -485,8 +544,15 @@ void config_print( void )
     printf( "\t\tServomotor position max: %d\n", appDataServo.ton_max );
     printf( "\t\tServomotor increment position: %d\n", appDataServo.speed ); /* Increment pace of the servomotor position. */
     printf( "\t\tOpen delay: %ds\n\t\tClose dealy: %ds\n",
-            appData.dooropendelay / 1000,
-            appData.doorclosedelay / 1000 );
+            appDataDoor.open_delay / 1000,
+            appDataDoor.close_delay / 1000 );
+    printf( "\t\tRemain open: %u\n", appDataDoor.remain_open );
+    printf( "\t\tOpen time: %02d:%02d\n",
+            appDataDoor.open_time.tm_hour,
+            appDataDoor.open_time.tm_min );
+    printf( "\t\tClose time: %02d:%02d\n",
+            appDataDoor.close_time.tm_hour,
+            appDataDoor.close_time.tm_min );
 
     printf( "\tTimeouts\n" );
     printf( "\t\tSleep: %us\n", appData.timeout_sleep / 1000 );

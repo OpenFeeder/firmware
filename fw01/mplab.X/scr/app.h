@@ -29,6 +29,7 @@
 //#define DISPLAY_USB_INFO               // uncomment to display USB information
 #define DISPLAY_LOG_INFO 
 //#define DISPLAY_ISR                    // uncomment to display interruption event
+//#define DISPLAY_ISR_RTCC
 //#define DISPLAY_ISR_IR                 // uncomment to display interruption event
 //#define DISPLAY_ISR_I2C                // uncomment to display interruption event
 #define DISPLAY_CURRENT_STATE            // uncomment to display the current state
@@ -88,8 +89,8 @@
 
 #define OPENFEEDER_IS_AWAKEN 1
 #define OPENFEEDER_IS_SLEEPING 0
-#define WAKE_UP 1
-#define GO_TO_SLEEP 0
+//#define WAKE_UP 1
+//#define GO_TO_SLEEP 0
 
 #define SLEEP_TIMEOUT_X1000MS_DEFAULT   60
 #define PIR_TIMEOUT_X1000MS_DEFAULT   10
@@ -102,6 +103,7 @@
 // *****************************************************************************
 
 /******************************************************************************/
+
 
 /* Application states
 
@@ -144,22 +146,38 @@ typedef enum
     APP_STATE_REMOTE_CONTROL,
 
     APP_STATE_BATTERY_LOW,
-        
+
     /* Application error state */
     APP_STATE_ERROR
 
 } APP_STATES;
 
+
 typedef enum
 {
     DOOR_IDLE, /* Not in use. */
+    DOOR_OPENED,
+    DOOR_CLOSED,
     DOOR_OPENING, /* Opening in action. */
     DOOR_CLOSING /* Closing in action. */
 
 } DOOR_STATUS;
 
 
+typedef enum
+{
+    RTCC_ALARM_IDLE, /* Not in use. */
+    RTCC_ALARM_WAKEUP_OPENFEEDER,
+    RTCC_ALARM_SLEEP_OPENFEEDER,
+    RTCC_ALARM_OPEN_DOOR,
+    RTCC_ALARM_CLOSE_DOOR,
+    RTCC_ALARM_SET_ATTRACTIVE_LEDS_ON,
+    RTCC_ALARM_SET_ATTRACTIVE_LEDS_OFF
+
+} RTCC_ALARM_ACTION;
+
 // *****************************************************************************
+
 
 /* Application Data
 
@@ -177,7 +195,7 @@ typedef struct
 {
     //uint8_t siteidzone;
     char siteid[5];
-    
+
     /* Application current state */
     APP_STATES state; /* current state */
     APP_STATES previous_state; /* save previous state */
@@ -185,10 +203,12 @@ typedef struct
     /* DateTime structure */
     struct tm current_time;
 
+
     /* Declaration of FLAGS type. */
     union
     {
         uint8_t reg;
+
 
         struct
         {
@@ -203,10 +223,12 @@ typedef struct
     /* I2C - Slave Device found */
     uint8_t i2c_add_found[MAX_OF_UNKNOWN_I2C_8_BIT_SLAVE_ADD]; // FIXME: Do not place this here !
 
+
     /* I2C - Status of MCP23017 */
     union
     {
         uint8_t status_reg;
+
 
         struct
         {
@@ -224,29 +246,22 @@ typedef struct
     BUTTON buttonPressed;
 
     /* Servomotor structure */
-    DOOR_STATUS reward_door_status;
     uint16_t timeout_sleep;
     uint16_t timeout_pir;
     uint16_t timeout_taking_reward;
 
-    uint16_t open_door_red;
-    uint16_t open_door_green;
-    uint16_t open_door_blue;
-
-    uint16_t dooropendelay;
-    uint16_t doorclosedelay;
-    
     bool bird_is_taking_reward;
 
     bool openfeeder_state;
-    bool rtcc_alarm_action;
+    RTCC_ALARM_ACTION rtcc_alarm_action;
 
     /* Battery level*/
     uint16_t battery_level;
     uint16_t vbat_level;
-    
+
 
 } APP_DATA;
+
 
 typedef struct
 {
@@ -256,12 +271,32 @@ typedef struct
 
     struct tm wake_up_time;
     struct tm sleep_time;
-    
+
     uint16_t alt_delay;
-    
+
+    bool status;
+
     uint8_t current_color_index;
 
 } APP_DATA_LEDS;
+
+typedef struct
+{
+    uint16_t open_door_red;
+    uint16_t open_door_green;
+    uint16_t open_door_blue;
+
+    uint16_t open_delay;
+    uint16_t close_delay;
+    
+    struct tm open_time;
+    struct tm close_time;
+    
+    uint8_t remain_open;
+    
+    DOOR_STATUS reward_door_status;
+
+} APP_DATA_DOOR;
 
 typedef struct
 {
@@ -271,6 +306,7 @@ typedef struct
     char pit_tags_denied[MAX_PIT_TAGS_DENIED_NUMBER][11];
 
 } APP_DATA_PIT_TAG;
+
 
 typedef struct
 {
@@ -293,11 +329,12 @@ typedef struct
     bool bird_pir_sensor_status;
     bool is_pit_tag_denied;
     bool is_reward_taken;
-    
+
     /* Attractive LEDs color*/
     uint16_t attractive_leds_rgb[3];
-    
+
 } APP_DATA_LOG;
+
 
 typedef struct
 {
@@ -340,6 +377,7 @@ extern APP_DATA_LOG appDataLog;
 extern APP_DATA_SERVO appDataServo; /* Servomotor application data. */
 extern APP_DATA_RC appDataRc; /* Remote control application data. */
 extern APP_DATA_EVENT appDataEvent;
+extern APP_DATA_DOOR appDataDoor;
 
 #define is_bird_sensor_detected( ) appDataLog.bird_pir_sensor_status /* Return the value of global variable. */
 #define clear_bird_sensor_detected( ) {appDataLog.bird_pir_sensor_status = 0;} /* Clear the bird detection sensor. */

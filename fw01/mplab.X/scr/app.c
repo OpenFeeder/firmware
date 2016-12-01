@@ -102,7 +102,7 @@ APP_DATA_LOG appDataLog;
 APP_DATA_SERVO appDataServo; /* Servomotor application data. */
 APP_DATA_RC appDataRc;
 APP_DATA_EVENT appDataEvent;
-
+APP_DATA_DOOR appDataDoor;
 
 /* Binary to Ascii text converter with simple lookup array */
 const char bin2ascii_tab[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
@@ -228,9 +228,10 @@ void APP_Tasks( void )
 #endif
                 /* Servomotor power command enable. */
                 servomotorPowerEnable( );
-                appData.reward_door_status = DOOR_CLOSING;
+                appDataDoor.reward_door_status = DOOR_CLOSING;
                 // TODO: Check door position or wainting for timeout closing
-                while ( DOOR_IDLE != appData.reward_door_status );
+                //                while ( DOOR_IDLE != appData.reward_door_status );
+                while ( DOOR_CLOSED != appDataDoor.reward_door_status );
                 /* Servomotor power command disable. */
                 servomotorPowerDisable( );
 
@@ -279,8 +280,11 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_IDLE\n" );
 #endif
-                /* Timeout before going to sleep mode */
-                setDelayMs( appData.timeout_sleep );
+                if ( appData.timeout_sleep > 0 )
+                {
+                    /* Timeout before going to sleep mode */
+                    setDelayMs( appData.timeout_sleep );
+                }
             }
 
             /* Green status LED blinks in idle mode. */
@@ -374,25 +378,50 @@ void APP_Tasks( void )
                 //                }
             }
 
-            // TODO: Update here appData.flags.bit_value.attractive_leds_status
-            // from 
-            // appDataAttractiveLeds.wake_up_time.tm_hour
-            // appDataAttractiveLeds.wake_up_time.tm_min
-            // and
-            // appDataAttractiveLeds.sleep_time.tm_hour
-            // appDataAttractiveLeds.sleep_time.tm_min
-
-
-            if ( appData.openfeeder_state == OPENFEEDER_IS_AWAKEN && appData.rtcc_alarm_action == GO_TO_SLEEP )
+            if ( RTCC_ALARM_IDLE != appData.rtcc_alarm_action )
             {
-                appData.state = APP_STATE_GO_TO_SLEEP_MODE;
-                break;
-            }
-
-            if ( appData.openfeeder_state == OPENFEEDER_IS_SLEEPING && appData.rtcc_alarm_action == WAKE_UP )
-            {
-                appData.state = APP_STATE_WAKE_UP_FROM_SLEEP;
-                break;
+                if ( OPENFEEDER_IS_AWAKEN == appData.openfeeder_state && RTCC_ALARM_SLEEP_OPENFEEDER == appData.rtcc_alarm_action )
+                {
+                    appData.state = APP_STATE_GO_TO_SLEEP_MODE;
+                    break;
+                }
+                if ( OPENFEEDER_IS_SLEEPING == appData.openfeeder_state && RTCC_ALARM_WAKEUP_OPENFEEDER == appData.rtcc_alarm_action )
+                {
+                    appData.state = APP_STATE_WAKE_UP_FROM_SLEEP;
+                    break;
+                }
+                if ( RTCC_ALARM_SET_ATTRACTIVE_LEDS_OFF == appData.rtcc_alarm_action )
+                {
+                    if ( ATTRACTIVE_LEDS_ON == appDataAttractiveLeds.status )
+                    {
+                        setAttractiveLedsOff( );
+                    }
+                }
+                if ( RTCC_ALARM_SET_ATTRACTIVE_LEDS_ON == appData.rtcc_alarm_action )
+                {
+                    if ( ATTRACTIVE_LEDS_OFF == appDataAttractiveLeds.status )
+                    {
+                        setAttractiveLedsOn( );
+                    }
+                }
+                if ( DOOR_OPENED != appDataDoor.reward_door_status && RTCC_ALARM_OPEN_DOOR == appData.rtcc_alarm_action )
+                {
+                    /* Open reward door */
+                    servomotorPowerEnable( );
+                    appDataDoor.reward_door_status = DOOR_OPENING;
+                    printf( "Opening reward door in action.\n" );
+                    while ( DOOR_OPENED != appDataDoor.reward_door_status );
+                    servomotorPowerDisable( );
+                }
+                if ( DOOR_CLOSED != appDataDoor.reward_door_status && RTCC_ALARM_CLOSE_DOOR == appData.rtcc_alarm_action )
+                {
+                    /* Close reward door */
+                    servomotorPowerEnable( );
+                    appDataDoor.reward_door_status = DOOR_CLOSING;
+                    printf( "Closing reward door in action.\n" );
+                    while ( DOOR_CLOSED != appDataDoor.reward_door_status );
+                    servomotorPowerDisable( );
+                }
             }
 
             /* Check TIMEOUT IDLE MODE endding.
@@ -400,7 +429,7 @@ void APP_Tasks( void )
              */
             if ( false == appData.flags.bit_value.attractive_leds_status )
             {
-                if ( isDelayMsEnding( ) )
+                if ( appData.timeout_sleep > 0 && isDelayMsEnding( ) )
                 {
                     appData.state = APP_STATE_SLEEP;
                 }
@@ -475,31 +504,32 @@ void APP_Tasks( void )
 #endif
             }
 
-            //#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
-            //            printf("APP_STATE_SLEEP\n");
-            //#endif
-            //            appData.previous_state = APP_STATE_SLEEP;
+            /* Close the door if it is opened */
+            if ( DOOR_CLOSED != appDataDoor.reward_door_status && RTCC_ALARM_CLOSE_DOOR == appData.rtcc_alarm_action )
+            {
+                /* Close reward door */
+                servomotorPowerEnable( );
+                appDataDoor.reward_door_status = DOOR_CLOSING;
+                printf( "Closing reward door in action.\n" );
+                while ( DOOR_CLOSED != appDataDoor.reward_door_status );
+                servomotorPowerDisable( );
+            }
+
+            /* Turn attractive LEDs off */
+            if ( ATTRACTIVE_LEDS_ON == appDataAttractiveLeds.status )
+            {
+                setAttractiveLedsOff( );
+            }
+
+            /* Turn status LED off */
             setLedsStatusColor( LEDS_OFF );
 
-            /* Sequence to enter Deep Sleep mode. */
-            //            _DSEN = 1; /* Deep Sleep */
-            //            Nop( );
-            //            Nop( );
-            //            Nop( );
-            //            _DSEN = 1; /* Deep Sleep */
-            //            Sleep( );
-
-            //            asm("BSET DSCON, #DSEN"); // not work !
-            //            asm("mov #8000, w2"); // enable DS
-            //            asm("mov w2, DSCON");
-            //            asm("mov w2, DSCON");
             Sleep( );
 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
             printf( "\n" );
 #endif
 
-            //appData.state = APP_STATE_IDLE;
             appData.state = APP_STATE_WAKE_UP_FROM_SLEEP;
             break;
             /* -------------------------------------------------------------- */
@@ -570,8 +600,18 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_OPENING_REWARD_DOOR\n" );
 #endif
+
+                appDataLog.is_reward_taken = false;
+
+                /* Check if door is already open */
+                if ( 1 == appDataDoor.remain_open )
+                {
+                    appData.state = APP_STATE_WAITING_CATCH_REWARD;
+                    break;
+                }
+
                 /* Delay before door open */
-                setDelayMs( appData.dooropendelay );
+                setDelayMs( appDataDoor.open_delay );
                 while ( false == isDelayMsEnding( ) )
                 {
                     Nop( );
@@ -579,16 +619,10 @@ void APP_Tasks( void )
 
                 /* Servomotor power command enable. */
                 servomotorPowerEnable( );
-                appData.reward_door_status = DOOR_OPENING;
-                //#if defined (USE_UART1_SERIAL_INTERFACE)
-                //                printf( "Opening reward door in action.\n" );
-                //#endif
-                appDataLog.is_reward_taken = false;
-                //                setDoorLedsColor( );
+                appDataDoor.reward_door_status = DOOR_OPENING;
             }
 
-            // TODO: Check door position or wait for timeout closing
-            if ( DOOR_IDLE == appData.reward_door_status )
+            if ( DOOR_OPENED == appDataDoor.reward_door_status )
             {
                 /* Servomotor power command enable. */
                 servomotorPowerDisable( );
@@ -658,8 +692,21 @@ void APP_Tasks( void )
                 printf( "> APP_STATE_CLOSING_REWARD_DOOR\n" );
 #endif
 
+                /* Enregistrement de l'heure de fin de détection de l'oiseau. */
+                while ( !RTCC_TimeGet( &appDataLog.bird_quit_time ) )
+                {
+                    Nop( );
+                }
+
+                /* Check if door must remain open */
+                if ( 1 == appDataDoor.remain_open )
+                {
+                    appData.state = APP_STATE_DATA_LOG;
+                    break;
+                }
+
                 /* Delay before door close */
-                setDelayMs( appData.doorclosedelay );
+                setDelayMs( appDataDoor.close_delay );
                 while ( false == isDelayMsEnding( ) )
                 {
                     Nop( );
@@ -667,25 +714,16 @@ void APP_Tasks( void )
 
                 /* Servomotor power command enable. */
                 servomotorPowerEnable( );
-                appData.reward_door_status = DOOR_CLOSING;
+                appDataDoor.reward_door_status = DOOR_CLOSING;
 #if defined (USE_UART1_SERIAL_INTERFACE) 
                 printf( "Closing reward door in action.\n" );
 #endif
             }
 
-            /* Enregistrement de l'heure de fin de détection de l'oiseau. */
-            // TODO: Get current Time when the RFID signal 
-            while ( !RTCC_TimeGet( &appDataLog.bird_quit_time ) )
-            {
-                Nop( );
-            }
-
-            // TODO: Check door position or wainting for timeout closing
-            if ( DOOR_IDLE == appData.reward_door_status )
+            if ( DOOR_CLOSED == appDataDoor.reward_door_status )
             {
                 /* Servomotor power command enable. */
                 servomotorPowerDisable( );
-                setAttractiveLedsColor( );
                 appData.state = APP_STATE_DATA_LOG;
             }
             break;
@@ -741,7 +779,7 @@ void APP_Tasks( void )
 #endif
             }
 
-            rtcc_set_alarm( appDataAlarmSleep.time.tm_hour, appDataAlarmSleep.time.tm_min, appDataAlarmSleep.time.tm_sec, EVERY_DAY );
+            rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_SECOND );
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
             printf( "Awaken from sleep mode!\n" );
@@ -856,9 +894,6 @@ void APP_Tasks( void )
 
 void APP_Initialize( void )
 {
-    /* Status LED */
-    //    setLedsStatusColor(LED_RED);
-
     /* Attractive LEDs initialize */
     setAttractiveLedsOff( );
     appDataAttractiveLeds.current_color_index = 0;
@@ -868,7 +903,7 @@ void APP_Initialize( void )
     appData.previous_state = APP_STATE_ERROR;
 
     appData.openfeeder_state = OPENFEEDER_IS_AWAKEN;
-    appData.rtcc_alarm_action = WAKE_UP;
+    appData.rtcc_alarm_action = RTCC_ALARM_WAKEUP_OPENFEEDER;
 
     /* Initialize all flags */
     //appData.flags.bit_value.systemInit = false;
@@ -902,6 +937,9 @@ void APP_Initialize( void )
     appDataUsb.key_is_nedded = false;
 
     memset( appData.siteid, '\0', 5 );
+
+    rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_SECOND );
+
 }
 
 

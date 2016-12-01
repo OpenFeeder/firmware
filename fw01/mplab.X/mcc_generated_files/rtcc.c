@@ -258,17 +258,83 @@ static uint8_t ConvertBCDToHex( uint8_t bcdvalue )
  */
 void __attribute__( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
 {
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR)
-    printf( "_RTCCInterrupt()\n" ); // display Sleeping message
+
+    if ( true == appData.flags.bit_value.systemInit )
+    {
+
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
+        printf( "_RTCCInterrupt() " ); // display Sleeping message
 #endif 
 
-    if ( appData.openfeeder_state == OPENFEEDER_IS_AWAKEN )
-    {
-        appData.rtcc_alarm_action = GO_TO_SLEEP;
-    }
-    else //OPENFEEDER_IS_SLEEPING
-    {
-        appData.rtcc_alarm_action = WAKE_UP;
+        appData.rtcc_alarm_action = RTCC_ALARM_IDLE;
+
+        if ( appData.openfeeder_state == OPENFEEDER_IS_SLEEPING )
+        {
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
+            printf( "- Wakeup\n" );
+#endif 
+            appData.rtcc_alarm_action = RTCC_ALARM_WAKEUP_OPENFEEDER;
+        }
+        else
+        {
+            while ( !RTCC_TimeGet( &appData.current_time ) )
+            {
+                Nop( );
+            }
+
+            if ( appData.current_time.tm_hour >= appDataAlarmSleep.time.tm_hour &&
+                 appData.current_time.tm_min >= appDataAlarmSleep.time.tm_min )
+            {
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
+                printf( "- Sleep\n" );
+#endif 
+                appData.rtcc_alarm_action = RTCC_ALARM_SLEEP_OPENFEEDER;
+            }
+            else
+            {
+
+                /* Attractive LEDs on/off */
+                if ( ( appData.current_time.tm_hour * 60 + appData.current_time.tm_min ) >= ( appDataAttractiveLeds.wake_up_time.tm_hour * 60 + appDataAttractiveLeds.wake_up_time.tm_min ) &&
+                     ( appData.current_time.tm_hour * 60 + appData.current_time.tm_min )< ( appDataAttractiveLeds.sleep_time.tm_hour * 60 + appDataAttractiveLeds.sleep_time.tm_min ) )
+
+                {
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
+                    printf( "- LEDs on\n" );
+#endif 
+                    appData.rtcc_alarm_action = RTCC_ALARM_SET_ATTRACTIVE_LEDS_ON;
+                }
+                else
+                {
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
+                    printf( "- LEDs off\n" );
+#endif 
+                    appData.rtcc_alarm_action = RTCC_ALARM_SET_ATTRACTIVE_LEDS_OFF;
+                }
+
+                /* Door open/close */
+                if ( 1 == appDataDoor.remain_open )
+                {
+
+                    if ( ( appData.current_time.tm_hour * 60 + appData.current_time.tm_min ) >= ( appDataDoor.open_time.tm_hour * 60 + appDataDoor.open_time.tm_min ) &&
+                         ( appData.current_time.tm_hour * 60 + appData.current_time.tm_min )< ( appDataDoor.close_time.tm_hour * 60 + appDataDoor.close_time.tm_min ) )
+
+                    {
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
+                        printf( "- Door open\n" );
+#endif 
+                        appData.rtcc_alarm_action = RTCC_ALARM_OPEN_DOOR;
+                    }
+                    else
+                    {
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
+                        printf( "- Door close\n" );
+#endif 
+                        appData.rtcc_alarm_action = RTCC_ALARM_CLOSE_DOOR;
+                    }
+                }
+
+            }
+        }
     }
 
     IFS3bits.RTCIF = false; /* Clear interrupt flag. */
@@ -276,5 +342,5 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
 
 
 /**
- End of File
+End of File
  */
