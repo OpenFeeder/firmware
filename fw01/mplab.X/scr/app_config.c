@@ -414,12 +414,12 @@ int8_t config_read_ini( void )
     --error_id;
     if ( read_parameter == -1 )
     {
-        appData.timeout_sleep = SLEEP_TIMEOUT_X1000MS_DEFAULT * 1000;
+        appData.timeout_standby = STANDBY_TIMEOUT_X1000MS_DEFAULT * 1000;
         return error_id;
     }
     else
     {
-        appData.timeout_sleep = ( uint16_t ) read_parameter * 1000;
+        appData.timeout_standby = ( uint16_t ) read_parameter * 1000;
     }
     /* Timeout before pir. */
     read_parameter = ini_getl( "timeouts", "pir", -1, "CONFIG.INI" );
@@ -555,7 +555,7 @@ void config_print( void )
             appDataDoor.close_time.tm_min );
 
     printf( "\tTimeouts\n" );
-    printf( "\t\tSleep: %us\n", appData.timeout_sleep / 1000 );
+    printf( "\t\tSleep: %us\n", appData.timeout_standby / 1000 );
     printf( "\t\tPIR: %us\n", appData.timeout_pir / 1000 );
     printf( "\t\tTaking reward: %us\n", appData.timeout_taking_reward / 1000 );
 

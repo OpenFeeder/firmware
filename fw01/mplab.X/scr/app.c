@@ -280,10 +280,10 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_IDLE\n" );
 #endif
-                if ( appData.timeout_sleep > 0 )
+                if ( appData.timeout_standby > 0 )
                 {
                     /* Timeout before going to sleep mode */
-                    setDelayMs( appData.timeout_sleep );
+                    setDelayMs( appData.timeout_standby );
                 }
             }
 
@@ -391,12 +391,12 @@ void APP_Tasks( void )
             {
                 if ( OPENFEEDER_IS_AWAKEN == appData.openfeeder_state && RTCC_ALARM_SLEEP_OPENFEEDER == appData.rtcc_alarm_action )
                 {
-                    appData.state = APP_STATE_GO_TO_SLEEP_MODE;
+                    appData.state = APP_STATE_SLEEP;
                     break;
                 }
                 if ( OPENFEEDER_IS_SLEEPING == appData.openfeeder_state && RTCC_ALARM_WAKEUP_OPENFEEDER == appData.rtcc_alarm_action )
                 {
-                    appData.state = APP_STATE_WAKE_UP_FROM_SLEEP;
+                    appData.state = APP_STATE_WAKE_UP;
                     break;
                 }
                 if ( RTCC_ALARM_SET_ATTRACTIVE_LEDS_OFF == appData.rtcc_alarm_action )
@@ -434,112 +434,15 @@ void APP_Tasks( void )
             }
 
             /* Check TIMEOUT IDLE MODE endding.
-             *  - if false go to APP_STATE_SLEEP
+             *  - if false go to APP_STATE_STANDBY
              */
             if ( false == appData.flags.bit_value.attractive_leds_status )
             {
-                if ( appData.timeout_sleep > 0 && isDelayMsEnding( ) )
+                if ( appData.timeout_standby > 0 && isDelayMsEnding( ) )
                 {
-                    appData.state = APP_STATE_SLEEP;
+                    appData.state = APP_STATE_STANDBY;
                 }
             }
-            break;
-            /* -------------------------------------------------------------- */
-
-        case APP_STATE_REMOTE_CONTROL:
-            /**
-             * Application idle state.
-             *  - 
-             */
-            if ( appData.state != appData.previous_state )
-            {
-                appData.previous_state = appData.state;
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
-                printf( "> APP_STATE_REMOTE_CONTROL\n" ); // GREEN LED for AB proto
-#endif
-                APP_remoteControlInitialize( );
-            }
-
-            /* Blue status LED blinks when the remote control is plugged. */
-            LedsStatusBlink( LED_BLUE, 500, 500 );
-
-            /* Check USER BUTTON detected.
-             *  - if true RemoteControlConnected = false and go to APP_STATE_IDLE
-             */
-            button_user_state = USER_BUTTON_GetValue( );
-
-            if ( button_user_state != previous_button_user_state )
-            {
-                previous_button_user_state = button_user_state;
-                if ( BUTTON_PRESSED == button_user_state )
-                {
-                    //#if defined (USE_UART1_SERIAL_INTERFACE)
-                    //                    printf("USER BUTTON PRESSED\n");
-                    //#endif
-                    clearRemoteControlDisplay( );
-                    appData.flags.bit_value.RemoteControlConnected = false;
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
-                    printf( "Remote control disconnected\n" );
-#endif
-                }
-            }
-
-            if ( appData.flags.bit_value.RemoteControlConnected )
-            {
-                APP_remoteControlTask( );
-            }
-            else
-            {
-                appData.state = APP_STATE_IDLE;
-            }
-            break;
-            /* -------------------------------------------------------------- */
-
-        case APP_STATE_SLEEP:
-            /**
-             * Application sleep state.
-             *  - mise hors service de l'ensemble des fonctions hormis le capteur PIR
-             *  - mise en sommeil simple du système
-             *    OPERATION DURING SLEEP MODES - PIR sensor and alarm deep sleep
-             *  - lors de la sortie du mode SLEEP, remettre en service les fonctions de l'OpenFeeder
-             *  - passer à l'état APP_STATE_IDLE
-             */
-
-            if ( appData.state != appData.previous_state )
-            {
-                appData.previous_state = appData.state;
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
-                printf( "> APP_STATE_SLEEP\n" );
-#endif
-            }
-
-            /* Close the door if it is opened */
-            if ( DOOR_CLOSED != appDataDoor.reward_door_status )
-            {
-                /* Close reward door */
-                servomotorPowerEnable( );
-                appDataDoor.reward_door_status = DOOR_CLOSING;
-                printf( "Closing reward door in action.\n" );
-                while ( DOOR_CLOSED != appDataDoor.reward_door_status );
-                servomotorPowerDisable( );
-            }
-
-            /* Turn attractive LEDs off */
-            if ( ATTRACTIVE_LEDS_ON == appDataAttractiveLeds.status )
-            {
-                setAttractiveLedsOff( );
-            }
-
-            /* Turn status LED off */
-            setLedsStatusColor( LEDS_OFF );
-
-            Sleep( );
-
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
-            printf( "\n" );
-#endif
-
-            appData.state = APP_STATE_WAKE_UP_FROM_SLEEP;
             break;
             /* -------------------------------------------------------------- */
 
@@ -760,26 +663,72 @@ void APP_Tasks( void )
             break;
             /* -------------------------------------------------------------- */
 
-        case APP_STATE_GO_TO_SLEEP_MODE:
+        case APP_STATE_STANDBY:
             if ( appData.state != appData.previous_state )
             {
                 appData.previous_state = appData.state;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
-                printf( "> APP_STATE_GO_TO_SLEEP_MODE\n" );
+                printf( "> APP_STATE_STANDBY\n" );
+#endif
+            }
+
+            Sleep( );
+
+            appData.state = APP_STATE_IDLE;
+            break;
+            /* -------------------------------------------------------------- */
+
+        case APP_STATE_SLEEP:
+            /**
+             * Application sleep state.
+             *  - mise hors service de l'ensemble des fonctions hormis le capteur PIR
+             *  - mise en sommeil simple du système
+             *    OPERATION DURING SLEEP MODES - PIR sensor and alarm deep sleep
+             *  - lors de la sortie du mode SLEEP, remettre en service les fonctions de l'OpenFeeder
+             *  - passer à l'état APP_STATE_IDLE
+             */
+
+            if ( appData.state != appData.previous_state )
+            {
+                appData.previous_state = appData.state;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
+                printf( "> APP_STATE_SLEEP\n" );
 #endif
             }
 
             rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_DAY );
 
-#if defined (USE_UART1_SERIAL_INTERFACE)
-            printf( "Go into sleep mode...\n" );
-#endif 
-            appData.openfeeder_state = OPENFEEDER_IS_SLEEPING;
-            appData.state = APP_STATE_SLEEP;
+            /* Close the door if it is opened */
+            if ( DOOR_CLOSED != appDataDoor.reward_door_status )
+            {
+                /* Close reward door */
+                servomotorPowerEnable( );
+                appDataDoor.reward_door_status = DOOR_CLOSING;
+                printf( "Closing reward door in action.\n" );
+                while ( DOOR_CLOSED != appDataDoor.reward_door_status );
+                servomotorPowerDisable( );
+            }
+
+            /* Turn attractive LEDs off */
+            if ( ATTRACTIVE_LEDS_ON == appDataAttractiveLeds.status )
+            {
+                setAttractiveLedsOff( );
+            }
+
+            /* Turn status LED off */
+            setLedsStatusColor( LEDS_OFF );
+
+            Sleep( );
+
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
+            printf( "\n" );
+#endif
+
+            appData.state = APP_STATE_WAKE_UP;
             break;
             /* -------------------------------------------------------------- */
 
-        case APP_STATE_WAKE_UP_FROM_SLEEP:
+        case APP_STATE_WAKE_UP:
             if ( appData.state != appData.previous_state )
             {
                 appData.previous_state = appData.state;
@@ -795,6 +744,55 @@ void APP_Tasks( void )
 #endif 
             appData.openfeeder_state = OPENFEEDER_IS_AWAKEN;
             appData.state = APP_STATE_IDLE;
+            break;
+            /* -------------------------------------------------------------- */
+
+        case APP_STATE_REMOTE_CONTROL:
+            /**
+             * Application idle state.
+             *  - 
+             */
+            if ( appData.state != appData.previous_state )
+            {
+                appData.previous_state = appData.state;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
+                printf( "> APP_STATE_REMOTE_CONTROL\n" ); // GREEN LED for AB proto
+#endif
+                APP_remoteControlInitialize( );
+            }
+
+            /* Blue status LED blinks when the remote control is plugged. */
+            LedsStatusBlink( LED_BLUE, 500, 500 );
+
+            /* Check USER BUTTON detected.
+             *  - if true RemoteControlConnected = false and go to APP_STATE_IDLE
+             */
+            button_user_state = USER_BUTTON_GetValue( );
+
+            if ( button_user_state != previous_button_user_state )
+            {
+                previous_button_user_state = button_user_state;
+                if ( BUTTON_PRESSED == button_user_state )
+                {
+                    //#if defined (USE_UART1_SERIAL_INTERFACE)
+                    //                    printf("USER BUTTON PRESSED\n");
+                    //#endif
+                    clearRemoteControlDisplay( );
+                    appData.flags.bit_value.RemoteControlConnected = false;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
+                    printf( "Remote control disconnected\n" );
+#endif
+                }
+            }
+
+            if ( appData.flags.bit_value.RemoteControlConnected )
+            {
+                APP_remoteControlTask( );
+            }
+            else
+            {
+                appData.state = APP_STATE_IDLE;
+            }
             break;
             /* -------------------------------------------------------------- */
 

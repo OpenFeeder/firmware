@@ -87,13 +87,11 @@
 
 #define DEFAULT_TIMEOUT_READING_PIT_TAG 30
 
-#define OPENFEEDER_IS_AWAKEN 1
-#define OPENFEEDER_IS_SLEEPING 0
-//#define WAKE_UP 1
-//#define GO_TO_SLEEP 0
+#define OPENFEEDER_IS_AWAKEN    1
+#define OPENFEEDER_IS_SLEEPING  0
 
-#define SLEEP_TIMEOUT_X1000MS_DEFAULT   60
-#define PIR_TIMEOUT_X1000MS_DEFAULT   10
+#define STANDBY_TIMEOUT_X1000MS_DEFAULT         60
+#define PIR_TIMEOUT_X1000MS_DEFAULT             10
 #define TAKING_REWARD_TIMEOUT_X1000MS_DEFAULT   10
 
 // *****************************************************************************
@@ -127,8 +125,6 @@ typedef enum
     /* In this state, application is in IDLE state after completion. */
     APP_STATE_IDLE,
 
-    APP_STATE_SLEEP,
-
     /* APP_STATE_RFID */
     APP_STATE_RFID_MESURING_RDYCLK,
     APP_STATE_RFID_READING_PIT_TAG,
@@ -139,9 +135,9 @@ typedef enum
 
     APP_STATE_DATA_LOG,
 
-    /* APP_STATE_SLEEP */
-    APP_STATE_GO_TO_SLEEP_MODE,
-    APP_STATE_WAKE_UP_FROM_SLEEP,
+    APP_STATE_STANDBY,
+    APP_STATE_SLEEP,
+    APP_STATE_WAKE_UP,
 
     APP_STATE_REMOTE_CONTROL,
 
@@ -246,7 +242,7 @@ typedef struct
     BUTTON buttonPressed;
 
     /* Servomotor structure */
-    uint16_t timeout_sleep;
+    uint16_t timeout_standby;
     uint16_t timeout_pir;
     uint16_t timeout_taking_reward;
 
@@ -280,6 +276,7 @@ typedef struct
 
 } APP_DATA_LEDS;
 
+
 typedef struct
 {
     uint16_t open_door_red;
@@ -288,15 +285,16 @@ typedef struct
 
     uint16_t open_delay;
     uint16_t close_delay;
-    
+
     struct tm open_time;
     struct tm close_time;
-    
+
     uint8_t remain_open;
-    
+
     DOOR_STATUS reward_door_status;
 
 } APP_DATA_DOOR;
+
 
 typedef struct
 {
@@ -332,7 +330,7 @@ typedef struct
 
     /* Attractive LEDs color*/
     uint16_t attractive_leds_rgb[3];
-    
+
     uint8_t door_status_when_bird_arrived;
 
 } APP_DATA_LOG;
