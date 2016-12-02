@@ -342,7 +342,7 @@ void APP_Tasks( void )
                 {
                     appDataLog.door_status_when_bird_arrived = 0;
                 }
-                
+
                 appData.state = APP_STATE_RFID_READING_PIT_TAG;
                 break;
             }
@@ -514,7 +514,7 @@ void APP_Tasks( void )
             }
 
             /* Close the door if it is opened */
-            if ( DOOR_CLOSED != appDataDoor.reward_door_status && RTCC_ALARM_CLOSE_DOOR == appData.rtcc_alarm_action )
+            if ( DOOR_CLOSED != appDataDoor.reward_door_status )
             {
                 /* Close reward door */
                 servomotorPowerEnable( );
