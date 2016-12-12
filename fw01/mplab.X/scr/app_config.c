@@ -8,8 +8,6 @@
 #include "app.h"
 #include "app_config.h"
 
-bool g_pitTagDeniedFoundInConfigIni = false;
-
 
 bool config_set( void )
 {
@@ -71,6 +69,8 @@ int8_t config_read_ini( void )
 {
     int8_t error_id = 0;
     int32_t read_parameter;
+    bool pitTagDeniedFoundInConfigIni = false;
+    bool pitTagAcceptedFoundInConfigIni = false;
 
     /* Site identification. */
     // TODO check site ID validity 
@@ -378,31 +378,57 @@ int8_t config_read_ini( void )
 
     appDataDoor.close_time.tm_sec = 0;
 
-    /* PIT Tags denied, bird banning. */
-    /* (fr) Lecture des PIT tags à ignorer. */
+    /* PIT Tags denied or associated with color A. */
     int s;
     char name[30];
     for ( s = 0; ini_getsection( s, name, 20, "CONFIG.INI" ) > 0; ++s )
     {
         if ( strcmp( name, "pittagsdenied" ) == 0 )
         {
-            g_pitTagDeniedFoundInConfigIni = true;
+            pitTagDeniedFoundInConfigIni = true;
         }
     }
 
-    appDataPitTag.numPitTagDenied = 0;
-    if ( true == g_pitTagDeniedFoundInConfigIni )
+    appDataPitTag.numPitTagDeniedOrColorA = 0;
+    if ( true == pitTagDeniedFoundInConfigIni )
     {
         int k;
         char name[20];
         for ( k = 0; ini_getkey( "pittagsdenied", k, name, 20, "CONFIG.INI" ) > 0; k++ )
         {
-            if ( k == MAX_PIT_TAGS_DENIED_NUMBER )
+            if ( k == MAX_PIT_TAGS_LIST_NUMBER )
             {
                 break;
             }
-            ++appDataPitTag.numPitTagDenied;
-            ini_gets( "pittagsdenied", name, "XXXXXXXXXX", appDataPitTag.pit_tags_denied[k], sizearray( appDataPitTag.pit_tags_denied[0] ), "CONFIG.INI" );
+            ++appDataPitTag.numPitTagDeniedOrColorA;
+            ini_gets( "pittagsdenied", name, "XXXXXXXXXX", appDataPitTag.pit_tags_list[k], sizearray( appDataPitTag.pit_tags_list[0] ), "CONFIG.INI" );
+            appDataPitTag.isPitTagdeniedOrColorA[k] = true;
+        }
+    }
+    
+    /* PIT Tags accepted or associated with color B. */
+    for ( s = 0; ini_getsection( s, name, 20, "CONFIG.INI" ) > 0; ++s )
+    {
+        if ( strcmp( name, "pittagsaccepted" ) == 0 )
+        {
+            pitTagAcceptedFoundInConfigIni = true;
+        }
+    }
+
+    appDataPitTag.numPitTagAcceptedOrColorB = 0;
+    if ( true == pitTagAcceptedFoundInConfigIni )
+    {
+        int k;
+        char name[20];
+        for ( k = 0; ini_getkey( "pittagsaccepted", k, name, 20, "CONFIG.INI" ) > 0; k++ )
+        {
+            if ( k == MAX_PIT_TAGS_LIST_NUMBER )
+            {
+                break;
+            }
+            ++appDataPitTag.numPitTagAcceptedOrColorB;
+            ini_gets( "pittagsaccepted", name, "XXXXXXXXXX", appDataPitTag.pit_tags_list[k+appDataPitTag.numPitTagDeniedOrColorA], sizearray( appDataPitTag.pit_tags_list[0] ), "CONFIG.INI" );
+            appDataPitTag.isPitTagdeniedOrColorA[k+appDataPitTag.numPitTagDeniedOrColorA] = false;
         }
     }
 
@@ -565,12 +591,24 @@ void config_print( void )
     //            appData.open_door_green,
     //            appData.open_door_blue );
 
-    printf( "\tPIT Tags denied\n" );
-    if ( true == g_pitTagDeniedFoundInConfigIni )
+    printf( "\tPIT Tags denied or associated with color A\n" );
+    if ( appDataPitTag.numPitTagDeniedOrColorA > 0 )
     {
-        for ( i = 0; i < appDataPitTag.numPitTagDenied; ++i )
+        for ( i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; ++i )
         {
-            printf( "\t\tSN%d: %s\n", i + 1, appDataPitTag.pit_tags_denied[i] );
+            printf( "\t\tSN%d: %s\n", i + 1, appDataPitTag.pit_tags_list[i] );
+        }
+    }
+    else
+    {
+        printf( "\t\tNone\n" );
+    }
+    printf( "\tPIT Tags accepted or associated with color B\n" );
+    if ( appDataPitTag.numPitTagAcceptedOrColorB > 0 )
+    {
+        for ( i = appDataPitTag.numPitTagDeniedOrColorA; i < ( appDataPitTag.numPitTagDeniedOrColorA + appDataPitTag.numPitTagAcceptedOrColorB ); ++i )
+        {
+            printf( "\t\tSN%d: %s\n", i + 1, appDataPitTag.pit_tags_list[i] );
         }
     }
     else

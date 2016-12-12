@@ -83,7 +83,7 @@
 #include "app_debug.h"
 #endif
 
-#define MAX_PIT_TAGS_DENIED_NUMBER 6
+#define MAX_PIT_TAGS_LIST_NUMBER 200
 
 #define DEFAULT_TIMEOUT_READING_PIT_TAG 30
 
@@ -298,11 +298,17 @@ typedef struct
 
 typedef struct
 {
-    /* Number of PIT tags denied */
-    uint8_t numPitTagDenied;
+    /* Number of PIT tags denied or associated with color A */
+    uint8_t numPitTagDeniedOrColorA;
+    /* Number of PIT tags accepted or associated with color B */
+    uint8_t numPitTagAcceptedOrColorB;
     /* List of PIT tags denied */
-    char pit_tags_denied[MAX_PIT_TAGS_DENIED_NUMBER][11];
+    char pit_tags_list[MAX_PIT_TAGS_LIST_NUMBER][11];
+    
+    bool isPitTagdeniedOrColorA[MAX_PIT_TAGS_LIST_NUMBER];
 
+    bool didPitTagMatched;
+        
 } APP_DATA_PIT_TAG;
 
 

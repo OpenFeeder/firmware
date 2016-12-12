@@ -465,13 +465,28 @@ void APP_Tasks( void )
             if ( appData.flags.bit_value.NewValidPitTag )
             {
 
-                if ( appDataPitTag.numPitTagDenied > 0 )
+                /* Current PIT tag IS NOT in the PIT tags list */
+                if ( false == appDataPitTag.didPitTagMatched )
                 {
-                    appDataLog.is_pit_tag_denied = checkPitTagDenied( );
+#if defined( USE_UART1_SERIAL_INTERFACE ) && defined (DISPLAY_PIT_TAG_INFO)
+                    printf( "PIT tag not matched ???\n" );
+#endif
+                    /* TODO */
+
                 }
                 else
                 {
-                    appDataLog.is_pit_tag_denied = false;
+                    /* Current PIT tag IS in the PIT tags list */
+
+
+                    if ( appDataPitTag.numPitTagDeniedOrColorA > 0 )
+                    {
+                        appDataLog.is_pit_tag_denied = checkPitTagDenied( );
+                    }
+                    else
+                    {
+                        appDataLog.is_pit_tag_denied = false;
+                    }
                 }
 
                 RFID_Disable( );
@@ -901,6 +916,8 @@ void APP_Tasks( void )
 
 void APP_Initialize( void )
 {
+    int i;
+
     /* Attractive LEDs initialize */
     setAttractiveLedsOff( );
     appDataAttractiveLeds.current_color_index = 0;
@@ -946,6 +963,15 @@ void APP_Initialize( void )
     memset( appData.siteid, '\0', 5 );
 
     rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_SECOND );
+
+    /* PIT tag data */
+    appDataPitTag.didPitTagMatched = false;
+    appDataPitTag. numPitTagDeniedOrColorA = 0;
+    appDataPitTag.numPitTagAcceptedOrColorB = 0;
+    for ( i = 0; i < MAX_PIT_TAGS_LIST_NUMBER; i++ )
+    {
+        appDataPitTag.isPitTagdeniedOrColorA[i] = false;
+    }
 
 }
 
