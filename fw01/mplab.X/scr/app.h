@@ -33,7 +33,7 @@
 //#define DISPLAY_ISR_IR                 // uncomment to display interruption event
 //#define DISPLAY_ISR_I2C                // uncomment to display interruption event
 #define DISPLAY_CURRENT_STATE            // uncomment to display the current state
-#define DISPLAY_RFID_STATE            // uncomment to display the current state
+//#define DISPLAY_RFID_STATE            // uncomment to display the current state
 #define DISPLAY_LOG_BUFFER_INFO 
 #define DISPLAY_PIT_TAG_INFO 
 #define DISPLAY_REMOTE_CONTROL_INFO 
@@ -172,6 +172,17 @@ typedef enum
 
 } RTCC_ALARM_ACTION;
 
+
+typedef enum
+{
+    NO_SCENARIO,
+    OPEN_BAR,
+    LONG_TERM_SPATIAL_MEMORY,
+    WORKING_SPATIAL_MEMORY,
+    COLOR_ASSOCIATIVE_LEARNING
+        
+} SCENARIO;
+
 // *****************************************************************************
 
 
@@ -189,7 +200,7 @@ typedef enum
 
 typedef struct
 {
-    //uint8_t siteidzone;
+    uint8_t scenario_number;
     char siteid[5];
 
     /* Application current state */
@@ -304,11 +315,13 @@ typedef struct
     uint8_t numPitTagAcceptedOrColorB;
     /* List of PIT tags denied */
     char pit_tags_list[MAX_PIT_TAGS_LIST_NUMBER][11];
-    
+
     bool isPitTagdeniedOrColorA[MAX_PIT_TAGS_LIST_NUMBER];
 
     bool didPitTagMatched;
-        
+    
+    uint8_t pitTagIndexInList;
+
 } APP_DATA_PIT_TAG;
 
 

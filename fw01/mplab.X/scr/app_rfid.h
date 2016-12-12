@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <time.h>
 
+
 typedef enum
 {
     /* In this state, the application opens the driver and then go in IDLE state after completion */
@@ -27,7 +28,8 @@ extern volatile uint8_t g_timeout_reading_pit_tag;
 
 void APP_Rfid_Init( void );
 bool APP_Rfid_Task( void );
-bool checkPitTagDenied(void);
+void findPitTagInList( void );
+bool isPitTagDenied( void );
 void clearPitTagBuffers( void );
 
 #endif /* APP_RFID_H */

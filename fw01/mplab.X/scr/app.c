@@ -465,28 +465,43 @@ void APP_Tasks( void )
             if ( appData.flags.bit_value.NewValidPitTag )
             {
 
-                /* Current PIT tag IS NOT in the PIT tags list */
-                if ( false == appDataPitTag.didPitTagMatched )
+                /* Check PIT tag read is in the PIT tags list */
+                findPitTagInList( );
+
+                if ( true == appDataPitTag.didPitTagMatched || OPEN_BAR == appData.scenario_number )
                 {
-#if defined( USE_UART1_SERIAL_INTERFACE ) && defined (DISPLAY_PIT_TAG_INFO)
-                    printf( "PIT tag not matched ???\n" );
-#endif
-                    /* TODO */
+
+                    switch ( appData.scenario_number )
+                    {
+                        case OPEN_BAR:
+                            /* No PIT tag denied */
+                            appDataLog.is_pit_tag_denied = false;
+                            break;
+                        case LONG_TERM_SPATIAL_MEMORY:
+                            /* Check if PIT tag is denied */
+                            appDataLog.is_pit_tag_denied = isPitTagDenied( );
+                            break;
+                        case WORKING_SPATIAL_MEMORY:
+                            /* Check if PIT tag is denied */
+                            appDataLog.is_pit_tag_denied = isPitTagDenied( );
+                            /* Bird is allowed only one time */
+                            appDataPitTag.isPitTagdeniedOrColorA[appDataPitTag.pitTagIndexInList] = true;
+                            break;
+                        case COLOR_ASSOCIATIVE_LEARNING:
+                            /* TODO */
+                            appDataLog.is_pit_tag_denied = true;
+                            break;
+
+                    }
 
                 }
                 else
                 {
-                    /* Current PIT tag IS in the PIT tags list */
-
-
-                    if ( appDataPitTag.numPitTagDeniedOrColorA > 0 )
-                    {
-                        appDataLog.is_pit_tag_denied = checkPitTagDenied( );
-                    }
-                    else
-                    {
-                        appDataLog.is_pit_tag_denied = false;
-                    }
+#if defined( USE_UART1_SERIAL_INTERFACE ) && defined (DISPLAY_PIT_TAG_INFO)
+                    printf( "PIT tag not matched - Consider as denied\n" );
+#endif
+                    /* TODO */
+                    appDataLog.is_pit_tag_denied = true;
                 }
 
                 RFID_Disable( );
@@ -968,6 +983,7 @@ void APP_Initialize( void )
     appDataPitTag.didPitTagMatched = false;
     appDataPitTag. numPitTagDeniedOrColorA = 0;
     appDataPitTag.numPitTagAcceptedOrColorB = 0;
+    appDataPitTag.pitTagIndexInList = 0;
     for ( i = 0; i < MAX_PIT_TAGS_LIST_NUMBER; i++ )
     {
         appDataPitTag.isPitTagdeniedOrColorA[i] = false;

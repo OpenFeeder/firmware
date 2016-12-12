@@ -189,27 +189,43 @@ void clearPitTagBuffers( void )
 }
 
 
-bool checkPitTagDenied( void )
+void findPitTagInList( void )
 {
-    bool isDenied = false;
+
     int i;
 
     for ( i = 0; i < ( appDataPitTag.numPitTagDeniedOrColorA + appDataPitTag.numPitTagAcceptedOrColorB ); ++i )
     {
         if ( 0 == strcmp( appDataLog.bird_pit_tag_str, appDataPitTag.pit_tags_list[i] ) )
         {
-//#if defined( USE_UART1_SERIAL_INTERFACE ) && defined (DISPLAY_PIT_TAG_INFO)
-//            printf( "PIT tag index: %d\n", i );
-//#endif
-            /* Current PIT tag is in the denied list */
-            isDenied = appDataPitTag.isPitTagdeniedOrColorA[i];
             /* Current PIT tag is in the all PIT tags list */
             appDataPitTag.didPitTagMatched = true;
-            break;
+            appDataPitTag.pitTagIndexInList = ( uint8_t ) i;
         }
     }
 
-    return isDenied;
+}
+
+
+bool isPitTagDenied( void )
+{
+    return appDataPitTag.isPitTagdeniedOrColorA[appDataPitTag.pitTagIndexInList];
+//    bool isDenied = false;
+//    int i;
+//
+//    for ( i = 0; i < ( appDataPitTag.numPitTagDeniedOrColorA + appDataPitTag.numPitTagAcceptedOrColorB ); ++i )
+//    {
+//        if ( 0 == strcmp( appDataLog.bird_pit_tag_str, appDataPitTag.pit_tags_list[i] ) )
+//        {
+//            /* Current PIT tag is in the denied list */
+//            isDenied = appDataPitTag.isPitTagdeniedOrColorA[i];
+//            /* Current PIT tag is in the all PIT tags list */
+//            appDataPitTag.didPitTagMatched = true;
+//            break;
+//        }
+//    }
+//
+//    return isDenied;
 }
 
 

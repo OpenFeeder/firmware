@@ -72,6 +72,18 @@ int8_t config_read_ini( void )
     bool pitTagDeniedFoundInConfigIni = false;
     bool pitTagAcceptedFoundInConfigIni = false;
 
+    /* Scenario number */
+    read_parameter = ini_getl( "scenario", "num", -1, "CONFIG.INI" );
+    --error_id;
+    if ( read_parameter == -1 )
+    {
+        return error_id;
+    }
+    else
+    {
+        appData.scenario_number = ( uint8_t ) read_parameter;
+    }
+
     /* Site identification. */
     // TODO check site ID validity 
     ini_gets( "siteid", "zone", "XXXX", appData.siteid, sizearray( appData.siteid ), "CONFIG.INI" );
@@ -405,7 +417,7 @@ int8_t config_read_ini( void )
             appDataPitTag.isPitTagdeniedOrColorA[k] = true;
         }
     }
-    
+
     /* PIT Tags accepted or associated with color B. */
     for ( s = 0; ini_getsection( s, name, 20, "CONFIG.INI" ) > 0; ++s )
     {
@@ -427,8 +439,8 @@ int8_t config_read_ini( void )
                 break;
             }
             ++appDataPitTag.numPitTagAcceptedOrColorB;
-            ini_gets( "pittagsaccepted", name, "XXXXXXXXXX", appDataPitTag.pit_tags_list[k+appDataPitTag.numPitTagDeniedOrColorA], sizearray( appDataPitTag.pit_tags_list[0] ), "CONFIG.INI" );
-            appDataPitTag.isPitTagdeniedOrColorA[k+appDataPitTag.numPitTagDeniedOrColorA] = false;
+            ini_gets( "pittagsaccepted", name, "XXXXXXXXXX", appDataPitTag.pit_tags_list[k + appDataPitTag.numPitTagDeniedOrColorA], sizearray( appDataPitTag.pit_tags_list[0] ), "CONFIG.INI" );
+            appDataPitTag.isPitTagdeniedOrColorA[k + appDataPitTag.numPitTagDeniedOrColorA] = false;
         }
     }
 
@@ -537,7 +549,25 @@ void config_print( void )
 
     printf( "Configuration parameters:\n" );
 
-    printf( "\tSite ID\n\t\tzone: %s\n",
+    printf( "\tScenario\n\t\tNumber: %u\n\t\tTitle:",
+            appData.scenario_number );
+    switch ( appData.scenario_number )
+    {
+        case OPEN_BAR:
+            printf( " open-bar\n" );
+            break;
+        case LONG_TERM_SPATIAL_MEMORY:
+            printf( " long term spatial memory\n" );
+            break;
+        case WORKING_SPATIAL_MEMORY:
+            printf( " working spatial memory\n" );
+            break;
+        case COLOR_ASSOCIATIVE_LEARNING:
+            printf( " color associative learning\n" );
+            break;
+    }
+
+    printf( "\tSite ID\n\t\tZone: %s\n",
             appData.siteid );
 
     printf( "\tTime\n" );
