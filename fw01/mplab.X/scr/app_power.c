@@ -126,7 +126,11 @@ FILEIO_RESULT logBatteryLevel( void )
     }
 
     flag = sprintf( buf, "%02d/%02d/%02d%s%02d:%02d:%02u%s"
-                    /* battery_level  */ "%04d\n",
+                    /* site id       */ "%s"
+                    /* separator     */ "%s"
+                    /* scenario      */ "%u"
+                    /* separator     */ "%s"
+                    /* battery_level */ "%04d\n",
                     currentTime.tm_mday,
                     currentTime.tm_mon,
                     currentTime.tm_year,
@@ -134,6 +138,10 @@ FILEIO_RESULT logBatteryLevel( void )
                     currentTime.tm_hour,
                     currentTime.tm_min,
                     currentTime.tm_sec,
+                    appDataLog.separator,
+                    appData.siteid,
+                    appDataLog.separator,
+                    appData.scenario_number,
                     appDataLog.separator,
                     appData.battery_level );
 
