@@ -168,7 +168,8 @@ typedef enum
     RTCC_ALARM_OPEN_DOOR,
     RTCC_ALARM_CLOSE_DOOR,
     RTCC_ALARM_SET_ATTRACTIVE_LEDS_ON,
-    RTCC_ALARM_SET_ATTRACTIVE_LEDS_OFF
+    RTCC_ALARM_SET_ATTRACTIVE_LEDS_OFF,
+    RTCC_ALARM_ALT_ATTRACTIVE_LEDS
 
 } RTCC_ALARM_ACTION;
 
@@ -280,6 +281,7 @@ typedef struct
     struct tm sleep_time;
 
     uint16_t alt_delay;
+    uint16_t alt_sec_elapsed;
 
     bool status;
 
@@ -348,7 +350,7 @@ typedef struct
     bool is_reward_taken;
 
     /* Attractive LEDs color*/
-    uint16_t attractive_leds_rgb[3];
+    uint8_t attractive_leds_current_color_index;
 
     uint8_t door_status_when_bird_arrived;
 

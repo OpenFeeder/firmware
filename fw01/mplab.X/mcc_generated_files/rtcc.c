@@ -333,6 +333,20 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
                     }
                 }
 
+                /* Alternate LEDs color */
+                if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number && ATTRACTIVE_LEDS_ON == appDataAttractiveLeds.status )
+                {
+                    if ( appDataAttractiveLeds.alt_sec_elapsed == appDataAttractiveLeds.alt_delay - 1 )
+                    {
+                        appData.rtcc_alarm_action = RTCC_ALARM_ALT_ATTRACTIVE_LEDS;
+                        appDataAttractiveLeds.alt_sec_elapsed = 0;
+                    }
+                    else
+                    {
+                        ++appDataAttractiveLeds.alt_sec_elapsed;
+                    }
+                }
+
             }
         }
     }

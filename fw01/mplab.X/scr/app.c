@@ -244,9 +244,9 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE)
                 printf( "System not initialized\n" );
 #endif
-                sprintf( appError.message, "Unable to initialize the system" );
-                appError.currentLineNumber = __LINE__;
-                sprintf( appError.currentFileName, "%s", __FILE__ );
+                //                sprintf( appError.message, "Unable to initialize the system" );
+                //                appError.currentLineNumber = __LINE__;
+                //                sprintf( appError.currentFileName, "%s", __FILE__ );
                 appData.state = APP_STATE_ERROR;
             }
 
@@ -330,9 +330,7 @@ void APP_Tasks( void )
                 clear_bird_sensor_detected( );
                 appDataLog.is_reward_taken = false;
 
-                appDataLog.attractive_leds_rgb[0] = appDataAttractiveLeds.red[appDataAttractiveLeds.current_color_index];
-                appDataLog.attractive_leds_rgb[1] = appDataAttractiveLeds.green[appDataAttractiveLeds.current_color_index];
-                appDataLog.attractive_leds_rgb[2] = appDataAttractiveLeds.blue[appDataAttractiveLeds.current_color_index];
+                appDataLog.attractive_leds_current_color_index = appDataAttractiveLeds.current_color_index;
 
                 if ( DOOR_OPENED == appDataDoor.reward_door_status )
                 {
@@ -413,6 +411,21 @@ void APP_Tasks( void )
                         setAttractiveLedsOn( );
                     }
                 }
+                if ( RTCC_ALARM_ALT_ATTRACTIVE_LEDS == appData.rtcc_alarm_action )
+                {
+
+                    double t = rand( );
+
+                    if ( ( t / RAND_MAX ) > 0.5 )
+                    {
+                        appDataAttractiveLeds.current_color_index = 0;
+                    }
+                    else
+                    {
+                        appDataAttractiveLeds.current_color_index = 1;
+                    }
+                    setAttractiveLedsOn( );
+                }
                 if ( DOOR_OPENED != appDataDoor.reward_door_status && RTCC_ALARM_OPEN_DOOR == appData.rtcc_alarm_action )
                 {
                     /* Open reward door */
@@ -431,6 +444,9 @@ void APP_Tasks( void )
                     while ( DOOR_CLOSED != appDataDoor.reward_door_status );
                     servomotorPowerDisable( );
                 }
+
+                appData.rtcc_alarm_action = RTCC_ALARM_IDLE;
+
             }
 
             /* Check TIMEOUT IDLE MODE endding.
@@ -490,10 +506,16 @@ void APP_Tasks( void )
                         case COLOR_ASSOCIATIVE_LEARNING:
                             /* TODO */
                             appDataLog.is_pit_tag_denied = true;
+                            if ( appDataPitTag.pitTagIndexInList <= ( appDataPitTag.numPitTagAcceptedOrColorB + appDataPitTag.numPitTagDeniedOrColorA + 1 ) / 2 && appDataLog.attractive_leds_current_color_index == 0 )
+                            {
+                                appDataLog.is_pit_tag_denied = false;
+                            }
+                            if ( appDataPitTag.pitTagIndexInList > ( appDataPitTag.numPitTagAcceptedOrColorB + appDataPitTag.numPitTagDeniedOrColorA + 1 ) / 2 && appDataLog.attractive_leds_current_color_index == 1 )
+                            {
+                                appDataLog.is_pit_tag_denied = false;
+                            }
                             break;
-
                     }
-
                 }
                 else
                 {
@@ -896,6 +918,8 @@ void APP_Tasks( void )
              */
             if ( appData.state != appData.previous_state )
             {
+
+
                 appData.previous_state = appData.state;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_ERROR\n" );
@@ -909,11 +933,11 @@ void APP_Tasks( void )
             /* Red status LED blinks until the user plug a USB key */
             LedsStatusBlink( LED_RED, 50, 450 );
 
-            if ( USBHostDeviceStatus( appDataUsb.deviceAddress ) == USB_DEVICE_DETACHED )
-            {
-                setLedsStatusColor( LEDS_OFF );
-                appData.state = APP_STATE_INIT_MOUNT_USB_KEY;
-            }
+            //            if ( USBHostDeviceStatus( appDataUsb.deviceAddress ) == USB_DEVICE_DETACHED )
+            //            {
+            //                setLedsStatusColor( LEDS_OFF );
+            //                appData.state = APP_STATE_INIT_MOUNT_USB_KEY;
+            //            }
 
             break;
             /* -------------------------------------------------------------- */
@@ -936,6 +960,7 @@ void APP_Initialize( void )
     /* Attractive LEDs initialize */
     setAttractiveLedsOff( );
     appDataAttractiveLeds.current_color_index = 0;
+    appDataAttractiveLeds.alt_sec_elapsed = 0;
 
     /* APP state task initialize */
     appData.state = APP_STATE_INIT;
@@ -965,9 +990,7 @@ void APP_Initialize( void )
     /* Data logger */
     appDataLog.nCharBuffer = 0;
     appDataLog.numDataStored = 0;
-    appDataLog.attractive_leds_rgb[0] = 0;
-    appDataLog.attractive_leds_rgb[1] = 0;
-    appDataLog.attractive_leds_rgb[2] = 0;
+    appDataLog.attractive_leds_current_color_index = 0;
 
     appData.bird_is_taking_reward = false;
 
@@ -993,5 +1016,5 @@ void APP_Initialize( void )
 
 
 /*******************************************************************************
- End of File
+End of File
  */

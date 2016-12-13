@@ -207,7 +207,7 @@ int8_t config_read_ini( void )
     }
     else
     {
-        appDataAttractiveLeds.alt_delay = ( uint16_t ) read_parameter * 1000;
+        appDataAttractiveLeds.alt_delay = ( uint16_t ) read_parameter;
     }
     /* Attractive LEDs wake up time. */
     read_parameter = ini_getl( "attractive_leds", "on_hour", -1, "CONFIG.INI" );
@@ -453,7 +453,7 @@ int8_t config_read_ini( void )
     if ( read_parameter == -1 )
     {
         appData.timeout_standby = STANDBY_TIMEOUT_X1000MS_DEFAULT * 1000;
-        return error_id;
+//        return error_id;
     }
     else
     {
@@ -465,7 +465,7 @@ int8_t config_read_ini( void )
     if ( read_parameter == -1 )
     {
         appData.timeout_pir = PIR_TIMEOUT_X1000MS_DEFAULT * 1000;
-        return error_id;
+//        return error_id;
     }
     else
     {
@@ -477,7 +477,7 @@ int8_t config_read_ini( void )
     if ( read_parameter == -1 )
     {
         appData.timeout_taking_reward = TAKING_REWARD_TIMEOUT_X1000MS_DEFAULT * 1000;
-        return error_id;
+//        return error_id;
     }
     else
     {
@@ -587,7 +587,7 @@ void config_print( void )
             appDataAttractiveLeds.red[1],
             appDataAttractiveLeds.green[1],
             appDataAttractiveLeds.blue[1] );
-    printf( "\t\tAlt. delay: %us\n", appDataAttractiveLeds.alt_delay / 1000 );
+    printf( "\t\tAlt. delay: %us\n", appDataAttractiveLeds.alt_delay );
     printf( "\t\tOn time: %02d:%02d\n",
             appDataAttractiveLeds.wake_up_time.tm_hour,
             appDataAttractiveLeds.wake_up_time.tm_min );
