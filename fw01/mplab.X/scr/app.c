@@ -236,9 +236,9 @@ void APP_Tasks(void)
                 servomotorPowerDisable();
 
                 setLedsStatusColor(LEDS_OFF);
-                
+
                 rtcc_set_alarm(appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_SECOND);
-                
+
                 appData.state = APP_STATE_RFID_MESURING_RDYCLK;
             }
             else
@@ -522,9 +522,8 @@ void APP_Tasks(void)
                 else
                 {
 #if defined( USE_UART1_SERIAL_INTERFACE ) && defined (DISPLAY_PIT_TAG_INFO)
-                    printf("PIT tag not matched - Consider as denied\n");
+                    printf("\tPIT tag not listed (consider as denied)\n");
 #endif
-                    /* TODO */
                     appDataLog.is_pit_tag_denied = true;
                 }
 
@@ -533,13 +532,16 @@ void APP_Tasks(void)
 
                 if (true == appDataLog.is_pit_tag_denied)
                 {
-#if defined (USE_UART1_SERIAL_INTERFACE)
-                    printf("PIT Tag denied\n");
+#if defined (USE_UART1_SERIAL_INTERFACE) 
+                        printf("\tPIT tag denied.\n");
 #endif
                     appData.state = APP_STATE_DATA_LOG;
                 }
                 else
                 {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                    printf("\tPIT tag accepted.\n");
+#endif
                     appData.state = APP_STATE_OPENING_REWARD_DOOR;
                 }
                 break;

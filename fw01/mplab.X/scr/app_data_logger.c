@@ -26,7 +26,7 @@ static int populateLogBuffer( void )
     //    printf(" - Populate buffer\n");
     //#endif
 
-    if ( 0 == strcmp( appDataLog.bird_pit_tag_str, "0" ) )
+    if ( 0 == strcmp( appDataLog.bird_pit_tag_str, "XXXXXXXXXX" ) )
     {
         appDataLog.is_reward_taken = false;
     }
