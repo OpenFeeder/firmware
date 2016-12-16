@@ -15,23 +15,66 @@
 
 #define sizearray(a)  (sizeof(a) / sizeof((a)[0]))
 
-//#define LOGFILENAME "LOG.CSV"
 #define DEFAULT_LOG_SEPARATOR ","
 
-#define CONFIG_INI_FOUND 0
-#define CONFIG_INI_NOT_FOUND -1
+#define INI_NOT_FOUND -1
 
-#define CONFIG_INI_READ_OK 0
-#define CONFIG_INI_READ_NOT_OK -1
+typedef enum {
+    INI_READ_OK = 0,
 
+    INI_PB_SCENARIO_NUM,
 
-bool config_set( void );
-int config_find_ini( void ); // FIXME: rename to config_find() ?
-int8_t config_read_ini( void ); // FIXME: rename to config_read() ?
-int8_t config_check_parameters( void );
-void config_print( void );
-void config_set_parameters( void );
+    INI_PB_SITEID_ZONE,
 
+    INI_PB_TIME_WAKEUP_HOUR,
+    INI_PB_TIME_WAKEUP_MINUTE,
+
+    INI_PB_TIME_SLEEP_HOUR,
+    INI_PB_TIME_SLEEP_MINUTE,
+
+    INI_PB_ATTRACTIVE_LEDS_RED_A,
+    INI_PB_ATTRACTIVE_LEDS_GREEN_A,
+    INI_PB_ATTRACTIVE_LEDS_BLUE_A,
+
+    INI_PB_ATTRACTIVE_LEDS_RED_B,
+    INI_PB_ATTRACTIVE_LEDS_GREEN_B,
+    INI_PB_ATTRACTIVE_LEDS_BLUE_B,
+
+    INI_PB_ATTRACTIVE_LEDS_ALT_DELAY,
+
+    INI_PB_ATTRACTIVE_LEDS_ON_HOUR,
+    INI_PB_ATTRACTIVE_LEDS_ON_MINUTE,
+
+    INI_PB_ATTRACTIVE_LEDS_OFF_HOUR,
+    INI_PB_ATTRACTIVE_LEDS_OFF_MINUTE,
+
+    INI_PB_DOOR_TON_MIN,
+    INI_PB_DOOR_TON_MAX,
+    INI_PB_DOOR_SPEED,
+
+    INI_PB_DOOR_OPEN_DELAY,
+    INI_PB_DOOR_CLOSE_DELAY,
+
+    INI_PB_DOOR_REMAIN_OPEN,
+
+    INI_PB_DOOR_OPEN_HOUR,
+    INI_PB_DOOR_OPEN_MINUTE,
+
+    INI_PB_DOOR_CLOSE_HOUR,
+    INI_PB_DOOR_CLOSE_MINUTE,
+
+    INI_PB_TIMEOUTS_SLEEP,
+    INI_PB_TIMEOUTS_PIR,
+    INI_PB_TIMEOUTS_REWARD
+
+} INI_READ_STATE;
+
+bool config_set(void);
+int config_find_ini(void);
+INI_READ_STATE config_read_ini(void);
+int8_t config_check_parameters(void);
+void config_print(void);
+void getIniPbChar(INI_READ_STATE, char *);
 
 #endif /* APP_CONFIG_H */
 

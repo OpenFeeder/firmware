@@ -102,7 +102,6 @@
 
 /******************************************************************************/
 
-
 /* Application states
 
   Summary:
@@ -113,8 +112,7 @@
     determine the behavior of the application at various times.
  */
 
-typedef enum
-{
+typedef enum {
     /* In this state, the application opens the driver */
     APP_STATE_INIT,
 
@@ -148,9 +146,7 @@ typedef enum
 
 } APP_STATES;
 
-
-typedef enum
-{
+typedef enum {
     DOOR_IDLE, /* Not in use. */
     DOOR_OPENED,
     DOOR_CLOSED,
@@ -159,9 +155,7 @@ typedef enum
 
 } DOOR_STATUS;
 
-
-typedef enum
-{
+typedef enum {
     RTCC_ALARM_IDLE, /* Not in use. */
     RTCC_ALARM_WAKEUP_OPENFEEDER,
     RTCC_ALARM_SLEEP_OPENFEEDER,
@@ -173,19 +167,16 @@ typedef enum
 
 } RTCC_ALARM_ACTION;
 
-
-typedef enum
-{
+typedef enum {
     NO_SCENARIO,
     OPEN_BAR,
     LONG_TERM_SPATIAL_MEMORY,
     WORKING_SPATIAL_MEMORY,
     COLOR_ASSOCIATIVE_LEARNING
-        
+
 } SCENARIO;
 
 // *****************************************************************************
-
 
 /* Application Data
 
@@ -199,8 +190,7 @@ typedef enum
     Application strings and buffers are be defined outside this structure.
  */
 
-typedef struct
-{
+typedef struct {
     uint8_t scenario_number;
     char siteid[5];
 
@@ -211,15 +201,11 @@ typedef struct
     /* DateTime structure */
     struct tm current_time;
 
-
     /* Declaration of FLAGS type. */
-    union
-    {
+    union {
         uint8_t reg;
 
-
-        struct
-        {
+        struct {
             unsigned systemInit : 1; /* true if configuration success from "CONFIG.INI" */
             unsigned attractive_leds_status : 1; /* true if configuration success from "CONFIG.INI" */
             unsigned RemoteControlConnected : 1; /* true if Remote Control is connected */
@@ -231,15 +217,11 @@ typedef struct
     /* I2C - Slave Device found */
     uint8_t i2c_add_found[MAX_OF_UNKNOWN_I2C_8_BIT_SLAVE_ADD]; // FIXME: Do not place this here !
 
-
     /* I2C - Status of MCP23017 */
-    union
-    {
+    union {
         uint8_t status_reg;
 
-
-        struct
-        {
+        struct {
             unsigned cmd_digits : 4; /* cmd individual 7 segments digits 1 to 4: 0b0001; 0b0010; 0b0100; 0b1000; */
             unsigned : 2;
             unsigned found : 1; /* true if MCP23017 is detected when USER BUTTON PRESSED. */
@@ -270,9 +252,7 @@ typedef struct
 
 } APP_DATA;
 
-
-typedef struct
-{
+typedef struct {
     uint16_t red[2];
     uint16_t green[2];
     uint16_t blue[2];
@@ -280,8 +260,8 @@ typedef struct
     struct tm wake_up_time;
     struct tm sleep_time;
 
-    uint16_t alt_delay;
-    uint16_t alt_sec_elapsed;
+    uint8_t alt_delay;
+    uint8_t alt_sec_elapsed;
 
     bool status;
 
@@ -289,9 +269,7 @@ typedef struct
 
 } APP_DATA_LEDS;
 
-
-typedef struct
-{
+typedef struct {
     uint16_t open_door_red;
     uint16_t open_door_green;
     uint16_t open_door_blue;
@@ -308,9 +286,7 @@ typedef struct
 
 } APP_DATA_DOOR;
 
-
-typedef struct
-{
+typedef struct {
     /* Number of PIT tags denied or associated with color A */
     uint8_t numPitTagDeniedOrColorA;
     /* Number of PIT tags accepted or associated with color B */
@@ -321,14 +297,12 @@ typedef struct
     bool isPitTagdeniedOrColorA[MAX_PIT_TAGS_LIST_NUMBER];
 
     bool didPitTagMatched;
-    
+
     uint8_t pitTagIndexInList;
 
 } APP_DATA_PIT_TAG;
 
-
-typedef struct
-{
+typedef struct {
     /* Log file name - 8.3 convention - Upper case only */
     char filename[13];
     /* Data separator in log file */
@@ -356,9 +330,7 @@ typedef struct
 
 } APP_DATA_LOG;
 
-
-typedef struct
-{
+typedef struct {
     struct tm raise_time;
 
 } APP_DATA_EVENT;
@@ -453,7 +425,7 @@ extern volatile bool g_new_value_of_em4095_rdyclk_measurement;
     This routine must be called from the SYS_Initialize function.
  */
 
-void APP_Initialize( void );
+void APP_Initialize(void);
 
 
 /*******************************************************************************
@@ -488,8 +460,8 @@ void APP_Initialize( void );
 
 // (en) State machine of the application.
 // (fr) Machine à états de l'application.
-void APP_Tasks( void );
-void APP_USB_MSDTasks( void );
+void APP_Tasks(void);
+void APP_USB_MSDTasks(void);
 
 
 #endif /* _APP_H */

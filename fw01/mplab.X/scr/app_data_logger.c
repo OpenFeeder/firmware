@@ -266,9 +266,9 @@ bool setLogFileName( void )
         return false;
     }
 
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO )
-    printf( "Log file name: %s\n", appDataLog.filename );
-#endif 
+//#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO )
+//    printf( "Log file name: %s\n", appDataLog.filename );
+//#endif 
 
     return true;
 }
