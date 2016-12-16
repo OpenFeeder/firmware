@@ -11,14 +11,12 @@
 #define ATTRACTIVE_LEDS_ON 1
 #define ATTRACTIVE_LEDS_OFF 0
 
-void setAttractiveLedsOff( void );
-void setAttractiveLedsOn( void );
-void setAttractiveLedsColor( void );
-void setAttractiveRedLedsColor( uint16_t );
-void setAttractiveGreenLedsColor( uint16_t );
-void setAttractiveBlueLedsColor( uint16_t );
-
-//void setDoorLedsColor( void );
+void setAttractiveLedsOff(void);
+void setAttractiveLedsOn(void);
+void setAttractiveLedsColor(void);
+void setAttractiveRedLedsColor(uint16_t);
+void setAttractiveGreenLedsColor(uint16_t);
+void setAttractiveBlueLedsColor(uint16_t);
 
 #endif /* APP_ATTRACT_LEDS_H */
 
