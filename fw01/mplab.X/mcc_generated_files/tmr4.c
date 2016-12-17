@@ -51,7 +51,6 @@
 #include <xc.h>
 #include <stdbool.h>
 #include "tmr4.h"
-//#include "em4095.h"
 #include "app.h"
 
 /**
@@ -110,7 +109,6 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _T4Interrupt( )
 
     //***User Area Begin
     static volatile uint16_t CountCallBack = 0;
-    //static volatile uint16_t CountCallBack_160ms = 0;
 
     // callback function - called every 15th pass 
     //    if ( ++CountCallBack >= TMR4_INTERRUPT_TICKER_FACTOR )
@@ -131,7 +129,6 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _T4Interrupt( )
     }
 
     // callback function - called every 6124th pass
-    //if ( ++CountCallBack_160ms >= 6124 )
     if ( ++CountCallBack >= TMR4_INTERRUPT_TICKER_FACTOR )
     {
         // ticker function call
@@ -139,17 +136,16 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _T4Interrupt( )
         if ( g_rfid_activate )
         {
             g_timeout_reading_pit_tag = (g_timeout_reading_pit_tag != 0) ? g_timeout_reading_pit_tag-1 : 0;
-            EM4095_SHD_Toggle( ); /* EM4095 active when SHD is low state, EM4095 enable. */
+//            EM4095_SHD_Toggle( ); /* EM4095 active when SHD is low state, EM4095 enable. */
         }
         else
         {
-           // EM4095_SHD_SetHigh( ); /* !!! for disable EM4095 set LOW. */
             EM4095_SHD_DISABLE();
         }
 
         // reset ticker counter
         CountCallBack = 0;
-        //CountCallBack_160ms = 0;
+
     }
 
     //***User Area End

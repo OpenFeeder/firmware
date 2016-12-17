@@ -35,7 +35,7 @@
 #define DISPLAY_CURRENT_STATE            // uncomment to display the current state
 //#define DISPLAY_RFID_STATE            // uncomment to display the current state
 #define DISPLAY_LOG_BUFFER_INFO 
-#define DISPLAY_PIT_TAG_INFO 
+//#define DISPLAY_PIT_TAG_INFO 
 #define DISPLAY_REMOTE_CONTROL_INFO 
 //#define DISPLAY_USB_ISR_INFO  // in USB_HostInterruptHandler( )
 
@@ -295,6 +295,8 @@ typedef struct {
     bool didPitTagMatched;
 
     uint8_t pitTagIndexInList;
+    
+    uint8_t number_of_valid_pit_tag;
 
 } APP_DATA_PIT_TAG;
 

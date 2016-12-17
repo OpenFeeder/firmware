@@ -146,7 +146,6 @@ extern volatile uint8_t g_counter_delay_read_bit;
 //extern volatile ISR_ID_DECODING_RFID g_current_interrupt_for_decoding_rfid; // interruption actuelle
 extern volatile uint8_t g_pit_tag_tab[];
 extern volatile uint8_t g_previous_pit_tag_tab[];
-extern volatile uint8_t number_of_valid_pit_tag;
 
 
 /*******************************************************************************

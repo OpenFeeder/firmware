@@ -11,43 +11,46 @@
 RFID_STATES g_rfid_reading_status = DISPLAY_RFID_INIT;
 RFID_STATES g_rfid_reading_status_previous = DISPLAY_RFID_ERROR;
 volatile uint8_t g_timeout_reading_pit_tag = 0;
+//volatile uint8_t number_of_valid_pit_tag = 0;
 
 
-void APP_Rfid_Init(void)
+void APP_Rfid_Init( void )
 {
-    CMD_VDD_APP_V_USB_SetHigh(); /* Powering VDD APP for USB and RFID. */
     appDataUsb.key_is_nedded = false;
     appData.flags.bit_value.NewValidPitTag = false;
     appDataPitTag.didPitTagMatched = false;
-    RFID_Enable();
     g_timeout_reading_pit_tag = DEFAULT_TIMEOUT_READING_PIT_TAG;
     g_rfid_reading_status = DISPLAY_RFID_INIT;
+    appDataPitTag.number_of_valid_pit_tag = 0;
+    clearPitTagBuffers( );
+    CMD_VDD_APP_V_USB_SetHigh( ); /* Powering VDD APP for USB and RFID. */
+    RFID_Enable( );
 }
 
 
-bool APP_Rfid_Task(void)
+bool APP_Rfid_Task( void )
 {
 
-    switch (g_rfid_reading_status)
+    switch ( g_rfid_reading_status )
     {
         case DISPLAY_RFID_INIT:
-            if (g_rfid_reading_status != g_rfid_reading_status_previous)
+            if ( g_rfid_reading_status != g_rfid_reading_status_previous )
             {
                 g_rfid_reading_status_previous = g_rfid_reading_status;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_RFID_STATE)
-                printf("\t> DISPLAY_RFID_INIT\n");
+                printf( "\t> DISPLAY_RFID_INIT\n" );
 #endif
             }
-            number_of_valid_pit_tag = 0;
+            appDataPitTag.number_of_valid_pit_tag = 0;
             g_rfid_reading_status = RFID_IDLE;
             break;
 
         case RFID_IDLE:
-            if (g_rfid_reading_status != g_rfid_reading_status_previous)
+            if ( g_rfid_reading_status != g_rfid_reading_status_previous )
             {
                 g_rfid_reading_status_previous = g_rfid_reading_status;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_RFID_STATE)
-                printf("\t> RFID_IDLE\n");
+                printf( "\t> RFID_IDLE\n" );
 #endif
             }
             // waiting for signal from DEMOD_OUT pin of EM4095...
@@ -56,54 +59,54 @@ bool APP_Rfid_Task(void)
 
         case RFID_DETECT_FALSE_DATASTREAM:
         {
-            if (g_rfid_reading_status != g_rfid_reading_status_previous)
+            if ( g_rfid_reading_status != g_rfid_reading_status_previous )
             {
                 g_rfid_reading_status_previous = g_rfid_reading_status;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_RFID_STATE)
-                printf("\t> RFID_DETECT_FALSE_DATASTREAM\n");
+                printf( "\t> RFID_DETECT_FALSE_DATASTREAM\n" );
 #endif
             }
             new_pit_tag_found = false;
             g_rfid_reading_status = RFID_IDLE;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_PIT_TAG_INFO)
-            printf("\t\tPIT tag: ");
-            displayPitTag();
-            printf(" - bad checksum\n");
+            printf( "\t\tPIT tag: " );
+            displayPitTag( );
+            printf( " - bad checksum\n" );
 #endif
             break;
         }
 
         case RFID_DETECT_COMPLET_DATASTREAM:
         {
-            if (g_rfid_reading_status != g_rfid_reading_status_previous)
+            if ( g_rfid_reading_status != g_rfid_reading_status_previous )
             {
                 g_rfid_reading_status_previous = g_rfid_reading_status;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_RFID_STATE)
-                printf("\t> RFID_DETECT_COMPLET_DATASTREAM\n");
+                printf( "\t> RFID_DETECT_COMPLET_DATASTREAM\n" );
 #endif
             }
             new_pit_tag_found = true;
             g_rfid_reading_status = RFID_IDLE;
 #if defined( USE_UART1_SERIAL_INTERFACE ) && defined (DISPLAY_PIT_TAG_INFO)
-            printf("\t\tPIT tag: ");
-            displayPitTag();
-            printf(" - good checksum\n");
+            printf( "\t\tPIT tag: " );
+            displayPitTag( );
+            printf( " - good checksum\n" );
 #endif
             break;
         }
 
         case DISPLAY_RFID_ERROR:
         default:
-            if (g_rfid_reading_status != g_rfid_reading_status_previous)
+            if ( g_rfid_reading_status != g_rfid_reading_status_previous )
             {
                 g_rfid_reading_status_previous = g_rfid_reading_status;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_RFID_STATE)
-                printf("\t> DISPLAY_RFID_ERROR\n");
+                printf( "\t> DISPLAY_RFID_ERROR\n" );
 #endif
             }
     }
 
-    if (new_pit_tag_found)
+    if ( new_pit_tag_found )
     {
         uint8_t i;
         uint8_t s = 0;
@@ -111,64 +114,87 @@ bool APP_Rfid_Task(void)
         new_pit_tag_found = false;
 
         /* Pit tag validity */
-        // Case 0000000000        
-        for (i = 0; i < 10; ++i)
+        for ( i = 0; i < 10; ++i )
         {
             s += g_pit_tag_tab[i];
+            appDataLog.bird_pit_tag_str[i] = bin2ascii_tab[g_pit_tag_tab[i]];
         }
-        if (s == 0)
+        appDataLog.bird_pit_tag_str[10] = '\0';
+        if ( s == 0 ) // Case 0000000000   
         {
             appData.flags.bit_value.NewValidPitTag = false;
 
 #if defined( USE_UART1_SERIAL_INTERFACE ) && defined (DISPLAY_PIT_TAG_INFO)
-            printf(" - invalid (0000000000).\n");
+            printf( " - invalid (0000000000).\n" );
 #endif
             return true;
         }
+        if ( OPEN_BAR != appData.scenario_number )
+        {
+            findPitTagInList( );
+            if ( false == appDataPitTag.didPitTagMatched )
+            {
+                clearPitTagBuffers( );
+#if defined( USE_UART1_SERIAL_INTERFACE ) && defined (DISPLAY_PIT_TAG_INFO)
+                printf( "\t\tNot listed => consider as denied.\n" );
+#endif
+                return true;
+            }
+        }
 
-        ++number_of_valid_pit_tag;
+        ++appDataPitTag.number_of_valid_pit_tag;
 
-        if (number_of_valid_pit_tag == 1)
+        if ( appDataPitTag.number_of_valid_pit_tag == 1 )
         {
             /* Save the current PIT Tag in local tab. */
-            for (i = 0; i < 10; ++i)
+            for ( i = 0; i < 10; ++i )
             {
                 g_previous_pit_tag_tab[i] = g_pit_tag_tab[i];
             }
+
         }
         else // number_of_valid_pit_tag == 2
         {
             /* Compare previous and current detected PIT tags. */
-            if (0 == strcmp((const char *) &g_pit_tag_tab, (const char *) &g_previous_pit_tag_tab))
+            //            if ( 0 == strcmp( ( const char * ) &g_pit_tag_tab, ( const char * ) &g_previous_pit_tag_tab ) )
+            bool flag = true;
+            for ( i = 0; i < 10; i++ )
+            {
+                if ( g_pit_tag_tab[i] != g_previous_pit_tag_tab[i] )
+                {
+                    flag = false;
+                    break;
+                }
+            }
+
+            //            if ( 0 == strcmp( g_pit_tag_tab, g_previous_pit_tag_tab ) )
+            if ( true == flag )
             {
                 appData.flags.bit_value.NewValidPitTag = true;
-                for (i = 0; i < 10; ++i)
+                for ( i = 0; i < 10; ++i )
                 {
                     appDataLog.bird_pit_tag_str[i] = bin2ascii_tab[g_pit_tag_tab[i]];
                 }
-                clearPitTagBuffers();
+                clearPitTagBuffers( );
                 appDataLog.bird_pit_tag_str[10] = '\0';
-                number_of_valid_pit_tag = 0;
+                appDataPitTag.number_of_valid_pit_tag = 0;
 
 #if defined( USE_UART1_SERIAL_INTERFACE ) && defined (DISPLAY_PIT_TAG_INFO)
-                printf("\tTwo valid PIT tags read: %s\n", appDataLog.bird_pit_tag_str);
-                //                displayPitTag( );
-                //                printf( "\n" );
-
+                printf( "\tTwo valid PIT tags read: %s\n", appDataLog.bird_pit_tag_str );
 #endif
             }
             else
             {
                 appData.flags.bit_value.NewValidPitTag = false;
 
-                for (i = 0; i < 10; ++i)
+                for ( i = 0; i < 10; ++i )
                 {
                     g_previous_pit_tag_tab[i] = g_pit_tag_tab[i];
                     g_pit_tag_tab[i] = 0;
                 }
-                --number_of_valid_pit_tag;
+                --appDataPitTag.number_of_valid_pit_tag;
 #if defined( USE_UART1_SERIAL_INTERFACE ) && defined (DISPLAY_PIT_TAG_INFO)
-                printf(" - invalid (different from previous detected).\n");
+                printf( " - invalid (different from previous detected).\n" );
 #endif
             }
         }
@@ -178,39 +204,47 @@ bool APP_Rfid_Task(void)
 }
 
 
-void clearPitTagBuffers(void)
+void clearPitTagBuffers( void )
 {
     int i;
 
-    for (i = 0; i < 10; ++i)
+    for ( i = 0; i < 10; ++i )
     {
         g_pit_tag_tab[i] = 0;
         g_previous_pit_tag_tab[i] = 0;
     }
 
-    number_of_valid_pit_tag = 0;
+    appDataPitTag.number_of_valid_pit_tag = 0;
 }
 
 
-void findPitTagInList(void)
+void findPitTagInList( void )
 {
 
     int i;
 
-    for (i = 0; i < (appDataPitTag.numPitTagDeniedOrColorA + appDataPitTag.numPitTagAcceptedOrColorB); ++i)
+    for ( i = 0; i < ( appDataPitTag.numPitTagDeniedOrColorA + appDataPitTag.numPitTagAcceptedOrColorB ); ++i )
     {
-        if (0 == strcmp(appDataLog.bird_pit_tag_str, appDataPitTag.pit_tags_list[i]))
+        //        printf( "%s %s ", appDataLog.bird_pit_tag_str, appDataPitTag.pit_tags_list[i] );
+        if ( 0 == strcmp( appDataLog.bird_pit_tag_str, appDataPitTag.pit_tags_list[i] ) )
         {
+            //            printf(" Found\n");
             /* Current PIT tag is in the all PIT tags list */
             appDataPitTag.didPitTagMatched = true;
-            appDataPitTag.pitTagIndexInList = (uint8_t) i;
+            appDataPitTag.pitTagIndexInList = ( uint8_t ) i;
+            return;
         }
+        //        printf("\n");
     }
+
+    //    printf("Not found\n");
+    appDataPitTag.didPitTagMatched = false;
+    appDataPitTag.pitTagIndexInList = 0;
 
 }
 
 
-bool isPitTagDenied(void)
+bool isPitTagDenied( void )
 {
     return appDataPitTag.isPitTagdeniedOrColorA[appDataPitTag.pitTagIndexInList];
     //    bool isDenied = false;
