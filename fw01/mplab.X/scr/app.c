@@ -147,7 +147,7 @@ void APP_Tasks( void )
 
             /* Check food level */
             IRSensorEnable( );
-            if ( BAR_IR2_OUT_GetValue( ) == 0 )
+            if ( 0 == BAR_IR2_OUT_GetValue( ) )
             {
                 printf( "Enough food\n" );
             }
@@ -229,8 +229,6 @@ void APP_Tasks( void )
                 /* Servomotor power command enable. */
                 servomotorPowerEnable( );
                 appDataDoor.reward_door_status = DOOR_CLOSING;
-                // TODO: Check door position or wainting for timeout closing
-                //                while ( DOOR_IDLE != appData.reward_door_status );
                 while ( DOOR_CLOSED != appDataDoor.reward_door_status );
                 /* Servomotor power command disable. */
                 servomotorPowerDisable( );
@@ -246,9 +244,6 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE)
                 printf( "System not initialized\n" );
 #endif
-                //                sprintf( appError.message, "Unable to initialize the system" );
-                //                appError.currentLineNumber = __LINE__;
-                //                sprintf( appError.currentFileName, "%s", __FILE__ );
                 appData.state = APP_STATE_ERROR;
             }
 
@@ -258,7 +253,7 @@ void APP_Tasks( void )
                 break;
             }
 
-            if ( usbUnmountDrive( ) == USB_DRIVE_MOUNTED )
+            if ( USB_DRIVE_MOUNTED == usbUnmountDrive( )  )
             {
                 appData.state = APP_STATE_ERROR;
             }
@@ -302,18 +297,6 @@ void APP_Tasks( void )
                 appData.state = APP_STATE_BATTERY_LOW;
                 break;
             }
-
-            /* If VDD_APP_V_USB power is ON, check if USB key is detached by user.
-             *  - if true go to APP_STATE_ERROR
-             */
-            //            if ( true == CMD_VDD_APP_V_USB_GetValue( ) )
-            //            {
-            //            if (USB_DEVICE_DETACHED == USBHostDeviceStatus(appDataUsb.deviceAddress))
-            //            {
-            //                appData.state = APP_STATE_ERROR;
-            //                break;
-            //            }
-            //            }
 
             /* Check PIR SENSOR detected.
              *  - recording the time of detected of the bird
@@ -536,7 +519,7 @@ void APP_Tasks( void )
             }
 
             /* Test if delay detect PIT Tags in ending. (20x 160 ms) */
-            if ( g_timeout_reading_pit_tag == 0 )
+            if ( 0 == g_timeout_reading_pit_tag )
             {
                 RFID_Disable( );
                 clear_bird_sensor_detected( );
@@ -603,7 +586,7 @@ void APP_Tasks( void )
                 appData.bird_is_taking_reward = false;
             }
 
-            if ( ( g_flag_ir1_sensor == true ) && ( appData.bird_is_taking_reward == false ) )
+            if ( ( true == g_flag_ir1_sensor  ) && ( false == appData.bird_is_taking_reward ) )
             {
                 /* REWARD_IR_SENSOR true. */
 #if defined (USE_UART1_SERIAL_INTERFACE)
@@ -615,7 +598,7 @@ void APP_Tasks( void )
             }
 
             /* low --> coupure de la barrière infra rouge */
-            if ( ( BAR_IR1_OUT_GetValue( ) == 0 ) && ( appData.bird_is_taking_reward == true ) )
+            if ( ( 0 == BAR_IR1_OUT_GetValue( ) ) && ( true == appData.bird_is_taking_reward  ) )
             {
 #if defined (USE_UART1_SERIAL_INTERFACE)
                 printf( "Reward taken.\n" );
@@ -628,7 +611,7 @@ void APP_Tasks( void )
             }
 
             /* Timeout elapsed and reward is not taken */
-            if ( true == isDelayMsEnding( ) && BAR_IR1_OUT_GetValue( ) == 0 )
+            if ( true == isDelayMsEnding( ) && 0 == BAR_IR1_OUT_GetValue( ) )
                 //            if ( g_timeout_taking_reward == 0 && BAR_IR1_OUT_GetValue( ) == 0 )
             {
 #if defined (USE_UART1_SERIAL_INTERFACE)
@@ -877,17 +860,17 @@ void APP_Tasks( void )
             /* Set-up time after a sleep period - Tset: 35ms */
             /* Tableau page 5 - datasheet EM4095*/
             setDelayMsEM4095( EM4095_TSET_DELAY_MS );
-            while ( isDelayMsEndingEM4095( ) == false )
+            while ( false == isDelayMsEndingEM4095( )  )
             {
                 Nop( );
             }
 
-            while ( EM4095_SHD_GetValue( ) == false )
+            while ( false == EM4095_SHD_GetValue( ) )
             {
                 Nop( );
             }
             EX_INT3_InterruptEnable( );
-            while ( g_new_value_of_em4095_rdyclk_measurement == false )
+            while ( false == g_new_value_of_em4095_rdyclk_measurement )
             {
                 Nop( );
             }
@@ -897,7 +880,6 @@ void APP_Tasks( void )
             printf( "RDY/CLK signal frequency: %u (x10Hz)\n", rdyclk_count_in_10ms * 5 );
 #endif    
             g_new_value_of_em4095_rdyclk_measurement = false;
-            //            RFID_Disable();
             CMD_VDD_APP_V_USB_SetLow( ); /* Shut down VDD APP for USB and RFID. */
 
             appData.state = APP_STATE_IDLE;
@@ -991,8 +973,6 @@ void APP_Initialize( void )
     appDataUsb.key_is_nedded = false;
 
     memset( appData.siteid, '\0', 5 );
-
-    rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_SECOND );
 
     /* PIT tag data */
     appDataPitTag.didPitTagMatched = false;
