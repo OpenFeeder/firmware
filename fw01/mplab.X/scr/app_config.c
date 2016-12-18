@@ -9,236 +9,350 @@
 #include "app_config.h"
 
 
-bool config_set(void)
+bool config_set( void )
 {
 
     INI_READ_STATE read_ini_status;
     char buf[50];
 
     /* Search for the CONFIG.INI file. */
-    if (INI_NOT_FOUND == config_find_ini())
+    if ( FILEIO_RESULT_FAILURE == config_find_ini( ) )
     {
-        strcpy(appError.message, "File not found (CONFIG.INI)");
+        strcpy( appError.message, "File not found (CONFIG.INI)" );
         appError.currentLineNumber = __LINE__;
-        sprintf(appError.currentFileName, "%s", __FILE__);
+        sprintf( appError.currentFileName, "%s", __FILE__ );
         return false;
     }
 
     /* Read the CONFIG.INI file. */
-    read_ini_status = config_read_ini();
+    read_ini_status = config_read_ini( );
 
-    if (INI_READ_OK != read_ini_status)
+    if ( INI_READ_OK != read_ini_status )
     {
-//#if defined (USE_UART1_SERIAL_INTERFACE)
-//        config_print();
-//#endif
-        getIniPbChar(read_ini_status, buf);
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        config_print( );
+#endif
+        getIniPbChar( read_ini_status, buf );
 
-        sprintf(appError.message, "Wrong parameters in CONFIG.INI: %s (%d)", buf, read_ini_status);
+        sprintf( appError.message, "Wrong parameters in CONFIG.INI: %s (%d)", buf, read_ini_status );
         appError.currentLineNumber = __LINE__;
-        sprintf(appError.currentFileName, "%s", __FILE__);
+        sprintf( appError.currentFileName, "%s", __FILE__ );
         return false;
+    }
+
+    if ( appDataPitTag.numPitTagDeniedOrColorA > 0 || appDataPitTag.numPitTagAcceptedOrColorB > 0 )
+    {
+        if ( FILEIO_RESULT_FAILURE == read_PIT_tags( ) )
+        {
+            return false;
+        }
     }
 
     return true;
 }
 
 
-int config_find_ini(void)
+FILEIO_RESULT read_PIT_tags( void )
+{
+
+    FILEIO_OBJECT file;
+    FILEIO_ERROR_TYPE errF;
+    uint16_t i;
+
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+    printf( "Read PIT tags files\n" );
+#endif 
+
+    if ( appDataPitTag.numPitTagDeniedOrColorA > 0 )
+    {
+
+        if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "PTDENIED.TXT", FILEIO_OPEN_READ ) )
+        {
+            errF = FILEIO_ErrorGet( 'A' );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+            printf( "unable to open PIT tags denied file (%u)", errF );
+#endif 
+            sprintf( appError.message, "Unable to open PIT tags denied file (%u)", errF );
+            appError.currentLineNumber = __LINE__;
+            sprintf( appError.currentFileName, "%s", __FILE__ );
+            FILEIO_ErrorClear( 'A' );
+            return FILEIO_RESULT_FAILURE;
+        }
+
+        for ( i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; i++ )
+        {
+            FILEIO_Read( appDataPitTag.pit_tags_list[i], 1, 10, &file );
+            appDataPitTag.pit_tags_list[i][11] = '\0';
+        }
+
+        if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
+        {
+            errF = FILEIO_ErrorGet( 'A' );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+            printf( "unable to close PIT tags denied file (%u)", errF );
+#endif 
+            sprintf( appError.message, "Unable to close PIT tags denied file (%u)", errF );
+            appError.currentLineNumber = __LINE__;
+            sprintf( appError.currentFileName, "%s", __FILE__ );
+            FILEIO_ErrorClear( 'A' );
+            return FILEIO_RESULT_FAILURE;
+        }
+
+    }
+
+    if ( appDataPitTag.numPitTagAcceptedOrColorB > 0 )
+    {
+
+        if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "PTACCEPT.TXT", FILEIO_OPEN_READ ) )
+        {
+            errF = FILEIO_ErrorGet( 'A' );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+            printf( "unable to open PIT tags accepted file (%u)", errF );
+#endif 
+            sprintf( appError.message, "Unable to open PIT tags accepted file (%u)", errF );
+            appError.currentLineNumber = __LINE__;
+            sprintf( appError.currentFileName, "%s", __FILE__ );
+            FILEIO_ErrorClear( 'A' );
+            return FILEIO_RESULT_FAILURE;
+        }
+
+        for ( i = 0; i < appDataPitTag.numPitTagAcceptedOrColorB; i++ )
+        {
+            FILEIO_Read( appDataPitTag.pit_tags_list[i + appDataPitTag.numPitTagDeniedOrColorA], 1, 10, &file );
+            appDataPitTag.pit_tags_list[i + appDataPitTag.numPitTagDeniedOrColorA][11] = '\0';
+        }
+
+        if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
+        {
+            errF = FILEIO_ErrorGet( 'A' );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+            printf( "unable to close PIT tags denied file (%u)", errF );
+#endif 
+            sprintf( appError.message, "Unable to close PIT tags denied file (%u)", errF );
+            appError.currentLineNumber = __LINE__;
+            sprintf( appError.currentFileName, "%s", __FILE__ );
+            FILEIO_ErrorClear( 'A' );
+            return FILEIO_RESULT_FAILURE;
+        }
+
+    }
+
+    return FILEIO_RESULT_SUCCESS;
+
+}
+
+
+FILEIO_RESULT config_find_ini( void )
 {
 
     FILEIO_SEARCH_RECORD searchRecord;
 
-    return FILEIO_Find("CONFIG.INI", FILEIO_ATTRIBUTE_ARCHIVE, &searchRecord, true);
+    return FILEIO_Find( "CONFIG.INI", FILEIO_ATTRIBUTE_ARCHIVE, &searchRecord, true );
 }
 
 
-INI_READ_STATE config_read_ini(void)
+INI_READ_STATE config_read_ini( void )
 {
 
     int32_t read_parameter;
-    bool pitTagDeniedFoundInConfigIni = false;
-    bool pitTagAcceptedFoundInConfigIni = false;
 
     /* Scenario number */
-    read_parameter = ini_getl("scenario", "num", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "scenario", "num", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         return INI_PB_SCENARIO_NUM;
     }
     else
     {
-        appData.scenario_number = (uint8_t) read_parameter;
+        appData.scenario_number = ( uint8_t ) read_parameter;
     }
 
     /* Site identification. */
-    // TODO check site ID validity 
-    ini_gets("siteid", "zone", "XXXX", appData.siteid, sizearray(appData.siteid), "CONFIG.INI");
+    ini_gets( "siteid", "zone", "XXXX", appData.siteid, sizearray( appData.siteid ), "CONFIG.INI" );
 
     /* Wake up time. */
-    read_parameter = ini_getl("time", "wakeup_hour", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "time", "wakeup_hour", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         return INI_PB_TIME_WAKEUP_HOUR;
     }
     else
     {
-        appDataAlarmWakeup.time.tm_hour = (int) read_parameter;
+        appDataAlarmWakeup.time.tm_hour = ( int ) read_parameter;
     }
-    read_parameter = ini_getl("time", "wakeup_minute", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "time", "wakeup_minute", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         return INI_PB_TIME_WAKEUP_MINUTE;
     }
     else
     {
-        appDataAlarmWakeup.time.tm_min = (int) read_parameter;
+        appDataAlarmWakeup.time.tm_min = ( int ) read_parameter;
     }
     appDataAlarmWakeup.time.tm_sec = 0;
 
     /* Sleep time. */
-    read_parameter = ini_getl("time", "sleep_hour", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "time", "sleep_hour", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         return INI_PB_TIME_SLEEP_HOUR;
     }
     else
     {
-        appDataAlarmSleep.time.tm_hour = (int) read_parameter;
+        appDataAlarmSleep.time.tm_hour = ( int ) read_parameter;
     }
-    read_parameter = ini_getl("time", "sleep_minute", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "time", "sleep_minute", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         return INI_PB_TIME_SLEEP_MINUTE;
     }
     else
     {
-        appDataAlarmSleep.time.tm_min = (int) read_parameter;
+        appDataAlarmSleep.time.tm_min = ( int ) read_parameter;
     }
     appDataAlarmSleep.time.tm_sec = 0;
 
     /* Attractive LEDs Color. */
-    /* (fr) Lecture de la couleur des LED d'attraction. */
-    read_parameter = ini_getl("attractiveleds", "red_a", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "attractiveleds", "red_a", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         return INI_PB_ATTRACTIVE_LEDS_RED_A;
     }
     else
     {
-        appDataAttractiveLeds.red[0] = (uint8_t) read_parameter;
+        appDataAttractiveLeds.red[0] = ( uint8_t ) read_parameter;
     }
-    read_parameter = ini_getl("attractiveleds", "green_a", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "attractiveleds", "green_a", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         return INI_PB_ATTRACTIVE_LEDS_GREEN_A;
     }
     else
     {
-        appDataAttractiveLeds.green[0] = (uint8_t) read_parameter;
+        appDataAttractiveLeds.green[0] = ( uint8_t ) read_parameter;
     }
-    read_parameter = ini_getl("attractiveleds", "blue_a", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "attractiveleds", "blue_a", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         return INI_PB_ATTRACTIVE_LEDS_BLUE_A;
     }
     else
     {
-        appDataAttractiveLeds.blue[0] = (uint8_t) read_parameter;
+        appDataAttractiveLeds.blue[0] = ( uint8_t ) read_parameter;
     }
-    read_parameter = ini_getl("attractiveleds", "red_b", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "attractiveleds", "red_b", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         return INI_PB_ATTRACTIVE_LEDS_RED_B;
     }
     else
     {
-        appDataAttractiveLeds.red[1] = (uint8_t) read_parameter;
+        appDataAttractiveLeds.red[1] = ( uint8_t ) read_parameter;
     }
-    read_parameter = ini_getl("attractiveleds", "green_b", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "attractiveleds", "green_b", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         return INI_PB_ATTRACTIVE_LEDS_GREEN_B;
     }
     else
     {
-        appDataAttractiveLeds.green[1] = (uint8_t) read_parameter;
+        appDataAttractiveLeds.green[1] = ( uint8_t ) read_parameter;
     }
-    read_parameter = ini_getl("attractiveleds", "blue_b", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "attractiveleds", "blue_b", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         return INI_PB_ATTRACTIVE_LEDS_BLUE_B;
     }
     else
     {
-        appDataAttractiveLeds.blue[1] = (uint8_t) read_parameter;
+        appDataAttractiveLeds.blue[1] = ( uint8_t ) read_parameter;
     }
     /* Attractive LEDs alternate delay. */
-    read_parameter = ini_getl("attractiveleds", "alt_delay", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "attractiveleds", "alt_delay", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         return INI_PB_ATTRACTIVE_LEDS_ALT_DELAY;
     }
     else
     {
-        appDataAttractiveLeds.alt_delay = (uint8_t) read_parameter;
+        appDataAttractiveLeds.alt_delay = ( uint8_t ) read_parameter;
     }
     /* Attractive LEDs wake up time. */
-    read_parameter = ini_getl("attractiveleds", "on_hour", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "attractiveleds", "on_hour", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         return INI_PB_ATTRACTIVE_LEDS_ON_HOUR;
     }
     else
     {
-        appDataAttractiveLeds.wake_up_time.tm_hour = (int) read_parameter;
+        appDataAttractiveLeds.wake_up_time.tm_hour = ( int ) read_parameter;
     }
-    read_parameter = ini_getl("attractiveleds", "on_minute", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "attractiveleds", "on_minute", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         return INI_PB_ATTRACTIVE_LEDS_ON_MINUTE;
     }
     else
     {
-        appDataAttractiveLeds.wake_up_time.tm_min = (int) read_parameter;
+        appDataAttractiveLeds.wake_up_time.tm_min = ( int ) read_parameter;
     }
 
     appDataAttractiveLeds.wake_up_time.tm_sec = 0;
 
     /* Attractive LEDs sleep time. */
-    read_parameter = ini_getl("attractiveleds", "off_hour", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "attractiveleds", "off_hour", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         return INI_PB_ATTRACTIVE_LEDS_OFF_HOUR;
     }
     else
     {
-        appDataAttractiveLeds.sleep_time.tm_hour = (int) read_parameter;
+        appDataAttractiveLeds.sleep_time.tm_hour = ( int ) read_parameter;
     }
-    read_parameter = ini_getl("attractiveleds", "off_minute", -1, "CONFIG.INI");
-    if (read_parameter == -1)
+    read_parameter = ini_getl( "attractiveleds", "off_minute", -1, "CONFIG.INI" );
+    if ( read_parameter == -1 )
     {
         return INI_PB_ATTRACTIVE_LEDS_OFF_MINUTE;
     }
     else
     {
-        appDataAttractiveLeds.sleep_time.tm_min = (int) read_parameter;
+        appDataAttractiveLeds.sleep_time.tm_min = ( int ) read_parameter;
     }
     appDataAttractiveLeds.sleep_time.tm_sec = 0;
 
+    /* PIT Tags denied or associated with color A. */
+    read_parameter = ini_getl( "pittagsdenied", "num", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
+    {
+        return INI_PB_PIT_TAG_DENIED;
+    }
+    else
+    {
+        appDataPitTag.numPitTagDeniedOrColorA = ( uint16_t ) read_parameter;
+    }
+    /* PIT Tags accepted or associated with color B. */
+    read_parameter = ini_getl( "pittagsaccepted", "num", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
+    {
+        return INI_PB_PIT_TAG_ACCEPTED;
+    }
+    else
+    {
+        appDataPitTag.numPitTagAcceptedOrColorB = ( uint16_t ) read_parameter;
+    }
+
     /* Door/servomotor configuration. */
-    read_parameter = ini_getl("door", "ton_min", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "door", "ton_min", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         appDataServo.ton_min = SERVO_POSITION_MIN_DEFAULT;
         return INI_PB_DOOR_TON_MIN;
     }
     else
     {
-        //appDataServo.ton_min = (uint16_t) read_parameter;
-        if (read_parameter >= SERVO_POSITION_MIN_DEFAULT)
+        if ( read_parameter >= SERVO_POSITION_MIN_DEFAULT )
         {
-            appDataServo.ton_min = (uint16_t) read_parameter;
+            appDataServo.ton_min = ( uint16_t ) read_parameter;
         }
         else
         {
@@ -246,18 +360,17 @@ INI_READ_STATE config_read_ini(void)
         }
     }
 
-    read_parameter = ini_getl("door", "ton_max", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "door", "ton_max", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         appDataServo.ton_max = SERVO_POSITION_MAX_DEFAULT;
         return INI_PB_DOOR_TON_MAX;
     }
     else
     {
-        //appDataServo.ton_max = ( uint16_t ) read_parameter;
-        if (read_parameter <= SERVO_POSITION_MAX_DEFAULT)
+        if ( read_parameter <= SERVO_POSITION_MAX_DEFAULT )
         {
-            appDataServo.ton_max = (uint16_t) read_parameter;
+            appDataServo.ton_max = ( uint16_t ) read_parameter;
         }
         else
         {
@@ -265,390 +378,336 @@ INI_READ_STATE config_read_ini(void)
         }
     }
 
-    read_parameter = ini_getl("door", "speed", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "door", "speed", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         appDataServo.speed = SERVO_SPEED_INC_DEFAULT;
         return INI_PB_DOOR_SPEED;
     }
     else
     {
-        appDataServo.speed = (uint8_t) read_parameter;
+        appDataServo.speed = ( uint8_t ) read_parameter;
     }
     /* Door open/closee delays. */
-    read_parameter = ini_getl("door", "opendelay", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "door", "opendelay", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         return INI_PB_DOOR_OPEN_DELAY;
     }
     else
     {
-        appDataDoor.open_delay = (uint16_t) read_parameter * 1000;
+        appDataDoor.open_delay = ( uint16_t ) read_parameter * 1000;
     }
-    read_parameter = ini_getl("door", "closedelay", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "door", "closedelay", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         return INI_PB_DOOR_CLOSE_DELAY;
     }
     else
     {
-        appDataDoor.close_delay = (uint16_t) read_parameter * 1000;
+        appDataDoor.close_delay = ( uint16_t ) read_parameter * 1000;
     }
     /* Door remain open */
-    read_parameter = ini_getl("door", "remainopen", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "door", "remainopen", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         return INI_PB_DOOR_REMAIN_OPEN;
     }
     else
     {
-        appDataDoor.remain_open = (uint8_t) read_parameter;
+        appDataDoor.remain_open = ( uint8_t ) read_parameter;
     }
     /* Door open time. */
-    read_parameter = ini_getl("door", "open_hour", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "door", "open_hour", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         return INI_PB_DOOR_OPEN_HOUR;
     }
     else
     {
-        appDataDoor.open_time.tm_hour = (int) read_parameter;
+        appDataDoor.open_time.tm_hour = ( int ) read_parameter;
     }
-    read_parameter = ini_getl("door", "open_minute", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "door", "open_minute", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         return INI_PB_DOOR_OPEN_MINUTE;
     }
     else
     {
-        appDataDoor.open_time.tm_min = (int) read_parameter;
+        appDataDoor.open_time.tm_min = ( int ) read_parameter;
     }
     appDataDoor.open_time.tm_sec = 0;
 
     /* Door close time. */
-    read_parameter = ini_getl("door", "close_hour", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "door", "close_hour", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         return INI_PB_DOOR_CLOSE_HOUR;
     }
     else
     {
-        appDataDoor.close_time.tm_hour = (int) read_parameter;
+        appDataDoor.close_time.tm_hour = ( int ) read_parameter;
     }
-    read_parameter = ini_getl("door", "close_minute", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "door", "close_minute", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         return INI_PB_DOOR_CLOSE_MINUTE;
     }
     else
     {
-        appDataDoor.close_time.tm_min = (int) read_parameter;
+        appDataDoor.close_time.tm_min = ( int ) read_parameter;
     }
     appDataDoor.close_time.tm_sec = 0;
 
-    /* PIT Tags denied or associated with color A. */
-    int s;
-    char name[30];
-    for (s = 0; ini_getsection(s, name, 20, "CONFIG.INI") > 0; ++s)
-    {
-        if (strcmp(name, "pittagsdenied") == 0)
-        {
-            pitTagDeniedFoundInConfigIni = true;
-        }
-    }
-
-    appDataPitTag.numPitTagDeniedOrColorA = 0;
-    if (true == pitTagDeniedFoundInConfigIni)
-    {
-        int k;
-        char name[20];
-        for (k = 0; ini_getkey("pittagsdenied", k, name, 20, "CONFIG.INI") > 0; k++)
-        {
-            if (k == MAX_PIT_TAGS_LIST_NUMBER)
-            {
-                break;
-            }
-            ++appDataPitTag.numPitTagDeniedOrColorA;
-            ini_gets("pittagsdenied", name, "XXXXXXXXXX", appDataPitTag.pit_tags_list[k], sizearray(appDataPitTag.pit_tags_list[0]), "CONFIG.INI");
-            appDataPitTag.isPitTagdeniedOrColorA[k] = true;
-        }
-    }
-
-    /* PIT Tags accepted or associated with color B. */
-    for (s = 0; ini_getsection(s, name, 20, "CONFIG.INI") > 0; ++s)
-    {
-        if (strcmp(name, "pittagsaccepted") == 0)
-        {
-            pitTagAcceptedFoundInConfigIni = true;
-        }
-    }
-
-    appDataPitTag.numPitTagAcceptedOrColorB = 0;
-    if (true == pitTagAcceptedFoundInConfigIni)
-    {
-        int k;
-        char name[20];
-        for (k = 0; ini_getkey("pittagsaccepted", k, name, 20, "CONFIG.INI") > 0; k++)
-        {
-            if (k == MAX_PIT_TAGS_LIST_NUMBER)
-            {
-                break;
-            }
-            ++appDataPitTag.numPitTagAcceptedOrColorB;
-            ini_gets("pittagsaccepted", name, "XXXXXXXXXX", appDataPitTag.pit_tags_list[k + appDataPitTag.numPitTagDeniedOrColorA], sizearray(appDataPitTag.pit_tags_list[0]), "CONFIG.INI");
-            appDataPitTag.isPitTagdeniedOrColorA[k + appDataPitTag.numPitTagDeniedOrColorA] = false;
-        }
-    }
-
     /* Data separator in the log file. */
-    ini_gets("logfile", "separator", DEFAULT_LOG_SEPARATOR, appDataLog.separator, sizearray(appDataLog.separator), "CONFIG.INI");
+    ini_gets( "logfile", "separator", DEFAULT_LOG_SEPARATOR, appDataLog.separator, sizearray( appDataLog.separator ), "CONFIG.INI" );
 
-    /* Timeout before sleep. */
-    read_parameter = ini_getl("timeouts", "sleep", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    /* Timeout before standby. */
+    read_parameter = ini_getl( "timeouts", "sleep", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         appData.timeout_standby = STANDBY_TIMEOUT_X1000MS_DEFAULT * 1000;
         return INI_PB_TIMEOUTS_SLEEP;
     }
     else
     {
-        appData.timeout_standby = (uint16_t) read_parameter * 1000;
+        appData.timeout_standby = ( uint16_t ) read_parameter * 1000;
     }
     /* Timeout before pir. */
-    read_parameter = ini_getl("timeouts", "pir", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "timeouts", "pir", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         appData.timeout_pir = PIR_TIMEOUT_X1000MS_DEFAULT * 1000;
         return INI_PB_TIMEOUTS_PIR;
     }
     else
     {
-        appData.timeout_pir = (uint16_t) read_parameter * 1000;
+        appData.timeout_pir = ( uint16_t ) read_parameter * 1000;
     }
     /* Timeout taking reward. */
-    read_parameter = ini_getl("timeouts", "reward", -1, "CONFIG.INI");
-    if (-1 == read_parameter)
+    read_parameter = ini_getl( "timeouts", "reward", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
         appData.timeout_taking_reward = TAKING_REWARD_TIMEOUT_X1000MS_DEFAULT * 1000;
         return INI_PB_TIMEOUTS_REWARD;
     }
     else
     {
-        appData.timeout_taking_reward = (uint16_t) read_parameter * 1000;
+        appData.timeout_taking_reward = ( uint16_t ) read_parameter * 1000;
     }
 
     return INI_READ_OK;
 }
 
 
-void config_print(void)
+void config_print( void )
 {
     int i;
 
-    printf("Configuration parameters\n");
+    printf( "Configuration parameters\n" );
 
-    printf("\tScenario\n\t\tNumber: %u\n\t\tTitle:",
-           appData.scenario_number);
-    switch (appData.scenario_number)
+    printf( "\tScenario\n\t\tNumber: %u\n\t\tTitle:",
+            appData.scenario_number );
+    switch ( appData.scenario_number )
     {
         case OPEN_BAR:
-            printf(" open-bar\n");
+            printf( " open-bar\n" );
             break;
         case LONG_TERM_SPATIAL_MEMORY:
-            printf(" long term spatial memory\n");
+            printf( " long term spatial memory\n" );
             break;
         case WORKING_SPATIAL_MEMORY:
-            printf(" working spatial memory\n");
+            printf( " working spatial memory\n" );
             break;
         case COLOR_ASSOCIATIVE_LEARNING:
-            printf(" color associative learning\n");
+            printf( " color associative learning\n" );
             break;
     }
 
-    printf("\tSite ID\n\t\tZone: %s\n",
-           appData.siteid);
+    printf( "\tSite ID\n\t\tZone: %s\n",
+            appData.siteid );
 
-    printf("\tTime\n");
-    printf("\t\tWake up: %02d:%02d\n",
-           appDataAlarmWakeup.time.tm_hour,
-           appDataAlarmWakeup.time.tm_min);
-    printf("\t\tSleep: %02d:%02d\n",
-           appDataAlarmSleep.time.tm_hour,
-           appDataAlarmSleep.time.tm_min);
+    printf( "\tTime\n" );
+    printf( "\t\tWake up: %02d:%02d\n",
+            appDataAlarmWakeup.time.tm_hour,
+            appDataAlarmWakeup.time.tm_min );
+    printf( "\t\tSleep: %02d:%02d\n",
+            appDataAlarmSleep.time.tm_hour,
+            appDataAlarmSleep.time.tm_min );
 
-    printf("\tAttractive LEDs\n");
-    printf("\t\tColor A: RGB(%d, %d, %d)\n",
-           appDataAttractiveLeds.red[0],
-           appDataAttractiveLeds.green[0],
-           appDataAttractiveLeds.blue[0]);
-    printf("\t\tColor B: RGB(%d, %d, %d)\n",
-           appDataAttractiveLeds.red[1],
-           appDataAttractiveLeds.green[1],
-           appDataAttractiveLeds.blue[1]);
-    printf("\t\tAlternate delay: %us\n", appDataAttractiveLeds.alt_delay);
-    printf("\t\tOn time: %02d:%02d\n",
-           appDataAttractiveLeds.wake_up_time.tm_hour,
-           appDataAttractiveLeds.wake_up_time.tm_min);
-    printf("\t\tOff time: %02d:%02d\n",
-           appDataAttractiveLeds.sleep_time.tm_hour,
-           appDataAttractiveLeds.sleep_time.tm_min);
+    printf( "\tAttractive LEDs\n" );
+    printf( "\t\tColor A: RGB(%d, %d, %d)\n",
+            appDataAttractiveLeds.red[0],
+            appDataAttractiveLeds.green[0],
+            appDataAttractiveLeds.blue[0] );
+    printf( "\t\tColor B: RGB(%d, %d, %d)\n",
+            appDataAttractiveLeds.red[1],
+            appDataAttractiveLeds.green[1],
+            appDataAttractiveLeds.blue[1] );
+    printf( "\t\tAlternate delay: %us\n", appDataAttractiveLeds.alt_delay );
+    printf( "\t\tOn time: %02d:%02d\n",
+            appDataAttractiveLeds.wake_up_time.tm_hour,
+            appDataAttractiveLeds.wake_up_time.tm_min );
+    printf( "\t\tOff time: %02d:%02d\n",
+            appDataAttractiveLeds.sleep_time.tm_hour,
+            appDataAttractiveLeds.sleep_time.tm_min );
 
-    printf("\tDoor\n");
-    printf("\t\tServomotor position min: %d\n", appDataServo.ton_min);
-    printf("\t\tServomotor position max: %d\n", appDataServo.ton_max);
-    printf("\t\tServomotor increment position: %d\n", appDataServo.speed); /* Increment pace of the servomotor position. */
-    printf("\t\tOpen delay: %ds\n\t\tClose delay: %ds\n",
-           appDataDoor.open_delay / 1000,
-           appDataDoor.close_delay / 1000);
-    if (0 == appDataDoor.remain_open)
+    printf( "\tDoor\n" );
+    printf( "\t\tServomotor position min: %d\n", appDataServo.ton_min );
+    printf( "\t\tServomotor position max: %d\n", appDataServo.ton_max );
+    printf( "\t\tServomotor increment position: %d\n", appDataServo.speed ); /* Increment pace of the servomotor position. */
+    printf( "\t\tOpen delay: %ds\n\t\tClose delay: %ds\n",
+            appDataDoor.open_delay / 1000,
+            appDataDoor.close_delay / 1000 );
+    if ( 0 == appDataDoor.remain_open )
     {
-        printf("\t\tRemain open: no\n");
+        printf( "\t\tRemain open: no\n" );
     }
     else
     {
-        printf("\t\tRemain open: yes\n");
+        printf( "\t\tRemain open: yes\n" );
     }
-    printf("\t\tOpen time: %02d:%02d\n",
-           appDataDoor.open_time.tm_hour,
-           appDataDoor.open_time.tm_min);
-    printf("\t\tClose time: %02d:%02d\n",
-           appDataDoor.close_time.tm_hour,
-           appDataDoor.close_time.tm_min);
+    printf( "\t\tOpen time: %02d:%02d\n",
+            appDataDoor.open_time.tm_hour,
+            appDataDoor.open_time.tm_min );
+    printf( "\t\tClose time: %02d:%02d\n",
+            appDataDoor.close_time.tm_hour,
+            appDataDoor.close_time.tm_min );
 
-    printf("\tTimeouts\n");
-    printf("\t\tSleep: %us\n", appData.timeout_standby / 1000);
-    printf("\t\tPIR: %us\n", appData.timeout_pir / 1000);
-    printf("\t\tTaking reward: %us\n", appData.timeout_taking_reward / 1000);
+    printf( "\tTimeouts\n" );
+    printf( "\t\tSleep: %us\n", appData.timeout_standby / 1000 );
+    printf( "\t\tPIR: %us\n", appData.timeout_pir / 1000 );
+    printf( "\t\tTaking reward: %us\n", appData.timeout_taking_reward / 1000 );
 
-    printf("\tPIT Tags denied or associated with color A\n");
-    if (appDataPitTag.numPitTagDeniedOrColorA > 0)
+    printf( "\tPIT Tags denied or associated with color A\n" );
+    if ( appDataPitTag.numPitTagDeniedOrColorA > 0 )
     {
-        for (i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; ++i)
+        for ( i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; ++i )
         {
-            printf("\t\tSN%d: %s\n", i + 1, appDataPitTag.pit_tags_list[i]);
+            printf( "\t\tSN%d: %s\n", i + 1, appDataPitTag.pit_tags_list[i] );
         }
     }
     else
     {
-        printf("\t\tNone\n");
+        printf( "\t\tNone\n" );
     }
-    printf("\tPIT Tags accepted or associated with color B\n");
-    if (appDataPitTag.numPitTagAcceptedOrColorB > 0)
+    printf( "\tPIT Tags accepted or associated with color B\n" );
+    if ( appDataPitTag.numPitTagAcceptedOrColorB > 0 )
     {
-        for (i = appDataPitTag.numPitTagDeniedOrColorA; i < (appDataPitTag.numPitTagDeniedOrColorA + appDataPitTag.numPitTagAcceptedOrColorB); ++i)
+        for ( i = appDataPitTag.numPitTagDeniedOrColorA; i < ( appDataPitTag.numPitTagDeniedOrColorA + appDataPitTag.numPitTagAcceptedOrColorB ); ++i )
         {
-            printf("\t\tSN%d: %s\n", i + 1 - appDataPitTag.numPitTagDeniedOrColorA, appDataPitTag.pit_tags_list[i]);
+            printf( "\t\tSN%d: %s\n", i + 1 - appDataPitTag.numPitTagDeniedOrColorA, appDataPitTag.pit_tags_list[i] );
         }
     }
     else
     {
-        printf("\t\tNone\n");
+        printf( "\t\tNone\n" );
     }
 
-    printf("\tData logger\n");
-    printf("\t\tFile name: %s\n", appDataLog.filename);    
-    printf("\t\tData separator: %s\n", appDataLog.separator);
+    printf( "\tData logger\n" );
+    printf( "\t\tFile name: %s\n", appDataLog.filename );
+    printf( "\t\tData separator: %s\n", appDataLog.separator );
 }
 
 
-void getIniPbChar(INI_READ_STATE state, char buf[])
+void getIniPbChar( INI_READ_STATE state, char buf[] )
 {
 
-    switch (state)
+    switch ( state )
     {
 
         case INI_PB_SCENARIO_NUM:
-            snprintf(buf, sizearray(buf), "Scenario: number");
+            snprintf( buf, sizearray( buf ), "Scenario: number" );
             break;
         case INI_PB_SITEID_ZONE:
-            snprintf(buf, sizearray(buf), "Site ID: zone");
+            snprintf( buf, sizearray( buf ), "Site ID: zone" );
             break;
         case INI_PB_TIME_WAKEUP_HOUR:
-            snprintf(buf, sizearray(buf), "Wake-up: hour");
+            snprintf( buf, sizearray( buf ), "Wake-up: hour" );
             break;
         case INI_PB_TIME_WAKEUP_MINUTE:
-            snprintf(buf, sizearray(buf), "Wake-up: minute");
+            snprintf( buf, sizearray( buf ), "Wake-up: minute" );
             break;
         case INI_PB_TIME_SLEEP_HOUR:
-            snprintf(buf, sizearray(buf), "Sleep: hour");
+            snprintf( buf, sizearray( buf ), "Sleep: hour" );
             break;
         case INI_PB_TIME_SLEEP_MINUTE:
-            snprintf(buf, sizearray(buf), "Sleep: minute");
+            snprintf( buf, sizearray( buf ), "Sleep: minute" );
             break;
         case INI_PB_ATTRACTIVE_LEDS_RED_A:
-            snprintf(buf, sizearray(buf), "Attractive LEDs: red A");
+            snprintf( buf, sizearray( buf ), "Attractive LEDs: red A" );
             break;
         case INI_PB_ATTRACTIVE_LEDS_GREEN_A:
-            snprintf(buf, sizearray(buf), "Attractive LEDs: green A");
+            snprintf( buf, sizearray( buf ), "Attractive LEDs: green A" );
             break;
         case INI_PB_ATTRACTIVE_LEDS_BLUE_A:
-            snprintf(buf, sizearray(buf), "Attractive LEDs: blue A");
+            snprintf( buf, sizearray( buf ), "Attractive LEDs: blue A" );
             break;
         case INI_PB_ATTRACTIVE_LEDS_RED_B:
-            snprintf(buf, sizearray(buf), "Attractive LEDs: red B");
+            snprintf( buf, sizearray( buf ), "Attractive LEDs: red B" );
             break;
         case INI_PB_ATTRACTIVE_LEDS_GREEN_B:
-            snprintf(buf, sizearray(buf), "Attractive LEDs: green B");
+            snprintf( buf, sizearray( buf ), "Attractive LEDs: green B" );
             break;
         case INI_PB_ATTRACTIVE_LEDS_BLUE_B:
-            snprintf(buf, sizearray(buf), "Attractive LEDs: blue B");
+            snprintf( buf, sizearray( buf ), "Attractive LEDs: blue B" );
             break;
         case INI_PB_ATTRACTIVE_LEDS_ALT_DELAY:
-            snprintf(buf, sizearray(buf), "Attractive LEDs: alternate delay");
+            snprintf( buf, sizearray( buf ), "Attractive LEDs: alternate delay" );
             break;
         case INI_PB_ATTRACTIVE_LEDS_ON_HOUR:
-            snprintf(buf, sizearray(buf), "Attractive LEDs: off minute");
+            snprintf( buf, sizearray( buf ), "Attractive LEDs: off minute" );
             break;
         case INI_PB_ATTRACTIVE_LEDS_ON_MINUTE:
-            snprintf(buf, sizearray(buf), "Attractive LEDs: on minute");
+            snprintf( buf, sizearray( buf ), "Attractive LEDs: on minute" );
             break;
         case INI_PB_ATTRACTIVE_LEDS_OFF_HOUR:
-            snprintf(buf, sizearray(buf), "Attractive LEDs: off hour");
+            snprintf( buf, sizearray( buf ), "Attractive LEDs: off hour" );
             break;
         case INI_PB_ATTRACTIVE_LEDS_OFF_MINUTE:
-            snprintf(buf, sizearray(buf), "Attractive LEDs: off minute");
+            snprintf( buf, sizearray( buf ), "Attractive LEDs: off minute" );
             break;
         case INI_PB_DOOR_TON_MIN:
-            snprintf(buf, sizearray(buf), "Door: position min");
+            snprintf( buf, sizearray( buf ), "Door: position min" );
             break;
         case INI_PB_DOOR_TON_MAX:
-            snprintf(buf, sizearray(buf), "Door: position max");
+            snprintf( buf, sizearray( buf ), "Door: position max" );
             break;
         case INI_PB_DOOR_SPEED:
-            snprintf(buf, sizearray(buf), "Door: speed");
+            snprintf( buf, sizearray( buf ), "Door: speed" );
             break;
         case INI_PB_DOOR_OPEN_DELAY:
-            snprintf(buf, sizearray(buf), "Door: open delay");
+            snprintf( buf, sizearray( buf ), "Door: open delay" );
             break;
         case INI_PB_DOOR_CLOSE_DELAY:
-            snprintf(buf, sizearray(buf), "Door: close delay");
+            snprintf( buf, sizearray( buf ), "Door: close delay" );
             break;
         case INI_PB_DOOR_REMAIN_OPEN:
-            snprintf(buf, sizearray(buf), "Door: remain open");
+            snprintf( buf, sizearray( buf ), "Door: remain open" );
             break;
         case INI_PB_DOOR_OPEN_HOUR:
-            snprintf(buf, sizearray(buf), "Door: open hour");
+            snprintf( buf, sizearray( buf ), "Door: open hour" );
             break;
         case INI_PB_DOOR_OPEN_MINUTE:
-            snprintf(buf, sizearray(buf), "Door: open minute");
+            snprintf( buf, sizearray( buf ), "Door: open minute" );
             break;
         case INI_PB_DOOR_CLOSE_HOUR:
-            snprintf(buf, sizearray(buf), "Door: close hour");
+            snprintf( buf, sizearray( buf ), "Door: close hour" );
             break;
         case INI_PB_DOOR_CLOSE_MINUTE:
-            snprintf(buf, sizearray(buf), "Door: close minute");
+            snprintf( buf, sizearray( buf ), "Door: close minute" );
             break;
         case INI_PB_TIMEOUTS_SLEEP:
-            snprintf(buf, sizearray(buf), "Timeouts: sleep");
+            snprintf( buf, sizearray( buf ), "Timeouts: sleep" );
             break;
         case INI_PB_TIMEOUTS_PIR:
-            snprintf(buf, sizearray(buf), "Timeouts: pir");
+            snprintf( buf, sizearray( buf ), "Timeouts: pir" );
             break;
         case INI_PB_TIMEOUTS_REWARD:
-            snprintf(buf, sizearray(buf), "Timeouts: reward");
+            snprintf( buf, sizearray( buf ), "Timeouts: reward" );
             break;
         default:
-            snprintf(buf, sizearray(buf), "Error not listed");
+            snprintf( buf, sizearray( buf ), "Error not listed" );
             break;
     }
 
