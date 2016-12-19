@@ -82,7 +82,7 @@ void INTERRUPT_Initialize (void)
         IPC5bits.INT1IP = 3;
     //    INT2I: INT2 - External Interrupt 2
     //    Priority: 3
-        IPC7bits.INT2IP = 3;
+//        IPC7bits.INT2IP = 3;
     //    MICI: MI2C1 - I2C1 Master Events
     //    Priority: 5
         IPC4bits.MI2C1IP = 5;

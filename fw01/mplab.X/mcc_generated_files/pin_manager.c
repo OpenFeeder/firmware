@@ -105,7 +105,6 @@ void PIN_MANAGER_Initialize(void)
     RPOR8bits.RP17R = 0x000E;   //RC1->OC2:OC2;
     RPINR18bits.U1RXR = 0x0014;   //RC4->UART1:U1RX;
     RPINR1bits.INT3R = 0x0017;   //RC7->EXT_INT:INT3;
-    RPINR1bits.INT2R = 0x000D;   //RB13->EXT_INT:INT2;
     RPOR9bits.RP19R = 0x0010;   //RC3->OC4:OC4;
     RPOR9bits.RP18R = 0x000F;   //RC2->OC3:OC3;
     RPINR2bits.INT4R = 0x0016;   //RC6->EXT_INT:INT4;

@@ -30,7 +30,6 @@ void APP_Rfid_Init( void )
 
 bool APP_Rfid_Task( void )
 {
-
     switch ( g_rfid_reading_status )
     {
         case DISPLAY_RFID_INIT:

@@ -27,7 +27,6 @@
  */
 #include <xc.h>
 #include "ext_int.h"
-//#include "pin_manager.h"
 
 //***User Area Begin->code: Add External Interrupt handler specific headers 
 #include "app.h"
@@ -74,23 +73,6 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _INT1Interrupt( void )
 }
 
 /**
-  Interrupt Handler for EX_INT2 - INT2
- */
-void __attribute__( ( interrupt, no_auto_psv ) ) _INT2Interrupt( void )
-{
-    //***User Area Begin->code: INT2 - External Interrupt 2***
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_IR)
-    printf( "_INT2Interrupt()\n" ); // display Sleeping message
-#endif 
-    /* Event on infrared barrier sensor for detect if silo is empty. */
-    // TODO: g_empty_silo_sensor_status
-    set_flag_ir2_sensor( );
-
-    //***User Area End->code: INT2 - External Interrupt 2***
-    EX_INT2_InterruptFlagClear( );
-}
-
-/**
   Interrupt Handler for EX_INT3 - INT3
  */
 void __attribute__( ( interrupt, no_auto_psv ) ) _INT3Interrupt( void )
@@ -127,6 +109,9 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _INT4Interrupt( void )
 //#endif
     RFID_DecodingTasks( ); /* Call state machine decoding RFID. */
 
+    // TODO : Update flag for DMOD_OUT presence
+    // Timeout_Detecting_RFID_Tag = REALOAD_VALUE;
+    
     //***User Area End->code: INT4 - External Interrupt 4***
     EX_INT4_InterruptFlagClear( );
 }
@@ -165,15 +150,6 @@ void EXT_INT_Initialize( void )
     EX_INT1_PositiveEdgeSet( );
     EX_INT1_InterruptEnable( );
     /*******
-     * INT2
-     * Clear the interrupt flag
-     * Set the external interrupt edge detect
-     * Enable the interrupt, if enabled in the UI. 
-     ********/
-    EX_INT2_InterruptFlagClear( );
-    EX_INT2_PositiveEdgeSet( );
-    EX_INT2_InterruptEnable( );
-    /*******
      * INT3
      * Clear the interrupt flag
      * Set the external interrupt edge detect
@@ -190,6 +166,5 @@ void EXT_INT_Initialize( void )
      ********/
     EX_INT4_InterruptFlagClear( );
     EX_INT4_NegativeEdgeSet( );
-    //    EX_INT4_PositiveEdgeSet( );
     EX_INT4_InterruptEnable( );
 }

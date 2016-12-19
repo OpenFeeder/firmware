@@ -7,6 +7,7 @@
 
 #include "mcc_generated_files/mcc.h"
 #include "ir_sensor.h"
+#include "usb_ch9.h"
 
 bool g_flag_ir1_sensor = false;
 bool g_flag_ir2_sensor = false;
@@ -21,18 +22,8 @@ void IRSensorEnable( void )
     /* Clear the interrupt flag and re-enable the interrupt */
     VDD_IR_ON( ); /* powering IR command enable. */
     TMR4_Start( );
-    EX_INT1_InterruptDisable( );
-    EX_INT1_PositiveEdgeSet( ); // set the edge
     EX_INT1_InterruptFlagClear( );
     EX_INT1_InterruptEnable( );   
-    __delay_ms( 10 );
-    Nop( );
-    Nop( );
-    Nop( );
-    Nop( );
-    Nop( );
-    EX_INT1_InterruptFlagClear( );
-    clear_ir1_sensor_detected( );
 }
 
 void IRSensorDisable( void )

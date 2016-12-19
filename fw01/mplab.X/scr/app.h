@@ -30,7 +30,7 @@
 #define DISPLAY_LOG_INFO 
 //#define DISPLAY_ISR                    // uncomment to display interruption event
 //#define DISPLAY_ISR_RTCC
-//#define DISPLAY_ISR_IR                 // uncomment to display interruption event
+#define DISPLAY_ISR_IR                 // uncomment to display interruption event
 //#define DISPLAY_ISR_I2C                // uncomment to display interruption event
 #define DISPLAY_CURRENT_STATE            // uncomment to display the current state
 //#define DISPLAY_RFID_STATE            // uncomment to display the current state
