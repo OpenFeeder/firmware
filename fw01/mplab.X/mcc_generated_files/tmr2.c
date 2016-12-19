@@ -50,11 +50,11 @@
 
 #include <xc.h>
 #include "tmr2.h"
-#include "app.h"
 
 /**
   Section: Data Type Definitions
  */
+
 
 /** TMR Driver Hardware Instance Object
 
@@ -80,6 +80,7 @@ typedef struct _TMR_OBJ_STRUCT
 
 static TMR_OBJ tmr2_obj;
 
+
 /**
   Section: Driver Interface
  */
@@ -101,41 +102,15 @@ void TMR2_Initialize( void )
     tmr2_obj.timerElapsed = false;
 }
 
+
 void __attribute__( ( interrupt, no_auto_psv ) ) _T2Interrupt( )
 {
     /* Check if the Timer Interrupt/Status is set */
-    /* ISR = 32 us */
 
     //***User Area Begin
-    //static volatile unsigned int CountCallBack = 0;
-    //static volatile uint8_t CountCmdServoTon = 1; // count Timer Interrupt for create servo_position
-    static volatile uint8_t CountCmdMultiplex = 0;
 
     // ticker function call;
-    //    TMR2_CallBack( );
-    /* Multiplexing LEDs, either every 3 ms, measuring = 3.744 ms */
-    // ticker is 0.003/0.000031875= 94 -> Callback function gets called everytime this ISR executes
-    if ( appData.flags.bit_value.RemoteControlConnected )
-    {
-//        LED_STATUS_B_Toggle( ); // FIXME: Debug display
-//        if ( appData.mcp23017.status_bit.found )
-//        {
-            if ( ++CountCmdMultiplex > 94 )
-            {
-                CountCmdMultiplex = 0; /* reset ticker counter */
-                if ( APP_isRemoteControlConnected( ) )
-                {
-                    APP_MultiplexingLEDsTasks( ); /* Multiplexing LEDs on I2C Control Device board. (duration: 474 us) */
-                }
-                else
-                {
-                    appData.flags.bit_value.RemoteControlConnected = false;
-//                    appData.mcp23017.status_bit.found = false;
-                    appData.mcp23017.status_bit.initialized = false;
-                }
-            }
-//        }
-    }
+    TMR2_CallBack( );
 
     //***User Area End
 
@@ -143,6 +118,7 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _T2Interrupt( )
     tmr2_obj.timerElapsed = true;
     IFS0bits.T2IF = false;
 }
+
 
 void TMR2_Period16BitSet( uint16_t value )
 {
@@ -152,10 +128,12 @@ void TMR2_Period16BitSet( uint16_t value )
     tmr2_obj.timerElapsed = false;
 }
 
+
 uint16_t TMR2_Period16BitGet( void )
 {
     return ( PR2 );
 }
+
 
 void TMR2_Counter16BitSet( uint16_t value )
 {
@@ -165,15 +143,18 @@ void TMR2_Counter16BitSet( uint16_t value )
     tmr2_obj.timerElapsed = false;
 }
 
+
 uint16_t TMR2_Counter16BitGet( void )
 {
     return ( TMR2 );
 }
 
-//void __attribute__( ( weak ) ) TMR2_CallBack( void )
-//{
-//    // Add your custom callback code here
-//}
+
+void __attribute__( ( weak ) ) TMR2_CallBack( void )
+{
+    // Add your custom callback code here
+}
+
 
 void TMR2_Start( void )
 {
@@ -187,6 +168,7 @@ void TMR2_Start( void )
     T2CONbits.TON = 1;
 }
 
+
 void TMR2_Stop( void )
 {
     /* Stop the Timer */
@@ -195,6 +177,7 @@ void TMR2_Stop( void )
     /*Disable the interrupt*/
     IEC0bits.T2IE = false;
 }
+
 
 bool TMR2_GetElapsedThenClear( void )
 {
@@ -209,10 +192,12 @@ bool TMR2_GetElapsedThenClear( void )
     return status;
 }
 
+
 int TMR2_SoftwareCounterGet( void )
 {
     return tmr2_obj.count;
 }
+
 
 void TMR2_SoftwareCounterClear( void )
 {

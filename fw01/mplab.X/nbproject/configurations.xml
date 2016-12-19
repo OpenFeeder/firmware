@@ -19,6 +19,7 @@
         <itemPath>scr/app_remote.h</itemPath>
         <itemPath>scr/app_power.h</itemPath>
         <itemPath>scr/app_event.h</itemPath>
+        <itemPath>scr/app_timers_callback.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="driver" projectFiles="true">
         <itemPath>scr/min_ini.h</itemPath>
@@ -99,6 +100,7 @@
         <itemPath>scr/app_remote.c</itemPath>
         <itemPath>scr/app_power.c</itemPath>
         <itemPath>scr/app_event.c</itemPath>
+        <itemPath>scr/app_timers_callback.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f3" displayName="driver" projectFiles="true">
         <itemPath>scr/servomotor.c</itemPath>

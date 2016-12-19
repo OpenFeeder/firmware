@@ -49,13 +49,12 @@
  */
 
 #include <xc.h>
-#include <stdbool.h>
 #include "tmr4.h"
-#include "app.h"
 
 /**
   Section: Data Type Definitions
  */
+
 
 /** TMR Driver Hardware Instance Object
 
@@ -81,6 +80,7 @@ typedef struct _TMR_OBJ_STRUCT
 
 static TMR_OBJ tmr4_obj;
 
+
 /**
   Section: Driver Interface
  */
@@ -95,7 +95,6 @@ void TMR4_Initialize( void )
     //TCKPS 1:1; T32 16 Bit; TON enabled; TSIDL disabled; TCS FOSC/2; TECS SOSC; TGATE disabled; 
     T4CON = 0x8000;
 
-
     IFS1bits.T4IF = false;
     IEC1bits.T4IE = true;
 
@@ -103,57 +102,20 @@ void TMR4_Initialize( void )
 
 }
 
+
 void __attribute__( ( interrupt, no_auto_psv ) ) _T4Interrupt( )
 {
     /* Check if the Timer Interrupt/Status is set */
 
     //***User Area Begin
-    static volatile uint16_t CountCallBack = 0;
-
-    // callback function - called every 15th pass 
-    //    if ( ++CountCallBack >= TMR4_INTERRUPT_TICKER_FACTOR )
-    // with 15 next interrupt occur at 442 us
-    // old : with 17 next interrupt occur at 495 us
-    // counter_delay_read_bit
-    if ( g_counter_delay_read_bit++ > DECODING_RFID_INTERRUPT_TICKER_FACTOR )
-    {
-        // EM4095 DEMOD_OUT interrupt on timer even every 400 us :
-#if defined (DEBUG_RFID_WORKING_ON_LED_STATUS)
-        LED_STATUS_G_SetHigh( );
-#endif
-        g_datastream_read_bit = EM4095_DEMOD_OUT_GetValue( );
-        ++g_counter_delay_overflow; // increment every 440 us
-
-        // reset ticker counter
-        g_counter_delay_read_bit = 0;
-    }
-
-    // callback function - called every 6124th pass
-    if ( ++CountCallBack >= TMR4_INTERRUPT_TICKER_FACTOR )
-    {
-        // ticker function call
-        //        TMR4_CallBack( );
-        if ( g_rfid_activate )
-        {
-            g_timeout_reading_pit_tag = (g_timeout_reading_pit_tag != 0) ? g_timeout_reading_pit_tag-1 : 0;
-//            EM4095_SHD_Toggle( ); /* EM4095 active when SHD is low state, EM4095 enable. */
-        }
-        else
-        {
-            EM4095_SHD_DISABLE();
-        }
-
-        // reset ticker counter
-        CountCallBack = 0;
-
-    }
+    TMR4_CallBack( );
 
     //***User Area End
-
     tmr4_obj.count++;
     tmr4_obj.timerElapsed = true;
     IFS1bits.T4IF = false;
 }
+
 
 void TMR4_Period16BitSet( uint16_t value )
 {
@@ -163,10 +125,12 @@ void TMR4_Period16BitSet( uint16_t value )
     tmr4_obj.timerElapsed = false;
 }
 
+
 uint16_t TMR4_Period16BitGet( void )
 {
     return ( PR4 );
 }
+
 
 void TMR4_Counter16BitSet( uint16_t value )
 {
@@ -176,15 +140,18 @@ void TMR4_Counter16BitSet( uint16_t value )
     tmr4_obj.timerElapsed = false;
 }
 
+
 uint16_t TMR4_Counter16BitGet( void )
 {
     return ( TMR4 );
 }
 
+
 void __attribute__( ( weak ) ) TMR4_CallBack( void )
 {
     // Add your custom callback code here
 }
+
 
 void TMR4_Start( void )
 {
@@ -198,6 +165,7 @@ void TMR4_Start( void )
     T4CONbits.TON = 1;
 }
 
+
 void TMR4_Stop( void )
 {
     /* Stop the Timer */
@@ -206,6 +174,7 @@ void TMR4_Stop( void )
     /*Disable the interrupt*/
     IEC1bits.T4IE = false;
 }
+
 
 bool TMR4_GetElapsedThenClear( void )
 {
@@ -220,10 +189,12 @@ bool TMR4_GetElapsedThenClear( void )
     return status;
 }
 
+
 int TMR4_SoftwareCounterGet( void )
 {
     return tmr4_obj.count;
 }
+
 
 void TMR4_SoftwareCounterClear( void )
 {
