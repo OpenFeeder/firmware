@@ -32,6 +32,7 @@
 #include "app.h"
 
 volatile uint16_t counter_positive_edge_rdyclk = 0;
+volatile bool g_new_value_of_em4095_rdyclk_measurement;
 
 //***User Area End->code: Add External Interrupt handler specific headers
 
@@ -83,7 +84,7 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _INT3Interrupt( void )
     //#endif 
     /* Mesuring RDY/CLK signal frequency. */
     /* Check if we can update counter_positive_edge_rdyclk value. */
-    if ( g_new_value_of_em4095_rdyclk_measurement == false )
+    if ( false == g_new_value_of_em4095_rdyclk_measurement )
     {
         ++counter_positive_edge_rdyclk;
     }

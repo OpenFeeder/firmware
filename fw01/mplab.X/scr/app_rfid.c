@@ -8,11 +8,16 @@
 #include "app.h"
 #include "app_rfid.h"
 
-RFID_STATES g_rfid_reading_status = DISPLAY_RFID_INIT;
-RFID_STATES g_rfid_reading_status_previous = DISPLAY_RFID_ERROR;
-volatile uint8_t g_timeout_reading_pit_tag = 0;
-//volatile uint8_t number_of_valid_pit_tag = 0;
+extern volatile bool g_new_value_of_em4095_rdyclk_measurement;
 
+
+RFID_STATES g_rfid_reading_status; // for serial display of state machine process of EM4095
+RFID_STATES g_rfid_reading_status_previous;
+volatile uint8_t g_timeout_reading_pit_tag;
+extern volatile uint16_t rdyclk_count_in_10ms;
+
+/* Binary to Ascii text converter with simple lookup array */
+const char bin2ascii_tab[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
 void APP_Rfid_Init( void )
 {
@@ -246,25 +251,45 @@ void findPitTagInList( void )
 bool isPitTagDenied( void )
 {
     return appDataPitTag.isPitTagdeniedOrColorA[appDataPitTag.pitTagIndexInList];
-    //    bool isDenied = false;
-    //    int i;
-    //
-    //    for ( i = 0; i < ( appDataPitTag.numPitTagDeniedOrColorA + appDataPitTag.numPitTagAcceptedOrColorB ); ++i )
-    //    {
-    //        if ( 0 == strcmp( appDataLog.bird_pit_tag_str, appDataPitTag.pit_tags_list[i] ) )
-    //        {
-    //            /* Current PIT tag is in the denied list */
-    //            isDenied = appDataPitTag.isPitTagdeniedOrColorA[i];
-    //            /* Current PIT tag is in the all PIT tags list */
-    //            appDataPitTag.didPitTagMatched = true;
-    //            break;
-    //        }
-    //    }
-    //
-    //    return isDenied;
 }
 
 
+void measureRfidFreq( void )
+{
+    g_new_value_of_em4095_rdyclk_measurement = false;
+    
+    powerUsbRfidEnable( );
+
+    EM4095_SHD_ENABLE( );
+    /* Set-up time after a sleep period - Tset: 35ms */
+    /* Tableau page 5 - datasheet EM4095*/
+    setDelayMsEM4095( EM4095_TSET_DELAY_MS );
+    while ( false == isDelayMsEndingEM4095( ) )
+    {
+        Nop( );
+    }
+
+    while ( false == EM4095_SHD_GetValue( ) )
+    {
+        Nop( );
+    }
+    EX_INT3_InterruptEnable( );
+    while ( false == g_new_value_of_em4095_rdyclk_measurement )
+    {
+        Nop( );
+    }
+    EX_INT3_InterruptDisable( );
+
+    appData.rfid_rdyclk = rdyclk_count_in_10ms * 5;
+
+    g_new_value_of_em4095_rdyclk_measurement = false;
+    powerUsbRfidDisable( );
+
+#if defined (USE_UART1_SERIAL_INTERFACE)
+    printf( "RDY/CLK signal frequency: %u %u (x10Hz)\n", rdyclk_count_in_10ms, appData.rfid_rdyclk );
+#endif   
+
+}
 /*******************************************************************************
- End of File
+End of File
  */

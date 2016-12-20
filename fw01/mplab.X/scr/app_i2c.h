@@ -13,7 +13,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "mcc_generated_files/mcc.h"
-//#include "app.h"
 
 #define MAX_OF_UNKNOWN_I2C_8_BIT_SLAVE_ADD 255
 

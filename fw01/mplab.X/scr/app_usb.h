@@ -29,14 +29,9 @@
 #ifndef APP_USB_H
 #define	APP_USB_H
 
-#include <xc.h> /* include processor files - each processor file is guarded. */
-#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
 #include "usb.h"
 #include "usb_common.h"
 #include "usb_host_msd.h"
-#include "fileio.h"
 
 
 #define USB_DRIVE_NOT_MOUNTED false
@@ -69,9 +64,6 @@ typedef struct
 // Section: extern declarations
 // *****************************************************************************
 // *****************************************************************************
-
-//extern bool usbDriveStatus; // FIXME: pourquoi pas mettre dans APP_DATA_USB ?
-
 bool usbKeyAccess( void );
 bool usbMountDrive( void );
 bool usbUnmountDrive( void );

@@ -11,16 +11,17 @@
 
 // FIXME: add to appData ?
 volatile uint16_t rdyclk_count_in_10ms; /* variable to display the number of positive edge counter on RDY/CLK in (10 ms ! --> 20 ms) */
-volatile bool g_new_value_of_em4095_rdyclk_measurement; // new value of a frequency measurement RDY/CLK of the EM4095 signal available
-volatile uint16_t g_timeout_x20ms;
-volatile uint16_t g_timeout_em4095_x20ms;
-volatile uint16_t g_timeout_leds_status_x20ms;
-volatile uint8_t g_timeout_taking_reward;
+extern volatile bool g_new_value_of_em4095_rdyclk_measurement; // new value of a frequency measurement RDY/CLK of the EM4095 signal available
+extern volatile uint16_t counter_positive_edge_rdyclk;
+
+extern volatile uint16_t g_timeout_x20ms;
+extern volatile uint16_t g_timeout_em4095_x20ms;
+extern volatile uint16_t g_timeout_leds_status_x20ms;
+extern volatile uint8_t g_timeout_taking_reward;
+extern volatile uint8_t g_timeout_reading_pit_tag;
 
 void TMR2_CallBack( void )
 {
-    //static volatile unsigned int CountCallBack = 0;
-    //static volatile uint8_t CountCmdServoTon = 1; // count Timer Interrupt for create servo_position
     static volatile uint8_t CountCmdMultiplex = 0;
 
     /* Multiplexing LEDs, either every 3 ms, measuring = 3.744 ms */
@@ -75,10 +76,8 @@ void TMR3_CallBack( void )
     {
         case DOOR_OPENING:
             /* Opening in action. */
-            //if ( servomotorOpenTheDoor( &appDataServo ) )
             if ( servomotorOpenTheDoor( ) )
             {
-                //                appData.reward_door_status = DOOR_IDLE;
                 appDataDoor.reward_door_status = DOOR_OPENED;
             }
             break;
@@ -87,7 +86,6 @@ void TMR3_CallBack( void )
             /* Closing in action. */
             if ( servomotorCloseTheDoor( ) )
             {
-                //                appData.reward_door_status = DOOR_IDLE;
                 appDataDoor.reward_door_status = DOOR_CLOSED;
             }
             break;

@@ -196,10 +196,6 @@
 
 #include "mcc_generated_files/mcc.h"
 #include "app.h"
-//#include "usb.h"
-//#include "usb_host_msd.h"
-//#include "led_status.h"
-//#include "em4095.h"
 
 
 /*
@@ -211,10 +207,6 @@ int main( void )
 {
     /* Initialize the device. */
     SYSTEM_Initialize( );
-
-    /* Stop the peripherals that we do not need. */
-    //TMR2_Stop( );
-    EX_INT3_InterruptDisable( ); /* Disable RDY/CLK reading. */
 
     /* Initialize peripheral driver. */
     RFID_Initialize( );

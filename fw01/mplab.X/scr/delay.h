@@ -22,7 +22,6 @@ bool isDelayMsEndingEM4095( void );
 void setDelayMsLEDsStatus( uint16_t );
 bool isDelayMsEndingLEDsStatus( void );
 
-
 #endif	/* DELAY_H */
 
 

@@ -57,9 +57,6 @@ void setAttractiveLedsColor(void)
 }
 
 /* Set color for red attractive LEDs. */
-//void setAttractiveRedLedsColor( uint8_t red_color )
-
-
 void setAttractiveRedLedsColor(uint16_t dc_pwm)
 {
     appDataAttractiveLeds.red[appDataAttractiveLeds.current_color_index] = dc_pwm;

@@ -9,9 +9,6 @@
 #ifndef APP_DEBUG_H
 #define APP_DEBUG_H
 
-
-//#include "app.h"
-
 /**
  * Section: Global Variable Definitions
  */

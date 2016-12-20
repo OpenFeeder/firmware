@@ -20,6 +20,7 @@
         <itemPath>scr/app_power.h</itemPath>
         <itemPath>scr/app_event.h</itemPath>
         <itemPath>scr/app_timers_callback.h</itemPath>
+        <itemPath>scr/app_check.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="driver" projectFiles="true">
         <itemPath>scr/min_ini.h</itemPath>
@@ -101,6 +102,7 @@
         <itemPath>scr/app_power.c</itemPath>
         <itemPath>scr/app_event.c</itemPath>
         <itemPath>scr/app_timers_callback.c</itemPath>
+        <itemPath>scr/app_check.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f3" displayName="driver" projectFiles="true">
         <itemPath>scr/servomotor.c</itemPath>
@@ -728,6 +730,7 @@
         <property key="UART 3" value="true"/>
         <property key="UART 4" value="true"/>
         <property key="USB" value="true"/>
+        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>

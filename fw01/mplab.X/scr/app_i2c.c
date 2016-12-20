@@ -7,9 +7,8 @@
 
 #include "app.h"
 #include "app_i2c.h"
-//#include "../mcc_generated_files/mcc.h"
-//#include "buttons.h"
-//#include "digits.h"
+
+extern const char bin2ascii_tab[];
 
 /* Research slaves components present on the I2C bus. */
 uint8_t APP_I2CMasterSeeksSlaveDevice( uint16_t addr7bits_start, uint16_t addr7bits_stop )

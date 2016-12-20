@@ -102,10 +102,6 @@ static int populateLogBuffer( void )
         strcat( appDataLog.buffer, line );
     }
 
-    //#if defined (USE_UART1_SERIAL_INTERFACE)
-    //    printf("%s", appDataLog.buffer);
-    //#endif 
-
     return flag;
 }
 
@@ -265,10 +261,6 @@ bool setLogFileName( void )
         sprintf( appError.currentFileName, "%s", __FILE__ );
         return false;
     }
-
-//#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO )
-//    printf( "Log file name: %s\n", appDataLog.filename );
-//#endif 
 
     return true;
 }

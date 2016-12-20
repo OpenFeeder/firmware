@@ -255,35 +255,9 @@ void APP_SerialDebugTasks( void )
 
             case 'm':
             case 'M':
-                /* Measure Ready/Clock frequency (EM4095) */
-                CMD_VDD_APP_V_USB_SetHigh( ); /* Power up VDD APP for USB and RFID. */
 
-                EM4095_SHD_ENABLE( );
-                /* Set-up time after a sleep period - Tset: 35ms */
-                /* Tableau page 5 - datasheet EM4095*/
-                setDelayMsEM4095( EM4095_TSET_DELAY_MS );
-                while ( isDelayMsEndingEM4095( ) == false )
-                {
-                    Nop( );
-                }
-
-                while ( EM4095_SHD_GetValue( ) == false )
-                {
-                    Nop( );
-                }
-                EX_INT3_InterruptEnable( );
-                while ( g_new_value_of_em4095_rdyclk_measurement == false )
-                {
-                    Nop( );
-                }
-                EX_INT3_InterruptDisable( );
-
-#if defined (USE_UART1_SERIAL_INTERFACE)
-                printf( "RDY/CLK signal frequency: %u (x10Hz)\n", rdyclk_count_in_10ms * 5 );
-#endif    
-                g_new_value_of_em4095_rdyclk_measurement = false;
-                //                RFID_Disable();
-                CMD_VDD_APP_V_USB_SetLow( ); /* Shut down VDD APP for USB and RFID. */
+                measureRfidFreq( );
+                printf( "RDY/CLK signal frequencey: %u (x10Hz)\n", appData.rfid_rdyclk );
 
                 break;
                 /* -------------------------------------------------------------- */

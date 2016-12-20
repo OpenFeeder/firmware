@@ -23,14 +23,13 @@ typedef enum
 
 } RFID_STATES;
 
-extern RFID_STATES g_rfid_reading_status; // for serial display of state machine process of EM4095
-extern volatile uint8_t g_timeout_reading_pit_tag;
 
 void APP_Rfid_Init( void );
 bool APP_Rfid_Task( void );
 void findPitTagInList( void );
 bool isPitTagDenied( void );
 void clearPitTagBuffers( void );
+void measureRfidFreq( void );
 
 #endif /* APP_RFID_H */
 /*******************************************************************************

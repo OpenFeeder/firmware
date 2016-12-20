@@ -12,6 +12,9 @@
 #include "em4095.h"
 #include "app.h"
 
+extern const char bin2ascii_tab[];
+
+extern RFID_STATES g_rfid_reading_status;
 
 /* Used with mcc_generated_files\tmr4.c */
 volatile bool g_rfid_activate = false; // [0, 1]

@@ -11,6 +11,29 @@
 #include "app_power.h"
 
 
+void powerUsbRfidEnable( void )
+{
+
+
+//    if ( CMD_VDD_APP_V_USB_GetValue( ) == 0 )
+//    {
+        CMD_VDD_APP_V_USB_SetHigh( ); /* Powering VDD APP for USB and RFID. */
+//    }
+
+}
+
+
+void powerUsbRfidDisable( void )
+{
+
+
+//    if ( CMD_VDD_APP_V_USB_GetValue( ) == 1 )
+//    {
+        CMD_VDD_APP_V_USB_SetLow( ); /* Powering VDD APP for USB and RFID. */
+//    }
+}
+
+
 void getVBatLevel( void )
 {
 
@@ -24,6 +47,8 @@ void getVBatLevel( void )
 
     while ( !ADC1_IsConversionComplete( ) )
     {
+
+
         ADC1_Tasks( );
     }
 
@@ -36,6 +61,8 @@ void printVBatLevel( void )
 {
 
 #if defined (USE_UART1_SERIAL_INTERFACE) 
+
+
     printf( "VBat level: %2.3f V (%u)\n", appData.vbat_level* VBAT_VOLTAGE_FACTOR, appData.vbat_level );
 #endif 
 
@@ -55,6 +82,8 @@ void getBatteryLevel( void )
 
     while ( !ADC1_IsConversionComplete( ) )
     {
+
+
         ADC1_Tasks( );
     }
 
@@ -67,25 +96,10 @@ void printBatteryLevel( void )
 {
 
 #if defined (USE_UART1_SERIAL_INTERFACE) 
+
+
     printf( "Battery level: %2.3f V (%u)\n", appData.battery_level * BATTERY_VOLTAGE_FACTOR, appData.battery_level );
 #endif 
-
-}
-
-
-bool isPowerBatteryGood( void )
-{
-
-    getBatteryLevel( );
-
-    return (appData.battery_level > LOW_BATTERY_LEVEL );
-    //    if ( appData.battery_level <= LOW_BATTERY_LEVEL )
-    //    {
-    //
-    //        return false; /* Battery protected */
-    //    }
-    //
-    //    return true;
 
 }
 
@@ -187,5 +201,5 @@ FILEIO_RESULT logBatteryLevel( void )
 }
 
 /*******************************************************************************
- End of File
+End of File
  */

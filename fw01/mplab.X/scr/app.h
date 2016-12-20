@@ -66,22 +66,27 @@
 #include "led_status.h"
 #include "ir_sensor.h"
 #include "servomotor.h"
-#include "app_attractive_leds.h"
 
-#include "app_power.h"
-#include "app_usb.h"
-#include "usb_host_local.h"
-#include "app_i2c.h"
-#include "app_config.h"
+
 #include "app_alarm.h"
-#include "app_datetime.h"
-#include "app_error.h"
-#include "app_event.h"
+#include "app_attractive_leds.h"
+#include "app_check.h"
+#include "app_config.h"
 #include "app_data_logger.h"
-#include "app_remote.h"
+#include "app_datetime.h"
 #if defined (USE_UART1_SERIAL_INTERFACE)
 #include "app_debug.h"
 #endif
+#include "app_error.h"
+#include "app_event.h"
+#include "app_i2c.h"
+#include "app_power.h"
+#include "app_remote.h"
+#include "app_rfid.h"
+#include "app_timers_callback.h"
+#include "app_usb.h"
+
+#include "usb_host_local.h"
 
 #define DEFAULT_TIMEOUT_READING_PIT_TAG 30
 
@@ -114,17 +119,17 @@
 typedef enum
 {
     /* In this state, the application opens the driver */
-    APP_STATE_INIT,
+    APP_STATE_INITIALIZE,
 
-    APP_STATE_INIT_MOUNT_USB_KEY,
+    //    APP_STATE_INIT_MOUNT_USB_KEY,
 
-    APP_STATE_INIT_CONFIG_SYS,
+    APP_STATE_CONFIGURE_SYSTEM,
 
     /* In this state, application is in IDLE state after completion. */
     APP_STATE_IDLE,
 
     /* APP_STATE_RFID */
-    APP_STATE_RFID_MESURING_RDYCLK,
+    //    APP_STATE_RFID_MESURING_RDYCLK,
     APP_STATE_RFID_READING_PIT_TAG,
 
     APP_STATE_OPENING_REWARD_DOOR,
@@ -139,7 +144,9 @@ typedef enum
 
     APP_STATE_REMOTE_CONTROL,
 
-    APP_STATE_BATTERY_LOW,
+    APP_STATE_LOW_BATTERY,
+    APP_STATE_LOW_FOOD_LEVEL,
+    APP_STATE_LOW_RFID_FREQUENCY,
 
     /* Application error state */
     APP_STATE_ERROR
@@ -264,6 +271,8 @@ typedef struct
     /* Battery level*/
     uint16_t battery_level;
     uint16_t vbat_level;
+
+    uint16_t rfid_rdyclk;
 
 
 } APP_DATA;
@@ -399,12 +408,8 @@ extern APP_DATA_DOOR appDataDoor;
 #define is_bird_sensor_detected( ) appDataLog.bird_pir_sensor_status /* Return the value of global variable. */
 #define clear_bird_sensor_detected( ) {appDataLog.bird_pir_sensor_status = 0;} /* Clear the bird detection sensor. */
 
-extern const char bin2ascii_tab[];
-
 extern const FILEIO_DRIVE_CONFIG gUSBDrive;
-extern volatile uint16_t counter_positive_edge_rdyclk;
-extern volatile uint16_t rdyclk_count_in_10ms;
-extern volatile bool g_new_value_of_em4095_rdyclk_measurement;
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Callback Routines
