@@ -144,6 +144,7 @@ static volatile uint16_t msec_count = 0; // The current millisecond count.
 // *****************************************************************************
 // *****************************************************************************
 
+
 /****************************************************************************
   Function:
     uint8_t USBHostClearEndpointErrors( uint8_t deviceAddress, uint8_t endpoint )
@@ -195,6 +196,7 @@ uint8_t USBHostClearEndpointErrors( uint8_t deviceAddress, uint8_t endpoint )
     return USB_ENDPOINT_NOT_FOUND;
 }
 
+
 /****************************************************************************
   Function:
     bool    USBHostDeviceSpecificClientDriver( uint8_t deviceAddress )
@@ -245,6 +247,7 @@ bool USBHostDeviceSpecificClientDriver( uint8_t deviceAddress )
 {
     return usbDeviceInfo.flags.bfUseDeviceClientDriver;
 }
+
 
 /****************************************************************************
   Function:
@@ -318,6 +321,7 @@ uint8_t USBHostDeviceStatus( uint8_t deviceAddress )
 
     return USB_HOLDING_UNSUPPORTED_DEVICE;
 }
+
 
 /****************************************************************************
   Function:
@@ -417,6 +421,7 @@ bool USBHostInit( unsigned long flags )
  ***************************************************************************/
 #ifdef USB_SUPPORT_ISOCHRONOUS_TRANSFERS
 
+
 bool USBHostIsochronousBuffersCreate( ISOCHRONOUS_DATA * isocData, uint8_t numberOfBuffers, uint16_t bufferSize )
 {
     uint8_t i;
@@ -471,6 +476,7 @@ bool USBHostIsochronousBuffersCreate( ISOCHRONOUS_DATA * isocData, uint8_t numbe
  ***************************************************************************/
 #ifdef USB_SUPPORT_ISOCHRONOUS_TRANSFERS
 
+
 void USBHostIsochronousBuffersDestroy( ISOCHRONOUS_DATA * isocData, uint8_t numberOfBuffers )
 {
     uint8_t i;
@@ -510,6 +516,7 @@ void USBHostIsochronousBuffersDestroy( ISOCHRONOUS_DATA * isocData, uint8_t numb
  ***************************************************************************/
 #ifdef USB_SUPPORT_ISOCHRONOUS_TRANSFERS
 
+
 void USBHostIsochronousBuffersReset( ISOCHRONOUS_DATA * isocData, uint8_t numberOfBuffers )
 {
     uint8_t i;
@@ -526,6 +533,7 @@ void USBHostIsochronousBuffersReset( ISOCHRONOUS_DATA * isocData, uint8_t number
     isocData->pDataUser = NULL;
 }
 #endif
+
 
 /****************************************************************************
   Function:
@@ -700,6 +708,7 @@ uint8_t USBHostIssueDeviceRequest( uint8_t deviceAddress, uint8_t bmRequestType,
     return USB_SUCCESS;
 }
 
+
 /****************************************************************************
   Function:
     uint8_t USBHostRead( uint8_t deviceAddress, uint8_t endpoint, uint8_t *pData,
@@ -810,6 +819,7 @@ uint8_t USBHostRead( uint8_t deviceAddress, uint8_t endpoint, uint8_t *pData, ui
     return USB_ENDPOINT_NOT_FOUND; // Endpoint not found
 }
 
+
 /****************************************************************************
   Function:
     uint8_t USBHostResetDevice( uint8_t deviceAddress )
@@ -858,6 +868,7 @@ uint8_t USBHostResetDevice( uint8_t deviceAddress )
     return USB_SUCCESS;
 }
 
+
 /****************************************************************************
   Function:
     uint8_t USBHostResumeDevice( uint8_t deviceAddress )
@@ -902,6 +913,7 @@ uint8_t USBHostResumeDevice( uint8_t deviceAddress )
 
     return USB_SUCCESS;
 }
+
 
 /****************************************************************************
   Function:
@@ -1000,6 +1012,7 @@ uint8_t USBHostSetDeviceConfiguration( uint8_t deviceAddress, uint8_t configurat
     return USB_SUCCESS;
 }
 
+
 /****************************************************************************
   Function:
     uint8_t USBHostSetNAKTimeout( uint8_t deviceAddress, uint8_t endpoint, uint16_t flags,
@@ -1053,6 +1066,7 @@ uint8_t USBHostSetNAKTimeout( uint8_t deviceAddress, uint8_t endpoint, uint16_t 
     }
     return USB_ENDPOINT_NOT_FOUND;
 }
+
 
 /****************************************************************************
   Function:
@@ -1136,6 +1150,7 @@ void USBHostShutdown( void )
     USBHostInit( 0 );
 }
 
+
 /****************************************************************************
   Function:
     uint8_t USBHostSuspendDevice( uint8_t deviceAddress )
@@ -1184,6 +1199,7 @@ uint8_t USBHostSuspendDevice( uint8_t deviceAddress )
 
     return USB_SUCCESS;
 }
+
 
 /****************************************************************************
   Function:
@@ -2450,6 +2466,7 @@ void USBHostTasks( void )
 
 }
 
+
 /****************************************************************************
   Function:
     void USBHostTerminateTransfer( uint8_t deviceAddress, uint8_t endpoint )
@@ -2495,6 +2512,7 @@ void USBHostTerminateTransfer( uint8_t deviceAddress, uint8_t endpoint )
         ep->status.bfTransferComplete = 1;
     }
 }
+
 
 /****************************************************************************
   Function:
@@ -2599,6 +2617,7 @@ bool USBHostTransferIsComplete( uint8_t deviceAddress, uint8_t endpoint, uint8_t
     return true;
 }
 
+
 /****************************************************************************
   Function:
     uint8_t  USBHostVbusEvent( USB_EVENT vbusEvent, uint8_t hubAddress,
@@ -2658,6 +2677,7 @@ uint8_t USBHostVbusEvent( USB_EVENT vbusEvent, uint8_t hubAddress, uint8_t portN
 
     return USB_ILLEGAL_REQUEST;
 }
+
 
 /****************************************************************************
   Function:
@@ -2779,6 +2799,7 @@ uint8_t USBHostWrite( uint8_t deviceAddress, uint8_t endpoint, uint8_t *data, ui
 // *****************************************************************************
 // *****************************************************************************
 
+
 /****************************************************************************
   Function:
     void _USB_CheckCommandAndEnumerationAttempts( void )
@@ -2843,6 +2864,7 @@ void _USB_CheckCommandAndEnumerationAttempts( void )
         }
     }
 }
+
 
 /****************************************************************************
   Function:
@@ -2918,6 +2940,7 @@ bool _USB_FindClassDriver( uint8_t bClass, uint8_t bSubClass, uint8_t bProtocol,
     return false;
 
 } // _USB_FindClassDriver
+
 
 /****************************************************************************
   Function:
@@ -3048,6 +3071,7 @@ bool _USB_FindDeviceLevelClientDriver( void )
     return false;
 }
 
+
 /****************************************************************************
   Function:
     USB_ENDPOINT_INFO * _USB_FindEndpoint( uint8_t endpoint )
@@ -3144,6 +3168,7 @@ USB_INTERFACE_INFO * _USB_FindInterface ( uint8_t bInterface, uint8_t bAltSettin
 
 } // _USB_FindInterface
  */
+
 
 /****************************************************************************
   Function:
@@ -4047,6 +4072,7 @@ TryBulk:
     return;
 }
 
+
 /****************************************************************************
   Function:
     bool _USB_FindServiceEndpoint( uint8_t transferType )
@@ -4181,6 +4207,7 @@ bool _USB_FindServiceEndpoint( uint8_t transferType )
     return false;
 }
 
+
 /****************************************************************************
   Function:
     void _USB_FreeConfigMemory( void )
@@ -4233,6 +4260,7 @@ void _USB_FreeConfigMemory( void )
 
 } // _USB_FreeConfigMemory
 
+
 /****************************************************************************
   Function:
     void _USB_FreeMemory( void )
@@ -4277,6 +4305,7 @@ void _USB_FreeMemory( void )
     _USB_FreeConfigMemory( );
 
 }
+
 
 /****************************************************************************
   Function:
@@ -4329,6 +4358,7 @@ void _USB_InitControlRead( USB_ENDPOINT_INFO *pEndpoint, uint8_t *pControlData, 
     // Set the flag last so all the parameters are set for an interrupt.
     pEndpoint->status.bfTransferComplete = 0;
 }
+
 
 /****************************************************************************
   Function:
@@ -4389,6 +4419,7 @@ void _USB_InitControlWrite( USB_ENDPOINT_INFO *pEndpoint, uint8_t *pControlData,
     // Set the flag last so all the parameters are set for an interrupt.
     pEndpoint->status.bfTransferComplete = 0;
 }
+
 
 /****************************************************************************
   Function:
@@ -4457,6 +4488,7 @@ void _USB_InitRead( USB_ENDPOINT_INFO *pEndpoint, uint8_t *pData, uint16_t size 
     pEndpoint->status.bfTransferComplete = 0;
 }
 
+
 /****************************************************************************
   Function:
     void _USB_InitWrite( USB_ENDPOINT_INFO *pEndpoint, uint8_t *pData,
@@ -4524,6 +4556,7 @@ void _USB_InitWrite( USB_ENDPOINT_INFO *pEndpoint, uint8_t *pData, uint16_t size
     pEndpoint->status.bfTransferComplete = 0;
 }
 
+
 /****************************************************************************
   Function:
     void _USB_NotifyClients( uint8_t address, USB_EVENT event, void *data,
@@ -4579,6 +4612,7 @@ void _USB_NotifyClients( uint8_t address, USB_EVENT event, void *data, unsigned 
             break;
     }
 } // _USB_NotifyClients
+
 
 /****************************************************************************
   Function:
@@ -4654,6 +4688,7 @@ void _USB_NotifyDataClients( uint8_t address, USB_EVENT event, void *data, unsig
  ***************************************************************************/
 #if defined(USB_ENABLE_1MS_EVENT) && defined(USB_HOST_APP_DATA_EVENT_HANDLER)
 
+
 void _USB_NotifyAllDataClients( uint8_t address, USB_EVENT event, void *data, unsigned int size )
 {
     uint16_t i;
@@ -4673,6 +4708,7 @@ void _USB_NotifyAllDataClients( uint8_t address, USB_EVENT event, void *data, un
     }
 } // _USB_NotifyClients
 #endif
+
 
 /****************************************************************************
   Function:
@@ -5038,6 +5074,7 @@ bool _USB_ParseConfigurationDescriptor( void )
     }
 }
 
+
 /****************************************************************************
   Function:
     void _USB_ResetDATA0( uint8_t endpoint )
@@ -5097,6 +5134,7 @@ void _USB_ResetDATA0( uint8_t endpoint )
     }
 }
 
+
 /****************************************************************************
   Function:
     void _USB_SendToken( uint8_t endpoint, uint8_t tokenType )
@@ -5153,6 +5191,7 @@ void _USB_SendToken( uint8_t endpoint, uint8_t tokenType )
     //    U1CONbits.TOKBUSY = 1;
     usbBusInfo.flags.bfTokenAlreadyWritten = 1;
 }
+
 
 /****************************************************************************
   Function:
@@ -5307,6 +5346,7 @@ void _USB_SetBDT( uint8_t token )
     pBDT->STAT.UOWN = 1;
 }
 
+
 /****************************************************************************
   Function:
     bool _USB_TransferInProgress( void )
@@ -5405,12 +5445,12 @@ bool _USB_TransferInProgress( void )
 #define U1STAT_TX_MASK                      0x08    // U1STAT bit mask for Tx/Rx indication
 #define U1STAT_ODD_MASK                     0x04    // U1STAT bit mask for even/odd buffer bank
 
+
 void USB_HostInterruptHandler( void )
 {
-    //#if defined (DEBUG_UART)
-    //            //printf( "USB_HostInterruptHandler()\n" ); // display Sleeping message
-    //           putchar( '-' );
-    //#endif 
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_ISR_INFO)
+    printf( "USB_HostInterruptHandler()\n" );
+#endif 
 
 #if defined( __C30__) || defined __XC16__
     IFS5 &= 0xFFBF;
@@ -5425,9 +5465,6 @@ void USB_HostInterruptHandler( void )
 
     if ( U1OTGIEbits.T1MSECIE && U1OTGIRbits.T1MSECIF )
     {
-#if defined (DISPLAY_USB_ISR_INFO)
-        putchar( 'a' );
-#endif
         // The interrupt is cleared by writing a '1' to it.
         U1OTGIR = USB_INTERRUPT_T1MSECIF;
 
@@ -5436,10 +5473,6 @@ void USB_HostInterruptHandler( void )
 
         //Notify ping all client drivers of 1MSEC event (address, event, data, sizeof_data)
         _USB_NotifyAllDataClients( 0, EVENT_1MS, ( void* ) &msec_count, 0 );
-#endif
-
-#if defined (DEBUG_ENABLE)
-        DEBUG_PutChar( '~' );
 #endif
 
 #ifdef  USB_SUPPORT_OTG
@@ -5517,13 +5550,6 @@ void USB_HostInterruptHandler( void )
     // The attach interrupt is level, not edge, triggered.  So make sure we have it enabled.
     if ( U1IEbits.ATTACHIE && U1IRbits.ATTACHIF )
     {
-#if defined (DISPLAY_USB_ISR_INFO)
-        putchar( 'b' );
-#endif
-#if defined (DEBUG_ENABLE)
-        DEBUG_PutChar( '[' );
-#endif
-
         // The attach interrupt is level, not edge, triggered.  If we clear it, it just
         // comes right back.  So clear the enable instead
         U1IEbits.ATTACHIE = 0;
@@ -5551,13 +5577,6 @@ void USB_HostInterruptHandler( void )
 
     if ( U1IEbits.DETACHIE && U1IRbits.DETACHIF )
     {
-#if defined (DISPLAY_USB_ISR_INFO)
-        putchar( 'c' );
-#endif
-#if defined (DEBUG_ENABLE)
-        DEBUG_PutChar( ']' );
-#endif
-
         U1IR = USB_INTERRUPT_DETACH;
         U1IEbits.DETACHIE = 0;
         usbOverrideHostState = STATE_DETACHED;
@@ -5645,9 +5664,6 @@ void USB_HostInterruptHandler( void )
     if ( ( U1IEbits.TRNIE && U1IRbits.TRNIF ) &&
          ( !( U1IEbits.UERRIE && U1IRbits.UERRIF ) || ( pCurrentEndpoint->bmAttributes.bfTransferType == USB_TRANSFER_TYPE_ISOCHRONOUS ) ) )
     {
-#if defined (DISPLAY_USB_ISR_INFO)
-        putchar( 'd' );
-#endif
 #if defined(__C30__) || defined __XC16__
         U1STATBITS copyU1STATbits;
 #elif defined(__PIC32MX__)
@@ -5657,10 +5673,6 @@ void USB_HostInterruptHandler( void )
 #endif
         uint16_t packetSize;
         BDT_ENTRY *pBDT;
-
-#if defined (DEBUG_ENABLE)
-        DEBUG_PutChar( '!' );
-#endif
 
         // The previous token has finished, so clear the way for writing a new one.
         usbBusInfo.flags.bfTokenAlreadyWritten = 0;
@@ -5860,10 +5872,6 @@ void USB_HostInterruptHandler( void )
                 // The application must clear this if not a control endpoint.
                 // A stall on a control endpoint does not indicate that the
                 // endpoint is halted.
-#if defined (DEBUG_ENABLE)
-                DEBUG_PutChar( '^' );
-#endif
-
                 pCurrentEndpoint->status.bfStalled = 1;
                 pCurrentEndpoint->bErrorCode = USB_ENDPOINT_STALLED;
                 _USB_SetTransferErrorState( pCurrentEndpoint );
@@ -5914,9 +5922,6 @@ void USB_HostInterruptHandler( void )
 
     if ( U1IEbits.SOFIE && U1IRbits.SOFIF )
     {
-#if defined (DISPLAY_USB_ISR_INFO)
-        putchar( 'e' );
-#endif
         USB_ENDPOINT_INFO *pEndpoint;
         USB_INTERFACE_INFO *pInterface;
 
@@ -5971,14 +5976,6 @@ void USB_HostInterruptHandler( void )
 
     if ( U1IEbits.UERRIE && U1IRbits.UERRIF )
     {
-#if defined (DISPLAY_USB_ISR_INFO)
-        putchar( 'f' );
-#endif
-#if defined (DEBUG_ENABLE)
-        DEBUG_PutChar( '#' );
-        DEBUG_PutHexUINT8( U1EIR );
-#endif
-
         // The previous token has finished, so clear the way for writing a new one.
         usbBusInfo.flags.bfTokenAlreadyWritten = 0;
 

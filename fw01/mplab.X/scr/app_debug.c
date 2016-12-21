@@ -257,8 +257,7 @@ void APP_SerialDebugTasks( void )
             case 'M':
 
                 measureRfidFreq( );
-                printf( "RDY/CLK signal frequencey: %u (x10Hz)\n", appData.rfid_rdyclk );
-
+                displayRfidFreq( );
                 break;
                 /* -------------------------------------------------------------- */
 

@@ -263,7 +263,7 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
     {
 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
-        printf( "_RTCCInterrupt() " ); // display Sleeping message
+        printf( "_RTCCInterrupt() " );
 #endif 
 
         appData.rtcc_alarm_action = RTCC_ALARM_IDLE;
@@ -345,6 +345,15 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
                     {
                         ++appDataAttractiveLeds.alt_sec_elapsed;
                     }
+                }
+
+                /* Battery level */               
+                if ( appData.current_time.tm_min == 0 && appData.current_time.tm_sec == 30 )
+                {
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
+                    printf( "- Battery check\n" );
+#endif 
+                    appData.rtcc_alarm_action = RTCC_BATTERY_LEVEL_CHECK;
                 }
 
             }

@@ -8,7 +8,7 @@
 #include "app.h"
 #include "app_rfid.h"
 
-extern volatile bool g_new_value_of_em4095_rdyclk_measurement;
+volatile bool g_new_value_of_em4095_rdyclk_measurement = false;
 
 
 RFID_STATES g_rfid_reading_status; // for serial display of state machine process of EM4095
@@ -18,6 +18,7 @@ extern volatile uint16_t rdyclk_count_in_10ms;
 
 /* Binary to Ascii text converter with simple lookup array */
 const char bin2ascii_tab[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+
 
 void APP_Rfid_Init( void )
 {
@@ -254,10 +255,18 @@ bool isPitTagDenied( void )
 }
 
 
+void displayRfidFreq( void )
+{
+#if defined (USE_UART1_SERIAL_INTERFACE)
+    printf( "RDY/CLK signal frequency: %u (x10Hz)\n", appData.rfid_rdyclk );
+#endif
+}
+
+
 void measureRfidFreq( void )
 {
     g_new_value_of_em4095_rdyclk_measurement = false;
-    
+
     powerUsbRfidEnable( );
 
     EM4095_SHD_ENABLE( );
@@ -273,21 +282,19 @@ void measureRfidFreq( void )
     {
         Nop( );
     }
+    EX_INT3_InterruptFlagClear();
     EX_INT3_InterruptEnable( );
     while ( false == g_new_value_of_em4095_rdyclk_measurement )
     {
         Nop( );
     }
+    EX_INT3_InterruptFlagClear();
     EX_INT3_InterruptDisable( );
 
     appData.rfid_rdyclk = rdyclk_count_in_10ms * 5;
 
     g_new_value_of_em4095_rdyclk_measurement = false;
     powerUsbRfidDisable( );
-
-#if defined (USE_UART1_SERIAL_INTERFACE)
-    printf( "RDY/CLK signal frequency: %u %u (x10Hz)\n", rdyclk_count_in_10ms, appData.rfid_rdyclk );
-#endif   
 
 }
 /*******************************************************************************

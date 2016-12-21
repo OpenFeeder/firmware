@@ -106,6 +106,7 @@ APP_DATA_DOOR appDataDoor;
 
 extern volatile uint8_t g_timeout_reading_pit_tag;
 
+
 /******************************************************************************
   Function:
     void APP_Tasks( void )
@@ -152,7 +153,7 @@ void APP_Tasks( void )
                     appData.state = APP_STATE_LOW_RFID_FREQUENCY;
                     break;
             }
-
+            
             break;
             /* -------------------------------------------------------------- */
 
@@ -262,20 +263,6 @@ void APP_Tasks( void )
                 }
             }
 
-            /* Green status LED blinks in idle mode. */
-            LedsStatusBlink( LED_GREEN, 25, 1975 );
-
-#if defined (USE_UART1_SERIAL_INTERFACE)
-            /* Get interaction with the serial terminal. */
-            APP_SerialDebugTasks( );
-#endif
-
-            if ( false == isPowerBatteryGood( ) )
-            {
-                appData.state = APP_STATE_LOW_BATTERY;
-                break;
-            }
-
             /* Check PIR SENSOR detected.
              *  - recording the time of detected of the bird
              *  - if true go to APP_STATE_ERROR
@@ -306,6 +293,17 @@ void APP_Tasks( void )
 
                 appData.state = APP_STATE_RFID_READING_PIT_TAG;
                 break;
+            }
+
+            /* Check TIMEOUT IDLE MODE endding.
+             *  - if false go to APP_STATE_STANDBY
+             */
+            if ( false == appData.flags.bit_value.attractive_leds_status )
+            {
+                if ( appData.timeout_standby > 0 && isDelayMsEnding( ) )
+                {
+                    appData.state = APP_STATE_STANDBY;
+                }
             }
 
             if ( RTCC_ALARM_IDLE != appData.rtcc_alarm_action )
@@ -371,10 +369,34 @@ void APP_Tasks( void )
                     while ( DOOR_CLOSED != appDataDoor.reward_door_status );
                     servomotorPowerDisable( );
                 }
+                if ( RTCC_BATTERY_LEVEL_CHECK == appData.rtcc_alarm_action )
+                {
+                    if ( false == isPowerBatteryGood( ) )
+                    {
+                        appData.state = APP_STATE_LOW_BATTERY;
+                        break;
+                    }
+                    else
+                    {
+                        if ( FILEIO_RESULT_FAILURE == logBatteryLevel( ) )
+                        {
+                            appData.state = APP_STATE_ERROR;
+                            break;
+                        }
+                    }
+                }
 
                 appData.rtcc_alarm_action = RTCC_ALARM_IDLE;
 
             }
+
+            /* Green status LED blinks in idle mode. */
+            LedsStatusBlink( LED_GREEN, 25, 1975 );
+
+#if defined (USE_UART1_SERIAL_INTERFACE)
+            /* Get interaction with the serial terminal. */
+            APP_SerialDebugTasks( );
+#endif
 
             /* Check USER BUTTON detected.
              *  - if true go to ...
@@ -386,9 +408,9 @@ void APP_Tasks( void )
                 previous_button_user_state = button_user_state;
                 if ( BUTTON_PRESSED == button_user_state )
                 {
-                    //#if defined (USE_UART1_SERIAL_INTERFACE)
-                    //                    printf("User button pressed - ");
-                    //#endif
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO)
+                    printf( "User button pressed - " );
+#endif
                     if ( APP_isRemoteControlConnected( ) )
                     {
                         appData.flags.bit_value.RemoteControlConnected = true; // FIXME: same of appData.mcp23017.status_bit.found
@@ -408,24 +430,14 @@ void APP_Tasks( void )
 #endif
                     }
                 }
-                //                else
-                //                {
-                //#if defined (USE_UART1_SERIAL_INTERFACE)
-                //                    printf("User button released\n");
-                //#endif
-                //                }
-            }
-
-            /* Check TIMEOUT IDLE MODE endding.
-             *  - if false go to APP_STATE_STANDBY
-             */
-            if ( false == appData.flags.bit_value.attractive_leds_status )
-            {
-                if ( appData.timeout_standby > 0 && isDelayMsEnding( ) )
+                else
                 {
-                    appData.state = APP_STATE_STANDBY;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO)
+                    printf( "User button released\n" );
+#endif
                 }
             }
+
             break;
             /* -------------------------------------------------------------- */
 
@@ -491,7 +503,7 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE)
                     printf( "\tPIT tag %s accepted.\n", appDataLog.bird_pit_tag_str );
 #endif
-                    appData.state = APP_STATE_OPENING_REWARD_DOOR;
+                    appData.state = APP_STATE_OPENING_DOOR;
                 }
                 break;
             }
@@ -510,7 +522,7 @@ void APP_Tasks( void )
             break;
             /* -------------------------------------------------------------- */
 
-        case APP_STATE_OPENING_REWARD_DOOR:
+        case APP_STATE_OPENING_DOOR:
             if ( appData.state != appData.previous_state )
             {
                 appData.previous_state = appData.state;
@@ -583,7 +595,7 @@ void APP_Tasks( void )
                 IRSensorDisable( );
                 appData.bird_is_taking_reward = false;
                 appDataLog.is_reward_taken = true;
-                appData.state = APP_STATE_CLOSING_REWARD_DOOR;
+                appData.state = APP_STATE_CLOSING_DOOR;
                 break;
             }
 
@@ -594,12 +606,12 @@ void APP_Tasks( void )
                 printf( "Reward timeout.\n" );
 #endif
                 IRSensorDisable( );
-                appData.state = APP_STATE_CLOSING_REWARD_DOOR;
+                appData.state = APP_STATE_CLOSING_DOOR;
             }
             break;
             /* -------------------------------------------------------------- */
 
-        case APP_STATE_CLOSING_REWARD_DOOR:
+        case APP_STATE_CLOSING_DOOR:
             if ( appData.state != appData.previous_state )
             {
                 appData.previous_state = appData.state;

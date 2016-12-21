@@ -9,6 +9,7 @@
 #include "app.h"
 #include "app_check.h"
 
+
 APP_CHECK checkImportantParameters( void )
 {
 
@@ -83,7 +84,6 @@ bool isRfidFreqGood( void )
     bool rfidFreqOK;
 
     /* Check food level */
-    measureRfidFreq( );
     measureRfidFreq( );
 
     rfidFreqOK = appData.rfid_rdyclk > MIN_RDYCLK_FREQ;

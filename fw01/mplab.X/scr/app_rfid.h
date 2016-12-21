@@ -30,6 +30,7 @@ void findPitTagInList( void );
 bool isPitTagDenied( void );
 void clearPitTagBuffers( void );
 void measureRfidFreq( void );
+void displayRfidFreq( void );
 
 #endif /* APP_RFID_H */
 /*******************************************************************************

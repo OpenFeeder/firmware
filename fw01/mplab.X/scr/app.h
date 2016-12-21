@@ -24,20 +24,25 @@
 // *****************************************************************************
 // *****************************************************************************
 
-//#define DEBUG_RFID_WORKING_ON_LED_STATUS // uncomment to display hardware trace in RFID decoding routine
-#define USE_UART1_SERIAL_INTERFACE       // uncomment to display information during Finite State Machine (FSM) of main application
-//#define DISPLAY_USB_INFO               // uncomment to display USB information
+
+#define USE_UART1_SERIAL_INTERFACE  // uncomment to display information dsent to UART
+#define DISPLAY_CURRENT_STATE       // uncomment to display the current state of main state machine (app.c))
+
+//#define DISPLAY_USB_INFO          // uncomment to display USB information
 #define DISPLAY_LOG_INFO 
-//#define DISPLAY_ISR                    // uncomment to display interruption event
-//#define DISPLAY_ISR_RTCC
-#define DISPLAY_ISR_IR                 // uncomment to display interruption event
-//#define DISPLAY_ISR_I2C                // uncomment to display interruption event
-#define DISPLAY_CURRENT_STATE            // uncomment to display the current state
-//#define DISPLAY_RFID_STATE            // uncomment to display the current state
-#define DISPLAY_LOG_BUFFER_INFO 
+
+//#define DISPLAY_ISR_RTCC          // uncomment to display interruption event
+//#define DISPLAY_ISR_IR              // uncomment to display interruption event
+//#define DISPLAY_ISR_PIR           // uncomment to display interruption event
+//#define DISPLAY_ISR_RFID          // uncomment to display interruption event
+//#define DISPLAY_ISR_I2C           // uncomment to display interruption event
+//#define DISPLAY_USB_ISR_INFO      // in USB_HostInterruptHandler( )
+
+//#define DISPLAY_RFID_STATE        // uncomment to display the current state
 //#define DISPLAY_PIT_TAG_INFO 
+//#define DEBUG_RFID_WORKING_ON_LED_STATUS // uncomment to display hardware trace in RFID decoding routine
+
 #define DISPLAY_REMOTE_CONTROL_INFO 
-//#define DISPLAY_USB_ISR_INFO  // in USB_HostInterruptHandler( )
 
 
 // *****************************************************************************
@@ -121,20 +126,15 @@ typedef enum
     /* In this state, the application opens the driver */
     APP_STATE_INITIALIZE,
 
-    //    APP_STATE_INIT_MOUNT_USB_KEY,
-
     APP_STATE_CONFIGURE_SYSTEM,
 
-    /* In this state, application is in IDLE state after completion. */
     APP_STATE_IDLE,
 
-    /* APP_STATE_RFID */
-    //    APP_STATE_RFID_MESURING_RDYCLK,
     APP_STATE_RFID_READING_PIT_TAG,
 
-    APP_STATE_OPENING_REWARD_DOOR,
+    APP_STATE_OPENING_DOOR,
     APP_STATE_WAITING_CATCH_REWARD,
-    APP_STATE_CLOSING_REWARD_DOOR,
+    APP_STATE_CLOSING_DOOR,
 
     APP_STATE_DATA_LOG,
 
@@ -174,7 +174,8 @@ typedef enum
     RTCC_ALARM_CLOSE_DOOR,
     RTCC_ALARM_SET_ATTRACTIVE_LEDS_ON,
     RTCC_ALARM_SET_ATTRACTIVE_LEDS_OFF,
-    RTCC_ALARM_ALT_ATTRACTIVE_LEDS
+    RTCC_ALARM_ALT_ATTRACTIVE_LEDS,
+    RTCC_BATTERY_LEVEL_CHECK
 
 } RTCC_ALARM_ACTION;
 
@@ -367,24 +368,6 @@ typedef struct
     struct tm raise_time;
 
 } APP_DATA_EVENT;
-
-//typedef struct
-//{
-//    /* Declaration of FLAGS type. */
-//    union
-//    {
-//        uint8_t reg;
-//
-//        struct
-//        {
-//            unsigned pir_sensor : 1; /* true if ... */
-//            unsigned ir1_sensor : 1; /* true if ...*/
-//            unsigned ir2_sensor : 1; /* true if ... */
-//            unsigned : 5;
-//        } bits;
-//    } flags;
-//} APP_DATA_CAPTEURS;
-
 
 // *****************************************************************************
 // *****************************************************************************

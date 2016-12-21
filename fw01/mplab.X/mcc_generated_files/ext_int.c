@@ -32,7 +32,7 @@
 #include "app.h"
 
 volatile uint16_t counter_positive_edge_rdyclk = 0;
-volatile bool g_new_value_of_em4095_rdyclk_measurement;
+extern volatile bool g_new_value_of_em4095_rdyclk_measurement;
 
 //***User Area End->code: Add External Interrupt handler specific headers
 
@@ -40,14 +40,15 @@ volatile bool g_new_value_of_em4095_rdyclk_measurement;
    Section: External Interrupt Handlers
  */
 
+
 /**
   Interrupt Handler for EX_INT0 - INT0
  */
 void __attribute__( ( interrupt, no_auto_psv ) ) _INT0Interrupt( void )
 {
     //***User Area Begin->code: INT0 - External Interrupt 0***
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR)
-    printf( "_INT0Interrupt()\n" ); // display Sleeping message
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_PIR)
+    printf( "_INT0Interrupt()\n" );
 #endif 
     /* PIR sensor event. */
     appDataLog.bird_pir_sensor_status = true;
@@ -56,6 +57,7 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _INT0Interrupt( void )
     EX_INT0_InterruptFlagClear( );
 }
 
+
 /**
   Interrupt Handler for EX_INT1 - INT1
  */
@@ -63,15 +65,15 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _INT1Interrupt( void )
 {
     //***User Area Begin->code: INT1 - External Interrupt 1***
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_IR)
-    printf( "_INT1Interrupt()\n" ); // display Sleeping message
+    printf( "_INT1Interrupt()\n" );
 #endif 
     /* Event on infrared barrier sensor for detect if bird taking a reward. */
-    // g_reward_ir_sensor_status = true;
     set_flag_ir1_sensor( );
 
     //***User Area End->code: INT1 - External Interrupt 1***
     EX_INT1_InterruptFlagClear( );
 }
+
 
 /**
   Interrupt Handler for EX_INT3 - INT3
@@ -79,9 +81,9 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _INT1Interrupt( void )
 void __attribute__( ( interrupt, no_auto_psv ) ) _INT3Interrupt( void )
 {
     //***User Area Begin->code: INT3 - External Interrupt 3***
-    //#if defined (DEBUG_UART) && defined (DISPLAY_ISR)
-    //            printf( "_INT3Interrupt()\n" ); // display Sleeping message
-    //#endif 
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RFID)
+    printf( "_INT3Interrupt()\n" );
+#endif 
     /* Mesuring RDY/CLK signal frequency. */
     /* Check if we can update counter_positive_edge_rdyclk value. */
     if ( false == g_new_value_of_em4095_rdyclk_measurement )
@@ -93,32 +95,34 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _INT3Interrupt( void )
     EX_INT3_InterruptFlagClear( );
 }
 
+
 /**
   Interrupt Handler for EX_INT4 - INT4
  */
 void __attribute__( ( interrupt, no_auto_psv ) ) _INT4Interrupt( void )
 {
     //***User Area Begin->code: INT4 - External Interrupt 4***
-    //#if defined (DEBUG_UART) && defined (DISPLAY_ISR)
-    //            printf( "_INT4Interrupt()\n" ); // display Sleeping message
-    //#endif 
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RFID)
+    printf( "_INT4Interrupt()\n" );
+#endif 
     /* Event on EM4095_DEMOD_OUT RFID signal. */
     /* EM4095_DEMOD_OUT interrupt on edge detect */
-//#if defined (DEBUG_RFID_WORKING_ON_LED_STATUS)
-//    setLedsStatusColor( LED_YELLOW );
-////    LED_STATUS_B_SetHigh( );
-//#endif
+    //#if defined (DEBUG_RFID_WORKING_ON_LED_STATUS)
+    //    setLedsStatusColor( LED_YELLOW );
+    ////    LED_STATUS_B_SetHigh( );
+    //#endif
     RFID_DecodingTasks( ); /* Call state machine decoding RFID. */
 
     // TODO : Update flag for DMOD_OUT presence
     // Timeout_Detecting_RFID_Tag = REALOAD_VALUE;
-    
+
     //***User Area End->code: INT4 - External Interrupt 4***
     EX_INT4_InterruptFlagClear( );
 }
 /**
     Section: External Interrupt Initializers
  */
+
 
 /**
     void EXT_INT_Initialize(void)
@@ -158,7 +162,7 @@ void EXT_INT_Initialize( void )
      ********/
     EX_INT3_InterruptFlagClear( );
     EX_INT3_PositiveEdgeSet( );
-    EX_INT3_InterruptEnable( );
+    EX_INT3_InterruptDisable( );
     /*******
      * INT4
      * Clear the interrupt flag

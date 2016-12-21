@@ -8,6 +8,11 @@
 #include "app.h"
 #include "app_usb.h"
 
+/* Interrupt handler for USB host. */
+void __attribute__( ( interrupt, auto_psv ) ) _USB1Interrupt( )
+{
+    USB_HostInterruptHandler( );
+}
 
 /* Declare a FILEIO_DRIVE_CONFIG structure to describe which functions the File I/O library will use to communicate with the media */
 const FILEIO_DRIVE_CONFIG gUSBDrive = {

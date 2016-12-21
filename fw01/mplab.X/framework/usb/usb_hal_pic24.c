@@ -22,7 +22,7 @@ please contact mla_licensing@microchip.com
 #ifndef USB_HAL_PIC24F_C
 #define USB_HAL_PIC24F_C
 
-#include "system.h"
+//#include "system.h"
 #include "usb.h"
 //#include "usb_config.h"
 
