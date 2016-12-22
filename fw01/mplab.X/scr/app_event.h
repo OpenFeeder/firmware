@@ -8,10 +8,6 @@
 #ifndef APP_EVENT_H
 #define APP_EVENT_H
 
-#include <stdio.h>
-#include <stdint.h>
-
-
 #endif /* APP_EVENT_H */
 
 

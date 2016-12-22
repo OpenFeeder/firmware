@@ -8,11 +8,8 @@
 #ifndef APP_REMOTE_H
 #define APP_REMOTE_H
 
-
-#include <string.h>
-#include "app.h"
-
 #define START_MENU_DELAY 500 // 2000
+
 
 typedef enum
 {
@@ -22,27 +19,6 @@ typedef enum
     /* In this state, application is in IDLE state after completion */
     APP_STATE_RC_IDLE,
 
-    //    /* In this state, application change the RTCC Date and Time */
-    //    APP_STATE_SET_RTCC,
-    //
-    //    /* In this state, application change the RTCC Date and Time */
-    //    APP_STATE_GET_RTCC,
-    //
-    //    /* In this state, application scan I2C bus address from 0x00 to 0x7F */
-    //    APP_STATE_I2C_SCAN_BUS,
-    //
-    //    /* Write PORT direction of MCP23017 */
-    //    APP_STATE_I2C_INIT_MCP23017,
-    //
-    //    /* Write a data to PORTA (digit 1) of MCP23017 */
-    //    APP_STATE_I2C_WRITE_MCP23017,
-    //
-    //    /* Read the buttons status attached to the bits<3:5> of the PORTB of MCP23017 */
-    //    APP_STATE_I2C_READ_MCP23017,
-    //
-    //    /* Application error state */
-    //    APP_STATE_ERROR,
-    //
     APP_STATE_RC_BATTERY_LEVEL_INIT,
 
     APP_STATE_RC_WAIT_ENTER_MENU,
@@ -50,6 +26,7 @@ typedef enum
     APP_STATE_RC_MANIPULATE_DIGIT
 
 } APP_STATES_RC;
+
 
 typedef enum
 {
@@ -92,6 +69,7 @@ typedef enum
 
 } MENUS_LEVELS;
 
+
 typedef enum
 {
     NONE = 0,
@@ -100,6 +78,7 @@ typedef enum
     READ_WRITE
 
 } MENUS_MODES;
+
 
 typedef enum
 {
@@ -110,6 +89,7 @@ typedef enum
     RGB
 
 } MENUS_VALUE_TYPES;
+
 
 typedef struct
 {
@@ -124,6 +104,7 @@ typedef struct
     MENUS_VALUE_TYPES valueType;
 
 } MENU;
+
 
 typedef struct
 {

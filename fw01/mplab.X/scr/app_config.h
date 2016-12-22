@@ -8,9 +8,6 @@
 #ifndef APP_CONFIG_H
 #define APP_CONFIG_H
 
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
 #include "min_ini.h"
 
 #define sizearray(a)  (sizeof(a) / sizeof((a)[0]))

@@ -1,11 +1,6 @@
 #ifndef APP_RFID_H
 #define APP_RFID_H
 
-#include <xc.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <time.h>
-
 
 typedef enum
 {

@@ -9,7 +9,6 @@
 #define APP_ALARM_H
 
 #include <xc.h>
-#include <stdint.h>
 #include <time.h>
 
 #define EVERY_DAY        0xD800
@@ -18,6 +17,7 @@
 #define EVERY_MINUTE     0xCC00
 #define EVERY_10_SECONDS 0xC800
 #define EVERY_SECOND     0xC400
+
 
 typedef struct
 {

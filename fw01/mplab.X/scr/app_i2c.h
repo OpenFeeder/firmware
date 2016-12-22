@@ -9,19 +9,17 @@
 #define	APP_I2C_H
 
 
-#include <xc.h> /* include processor files - each processor file is guarded. */
-#include <stdint.h>
-#include <stdbool.h>
-#include "mcc_generated_files/mcc.h"
-
 #define MAX_OF_UNKNOWN_I2C_8_BIT_SLAVE_ADD 255
+
 
 typedef struct i2c_add_t
 {
 
+
     union
     {
         uint8_t add8bit;
+
 
         struct
         {

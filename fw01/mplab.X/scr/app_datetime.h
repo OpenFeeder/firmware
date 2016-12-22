@@ -15,9 +15,9 @@
 #include "mcc_generated_files/rtcc.h"
 
 
-void setDateTime(int, int, int, int, int, int);
-void printCurrentDate();
-void getDateTime( struct tm *);
+void setDateTime( int, int, int, int, int, int );
+void printCurrentDate( );
+void getDateTime( struct tm * );
 
 
 #endif /* APP_DATETIME_H */
