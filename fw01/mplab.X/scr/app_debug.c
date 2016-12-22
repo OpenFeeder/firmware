@@ -15,24 +15,19 @@
 /* Display information on serial terminal. */
 void displayBootMessage( void )
 {
-    printf( "\n\n=== Openfeeder prototype v0-1-0 ===\n" );
-    printf( "   Firmware: Ver. fw002 - Rev. c\n" );
-    //    printf( "DEBUG_UART defined: Display information during main application.\n" ); /* see: \scr\app.h */
-    printf( "===================================\n\n" );
-#if defined (DISPLAY_USB_INFO)
-    printf( "DISPLAY_USB_INFO defined: Display USB information.\n" ); /* see: \scr\app.h */
-#endif
-#if defined (DEBUG_RFID_WORKING_ON_LED_STATUS)
-    printf( "DEBUG_RFID_WORKING_ON_LED_STATUS defined: Display information on status LED during RFID decoding routine.\n" ); /* see: \scr\app.h */
-#endif
-
+    printf( "\n\n================ Openfeeder ================\n" );
+    printf( "       Board: 0.1.0 - Firmware: fw001\n" );
+    printf( "============================================\n" );
+    printf( "   Webpage: https://github.com/OpenFeeder\n" );
+    printf( "   Contact: contact.openfeeder@gmail.com\n" );
+    printf( "============================================\n\n" );
 }
 
 
 void APP_SerialDebugTasks( void )
 {
 
-    /* Interface firmware terminal (Debug) - Idem in main.c */
+    /* Interface firmware terminal (Debug) */
     // a or A: analogic measure of the current postion of the servomotor, battery voltage and VBat voltage
     // b or B: set blue color value of attractive LEDs
     // c or C: close reward door
@@ -43,7 +38,6 @@ void APP_SerialDebugTasks( void )
     // h or H: toggle door remain open parameter
     // i or I: enable IR 
     // j or J: disable IR 
-    // m or M: measure Ready/Clock frequency (EM4095)
     // o or O: open reward door
     // p or P: change servomotor position
     // r or R: set red color value of attractive LEDs
@@ -170,8 +164,8 @@ void APP_SerialDebugTasks( void )
             case 'e':
             case 'E':
                 /* Mesuring RDY/CLK period of EM4095 */
-                printf( "Mesuring RDY/CLK period of EM4095.\n" );
-                // TODO: appData.state = APP_STATE_RFID_MESURING_RDYCLK;
+                measureRfidFreq( );
+                displayRfidFreq( );
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -250,14 +244,6 @@ void APP_SerialDebugTasks( void )
                 /* Disable IR  */
                 IRSensorDisable( );
                 printf( "IR command disable, mode low power.\n" );
-                break;
-                /* -------------------------------------------------------------- */
-
-            case 'm':
-            case 'M':
-
-                measureRfidFreq( );
-                displayRfidFreq( );
                 break;
                 /* -------------------------------------------------------------- */
 

@@ -1,8 +1,12 @@
+/**
+ * @file led_status.h
+ * @author OpenFeeder Team <https://github.com/orgs/OpenFeeder/people>
+ * @version 1.0
+ * @date 09/09/2016
+ */
+
 #ifndef APP_LED_STATUS_H
 #define APP_LED_STATUS_H
-
-#include "mcc_generated_files/mcc.h"
-//#include "mcc_generated_files/pin_manager.h"
 
 typedef enum
 {

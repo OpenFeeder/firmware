@@ -345,7 +345,6 @@ INI_READ_STATE config_read_ini( void )
     read_parameter = ini_getl( "door", "ton_min", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
     {
-        appDataServo.ton_min = SERVO_POSITION_MIN_DEFAULT;
         return INI_PB_DOOR_TON_MIN;
     }
     else
@@ -363,7 +362,6 @@ INI_READ_STATE config_read_ini( void )
     read_parameter = ini_getl( "door", "ton_max", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
     {
-        appDataServo.ton_max = SERVO_POSITION_MAX_DEFAULT;
         return INI_PB_DOOR_TON_MAX;
     }
     else
@@ -381,7 +379,6 @@ INI_READ_STATE config_read_ini( void )
     read_parameter = ini_getl( "door", "speed", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
     {
-        appDataServo.speed = SERVO_SPEED_INC_DEFAULT;
         return INI_PB_DOOR_SPEED;
     }
     else
@@ -466,7 +463,6 @@ INI_READ_STATE config_read_ini( void )
     read_parameter = ini_getl( "timeouts", "sleep", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
     {
-        appData.timeout_standby = STANDBY_TIMEOUT_X1000MS_DEFAULT * 1000;
         return INI_PB_TIMEOUTS_SLEEP;
     }
     else
@@ -477,7 +473,6 @@ INI_READ_STATE config_read_ini( void )
     read_parameter = ini_getl( "timeouts", "pir", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
     {
-        appData.timeout_pir = PIR_TIMEOUT_X1000MS_DEFAULT * 1000;
         return INI_PB_TIMEOUTS_PIR;
     }
     else
@@ -488,7 +483,6 @@ INI_READ_STATE config_read_ini( void )
     read_parameter = ini_getl( "timeouts", "reward", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
     {
-        appData.timeout_taking_reward = TAKING_REWARD_TIMEOUT_X1000MS_DEFAULT * 1000;
         return INI_PB_TIMEOUTS_REWARD;
     }
     else

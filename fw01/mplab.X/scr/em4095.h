@@ -34,17 +34,6 @@
 #ifndef XC_HEADER_EM4095_H
 #define	XC_HEADER_EM4095_H
 
-#include <xc.h> // include processor files - each processor file is guarded.  
-#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include "pin_manager.h"
-#include "ext_int.h"
-#include "tmr4.h"
-#include "uart1.h"
-#include "app_rfid.h"
-
-
 #define DATASTREAM_BUFFER_SIZE 55 /* number of bit after header data in RFID raw frame */
 #define SynchroWithTimerDelayCount() {g_counter_delay_read_bit = 0;} /* timer synchronization */
 
@@ -114,16 +103,6 @@ typedef enum {
     INT_FALLING_EDGE
 
 } ISR_ID_DECODING_RFID; // identification of the interrupt
-
-///* EM4095 Library data structure */
-//typedef struct em4095_data_t
-//{
-//    /* Application current state */
-//    RFID_DISPLAY_STATES serial_display_state;
-//
-//} EM4095_DATA;
-//
-//extern EM4095_DATA em4095;
 
 // *****************************************************************************
 // *****************************************************************************

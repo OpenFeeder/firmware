@@ -14,13 +14,6 @@
 #ifndef XC_HEADER_MCP23017_H
 #define	XC_HEADER_MCP23017_H
 
-//#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include "mcc_generated_files/i2c1.h"
-//#include "mcc_generated_files/uart1.h"
-
-
 // MCP23017 7-bits slave address (and 0x40 is the 8-bits slave address)
 #define MCP23017_ADDRESS    0x20
 
@@ -104,14 +97,14 @@
 
     <p><b>Remarks:</b></p>
  */
-I2C1_MESSAGE_STATUS I2C1_MasterWriteMCP23017(const uint16_t addr7bits,
-                                             uint8_t *p_data,
-                                             const uint8_t data_len);
+I2C1_MESSAGE_STATUS I2C1_MasterWriteMCP23017( const uint16_t addr7bits,
+                                              uint8_t *p_data,
+                                              const uint8_t data_len );
 
-I2C1_MESSAGE_STATUS I2C1_MasterReadMCP23017(const uint16_t addr7bits,
-                                            const uint8_t register_addr,
-                                            uint8_t *p_data_read,
-                                            const uint8_t number_of_data_to_read);
+I2C1_MESSAGE_STATUS I2C1_MasterReadMCP23017( const uint16_t addr7bits,
+                                             const uint8_t register_addr,
+                                             uint8_t *p_data_read,
+                                             const uint8_t number_of_data_to_read );
 
 
 #endif	/* XC_HEADER_TEMPLATE_H */

@@ -1,6 +1,28 @@
 #ifndef APP_RFID_H
 #define APP_RFID_H
 
+#define MAX_PIT_TAGS_LIST_NUMBER 200
+
+#define DEFAULT_TIMEOUT_READING_PIT_TAG 30
+
+typedef struct
+{
+    /* Number of PIT tags denied or associated with color A */
+    uint16_t numPitTagDeniedOrColorA;
+    /* Number of PIT tags accepted or associated with color B */
+    uint16_t numPitTagAcceptedOrColorB;
+    /* List of PIT tags denied */
+    char pit_tags_list[MAX_PIT_TAGS_LIST_NUMBER][11];
+
+    bool isPitTagdeniedOrColorA[MAX_PIT_TAGS_LIST_NUMBER];
+
+    bool didPitTagMatched;
+
+    uint16_t pitTagIndexInList;
+
+    uint8_t number_of_valid_pit_tag;
+
+} APP_DATA_PIT_TAG;
 
 typedef enum
 {

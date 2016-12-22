@@ -8,9 +8,6 @@
 #ifndef IR_SENSOR_H
 #define	IR_SENSOR_H
 
-#include <xc.h>
-#include <ctype.h>
-#include <stdbool.h>
 #include "pin_manager.h"
 #include "ext_int.h"
 #include "tmr4.h"

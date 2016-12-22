@@ -8,7 +8,7 @@
 #ifndef APP_REMOTE_H
 #define APP_REMOTE_H
 
-#define START_MENU_DELAY 500 // 2000
+#define START_MENU_DELAY 2000
 
 
 typedef enum

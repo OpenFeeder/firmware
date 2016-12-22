@@ -8,9 +8,9 @@
  * @datasheet http://www.emmicroelectronic.com/sites/default/files/public/products/datasheets/em4095_ds.pdf
  */
 
-
-#include "em4095.h"
 #include "app.h"
+#include "em4095.h"
+
 
 extern const char bin2ascii_tab[];
 

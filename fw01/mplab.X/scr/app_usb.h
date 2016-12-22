@@ -32,7 +32,7 @@
 #include "usb.h"
 #include "usb_common.h"
 #include "usb_host_msd.h"
-
+#include "usb_host_msd_scsi.h"
 
 #define USB_DRIVE_NOT_MOUNTED false
 #define USB_DRIVE_MOUNTED true

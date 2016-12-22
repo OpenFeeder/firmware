@@ -5,9 +5,8 @@
  * @date 09/09/2016
  */
 
-#include "mcc_generated_files/mcc.h"
+#include "app.h"
 #include "ir_sensor.h"
-#include "usb_ch9.h"
 
 bool g_flag_ir1_sensor = false;
 bool g_flag_ir2_sensor = false;

@@ -8,6 +8,12 @@
 #ifndef APP_EVENT_H
 #define APP_EVENT_H
 
+typedef struct
+{
+    struct tm raise_time;
+
+} APP_DATA_EVENT;
+
 #endif /* APP_EVENT_H */
 
 

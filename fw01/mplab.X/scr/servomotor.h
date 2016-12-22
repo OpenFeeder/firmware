@@ -9,11 +9,6 @@
 #ifndef SERVOMOTOR_H
 #define	SERVOMOTOR_H
 
-//#include <xc.h> /* include processor files - each processor file is guarded. */
-#include "mcc_generated_files/mcc.h"
-#include <stdint.h>
-#include <stdbool.h>
-
 /* Change servomotor position, Ton time (in us) corresponds to an angular angle.
  * Absolute range: 500 us < servo_position < 2500 us
  * Ton value depends on the actuator type.
@@ -25,13 +20,29 @@
 #define SERVO_START_POSITION_DEFAULT    1500    /* initial servomotor position at the middle */
 #define SERVO_SPEED_INC_DEFAULT         10      /* servomotor position increment every 20 ms */
 
-/** [Clockwise](https://en.wikipedia.org/wiki/Clockwise)
- * A clockwise (typically abbreviated as CW) motion is one that proceeds in the same direction as a clock's hands.
- * The opposite sense of rotation or revolution is (in Commonwealth English) anticlockwise (ACW),
- * or (in North American English) counterclockwise (CCW).
- */
-//#define CW  0 // direction clockwise
-//#define CCW 1 // direction counterclockwise
+typedef enum
+{
+    DOOR_IDLE, /* Not in use. */
+    DOOR_OPENED,
+    DOOR_CLOSED,
+    DOOR_OPENING, /* Opening in action. */
+    DOOR_CLOSING /* Closing in action. */
+
+} DOOR_STATUS;
+
+typedef struct
+{
+    uint16_t open_delay;
+    uint16_t close_delay;
+
+    struct tm open_time;
+    struct tm close_time;
+
+    uint8_t remain_open;
+
+    DOOR_STATUS reward_door_status;
+
+} APP_DATA_DOOR;
 
 /* Servomotor components */
 typedef struct

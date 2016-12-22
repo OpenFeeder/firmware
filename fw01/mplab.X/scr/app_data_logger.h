@@ -19,6 +19,35 @@
 
 #define sizearray(a)  (sizeof(a) / sizeof((a)[0]))
 
+typedef struct
+{
+    /* Log file name - 8.3 convention - Upper case only */
+    char filename[13];
+    /* Data separator in log file */
+    char separator[2];
+
+    /* Character buffer to store data before export to the log file */
+    char buffer[MAX_CHAR_PER_LINE * MAX_NUM_DATA_TO_STORE];
+    /* Number of written characters in the buffer */
+    unsigned int nCharBuffer;
+    /* Number of line stored in the buffer */
+    uint8_t numDataStored;
+
+    /* Bird Data */
+    struct tm bird_arrived_time;
+    struct tm bird_quit_time;
+    char bird_pit_tag_str[11];
+    bool bird_pir_sensor_status;
+    bool is_pit_tag_denied;
+    bool is_reward_taken;
+
+    /* Attractive LEDs color*/
+    uint8_t attractive_leds_current_color_index;
+
+    uint8_t door_status_when_bird_arrived;
+
+} APP_DATA_LOG;
+
 bool dataLog( void );
 bool setLogFileName( void );
 void GetTimestamp( FILEIO_TIMESTAMP * );

@@ -43,15 +43,14 @@
     SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
     (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
 
-*/
+ */
 
 #ifndef _PIN_MANAGER_H
 #define _PIN_MANAGER_H
 /**
     Section: Includes
-*/
+ */
 #include <xc.h>
-#include "ir_sensor.h"
 
 /*** Button Definitions *********************************************/
 #define BUTTON_PRESSED      0
@@ -59,7 +58,7 @@
 
 /**
     Section: Device Pin Macros
-*/
+ */
 /**
   @Summary
     Sets the GPIO pin, RA0, high using LATA0.
@@ -82,7 +81,7 @@
     channel_AN0_MA_12V_SetHigh();
     </code>
 
-*/
+ */
 #define channel_AN0_MA_12V_SetHigh()          _LATA0 = 1
 /**
   @Summary
@@ -106,7 +105,7 @@
     channel_AN0_MA_12V_SetLow();
     </code>
 
-*/
+ */
 #define channel_AN0_MA_12V_SetLow()           _LATA0 = 0
 /**
   @Summary
@@ -130,7 +129,7 @@
     channel_AN0_MA_12V_Toggle();
     </code>
 
-*/
+ */
 #define channel_AN0_MA_12V_Toggle()           _LATA0 ^= 1
 /**
   @Summary
@@ -156,7 +155,7 @@
     postValue = channel_AN0_MA_12V_GetValue();
     </code>
 
-*/
+ */
 #define channel_AN0_MA_12V_GetValue()         _RA0
 /**
   @Summary
@@ -180,7 +179,7 @@
     channel_AN0_MA_12V_SetDigitalInput();
     </code>
 
-*/
+ */
 #define channel_AN0_MA_12V_SetDigitalInput()  _TRISA0 = 1
 /**
   @Summary
@@ -204,7 +203,7 @@
     channel_AN0_MA_12V_SetDigitalOutput();
     </code>
 
-*/
+ */
 #define channel_AN0_MA_12V_SetDigitalOutput() _TRISA0 = 0
 /**
   @Summary
@@ -228,7 +227,7 @@
     channel_AN1_MA_SERVO_SetHigh();
     </code>
 
-*/
+ */
 #define channel_AN1_MA_SERVO_SetHigh()          _LATA1 = 1
 /**
   @Summary
@@ -252,7 +251,7 @@
     channel_AN1_MA_SERVO_SetLow();
     </code>
 
-*/
+ */
 #define channel_AN1_MA_SERVO_SetLow()           _LATA1 = 0
 /**
   @Summary
@@ -276,7 +275,7 @@
     channel_AN1_MA_SERVO_Toggle();
     </code>
 
-*/
+ */
 #define channel_AN1_MA_SERVO_Toggle()           _LATA1 ^= 1
 /**
   @Summary
@@ -302,7 +301,7 @@
     postValue = channel_AN1_MA_SERVO_GetValue();
     </code>
 
-*/
+ */
 #define channel_AN1_MA_SERVO_GetValue()         _RA1
 /**
   @Summary
@@ -326,7 +325,7 @@
     channel_AN1_MA_SERVO_SetDigitalInput();
     </code>
 
-*/
+ */
 #define channel_AN1_MA_SERVO_SetDigitalInput()  _TRISA1 = 1
 /**
   @Summary
@@ -350,7 +349,7 @@
     channel_AN1_MA_SERVO_SetDigitalOutput();
     </code>
 
-*/
+ */
 #define channel_AN1_MA_SERVO_SetDigitalOutput() _TRISA1 = 0
 /**
   @Summary
@@ -374,7 +373,7 @@
     CMD_VCC_IR_SetHigh();
     </code>
 
-*/
+ */
 #define CMD_VCC_IR_SetHigh()          _LATA10 = 1
 /**
   @Summary
@@ -398,7 +397,7 @@
     CMD_VCC_IR_SetLow();
     </code>
 
-*/
+ */
 #define CMD_VCC_IR_SetLow()           _LATA10 = 0
 /**
   @Summary
@@ -422,7 +421,7 @@
     CMD_VCC_IR_Toggle();
     </code>
 
-*/
+ */
 #define CMD_VCC_IR_Toggle()           _LATA10 ^= 1
 /**
   @Summary
@@ -448,7 +447,7 @@
     postValue = CMD_VCC_IR_GetValue();
     </code>
 
-*/
+ */
 #define CMD_VCC_IR_GetValue()         _RA10
 /**
   @Summary
@@ -472,7 +471,7 @@
     CMD_VCC_IR_SetDigitalInput();
     </code>
 
-*/
+ */
 #define CMD_VCC_IR_SetDigitalInput()  _TRISA10 = 1
 /**
   @Summary
@@ -496,7 +495,7 @@
     CMD_VCC_IR_SetDigitalOutput();
     </code>
 
-*/
+ */
 #define CMD_VCC_IR_SetDigitalOutput() _TRISA10 = 0
 /**
   @Summary
@@ -520,7 +519,7 @@
     LED_STATUS_G_SetHigh();
     </code>
 
-*/
+ */
 #define LED_STATUS_G_SetHigh()          _LATA7 = 1
 /**
   @Summary
@@ -544,7 +543,7 @@
     LED_STATUS_G_SetLow();
     </code>
 
-*/
+ */
 #define LED_STATUS_G_SetLow()           _LATA7 = 0
 /**
   @Summary
@@ -568,7 +567,7 @@
     LED_STATUS_G_Toggle();
     </code>
 
-*/
+ */
 #define LED_STATUS_G_Toggle()           _LATA7 ^= 1
 /**
   @Summary
@@ -594,7 +593,7 @@
     postValue = LED_STATUS_G_GetValue();
     </code>
 
-*/
+ */
 #define LED_STATUS_G_GetValue()         _RA7
 /**
   @Summary
@@ -618,7 +617,7 @@
     LED_STATUS_G_SetDigitalInput();
     </code>
 
-*/
+ */
 #define LED_STATUS_G_SetDigitalInput()  _TRISA7 = 1
 /**
   @Summary
@@ -642,7 +641,7 @@
     LED_STATUS_G_SetDigitalOutput();
     </code>
 
-*/
+ */
 #define LED_STATUS_G_SetDigitalOutput() _TRISA7 = 0
 /**
   @Summary
@@ -666,7 +665,7 @@
     LED_STATUS_B_SetHigh();
     </code>
 
-*/
+ */
 #define LED_STATUS_B_SetHigh()          _LATA8 = 1
 /**
   @Summary
@@ -690,7 +689,7 @@
     LED_STATUS_B_SetLow();
     </code>
 
-*/
+ */
 #define LED_STATUS_B_SetLow()           _LATA8 = 0
 /**
   @Summary
@@ -714,7 +713,7 @@
     LED_STATUS_B_Toggle();
     </code>
 
-*/
+ */
 #define LED_STATUS_B_Toggle()           _LATA8 ^= 1
 /**
   @Summary
@@ -740,7 +739,7 @@
     postValue = LED_STATUS_B_GetValue();
     </code>
 
-*/
+ */
 #define LED_STATUS_B_GetValue()         _RA8
 /**
   @Summary
@@ -764,7 +763,7 @@
     LED_STATUS_B_SetDigitalInput();
     </code>
 
-*/
+ */
 #define LED_STATUS_B_SetDigitalInput()  _TRISA8 = 1
 /**
   @Summary
@@ -788,7 +787,7 @@
     LED_STATUS_B_SetDigitalOutput();
     </code>
 
-*/
+ */
 #define LED_STATUS_B_SetDigitalOutput() _TRISA8 = 0
 /**
   @Summary
@@ -812,7 +811,7 @@
     LED_STATUS_R_SetHigh();
     </code>
 
-*/
+ */
 #define LED_STATUS_R_SetHigh()          _LATA9 = 1
 /**
   @Summary
@@ -836,7 +835,7 @@
     LED_STATUS_R_SetLow();
     </code>
 
-*/
+ */
 #define LED_STATUS_R_SetLow()           _LATA9 = 0
 /**
   @Summary
@@ -860,7 +859,7 @@
     LED_STATUS_R_Toggle();
     </code>
 
-*/
+ */
 #define LED_STATUS_R_Toggle()           _LATA9 ^= 1
 /**
   @Summary
@@ -886,7 +885,7 @@
     postValue = LED_STATUS_R_GetValue();
     </code>
 
-*/
+ */
 #define LED_STATUS_R_GetValue()         _RA9
 /**
   @Summary
@@ -910,7 +909,7 @@
     LED_STATUS_R_SetDigitalInput();
     </code>
 
-*/
+ */
 #define LED_STATUS_R_SetDigitalInput()  _TRISA9 = 1
 /**
   @Summary
@@ -934,7 +933,7 @@
     LED_STATUS_R_SetDigitalOutput();
     </code>
 
-*/
+ */
 #define LED_STATUS_R_SetDigitalOutput() _TRISA9 = 0
 /**
   @Summary
@@ -958,7 +957,7 @@
     RTCC_IN_SetHigh();
     </code>
 
-*/
+ */
 #define RTCC_IN_SetHigh()          _LATB0 = 1
 /**
   @Summary
@@ -982,7 +981,7 @@
     RTCC_IN_SetLow();
     </code>
 
-*/
+ */
 #define RTCC_IN_SetLow()           _LATB0 = 0
 /**
   @Summary
@@ -1006,7 +1005,7 @@
     RTCC_IN_Toggle();
     </code>
 
-*/
+ */
 #define RTCC_IN_Toggle()           _LATB0 ^= 1
 /**
   @Summary
@@ -1032,7 +1031,7 @@
     postValue = RTCC_IN_GetValue();
     </code>
 
-*/
+ */
 #define RTCC_IN_GetValue()         _RB0
 /**
   @Summary
@@ -1056,7 +1055,7 @@
     RTCC_IN_SetDigitalInput();
     </code>
 
-*/
+ */
 #define RTCC_IN_SetDigitalInput()  _TRISB0 = 1
 /**
   @Summary
@@ -1080,7 +1079,7 @@
     RTCC_IN_SetDigitalOutput();
     </code>
 
-*/
+ */
 #define RTCC_IN_SetDigitalOutput() _TRISB0 = 0
 /**
   @Summary
@@ -1104,7 +1103,7 @@
     BAR_IR2_OUT_SetHigh();
     </code>
 
-*/
+ */
 #define BAR_IR2_OUT_SetHigh()          _LATB13 = 1
 /**
   @Summary
@@ -1128,7 +1127,7 @@
     BAR_IR2_OUT_SetLow();
     </code>
 
-*/
+ */
 #define BAR_IR2_OUT_SetLow()           _LATB13 = 0
 /**
   @Summary
@@ -1152,7 +1151,7 @@
     BAR_IR2_OUT_Toggle();
     </code>
 
-*/
+ */
 #define BAR_IR2_OUT_Toggle()           _LATB13 ^= 1
 /**
   @Summary
@@ -1178,7 +1177,7 @@
     postValue = BAR_IR2_OUT_GetValue();
     </code>
 
-*/
+ */
 #define BAR_IR2_OUT_GetValue()         _RB13
 /**
   @Summary
@@ -1202,7 +1201,7 @@
     BAR_IR2_OUT_SetDigitalInput();
     </code>
 
-*/
+ */
 #define BAR_IR2_OUT_SetDigitalInput()  _TRISB13 = 1
 /**
   @Summary
@@ -1226,7 +1225,7 @@
     BAR_IR2_OUT_SetDigitalOutput();
     </code>
 
-*/
+ */
 #define BAR_IR2_OUT_SetDigitalOutput() _TRISB13 = 0
 /**
   @Summary
@@ -1250,7 +1249,7 @@
     USER_BUTTON_SetHigh();
     </code>
 
-*/
+ */
 #define USER_BUTTON_SetHigh()          _LATB15 = 1
 /**
   @Summary
@@ -1274,7 +1273,7 @@
     USER_BUTTON_SetLow();
     </code>
 
-*/
+ */
 #define USER_BUTTON_SetLow()           _LATB15 = 0
 /**
   @Summary
@@ -1298,7 +1297,7 @@
     USER_BUTTON_Toggle();
     </code>
 
-*/
+ */
 #define USER_BUTTON_Toggle()           _LATB15 ^= 1
 /**
   @Summary
@@ -1324,7 +1323,7 @@
     postValue = USER_BUTTON_GetValue();
     </code>
 
-*/
+ */
 #define USER_BUTTON_GetValue()         _RB15
 /**
   @Summary
@@ -1348,7 +1347,7 @@
     USER_BUTTON_SetDigitalInput();
     </code>
 
-*/
+ */
 #define USER_BUTTON_SetDigitalInput()  _TRISB15 = 1
 /**
   @Summary
@@ -1372,7 +1371,7 @@
     USER_BUTTON_SetDigitalOutput();
     </code>
 
-*/
+ */
 #define USER_BUTTON_SetDigitalOutput() _TRISB15 = 0
 /**
   @Summary
@@ -1396,7 +1395,7 @@
     CMD_VCC_SERVO_SetHigh();
     </code>
 
-*/
+ */
 #define CMD_VCC_SERVO_SetHigh()          _LATB2 = 1
 /**
   @Summary
@@ -1420,7 +1419,7 @@
     CMD_VCC_SERVO_SetLow();
     </code>
 
-*/
+ */
 #define CMD_VCC_SERVO_SetLow()           _LATB2 = 0
 /**
   @Summary
@@ -1444,7 +1443,7 @@
     CMD_VCC_SERVO_Toggle();
     </code>
 
-*/
+ */
 #define CMD_VCC_SERVO_Toggle()           _LATB2 ^= 1
 /**
   @Summary
@@ -1470,7 +1469,7 @@
     postValue = CMD_VCC_SERVO_GetValue();
     </code>
 
-*/
+ */
 #define CMD_VCC_SERVO_GetValue()         _RB2
 /**
   @Summary
@@ -1494,7 +1493,7 @@
     CMD_VCC_SERVO_SetDigitalInput();
     </code>
 
-*/
+ */
 #define CMD_VCC_SERVO_SetDigitalInput()  _TRISB2 = 1
 /**
   @Summary
@@ -1518,7 +1517,7 @@
     CMD_VCC_SERVO_SetDigitalOutput();
     </code>
 
-*/
+ */
 #define CMD_VCC_SERVO_SetDigitalOutput() _TRISB2 = 0
 /**
   @Summary
@@ -1542,7 +1541,7 @@
     CMD_SERVO_SetHigh();
     </code>
 
-*/
+ */
 #define CMD_SERVO_SetHigh()          _LATB3 = 1
 /**
   @Summary
@@ -1566,7 +1565,7 @@
     CMD_SERVO_SetLow();
     </code>
 
-*/
+ */
 #define CMD_SERVO_SetLow()           _LATB3 = 0
 /**
   @Summary
@@ -1590,7 +1589,7 @@
     CMD_SERVO_Toggle();
     </code>
 
-*/
+ */
 #define CMD_SERVO_Toggle()           _LATB3 ^= 1
 /**
   @Summary
@@ -1616,7 +1615,7 @@
     postValue = CMD_SERVO_GetValue();
     </code>
 
-*/
+ */
 #define CMD_SERVO_GetValue()         _RB3
 /**
   @Summary
@@ -1640,7 +1639,7 @@
     CMD_SERVO_SetDigitalInput();
     </code>
 
-*/
+ */
 #define CMD_SERVO_SetDigitalInput()  _TRISB3 = 1
 /**
   @Summary
@@ -1664,7 +1663,7 @@
     CMD_SERVO_SetDigitalOutput();
     </code>
 
-*/
+ */
 #define CMD_SERVO_SetDigitalOutput() _TRISB3 = 0
 /**
   @Summary
@@ -1688,7 +1687,7 @@
     CMD_VDD_APP_V_USB_SetHigh();
     </code>
 
-*/
+ */
 #define CMD_VDD_APP_V_USB_SetHigh()          _LATB5 = 1
 /**
   @Summary
@@ -1712,7 +1711,7 @@
     CMD_VDD_APP_V_USB_SetLow();
     </code>
 
-*/
+ */
 #define CMD_VDD_APP_V_USB_SetLow()           _LATB5 = 0
 /**
   @Summary
@@ -1736,7 +1735,7 @@
     CMD_VDD_APP_V_USB_Toggle();
     </code>
 
-*/
+ */
 #define CMD_VDD_APP_V_USB_Toggle()           _LATB5 ^= 1
 /**
   @Summary
@@ -1762,7 +1761,7 @@
     postValue = CMD_VDD_APP_V_USB_GetValue();
     </code>
 
-*/
+ */
 #define CMD_VDD_APP_V_USB_GetValue()         _RB5
 /**
   @Summary
@@ -1786,7 +1785,7 @@
     CMD_VDD_APP_V_USB_SetDigitalInput();
     </code>
 
-*/
+ */
 #define CMD_VDD_APP_V_USB_SetDigitalInput()  _TRISB5 = 1
 /**
   @Summary
@@ -1810,7 +1809,7 @@
     CMD_VDD_APP_V_USB_SetDigitalOutput();
     </code>
 
-*/
+ */
 #define CMD_VDD_APP_V_USB_SetDigitalOutput() _TRISB5 = 0
 /**
   @Summary
@@ -1834,7 +1833,7 @@
     BIRD_PIR_SENSOR_SetHigh();
     </code>
 
-*/
+ */
 #define BIRD_PIR_SENSOR_SetHigh()          _LATB7 = 1
 /**
   @Summary
@@ -1858,7 +1857,7 @@
     BIRD_PIR_SENSOR_SetLow();
     </code>
 
-*/
+ */
 #define BIRD_PIR_SENSOR_SetLow()           _LATB7 = 0
 /**
   @Summary
@@ -1882,7 +1881,7 @@
     BIRD_PIR_SENSOR_Toggle();
     </code>
 
-*/
+ */
 #define BIRD_PIR_SENSOR_Toggle()           _LATB7 ^= 1
 /**
   @Summary
@@ -1908,7 +1907,7 @@
     postValue = BIRD_PIR_SENSOR_GetValue();
     </code>
 
-*/
+ */
 #define BIRD_PIR_SENSOR_GetValue()         _RB7
 /**
   @Summary
@@ -1932,7 +1931,7 @@
     BIRD_PIR_SENSOR_SetDigitalInput();
     </code>
 
-*/
+ */
 #define BIRD_PIR_SENSOR_SetDigitalInput()  _TRISB7 = 1
 /**
   @Summary
@@ -1956,7 +1955,7 @@
     BIRD_PIR_SENSOR_SetDigitalOutput();
     </code>
 
-*/
+ */
 #define BIRD_PIR_SENSOR_SetDigitalOutput() _TRISB7 = 0
 /**
   @Summary
@@ -1980,7 +1979,7 @@
     EM4095_DEMOD_OUT_SetHigh();
     </code>
 
-*/
+ */
 #define EM4095_DEMOD_OUT_SetHigh()          _LATC6 = 1
 /**
   @Summary
@@ -2004,7 +2003,7 @@
     EM4095_DEMOD_OUT_SetLow();
     </code>
 
-*/
+ */
 #define EM4095_DEMOD_OUT_SetLow()           _LATC6 = 0
 /**
   @Summary
@@ -2028,7 +2027,7 @@
     EM4095_DEMOD_OUT_Toggle();
     </code>
 
-*/
+ */
 #define EM4095_DEMOD_OUT_Toggle()           _LATC6 ^= 1
 /**
   @Summary
@@ -2054,7 +2053,7 @@
     postValue = EM4095_DEMOD_OUT_GetValue();
     </code>
 
-*/
+ */
 #define EM4095_DEMOD_OUT_GetValue()         _RC6
 /**
   @Summary
@@ -2078,7 +2077,7 @@
     EM4095_DEMOD_OUT_SetDigitalInput();
     </code>
 
-*/
+ */
 #define EM4095_DEMOD_OUT_SetDigitalInput()  _TRISC6 = 1
 /**
   @Summary
@@ -2102,7 +2101,7 @@
     EM4095_DEMOD_OUT_SetDigitalOutput();
     </code>
 
-*/
+ */
 #define EM4095_DEMOD_OUT_SetDigitalOutput() _TRISC6 = 0
 /**
   @Summary
@@ -2126,7 +2125,7 @@
     EM4095_RDYCLK_SetHigh();
     </code>
 
-*/
+ */
 #define EM4095_RDYCLK_SetHigh()          _LATC7 = 1
 /**
   @Summary
@@ -2150,7 +2149,7 @@
     EM4095_RDYCLK_SetLow();
     </code>
 
-*/
+ */
 #define EM4095_RDYCLK_SetLow()           _LATC7 = 0
 /**
   @Summary
@@ -2174,7 +2173,7 @@
     EM4095_RDYCLK_Toggle();
     </code>
 
-*/
+ */
 #define EM4095_RDYCLK_Toggle()           _LATC7 ^= 1
 /**
   @Summary
@@ -2200,7 +2199,7 @@
     postValue = EM4095_RDYCLK_GetValue();
     </code>
 
-*/
+ */
 #define EM4095_RDYCLK_GetValue()         _RC7
 /**
   @Summary
@@ -2224,7 +2223,7 @@
     EM4095_RDYCLK_SetDigitalInput();
     </code>
 
-*/
+ */
 #define EM4095_RDYCLK_SetDigitalInput()  _TRISC7 = 1
 /**
   @Summary
@@ -2248,7 +2247,7 @@
     EM4095_RDYCLK_SetDigitalOutput();
     </code>
 
-*/
+ */
 #define EM4095_RDYCLK_SetDigitalOutput() _TRISC7 = 0
 /**
   @Summary
@@ -2272,7 +2271,7 @@
     EM4095_SHD_SetHigh();
     </code>
 
-*/
+ */
 #define EM4095_SHD_SetHigh()          _LATC8 = 1
 /**
   @Summary
@@ -2296,7 +2295,7 @@
     EM4095_SHD_SetLow();
     </code>
 
-*/
+ */
 #define EM4095_SHD_SetLow()           _LATC8 = 0
 /**
   @Summary
@@ -2320,7 +2319,7 @@
     EM4095_SHD_Toggle();
     </code>
 
-*/
+ */
 #define EM4095_SHD_Toggle()           _LATC8 ^= 1
 /**
   @Summary
@@ -2346,7 +2345,7 @@
     postValue = EM4095_SHD_GetValue();
     </code>
 
-*/
+ */
 #define EM4095_SHD_GetValue()         _RC8
 /**
   @Summary
@@ -2370,7 +2369,7 @@
     EM4095_SHD_SetDigitalInput();
     </code>
 
-*/
+ */
 #define EM4095_SHD_SetDigitalInput()  _TRISC8 = 1
 /**
   @Summary
@@ -2394,7 +2393,7 @@
     EM4095_SHD_SetDigitalOutput();
     </code>
 
-*/
+ */
 #define EM4095_SHD_SetDigitalOutput() _TRISC8 = 0
 /**
   @Summary
@@ -2418,7 +2417,7 @@
     BAR_IR1_OUT_SetHigh();
     </code>
 
-*/
+ */
 #define BAR_IR1_OUT_SetHigh()          _LATC9 = 1
 /**
   @Summary
@@ -2442,7 +2441,7 @@
     BAR_IR1_OUT_SetLow();
     </code>
 
-*/
+ */
 #define BAR_IR1_OUT_SetLow()           _LATC9 = 0
 /**
   @Summary
@@ -2466,7 +2465,7 @@
     BAR_IR1_OUT_Toggle();
     </code>
 
-*/
+ */
 #define BAR_IR1_OUT_Toggle()           _LATC9 ^= 1
 /**
   @Summary
@@ -2492,7 +2491,7 @@
     postValue = BAR_IR1_OUT_GetValue();
     </code>
 
-*/
+ */
 #define BAR_IR1_OUT_GetValue()         _RC9
 /**
   @Summary
@@ -2516,7 +2515,7 @@
     BAR_IR1_OUT_SetDigitalInput();
     </code>
 
-*/
+ */
 #define BAR_IR1_OUT_SetDigitalInput()  _TRISC9 = 1
 /**
   @Summary
@@ -2540,12 +2539,12 @@
     BAR_IR1_OUT_SetDigitalOutput();
     </code>
 
-*/
+ */
 #define BAR_IR1_OUT_SetDigitalOutput() _TRISC9 = 0
 
 /**
     Section: Function Prototypes
-*/
+ */
 /**
   @Summary
     Configures the pin settings of the PIC24FJ128GB204
@@ -2574,7 +2573,7 @@
     }
     </code>
 
-*/
-void PIN_MANAGER_Initialize(void);
+ */
+void PIN_MANAGER_Initialize( void );
 
 #endif

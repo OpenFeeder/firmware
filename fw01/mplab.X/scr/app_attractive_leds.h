@@ -11,6 +11,24 @@
 #define ATTRACTIVE_LEDS_ON 1
 #define ATTRACTIVE_LEDS_OFF 0
 
+typedef struct
+{
+    uint16_t red[2];
+    uint16_t green[2];
+    uint16_t blue[2];
+
+    struct tm wake_up_time;
+    struct tm sleep_time;
+
+    uint8_t alt_delay;
+    uint8_t alt_sec_elapsed;
+
+    bool status;
+
+    uint8_t current_color_index;
+
+} APP_DATA_LEDS;
+
 void setAttractiveLedsOff(void);
 void setAttractiveLedsOn(void);
 void setAttractiveLedsColor(void);

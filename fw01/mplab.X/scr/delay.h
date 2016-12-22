@@ -10,10 +10,7 @@
 #ifndef DELAY_H
 #define	DELAY_H
 
-//#include <xc.h> /* include processor files - each processor file is guarded. */
 #include "mcc_generated_files/mcc.h"
-#include <stdint.h>
-#include <stdbool.h>
 
 void setDelayMs( uint16_t );
 bool isDelayMsEnding( void );

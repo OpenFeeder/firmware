@@ -13,8 +13,6 @@
 #define sizearray(a)  (sizeof(a) / sizeof((a)[0]))
 
 #define DEFAULT_LOG_SEPARATOR ","
-#define MAX_PIT_TAGS_LIST_NUMBER 200
-
 
 typedef enum
 {
