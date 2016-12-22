@@ -8,6 +8,7 @@
 #include "app.h"
 #include "app_usb.h"
 
+
 /* Interrupt handler for USB host. */
 void __attribute__( ( interrupt, auto_psv ) ) _USB1Interrupt( )
 {
@@ -31,49 +32,6 @@ const FILEIO_DRIVE_CONFIG gUSBDrive = {
                                        /* Function to determine if the media is write-protected */
                                        ( FILEIO_DRIVER_WriteProtectStateGet ) USBHostMSDSCSIWriteProtectState
 };
-
-
-bool usbKeyAccess( void )
-{
-    bool access = false;
-    uint8_t success;
-
-    switch ( USBHostDeviceStatus( appDataUsb.deviceAddress ) )
-    {
-        case USB_DEVICE_ATTACHED:
-            if ( false == appDataUsb.usbDriveStatus )
-                access = usbMountDrive( );
-            else
-                access = true;
-            break;
-
-        case USB_DEVICE_DETACHED:
-            break;
-
-        case USB_DEVICE_SUSPENDED:
-            // http://www.microchip.com/forums/m582058.aspx
-            // help_mla_usb.pdf => 1.4.2.1.1.14 USBHostResumeDevice Function            
-            success = USBHostResumeDevice( appDataUsb.deviceAddress );
-            if ( success != USB_SUCCESS )
-            {
-                if ( success == USB_UNKNOWN_DEVICE )
-                    printf( "Device not found\n" );
-                else // USB_ILLEGAL_REQUEST
-                    printf( "Device cannot RESUME unless it is suspended\n" );
-                appData.state = APP_STATE_ERROR;
-            }
-            else
-            {
-                access = true;
-            }
-            break;
-
-        default:
-            break;
-    }
-
-    return access;
-}
 
 
 bool usbMountDrive( void )

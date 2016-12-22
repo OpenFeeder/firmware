@@ -37,6 +37,7 @@
 #define USB_DRIVE_NOT_MOUNTED false
 #define USB_DRIVE_MOUNTED true
 
+
 /* Application Data
 
   Summary:
@@ -64,7 +65,6 @@ typedef struct
 // Section: extern declarations
 // *****************************************************************************
 // *****************************************************************************
-bool usbKeyAccess( void );
 bool usbMountDrive( void );
 bool usbUnmountDrive( void );
 
