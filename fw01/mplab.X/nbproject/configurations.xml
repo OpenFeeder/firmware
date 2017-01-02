@@ -5,35 +5,35 @@
                    displayName="Header Files"
                    projectFiles="true">
       <logicalFolder name="f2" displayName="app" projectFiles="true">
-        <itemPath>scr/app.h</itemPath>
-        <itemPath>scr/app_alarm.h</itemPath>
-        <itemPath>scr/app_datetime.h</itemPath>
-        <itemPath>scr/app_debug.h</itemPath>
-        <itemPath>scr/app_error.h</itemPath>
-        <itemPath>scr/app_data_logger.h</itemPath>
-        <itemPath>scr/app_usb.h</itemPath>
-        <itemPath>scr/app_i2c.h</itemPath>
-        <itemPath>scr/app_config.h</itemPath>
-        <itemPath>scr/app_rfid.h</itemPath>
-        <itemPath>scr/app_attractive_leds.h</itemPath>
-        <itemPath>scr/app_remote.h</itemPath>
-        <itemPath>scr/app_power.h</itemPath>
-        <itemPath>scr/app_event.h</itemPath>
-        <itemPath>scr/app_timers_callback.h</itemPath>
-        <itemPath>scr/app_check.h</itemPath>
+        <itemPath>src/app.h</itemPath>
+        <itemPath>src/app_alarm.h</itemPath>
+        <itemPath>src/app_attractive_leds.h</itemPath>
+        <itemPath>src/app_check.h</itemPath>
+        <itemPath>src/app_config.h</itemPath>
+        <itemPath>src/app_data_logger.h</itemPath>
+        <itemPath>src/app_datetime.h</itemPath>
+        <itemPath>src/app_debug.h</itemPath>
+        <itemPath>src/app_error.h</itemPath>
+        <itemPath>src/app_event.h</itemPath>
+        <itemPath>src/app_i2c.h</itemPath>
+        <itemPath>src/app_power.h</itemPath>
+        <itemPath>src/app_remote.h</itemPath>
+        <itemPath>src/app_rfid.h</itemPath>
+        <itemPath>src/app_timers_callback.h</itemPath>
+        <itemPath>src/app_usb.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="driver" projectFiles="true">
-        <itemPath>scr/min_ini.h</itemPath>
-        <itemPath>scr/min_glue.h</itemPath>
-        <itemPath>scr/mcp23017.h</itemPath>
-        <itemPath>scr/em4095.h</itemPath>
-        <itemPath>scr/digits.h</itemPath>
-        <itemPath>scr/buttons.h</itemPath>
-        <itemPath>scr/servomotor.h</itemPath>
-        <itemPath>scr/fileio_config.h</itemPath>
-        <itemPath>scr/led_status.h</itemPath>
-        <itemPath>scr/ir_sensor.h</itemPath>
-        <itemPath>scr/delay.h</itemPath>
+        <itemPath>src/buttons.h</itemPath>
+        <itemPath>src/delay.h</itemPath>
+        <itemPath>src/digits.h</itemPath>
+        <itemPath>src/em4095.h</itemPath>
+        <itemPath>src/fileio_config.h</itemPath>
+        <itemPath>src/ir_sensor.h</itemPath>
+        <itemPath>src/led_status.h</itemPath>
+        <itemPath>src/mcp23017.h</itemPath>
+        <itemPath>src/min_glue.h</itemPath>
+        <itemPath>src/min_ini.h</itemPath>
+        <itemPath>src/servomotor.h</itemPath>
       </logicalFolder>
       <logicalFolder name="framework" displayName="framework" projectFiles="true">
         <logicalFolder name="fileio" displayName="fileio" projectFiles="true">
@@ -86,33 +86,33 @@
                    displayName="Source Files"
                    projectFiles="true">
       <logicalFolder name="f2" displayName="app" projectFiles="true">
-        <itemPath>scr/app.c</itemPath>
-        <itemPath>scr/app_alarm.c</itemPath>
-        <itemPath>scr/app_datetime.c</itemPath>
-        <itemPath>scr/app_debug.c</itemPath>
-        <itemPath>scr/app_error.c</itemPath>
-        <itemPath>scr/app_data_logger.c</itemPath>
-        <itemPath>scr/app_i2c.c</itemPath>
-        <itemPath>scr/app_usb.c</itemPath>
-        <itemPath>scr/app_config.c</itemPath>
-        <itemPath>scr/app_rfid.c</itemPath>
-        <itemPath>scr/app_attractive_leds.c</itemPath>
-        <itemPath>scr/app_remote.c</itemPath>
-        <itemPath>scr/app_power.c</itemPath>
-        <itemPath>scr/app_event.c</itemPath>
-        <itemPath>scr/app_timers_callback.c</itemPath>
-        <itemPath>scr/app_check.c</itemPath>
+        <itemPath>src/app.c</itemPath>
+        <itemPath>src/app_alarm.c</itemPath>
+        <itemPath>src/app_attractive_leds.c</itemPath>
+        <itemPath>src/app_check.c</itemPath>
+        <itemPath>src/app_config.c</itemPath>
+        <itemPath>src/app_data_logger.c</itemPath>
+        <itemPath>src/app_datetime.c</itemPath>
+        <itemPath>src/app_debug.c</itemPath>
+        <itemPath>src/app_error.c</itemPath>
+        <itemPath>src/app_event.c</itemPath>
+        <itemPath>src/app_i2c.c</itemPath>
+        <itemPath>src/app_power.c</itemPath>
+        <itemPath>src/app_remote.c</itemPath>
+        <itemPath>src/app_rfid.c</itemPath>
+        <itemPath>src/app_timers_callback.c</itemPath>
+        <itemPath>src/app_usb.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f3" displayName="driver" projectFiles="true">
-        <itemPath>scr/servomotor.c</itemPath>
-        <itemPath>scr/digits.c</itemPath>
-        <itemPath>scr/em4095.c</itemPath>
-        <itemPath>scr/mcp23017.c</itemPath>
-        <itemPath>scr/min_glue.c</itemPath>
-        <itemPath>scr/min_ini.c</itemPath>
-        <itemPath>scr/led_status.c</itemPath>
-        <itemPath>scr/ir_sensor.c</itemPath>
-        <itemPath>scr/delay.c</itemPath>
+        <itemPath>src/delay.c</itemPath>
+        <itemPath>src/digits.c</itemPath>
+        <itemPath>src/em4095.c</itemPath>
+        <itemPath>src/ir_sensor.c</itemPath>
+        <itemPath>src/led_status.c</itemPath>
+        <itemPath>src/mcp23017.c</itemPath>
+        <itemPath>src/min_glue.c</itemPath>
+        <itemPath>src/min_ini.c</itemPath>
+        <itemPath>src/servomotor.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="fileio" displayName="fileio" projectFiles="true">
@@ -494,42 +494,6 @@
         <property key="tracecontrol.tracefilemax" value="10000000"/>
         <property key="voltagevalue" value="3.25"/>
       </RealICEPlatformTool>
-      <item path="scr/app_i2c.c" ex="true" overriding="false">
-        <C30>
-        </C30>
-        <C30-AR>
-        </C30-AR>
-        <C30-AS>
-        </C30-AS>
-        <C30-LD>
-        </C30-LD>
-        <C30Global>
-        </C30Global>
-      </item>
-      <item path="scr/app_remote.c" ex="true" overriding="false">
-        <C30>
-        </C30>
-        <C30-AR>
-        </C30-AR>
-        <C30-AS>
-        </C30-AS>
-        <C30-LD>
-        </C30-LD>
-        <C30Global>
-        </C30Global>
-      </item>
-      <item path="scr/mcp23017.c" ex="true" overriding="false">
-        <C30>
-        </C30>
-        <C30-AR>
-        </C30-AR>
-        <C30-AS>
-        </C30-AS>
-        <C30-LD>
-        </C30-LD>
-        <C30Global>
-        </C30Global>
-      </item>
     </conf>
     <conf name="PIC24FJ128GB204_CodeModel_Large" type="2">
       <toolsSet>
@@ -582,7 +546,7 @@
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
         <property key="extra-include-directories"
-                  value=".;scr;framework\fileio;framework\usb;mcc_generated_files"/>
+                  value=".;src;framework\fileio;framework\usb;mcc_generated_files"/>
         <property key="isolate-each-function" value="false"/>
         <property key="keep-inline" value="false"/>
         <property key="oXC16gcc-align-arr" value="false"/>
@@ -728,7 +692,6 @@
         <property key="UART 3" value="true"/>
         <property key="UART 4" value="true"/>
         <property key="USB" value="true"/>
-        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>
