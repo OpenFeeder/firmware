@@ -119,6 +119,7 @@ void APP_Tasks( void )
     static bool button_user_state;
     static bool previous_button_user_state = BUTTON_NOT_PRESSED;
     APP_CHECK chk;
+    bool flag;
 
     /* Check the Application State. */
     switch ( appData.state )
@@ -216,25 +217,11 @@ void APP_Tasks( void )
                 EX_INT0_InterruptEnable( );
 
                 appData.state = APP_STATE_IDLE;
-
-#if defined (USE_UART1_SERIAL_INTERFACE)
-                printf( "System initialized\n" );
-#endif
-
             }
             else
             {
-#if defined (USE_UART1_SERIAL_INTERFACE)
-                printf( "System not initialized\n" );
-#endif
                 USBHostShutdown( );
                 powerUsbRfidDisable( );
-                appData.state = APP_STATE_ERROR;
-                break;
-            }
-
-            if ( FILEIO_RESULT_FAILURE == logBatteryLevel( ) )
-            {
                 appData.state = APP_STATE_ERROR;
                 break;
             }
@@ -379,19 +366,18 @@ void APP_Tasks( void )
                 }
                 if ( RTCC_BATTERY_LEVEL_CHECK == appData.rtcc_alarm_action )
                 {
-                    if ( false == isPowerBatteryGood( ) )
+
+                    flag = isPowerBatteryGood( );
+                    appDataLog.battery_level[appDataLog.numBatteryLevelStored][0] = appData.current_time.tm_hour;
+                    appDataLog.battery_level[appDataLog.numBatteryLevelStored][1] = appData.battery_level;
+                    ++appDataLog.numBatteryLevelStored;
+
+                    if ( false == flag )
                     {
                         appData.state = APP_STATE_LOW_BATTERY;
                         break;
                     }
-                    else
-                    {
-                        if ( FILEIO_RESULT_FAILURE == logBatteryLevel( ) )
-                        {
-                            appData.state = APP_STATE_ERROR;
-                            break;
-                        }
-                    }
+
                 }
 
                 appData.rtcc_alarm_action = RTCC_ALARM_IDLE;
@@ -736,13 +722,10 @@ void APP_Tasks( void )
                 RFID_Disable( );
                 IRSensorDisable( );
                 appDataUsb.key_is_nedded = false;
-
-                /* Log data if buffer is not empty */
-                if ( appDataLog.numDataStored > 0 )
-                {
-                    powerUsbRfidEnable( );
-                    appDataUsb.key_is_nedded = true;
-                }
+                appDataUsb.getValidDeviceAdress = false;
+                /* Log data on USB device */
+                powerUsbRfidEnable( );
+                appDataUsb.key_is_nedded = true;
 
             }
 
@@ -750,13 +733,26 @@ void APP_Tasks( void )
             {
                 if ( appDataUsb.getValidDeviceAdress )
                 {
-                    /* Force data to be written on the USB device */
-                    appDataLog.numDataStored = MAX_NUM_DATA_TO_STORE;
-                    if ( false == dataLog( true ) )
+                    if ( appDataLog.numDataStored > 0 )
                     {
-                        appData.state = APP_STATE_ERROR;
-                        break;
+                        /* Force data to be written on the USB device */
+                        appDataLog.numDataStored = MAX_NUM_DATA_TO_STORE;
+                        if ( false == dataLog( true ) )
+                        {
+                            appData.state = APP_STATE_ERROR;
+                            break;
+                        }
                     }
+
+                    if ( appDataLog.numBatteryLevelStored > 0 )
+                    {
+                        if ( FILEIO_RESULT_FAILURE == logBatteryLevel( ) )
+                        {
+                            appData.state = APP_STATE_ERROR;
+                            break;
+                        }
+                    }
+
                     USBHostShutdown( );
                     powerUsbRfidDisable( );
                 }
@@ -848,6 +844,60 @@ void APP_Tasks( void )
             /* -------------------------------------------------------------- */
 
         case APP_STATE_LOW_BATTERY:
+            if ( appData.state != appData.previous_state )
+            {
+
+                appData.previous_state = appData.state;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
+                printf( "> APP_STATE_LOW_BATTERY\n" );
+#endif
+                appDataUsb.key_is_nedded = false;
+                appDataUsb.getValidDeviceAdress = false;
+                /* Log data on USB device */
+                powerUsbRfidEnable( );
+                appDataUsb.key_is_nedded = true;
+
+            }
+            
+            if ( true == appDataUsb.key_is_nedded )
+            {
+                if ( appDataUsb.getValidDeviceAdress )
+                {
+                    if ( appDataLog.numDataStored > 0 )
+                    {
+                        /* Force data to be written on the USB device */
+                        appDataLog.numDataStored = MAX_NUM_DATA_TO_STORE;
+                        if ( false == dataLog( true ) )
+                        {
+                            appData.state = APP_STATE_ERROR;
+                            break;
+                        }
+                    }
+
+                    if ( appDataLog.numBatteryLevelStored > 0 )
+                    {
+                        if ( FILEIO_RESULT_FAILURE == logBatteryLevel( ) )
+                        {
+                            appData.state = APP_STATE_ERROR;
+                            break;
+                        }
+                    }
+
+                    USBHostShutdown( );
+                    powerUsbRfidDisable( );
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+
+            appData.state = APP_STATE_ERROR;
+
+            break;
+            /* -------------------------------------------------------------- */
+
         case APP_STATE_LOW_FOOD_LEVEL:
         case APP_STATE_LOW_RFID_FREQUENCY:
         case APP_STATE_ERROR:
@@ -863,10 +913,6 @@ void APP_Tasks( void )
                 {
                     printf( "> APP_STATE_ERROR\n" );
                 }
-                if ( appData.state == APP_STATE_LOW_BATTERY )
-                {
-                    printf( "> APP_STATE_LOW_BATTERY\n" );
-                }
                 if ( appData.state == APP_STATE_LOW_FOOD_LEVEL )
                 {
                     printf( "> APP_STATE_LOW_FOOD_LEVEL\n" );
@@ -881,6 +927,7 @@ void APP_Tasks( void )
 #endif
                 clearError( );
 
+                rtcc_stop_alarm( );
                 /* Set peripherals Off. */
                 setAttractiveLedsOff( );
                 EX_INT0_InterruptDisable( );
@@ -915,7 +962,7 @@ void APP_Tasks( void )
 
 void APP_Initialize( void )
 {
-    int i;
+    int i, j;
 
     /* Attractive LEDs initialize */
     setAttractiveLedsOff( );
@@ -948,6 +995,8 @@ void APP_Initialize( void )
     appDataLog.numDataStored = 0;
     appDataLog.attractive_leds_current_color_index = 0;
 
+    appDataLog.numBatteryLevelStored = 0;
+
     appData.bird_is_taking_reward = false;
 
     /* USB host */
@@ -966,6 +1015,15 @@ void APP_Initialize( void )
     {
         appDataPitTag.isPitTagdeniedOrColorA[i] = false;
     }
+
+    for ( i = 0; i < 24; i++ )
+    {
+        for ( j = 0; j < 2; j++ )
+        {
+            appDataLog.battery_level[i][j] = 0;
+        }
+    }
+    appDataLog.numBatteryLevelStored = 0;
 
     appError.ledColor = LED_RED;
 

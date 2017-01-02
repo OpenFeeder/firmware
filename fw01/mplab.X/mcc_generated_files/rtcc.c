@@ -347,7 +347,7 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
                     }
                 }
 
-                /* Battery level */               
+                /* Battery level */
                 if ( appData.current_time.tm_min == 0 && appData.current_time.tm_sec == 30 )
                 {
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)

@@ -22,6 +22,11 @@ void rtcc_set_alarm( int hour, int minute, int second, int alarmMask )
 }
 
 
+void rtcc_stop_alarm( void )
+{
+    ALCFGRPTbits.ALRMEN = 0;
+}
+
 /*******************************************************************************
  End of File
  */

@@ -28,16 +28,17 @@ void APP_SerialDebugTasks( void )
 {
 
     /* Interface firmware terminal (Debug) */
-    // a or A: analogic measure of the current postion of the servomotor, battery voltage and VBat voltage
+    // a or A: analog measure of the servomotor position, battery voltage and VBat voltage
     // b or B: set blue color value of attractive LEDs
     // c or C: close reward door
-    // d or D: display current state of the datalogger buffer
+    // d or D: display datalogger buffer
     // e or E: mesuring RDY/CLK period of EM4095
     // f or F: display configuration parameters (CONFIG.INI) 
     // g or G: set green color value of attractive LEDs
     // h or H: toggle door remain open parameter
     // i or I: enable IR 
     // j or J: disable IR 
+    // k or K: display battery level buffer
     // o or O: open reward door
     // p or P: change servomotor position
     // r or R: set red color value of attractive LEDs
@@ -47,6 +48,7 @@ void APP_SerialDebugTasks( void )
     // v or V: set status of servomotor power command
 
     uint16_t dc_pwm;
+    int i;
 
     if ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) )
     {
@@ -244,6 +246,17 @@ void APP_SerialDebugTasks( void )
                 /* Disable IR  */
                 IRSensorDisable( );
                 printf( "IR command disable, mode low power.\n" );
+                break;
+                /* -------------------------------------------------------------- */
+                
+            case 'k':
+            case 'K':
+                /* Display battery level buffer  */
+                printf( "Battery level buffer:\n" );
+                for ( i = 0; i < 24; i++ )
+                    printf( "%d - %d\n",
+                            appDataLog.battery_level[i][0],
+                            appDataLog.battery_level[i][1] );
                 break;
                 /* -------------------------------------------------------------- */
 

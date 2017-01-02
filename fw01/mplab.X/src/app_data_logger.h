@@ -46,6 +46,9 @@ typedef struct
 
     uint8_t door_status_when_bird_arrived;
 
+    int16_t battery_level[24][2];
+    uint8_t numBatteryLevelStored;
+     
 } APP_DATA_LOG;
 
 bool dataLog( bool );

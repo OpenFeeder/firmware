@@ -18,6 +18,7 @@
 #define EVERY_10_SECONDS 0xC800
 #define EVERY_SECOND     0xC400
 
+
 typedef enum
 {
     RTCC_ALARM_IDLE, /* Not in use. */
@@ -32,6 +33,7 @@ typedef enum
 
 } RTCC_ALARM_ACTION;
 
+
 typedef struct
 {
     struct tm time;
@@ -40,7 +42,7 @@ typedef struct
 
 
 void rtcc_set_alarm( int, int, int, int );
-
+void rtcc_stop_alarm( void );
 
 #endif /* APP_ALARM_H */
 

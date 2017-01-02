@@ -15,10 +15,10 @@ void powerUsbRfidEnable( void )
 {
 
 
-//    if ( CMD_VDD_APP_V_USB_GetValue( ) == 0 )
-//    {
-        CMD_VDD_APP_V_USB_SetHigh( ); /* Powering VDD APP for USB and RFID. */
-//    }
+    //    if ( CMD_VDD_APP_V_USB_GetValue( ) == 0 )
+    //    {
+    CMD_VDD_APP_V_USB_SetHigh( ); /* Powering VDD APP for USB and RFID. */
+    //    }
 
 }
 
@@ -27,10 +27,10 @@ void powerUsbRfidDisable( void )
 {
 
 
-//    if ( CMD_VDD_APP_V_USB_GetValue( ) == 1 )
-//    {
-        CMD_VDD_APP_V_USB_SetLow( ); /* Powering VDD APP for USB and RFID. */
-//    }
+    //    if ( CMD_VDD_APP_V_USB_GetValue( ) == 1 )
+    //    {
+    CMD_VDD_APP_V_USB_SetLow( ); /* Powering VDD APP for USB and RFID. */
+    //    }
 }
 
 
@@ -61,8 +61,6 @@ void printVBatLevel( void )
 {
 
 #if defined (USE_UART1_SERIAL_INTERFACE) 
-
-
     printf( "VBat level: %2.3f V (%u)\n", appData.vbat_level* VBAT_VOLTAGE_FACTOR, appData.vbat_level );
 #endif 
 
@@ -96,8 +94,6 @@ void printBatteryLevel( void )
 {
 
 #if defined (USE_UART1_SERIAL_INTERFACE) 
-
-
     printf( "Battery level: %2.3f V (%u)\n", appData.battery_level * BATTERY_VOLTAGE_FACTOR, appData.battery_level );
 #endif 
 
@@ -111,7 +107,7 @@ FILEIO_RESULT logBatteryLevel( void )
     FILEIO_ERROR_TYPE errF;
     char buf[100];
     struct tm currentTime;
-    int flag;
+    int flag, i;
     size_t numDataWritten;
 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
@@ -126,7 +122,7 @@ FILEIO_RESULT logBatteryLevel( void )
         return FILEIO_RESULT_FAILURE;
     }
 
-    if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "BATTERY.LOG", FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND ) )
+    if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "BATTERY.TXT", FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND ) )
     {
         errF = FILEIO_ErrorGet( 'A' );
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
@@ -139,32 +135,25 @@ FILEIO_RESULT logBatteryLevel( void )
         return FILEIO_RESULT_FAILURE;
     }
 
-    flag = sprintf( buf, "%02d/%02d/%02d%s%02d:%02d:%02u%s"
-                    /* site id       */ "%s"
-                    /* separator     */ "%s"
-                    /* scenario      */ "%u"
-                    /* separator     */ "%s"
-                    /* battery_level */ "%04d\n",
+    flag = sprintf( buf, "%02d/%02d/%02d"
+                    /* separator        */ "%s"
+                    /* site id          */ "%s"
+                    /* separator        */ "%s"
+                    /* scenario         */ "%u",
                     currentTime.tm_mday,
                     currentTime.tm_mon,
                     currentTime.tm_year,
                     appDataLog.separator,
-                    currentTime.tm_hour,
-                    currentTime.tm_min,
-                    currentTime.tm_sec,
-                    appDataLog.separator,
                     appData.siteid,
                     appDataLog.separator,
-                    appData.scenario_number,
-                    appDataLog.separator,
-                    appData.battery_level );
+                    appData.scenario_number );
 
     if ( flag > 0 )
     {
         numDataWritten = FILEIO_Write( buf, 1, flag, &file );
     }
 
-    if ( numDataWritten < appDataLog.nCharBuffer )
+    if ( numDataWritten < flag )
     {
         errF = FILEIO_ErrorGet( 'A' );
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
@@ -175,6 +164,36 @@ FILEIO_RESULT logBatteryLevel( void )
         sprintf( appError.currentFileName, "%s", __FILE__ );
         FILEIO_ErrorClear( 'A' );
         return FILEIO_RESULT_FAILURE;
+    }
+
+    memset( buf, '\0', sizeof ( buf ) );
+
+    for ( i = 0; i < 24; i++ )
+    {
+        flag = sprintf( buf, "%s%d%s%d",
+                        appDataLog.separator,
+                        appDataLog.battery_level[i][0],
+                        appDataLog.separator,
+                        appDataLog.battery_level[i][1] );
+
+        if ( flag > 0 )
+        {
+            numDataWritten = FILEIO_Write( buf, 1, flag, &file );
+        }
+
+        if ( numDataWritten < flag )
+        {
+            errF = FILEIO_ErrorGet( 'A' );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+            printf( "unable to write battery level in log file (%u)", errF );
+#endif 
+            sprintf( appError.message, "Unable to write battery level in log file (%u)", errF );
+            appError.currentLineNumber = __LINE__;
+            sprintf( appError.currentFileName, "%s", __FILE__ );
+            FILEIO_ErrorClear( 'A' );
+            return FILEIO_RESULT_FAILURE;
+        }
+
     }
 
     if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
@@ -190,6 +209,10 @@ FILEIO_RESULT logBatteryLevel( void )
         return FILEIO_RESULT_FAILURE;
     }
 
+    if ( USB_DRIVE_MOUNTED == usbUnmountDrive( ) )
+    {
+        return FILEIO_RESULT_FAILURE;
+    }
 
 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
