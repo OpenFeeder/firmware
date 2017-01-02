@@ -9,7 +9,6 @@
 #include "ir_sensor.h"
 
 bool g_flag_ir1_sensor = false;
-bool g_flag_ir2_sensor = false;
 
 void IRSensor_Initialize( void )
 {

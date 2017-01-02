@@ -48,7 +48,7 @@ typedef struct
 
 } APP_DATA_LOG;
 
-bool dataLog( void );
+bool dataLog( bool );
 bool setLogFileName( void );
 void GetTimestamp( FILEIO_TIMESTAMP * );
 void clearLogBuffer( void );

@@ -180,7 +180,7 @@ void clearLogBuffer( void )
 }
 
 
-bool dataLog( void )
+bool dataLog( bool newData )
 {
     unsigned int nChar = 0;
 
@@ -188,28 +188,34 @@ bool dataLog( void )
     printf( "Data logging - " );
 #endif 
 
-    nChar = populateLogBuffer( );
-
-    if ( nChar < 0 )
+    /* Check if new data need to be added to the log buffer */
+    if ( true == newData )
     {
+
+        nChar = populateLogBuffer( );
+
+        if ( nChar < 0 )
+        {
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-        printf( "unable to populate log buffer\n" );
+            printf( "unable to populate log buffer\n" );
 #endif 
-        sprintf( appError.message, "Unable to populate log buffer" );
-        appError.currentLineNumber = __LINE__;
-        sprintf( appError.currentFileName, "%s", __FILE__ );
-        return false;
-    }
-    else
-    {
-        appDataLog.nCharBuffer += nChar;
-        appDataLog.numDataStored += 1;
+            sprintf( appError.message, "Unable to populate log buffer" );
+            appError.currentLineNumber = __LINE__;
+            sprintf( appError.currentFileName, "%s", __FILE__ );
+            return false;
+        }
+        else
+        {
+            appDataLog.nCharBuffer += nChar;
+            appDataLog.numDataStored += 1;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO )
-        printf( "data to buffer (%u/%u)\n", appDataLog.numDataStored, MAX_NUM_DATA_TO_STORE );
+            printf( "data to buffer (%u/%u)\n", appDataLog.numDataStored, MAX_NUM_DATA_TO_STORE );
 #endif 
-    }
+        }
 
-    /* Quantite donnees suffisantes => ecriture dans fichier LOG */
+    }
+    
+    /* If buffer is full then write log file on the USB device */
     if ( appDataLog.numDataStored == MAX_NUM_DATA_TO_STORE )
     {
 

@@ -144,7 +144,7 @@ void EXT_INT_Initialize( void )
      ********/
     EX_INT0_InterruptFlagClear( );
     EX_INT0_PositiveEdgeSet( );
-    EX_INT0_InterruptEnable( );
+    EX_INT0_InterruptDisable( );
     /*******
      * INT1
      * Clear the interrupt flag
@@ -153,7 +153,7 @@ void EXT_INT_Initialize( void )
      ********/
     EX_INT1_InterruptFlagClear( );
     EX_INT1_PositiveEdgeSet( );
-    EX_INT1_InterruptEnable( );
+    EX_INT1_InterruptDisable( );
     /*******
      * INT3
      * Clear the interrupt flag
@@ -171,5 +171,5 @@ void EXT_INT_Initialize( void )
      ********/
     EX_INT4_InterruptFlagClear( );
     EX_INT4_NegativeEdgeSet( );
-    EX_INT4_InterruptEnable( );
+    EX_INT4_InterruptDisable( );
 }
