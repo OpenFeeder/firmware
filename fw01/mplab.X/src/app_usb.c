@@ -205,7 +205,6 @@ bool USB_ApplicationEventHandler( uint8_t address, USB_EVENT event, void *data, 
              */
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
             printf( "USB event: EVENT_VBUS_REQUEST_POWER - Port: %u - Current: %u (x2mA)\n", ( ( USB_VBUS_POWER_EVENT_DATA* ) data )->port, ( ( USB_VBUS_POWER_EVENT_DATA* ) data )->current );
-            // display "USB event : EVENT_VBUS_REQUEST_POWER - 0 - 50"
 #endif
             return true;
             break;

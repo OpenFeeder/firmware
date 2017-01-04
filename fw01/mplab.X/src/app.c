@@ -392,9 +392,7 @@ void APP_Tasks( void )
             APP_SerialDebugTasks( );
 #endif
 
-            /* Check USER BUTTON detected.
-             *  - if true go to ...
-             */
+            /* Check USER BUTTON detected. */
             button_user_state = USER_BUTTON_GetValue( );
 
             if ( button_user_state != previous_button_user_state )
@@ -422,6 +420,7 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
                         printf( "Remote control not found.\n" );
 #endif
+                        appData.state = APP_STATE_FLUSH_DATA_TO_USB;
                     }
                 }
                 else
@@ -669,6 +668,56 @@ void APP_Tasks( void )
             {
                 appData.state = APP_STATE_IDLE;
             }
+
+            USBHostShutdown( );
+            powerUsbRfidDisable( );
+
+            break;
+            /* -------------------------------------------------------------- */
+
+        case APP_STATE_FLUSH_DATA_TO_USB:
+            if ( appData.state != appData.previous_state )
+            {
+                appData.previous_state = appData.state;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
+                printf( "> APP_STATE_FLUSH_DATA_TO_USB\n" );
+#endif
+
+//                printf( "USBHostDeviceStatus: " );
+//                printUSBHostDeviceStatus( );
+//                putchar( '\n' );
+
+                appDataUsb.getValidDeviceAdress = false;
+                /* Log data on USB device */
+                appDataUsb.key_is_nedded = true;
+                powerUsbRfidEnable( );
+
+            }
+
+            LedsStatusBlink( LED_BLUE, 50, 250 );
+
+            if ( appDataUsb.getValidDeviceAdress )
+            {
+                if ( appDataLog.numDataStored > 0 )
+                {
+                    /* Force data to be written on the USB device */
+                    appDataLog.numDataStored = MAX_NUM_DATA_TO_STORE;
+                    if ( false == dataLog( false ) )
+                    {
+                        appData.state = APP_STATE_ERROR;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                break;
+            }
+
+            USBHostShutdown( );
+            powerUsbRfidDisable( );
+
+            appData.state = APP_STATE_IDLE;
             break;
             /* -------------------------------------------------------------- */
 
@@ -737,7 +786,7 @@ void APP_Tasks( void )
                     {
                         /* Force data to be written on the USB device */
                         appDataLog.numDataStored = MAX_NUM_DATA_TO_STORE;
-                        if ( false == dataLog( true ) )
+                        if ( false == dataLog( false ) )
                         {
                             appData.state = APP_STATE_ERROR;
                             break;
@@ -858,7 +907,7 @@ void APP_Tasks( void )
                 appDataUsb.key_is_nedded = true;
 
             }
-            
+
             if ( true == appDataUsb.key_is_nedded )
             {
                 if ( appDataUsb.getValidDeviceAdress )
