@@ -48,6 +48,7 @@ bool isPowerBatteryGood( void )
         appError.currentLineNumber = __LINE__;
         sprintf( appError.currentFileName, "%s", __FILE__ );
 
+        appError.number = ERROR_LOW_BATTERY;
         appError.ledColor = LED_PURPLE;
     }
 
@@ -70,7 +71,7 @@ bool isEnoughFood( void )
         strcpy( appError.message, "Not enough food" );
         appError.currentLineNumber = __LINE__;
         sprintf( appError.currentFileName, "%s", __FILE__ );
-        //        appError.ledColor = LED_YELLOW;
+        appError.number = ERROR_LOW_FOOD;
         appError.ledColor = LED_PURPLE;
     }
 
@@ -93,7 +94,7 @@ bool isRfidFreqGood( void )
         strcpy( appError.message, "Rfid frequency too low" );
         appError.currentLineNumber = __LINE__;
         sprintf( appError.currentFileName, "%s", __FILE__ );
-        //        appError.ledColor = LED_YELLOW;
+        appError.number = ERROR_LOW_RFID_FREQUENCY;
         appError.ledColor = LED_PURPLE;
     }
 

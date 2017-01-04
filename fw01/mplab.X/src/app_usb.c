@@ -62,6 +62,7 @@ bool usbMountDrive( void )
             else // USB_ILLEGAL_REQUEST
                 printf( "Device cannot RESUME unless it is suspended\n" );
             appDataUsb.usbDriveStatus = USB_DRIVE_NOT_MOUNTED;
+            appError.number = ERROR_USB;
             return appDataUsb.usbDriveStatus;
         }
     }
@@ -85,6 +86,7 @@ bool usbMountDrive( void )
         appError.currentLineNumber = __LINE__;
         sprintf( appError.currentFileName, "%s", __FILE__ );
         appDataUsb.usbDriveStatus = USB_DRIVE_NOT_MOUNTED;
+        appError.number = ERROR_USB;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
         printf( " - USB drive not mounted %d\n", errF );
 #endif
@@ -120,6 +122,7 @@ bool usbUnmountDrive( void )
         strcpy( appError.message, "Unable to unmount drive" );
         appError.currentLineNumber = __LINE__;
         sprintf( appError.currentFileName, "%s", __FILE__ );
+        appError.number = ERROR_USB;
         return USB_DRIVE_MOUNTED;
     }
 
@@ -152,6 +155,7 @@ bool usbUnmountDrive( void )
             appError.currentLineNumber = __LINE__;
             sprintf( appError.currentFileName, "%s", __FILE__ );
         }
+        appError.number = ERROR_USB;
         appDataUsb.usbDriveStatus = USB_DRIVE_MOUNTED;
     }
 

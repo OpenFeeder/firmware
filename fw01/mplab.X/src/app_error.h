@@ -19,6 +19,29 @@
 // *****************************************************************************
 
 
+typedef enum
+{
+    ERROR_NONE,
+    ERROR_LOW_BATTERY,
+    ERROR_LOW_VBAT,
+    ERROR_USB,
+    ERROR_INI_READ,
+    ERROR_FILE_WRITE,
+    ERROR_DOOR,
+    ERROR_LOW_FOOD,
+    ERROR_LOW_RFID_FREQUENCY,
+    ERROR_POPULATE_DATA_BUFFER,
+    ERROR_LOG_FILE_OPEN,
+    ERROR_LOG_FILE_WRITE,
+    ERROR_LOG_FILE_CLOSE,
+    ERROR_LOG_FILE_SET_NAME,
+    ERROR_BATTERY_FILE_OPEN,
+    ERROR_BATTERY_FILE_WRITE,
+    ERROR_BATTERY_FILE_CLOSE
+        
+} ERROR_NUMBER;
+
+
 typedef struct
 {
     char message[200]; // Error message buffer
@@ -28,6 +51,8 @@ typedef struct
     //                      //                   1 => low priority 
 
     LED_STATUS ledColor;
+
+    ERROR_NUMBER number;
 
 } APP_ERROR;
 

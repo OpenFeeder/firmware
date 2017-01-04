@@ -130,6 +130,7 @@ static int writeLogFile( void )
         appError.currentLineNumber = __LINE__;
         sprintf( appError.currentFileName, "%s", __FILE__ );
         FILEIO_ErrorClear( 'A' );
+        appError.number = ERROR_LOG_FILE_OPEN;
         return FILEIO_RESULT_FAILURE;
     }
 
@@ -145,6 +146,7 @@ static int writeLogFile( void )
         appError.currentLineNumber = __LINE__;
         sprintf( appError.currentFileName, "%s", __FILE__ );
         FILEIO_ErrorClear( 'A' );
+        appError.number = ERROR_LOG_FILE_WRITE;
         return FILEIO_RESULT_FAILURE;
     }
 
@@ -158,6 +160,7 @@ static int writeLogFile( void )
         appError.currentLineNumber = __LINE__;
         sprintf( appError.currentFileName, "%s", __FILE__ );
         FILEIO_ErrorClear( 'A' );
+        appError.number = ERROR_LOG_FILE_CLOSE;
         return FILEIO_RESULT_FAILURE;
     }
 
@@ -202,6 +205,7 @@ bool dataLog( bool newData )
             sprintf( appError.message, "Unable to populate log buffer" );
             appError.currentLineNumber = __LINE__;
             sprintf( appError.currentFileName, "%s", __FILE__ );
+            appError.number = ERROR_POPULATE_DATA_BUFFER;
             return false;
         }
         else
@@ -265,6 +269,7 @@ bool setLogFileName( void )
         sprintf( appError.message, "Unable to set log file name" );
         appError.currentLineNumber = __LINE__;
         sprintf( appError.currentFileName, "%s", __FILE__ );
+        appError.number = ERROR_LOG_FILE_SET_NAME;
         return false;
     }
 

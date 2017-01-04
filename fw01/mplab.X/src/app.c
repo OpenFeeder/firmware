@@ -986,14 +986,13 @@ void APP_Tasks( void )
 
             }
 
-            /* Red status LED blinks until the user plug a USB key */
+            /* Red status LED blinks */
             LedsStatusBlink( appError.ledColor, 50, 450 );
 
-            //            if ( USBHostDeviceStatus( appDataUsb.deviceAddress ) == USB_DEVICE_DETACHED )
-            //            {
-            //                setLedsStatusColor( LEDS_OFF );
-            //                appData.state = APP_STATE_INIT_MOUNT_USB_KEY;
-            //            }
+#if defined (USE_UART1_SERIAL_INTERFACE)
+            /* Get interaction with the serial terminal. */
+            APP_SerialDebugTasks( );
+#endif
 
             break;
             /* -------------------------------------------------------------- */
@@ -1075,6 +1074,7 @@ void APP_Initialize( void )
     appDataLog.numBatteryLevelStored = 0;
 
     appError.ledColor = LED_RED;
+    appError.number = ERROR_NONE;
 
 }
 

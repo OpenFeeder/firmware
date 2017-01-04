@@ -20,7 +20,16 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/D:/github/openfeeder/firmwares/fw01/mplab.X/src/app_power.h</file>
+            <file>file:/D:/github/openfeeder/firmwares/fw01/mplab.X/src/app_check.c</file>
+            <file>file:/D:/github/openfeeder/firmwares/fw01/mplab.X/src/app_remote.c</file>
+            <file>file:/D:/github/openfeeder/firmwares/fw01/mplab.X/src/app_data_logger.c</file>
+            <file>file:/D:/github/openfeeder/firmwares/fw01/mplab.X/src/app_error.h</file>
+            <file>file:/D:/github/openfeeder/firmwares/fw01/mplab.X/src/app_power.c</file>
+            <file>file:/D:/github/openfeeder/firmwares/fw01/mplab.X/src/app_usb.c</file>
             <file>file:/D:/github/openfeeder/firmwares/fw01/mplab.X/src/app.c</file>
+            <file>file:/D:/github/openfeeder/firmwares/fw01/mplab.X/src/app_remote.h</file>
+            <file>file:/D:/github/openfeeder/firmwares/fw01/mplab.X/src/app.h</file>
         </group>
     </open-files>
 </project-private>

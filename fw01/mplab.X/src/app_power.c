@@ -132,6 +132,7 @@ FILEIO_RESULT logBatteryLevel( void )
         appError.currentLineNumber = __LINE__;
         sprintf( appError.currentFileName, "%s", __FILE__ );
         FILEIO_ErrorClear( 'A' );
+        appError.number = ERROR_BATTERY_FILE_OPEN;
         return FILEIO_RESULT_FAILURE;
     }
 
@@ -163,6 +164,7 @@ FILEIO_RESULT logBatteryLevel( void )
         appError.currentLineNumber = __LINE__;
         sprintf( appError.currentFileName, "%s", __FILE__ );
         FILEIO_ErrorClear( 'A' );
+        appError.number = ERROR_BATTERY_FILE_WRITE;
         return FILEIO_RESULT_FAILURE;
     }
 
@@ -191,6 +193,7 @@ FILEIO_RESULT logBatteryLevel( void )
             appError.currentLineNumber = __LINE__;
             sprintf( appError.currentFileName, "%s", __FILE__ );
             FILEIO_ErrorClear( 'A' );
+            appError.number = ERROR_BATTERY_FILE_WRITE;
             return FILEIO_RESULT_FAILURE;
         }
 
@@ -206,6 +209,7 @@ FILEIO_RESULT logBatteryLevel( void )
         appError.currentLineNumber = __LINE__;
         sprintf( appError.currentFileName, "%s", __FILE__ );
         FILEIO_ErrorClear( 'A' );
+        appError.number = ERROR_BATTERY_FILE_CLOSE;
         return FILEIO_RESULT_FAILURE;
     }
 

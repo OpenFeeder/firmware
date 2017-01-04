@@ -12,20 +12,21 @@ MENU menu;
 
 char currentMenuValue[6];
 
-char batteryState[] = "|||| ";
+//char batteryState[] = "|||| ";
 char pileState[] = "||ii ";
 char numberDays[] = "d012 ";
 char error[] = "noEr.";
 
-char pirDetect[] = "truE ";
+//char pirDetect[] = "truE ";
 char rfidDetect[] = "PtAG ";
-char rewardAccess[] = "OPEn ";
+//char doorStatus[] = "OPEn ";
 char irDetect[] = "truE ";
 
-char siteID[] = "AAXX ";
+//char siteID[] = "AAXX ";
 
 int currentDigitModificationDirection;
 int currentDigitPosition = 0;
+
 
 void APP_remoteControlInitialize( void )
 {
@@ -33,8 +34,12 @@ void APP_remoteControlInitialize( void )
     appDataRc.previous_state = APP_STATE_RC_BATTERY_LEVEL_INIT;
 }
 
+
 void APP_remoteControlTask( void )
 {
+
+    uint16_t battery_level_step;
+
     switch ( appDataRc.state )
     {
         case APP_STATE_RC_INIT:
@@ -68,8 +73,24 @@ void APP_remoteControlTask( void )
             print7Segments( "bAtt" );
             setDelayMs( START_MENU_DELAY );
             while ( false == isDelayMsEnding( ) );
-            //TODO: get real battery level
-            print7Segments( "|||| " );
+            battery_level_step = 4 * ( appData.battery_level - LOW_BATTERY_LEVEL ) / ( HIGH_BATTERY_LEVEL - LOW_BATTERY_LEVEL );
+//            if ( 0 == battery_level_step )
+//                print7Segments( "|    " );
+//            if ( 1 == battery_level_step )
+//                print7Segments( "||   " );
+//            if ( 2 == battery_level_step )
+//                print7Segments( "|||  " );
+//            if ( 3 <= battery_level_step )
+//                print7Segments( "|||| " );
+            if ( 0 == battery_level_step )
+                print7Segments( "0    " );
+            if ( 1 == battery_level_step )
+                print7Segments( "00   " );
+            if ( 2 == battery_level_step )
+                print7Segments( "000  " );
+            if ( 3 <= battery_level_step )
+                print7Segments( "0000 " );
+            
             setDelayMs( START_MENU_DELAY );
             while ( false == isDelayMsEnding( ) );
             displayDigitFixe( );
@@ -276,6 +297,7 @@ void APP_remoteControlTask( void )
     }
 }
 
+
 void print7Segments( const char *buf )
 {
     //#if defined (USE_UART1_SERIAL_INTERFACE)
@@ -302,6 +324,7 @@ void print7Segments( const char *buf )
         appData.digit[3] = appData.digit[3] & 0b01111111;
     }
 }
+
 
 void modifyCurrentDigit( uint8_t currentDigitPosition, uint8_t currentDigitModificationDirection )
 {
@@ -450,6 +473,7 @@ void modifyCurrentDigit( uint8_t currentDigitPosition, uint8_t currentDigitModif
     printCurrentMenuValue( );
 }
 
+
 void printCurrentMenu( void )
 {
     //#if defined (USE_UART1_SERIAL_INTERFACE)
@@ -472,6 +496,7 @@ void printCurrentMenu( void )
         }
     }
 }
+
 
 void setCurrentMenuValue( void )
 {
@@ -496,16 +521,36 @@ void setCurrentMenuValue( void )
     }
 }
 
+
 void getCurrentMenuValue( void )
 {
     //#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
     //    printf( "getCurrentMenuValue()\n" );
     //#endif 
 
+    uint16_t battery_level_step;
+
     switch ( menu.currentMenu )
     {
         case N4_BATTERY_STATE:
-            strncpy( currentMenuValue, batteryState, 5 );
+            battery_level_step = 4 * ( appData.battery_level - LOW_BATTERY_LEVEL ) / ( HIGH_BATTERY_LEVEL - LOW_BATTERY_LEVEL );
+            //            if ( 0 == battery_level_step )
+            //                strncpy( currentMenuValue, "|    ", 5 );
+            //            if ( 1 == battery_level_step )
+            //                strncpy( currentMenuValue, "||   ", 5 );
+            //            if ( 2 == battery_level_step )
+            //                strncpy( currentMenuValue, "|||  ", 5 );
+            //            if ( 3 <= battery_level_step )
+            //                strncpy( currentMenuValue, "|||| ", 5 );
+            if ( 0 == battery_level_step )
+                strncpy( currentMenuValue, "0    ", 5 );
+            if ( 1 == battery_level_step )
+                strncpy( currentMenuValue, "00   ", 5 );
+            if ( 2 == battery_level_step )
+                strncpy( currentMenuValue, "000  ", 5 );
+            if ( 3 <= battery_level_step )
+                strncpy( currentMenuValue, "0000 ", 5 );
+            //            strncpy( currentMenuValue, batteryState, 5 );
             break;
 
         case N4_PILE_STATE:
@@ -516,7 +561,8 @@ void getCurrentMenuValue( void )
             strncpy( currentMenuValue, numberDays, 5 );
             break;
 
-        case N4_ERRORS_LIST:
+        case N4_ERRORS_LIST:            
+            sprintf(error, "Er%02d ", appError.number);
             strncpy( currentMenuValue, error, 5 );
             break;
 
@@ -546,15 +592,32 @@ void getCurrentMenuValue( void )
             break;
 
         case N4_PIR_DETECT:
-            strncpy( currentMenuValue, pirDetect, 5 );
+
+            if ( true == appDataLog.bird_pir_sensor_status )
+            {
+                strncpy( currentMenuValue, "truE ", 5 );
+            }
+            else
+            {
+                strncpy( currentMenuValue, "nonE ", 5 );
+            }
+            //            strncpy( currentMenuValue, pirDetect, 5 );
             break;
 
         case N4_RFID_DETECT:
             strncpy( currentMenuValue, rfidDetect, 5 );
             break;
 
-        case N4_REWARD_ACCESS:
-            strncpy( currentMenuValue, rewardAccess, 5 );
+        case N4_DOOR_STATUS:
+
+            if ( DOOR_OPENED == appDataDoor.reward_door_status )
+            {
+                strncpy( currentMenuValue, "OPEn ", 5 );
+            }
+            else
+            {
+                strncpy( currentMenuValue, "cLSE ", 5 );
+            }
             break;
 
         case N4_IR_DETECT:
@@ -577,13 +640,15 @@ void getCurrentMenuValue( void )
             break;
 
         case N3_SITE_ID:
-            strncpy( currentMenuValue, siteID, 5 );
+            strncpy( currentMenuValue, appData.siteid, 5 );
+            //            strncpy( currentMenuValue, siteID, 5 );
             break;
 
         default:
             break;
     }
 }
+
 
 void storeCurrentMenu( void )
 {
@@ -623,16 +688,16 @@ void storeCurrentMenu( void )
             appDataAlarmSleep.time.tm_sec = 0;
             break;
 
-        case N4_PIR_DETECT:
-            strncpy( currentMenuValue, pirDetect, 5 );
-            break;
+            //        case N4_PIR_DETECT:
+            //            strncpy( currentMenuValue, pirDetect, 5 );
+            //            break;
 
         case N4_RFID_DETECT:
             strncpy( currentMenuValue, rfidDetect, 5 );
             break;
 
-        case N4_REWARD_ACCESS:
-            strncpy( currentMenuValue, rewardAccess, 5 );
+        case N4_DOOR_STATUS:
+            //            strncpy( currentMenuValue, doorStatus, 5 );
             break;
 
         case N4_IR_DETECT:
@@ -654,14 +719,15 @@ void storeCurrentMenu( void )
             OC3_SingleCompareValueSet( appDataAttractiveLeds.blue[appDataAttractiveLeds.current_color_index] );
             break;
 
-        case N3_SITE_ID:
-            strncpy( currentMenuValue, siteID, 5 );
-            break;
+            //        case N3_SITE_ID:
+            //            strncpy( currentMenuValue, siteID, 5 );
+            //            break;
 
         default:
             break;
     }
 }
+
 
 void printCurrentMenuValue( void )
 {
@@ -670,6 +736,7 @@ void printCurrentMenuValue( void )
     //#endif 
     print7Segments( currentMenuValue );
 }
+
 
 void setCurrentMenu( MENUS_LEVELS menuLevel )
 {
@@ -958,7 +1025,7 @@ void setCurrentMenu( MENUS_LEVELS menuLevel )
             menu.currentMenu = N3_RFID;
             menu.parentMenu = N2_TEST;
             menu.firstChild = N4_RFID_DETECT;
-            menu.nextMenu = N3_REWARD;
+            menu.nextMenu = N3_DOOR;
             menu.previousMenu = N3_PIR;
             strncpy( menu.name, "rFid ", 5 );
             menu.mode = NONE;
@@ -978,10 +1045,10 @@ void setCurrentMenu( MENUS_LEVELS menuLevel )
             menu.valueType = NO_TYPE;
             break;
 
-        case N3_REWARD:
-            menu.currentMenu = N3_REWARD;
+        case N3_DOOR:
+            menu.currentMenu = N3_DOOR;
             menu.parentMenu = N2_TEST;
-            menu.firstChild = N4_REWARD_ACCESS;
+            menu.firstChild = N4_DOOR_STATUS;
             menu.nextMenu = N3_IR;
             menu.previousMenu = N3_RFID;
             strncpy( menu.name, "door ", 5 );
@@ -990,9 +1057,9 @@ void setCurrentMenu( MENUS_LEVELS menuLevel )
             menu.valueType = NO_TYPE;
             break;
 
-        case N4_REWARD_ACCESS:
-            menu.currentMenu = N4_REWARD_ACCESS;
-            menu.parentMenu = N3_REWARD;
+        case N4_DOOR_STATUS:
+            menu.currentMenu = N4_DOOR_STATUS;
+            menu.parentMenu = N3_DOOR;
             menu.firstChild = NO;
             menu.nextMenu = NO;
             menu.previousMenu = NO;
@@ -1007,7 +1074,7 @@ void setCurrentMenu( MENUS_LEVELS menuLevel )
             menu.parentMenu = N2_TEST;
             menu.firstChild = N4_IR_DETECT;
             menu.nextMenu = N3_LEDS;
-            menu.previousMenu = N3_REWARD;
+            menu.previousMenu = N3_DOOR;
             strncpy( menu.name, "CbIr ", 5 );
             menu.mode = NONE;
             menu.level = 2;
@@ -1093,7 +1160,7 @@ void setCurrentMenu( MENUS_LEVELS menuLevel )
             menu.nextMenu = NO;
             menu.previousMenu = NO;
             strncpy( menu.name, "     ", 5 );
-            menu.mode = READ_WRITE;
+            menu.mode = READ;
             menu.level = 2;
             menu.valueType = NO_TYPE;
             break;
@@ -1102,6 +1169,7 @@ void setCurrentMenu( MENUS_LEVELS menuLevel )
             break;
     }
 }
+
 
 void clearRemoteControlDisplay( void )
 {
