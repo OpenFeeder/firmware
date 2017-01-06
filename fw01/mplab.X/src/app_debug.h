@@ -3,7 +3,6 @@
  * @author OpenFeeder Team <https://github.com/orgs/OpenFeeder/people>
  * @version 1.0
  * @date 06/07/2016
- * @revision history 2
  */
 
 #ifndef APP_DEBUG_H

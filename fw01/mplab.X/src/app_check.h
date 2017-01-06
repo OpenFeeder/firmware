@@ -16,6 +16,7 @@ typedef enum
     APP_CHECK_OK,
 
     APP_CHECK_BATTERY_PB,
+    APP_CHECK_VBAT_PB,
     APP_CHECK_FOOD_LEVEL_PB,
     APP_CHECK_RFID_FREQ_PB
 
@@ -23,6 +24,7 @@ typedef enum
 
 APP_CHECK checkImportantParameters( void );
 bool isPowerBatteryGood( void );
+bool isPowerVbatGood( void );
 bool isEnoughFood( void );
 bool isRfidFreqGood( void );
 

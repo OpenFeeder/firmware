@@ -1,5 +1,5 @@
 /**
- * @file app_rc_menu.c
+ * @file app_remote.c
  * @author OpenFeeder Team <https://github.com/orgs/OpenFeeder/people>
  * @version 1.0
  * @date
@@ -13,9 +13,9 @@ MENU menu;
 char currentMenuValue[6];
 
 //char batteryState[] = "|||| ";
-char pileState[] = "||ii ";
+//char pileState[] = "||ii ";
 char numberDays[] = "d012 ";
-char error[] = "noEr.";
+//char error[] = "noEr.";
 
 //char pirDetect[] = "truE ";
 char rfidDetect[] = "PtAG ";
@@ -528,20 +528,13 @@ void getCurrentMenuValue( void )
     //    printf( "getCurrentMenuValue()\n" );
     //#endif 
 
-    uint16_t battery_level_step;
-
+    uint16_t battery_level_step, vbat_level_step;
+    char error[6];
+    
     switch ( menu.currentMenu )
     {
         case N4_BATTERY_STATE:
             battery_level_step = 4 * ( appData.battery_level - LOW_BATTERY_LEVEL ) / ( HIGH_BATTERY_LEVEL - LOW_BATTERY_LEVEL );
-            //            if ( 0 == battery_level_step )
-            //                strncpy( currentMenuValue, "|    ", 5 );
-            //            if ( 1 == battery_level_step )
-            //                strncpy( currentMenuValue, "||   ", 5 );
-            //            if ( 2 == battery_level_step )
-            //                strncpy( currentMenuValue, "|||  ", 5 );
-            //            if ( 3 <= battery_level_step )
-            //                strncpy( currentMenuValue, "|||| ", 5 );
             if ( 0 == battery_level_step )
                 strncpy( currentMenuValue, "0    ", 5 );
             if ( 1 == battery_level_step )
@@ -550,11 +543,18 @@ void getCurrentMenuValue( void )
                 strncpy( currentMenuValue, "000  ", 5 );
             if ( 3 <= battery_level_step )
                 strncpy( currentMenuValue, "0000 ", 5 );
-            //            strncpy( currentMenuValue, batteryState, 5 );
             break;
 
         case N4_PILE_STATE:
-            strncpy( currentMenuValue, pileState, 5 );
+            vbat_level_step = 4 * ( appData.vbat_level - LOW_VBAT_LEVEL ) / ( HIGH_VBAT_LEVEL - LOW_VBAT_LEVEL );
+            if ( 0 == vbat_level_step )
+                strncpy( currentMenuValue, "0    ", 5 );
+            if ( 1 == vbat_level_step )
+                strncpy( currentMenuValue, "00   ", 5 );
+            if ( 2 == vbat_level_step )
+                strncpy( currentMenuValue, "000  ", 5 );
+            if ( 3 <= vbat_level_step )
+                strncpy( currentMenuValue, "0000 ", 5 );
             break;
 
         case N4_NUMBER_DAYS:
@@ -562,7 +562,7 @@ void getCurrentMenuValue( void )
             break;
 
         case N4_ERRORS_LIST:            
-            sprintf(error, "Er%02d ", appError.number);
+            sprintf(error, "Er%02d.", appError.number);
             strncpy( currentMenuValue, error, 5 );
             break;
 

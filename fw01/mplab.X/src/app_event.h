@@ -1,5 +1,5 @@
 /**
- * @file app_error.h
+ * @file app_event.h
  * @author OpenFeeder Team <https://github.com/orgs/OpenFeeder/people>
  * @version 1.0
  * @date

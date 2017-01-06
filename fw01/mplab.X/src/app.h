@@ -25,8 +25,8 @@
 // *****************************************************************************
 
 
-#define USE_UART1_SERIAL_INTERFACE  // uncomment to display information dsent to UART
-#define DISPLAY_CURRENT_STATE       // uncomment to display the current state of main state machine (app.c))
+//#define USE_UART1_SERIAL_INTERFACE  // uncomment to display information dsent to UART
+//#define DISPLAY_CURRENT_STATE       // uncomment to display the current state of main state machine (app.c))
 
 //#define DISPLAY_USB_INFO          // uncomment to display USB information
 //#define DISPLAY_LOG_INFO 
@@ -124,6 +124,7 @@ typedef enum
     APP_STATE_REMOTE_CONTROL,
     APP_STATE_FLUSH_DATA_TO_USB,
     APP_STATE_LOW_BATTERY,
+    APP_STATE_LOW_VBAT,
     APP_STATE_LOW_FOOD_LEVEL,
     APP_STATE_LOW_RFID_FREQUENCY,
 
@@ -228,6 +229,7 @@ typedef struct
 
     uint16_t rfid_rdyclk;
 
+    APP_STATES rc_previous_state;
 
 } APP_DATA;
 

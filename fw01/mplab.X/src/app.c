@@ -147,6 +147,9 @@ void APP_Tasks( void )
                 case APP_CHECK_BATTERY_PB:
                     appData.state = APP_STATE_LOW_BATTERY;
                     break;
+                case APP_CHECK_VBAT_PB:
+                    appData.state = APP_STATE_LOW_VBAT;
+                    break;  
                 case APP_CHECK_FOOD_LEVEL_PB:
                     appData.state = APP_STATE_LOW_FOOD_LEVEL;
                     break;
@@ -410,6 +413,7 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
                         printf( "Remote control found.\n" );
 #endif
+                        appData.rc_previous_state = APP_STATE_IDLE;
                         appData.state = APP_STATE_REMOTE_CONTROL;
                         break;
                     }
@@ -683,9 +687,9 @@ void APP_Tasks( void )
                 printf( "> APP_STATE_FLUSH_DATA_TO_USB\n" );
 #endif
 
-//                printf( "USBHostDeviceStatus: " );
-//                printUSBHostDeviceStatus( );
-//                putchar( '\n' );
+                //                printf( "USBHostDeviceStatus: " );
+                //                printUSBHostDeviceStatus( );
+                //                putchar( '\n' );
 
                 appDataUsb.getValidDeviceAdress = false;
                 /* Log data on USB device */
@@ -887,7 +891,7 @@ void APP_Tasks( void )
             }
             else
             {
-                appData.state = APP_STATE_IDLE;
+                appData.state = appData.rc_previous_state;
             }
             break;
             /* -------------------------------------------------------------- */
@@ -947,6 +951,7 @@ void APP_Tasks( void )
             break;
             /* -------------------------------------------------------------- */
 
+        case APP_STATE_LOW_VBAT:
         case APP_STATE_LOW_FOOD_LEVEL:
         case APP_STATE_LOW_RFID_FREQUENCY:
         case APP_STATE_ERROR:
@@ -962,6 +967,10 @@ void APP_Tasks( void )
                 {
                     printf( "> APP_STATE_ERROR\n" );
                 }
+                if ( appData.state == APP_STATE_LOW_VBAT )
+                {
+                    printf( "> APP_STATE_LOW_VBAT\n" );
+                }
                 if ( appData.state == APP_STATE_LOW_FOOD_LEVEL )
                 {
                     printf( "> APP_STATE_LOW_FOOD_LEVEL\n" );
@@ -974,7 +983,7 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE)
                 printError( );
 #endif
-                clearError( );
+//                clearError( );
 
                 rtcc_stop_alarm( );
                 /* Set peripherals Off. */
@@ -993,6 +1002,45 @@ void APP_Tasks( void )
             /* Get interaction with the serial terminal. */
             APP_SerialDebugTasks( );
 #endif
+            /* Check USER BUTTON detected. */
+            button_user_state = USER_BUTTON_GetValue( );
+
+            if ( button_user_state != previous_button_user_state )
+            {
+                previous_button_user_state = button_user_state;
+                if ( BUTTON_PRESSED == button_user_state )
+                {
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO)
+                    printf( "User button pressed - " );
+#endif
+                    if ( APP_isRemoteControlConnected( ) )
+                    {
+                        appData.flags.bit_value.RemoteControlConnected = true; // FIXME: same of appData.mcp23017.status_bit.found
+                        //appData.mcp23017.status_bit.found = true;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
+                        printf( "Remote control found.\n" );
+#endif
+                        appData.rc_previous_state = APP_STATE_ERROR;
+                        appData.state = APP_STATE_REMOTE_CONTROL;
+                        break;
+                    }
+//                    else
+//                    {
+//                        appData.mcp23017.status_bit.found = false;
+//                        appData.mcp23017.status_bit.initialized = false;
+//#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
+//                        printf( "Remote control not found.\n" );
+//#endif
+//                        appData.state = APP_STATE_FLUSH_DATA_TO_USB;
+//                    }
+                }
+                else
+                {
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO)
+                    printf( "User button released\n" );
+#endif
+                }
+            }
 
             break;
             /* -------------------------------------------------------------- */

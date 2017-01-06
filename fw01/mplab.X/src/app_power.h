@@ -3,8 +3,6 @@
  * @author OpenFeeder Team <https://github.com/orgs/OpenFeeder/people>
  * @version 1.0
  * @date
- * @revision history 1
- * @dependency 
  */
 
 #ifndef APP_POWER_H
@@ -23,7 +21,8 @@
 #define LOW_BATTERY_LEVEL 2929
 #define BATTERY_VOLTAGE_FACTOR 0.003925439453125
 
-//#define LOW_VBAT_LEVEL 2929
+#define HIGH_VBAT_LEVEL 3830
+#define LOW_VBAT_LEVEL 3393
 #define VBAT_VOLTAGE_FACTOR 0.000795827117474
 
 void powerUsbRfidEnable( void );

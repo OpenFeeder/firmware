@@ -29,14 +29,12 @@ bool config_set( void )
 
     if ( INI_READ_OK != read_ini_status )
     {
-#if defined (USE_UART1_SERIAL_INTERFACE)
-        config_print( );
-#endif
         getIniPbChar( read_ini_status, buf );
 
         sprintf( appError.message, "Wrong parameters in CONFIG.INI: %s (%d)", buf, read_ini_status );
         appError.currentLineNumber = __LINE__;
         sprintf( appError.currentFileName, "%s", __FILE__ );
+        appError.number = ERROR_INI_FILE_READ;
         return false;
     }
 
@@ -76,6 +74,7 @@ FILEIO_RESULT read_PIT_tags( void )
             appError.currentLineNumber = __LINE__;
             sprintf( appError.currentFileName, "%s", __FILE__ );
             FILEIO_ErrorClear( 'A' );
+            appError.number = ERROR_PIT_TAGS_DENIED_FILE_OPEN;
             return FILEIO_RESULT_FAILURE;
         }
 
@@ -95,6 +94,7 @@ FILEIO_RESULT read_PIT_tags( void )
             appError.currentLineNumber = __LINE__;
             sprintf( appError.currentFileName, "%s", __FILE__ );
             FILEIO_ErrorClear( 'A' );
+            appError.number = ERROR_PIT_TAGS_DENIED_FILE_CLOSE;
             return FILEIO_RESULT_FAILURE;
         }
 
@@ -113,6 +113,7 @@ FILEIO_RESULT read_PIT_tags( void )
             appError.currentLineNumber = __LINE__;
             sprintf( appError.currentFileName, "%s", __FILE__ );
             FILEIO_ErrorClear( 'A' );
+            appError.number = ERROR_PIT_TAGS_ACCEPTED_FILE_OPEN;
             return FILEIO_RESULT_FAILURE;
         }
 
@@ -128,10 +129,11 @@ FILEIO_RESULT read_PIT_tags( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
             printf( "unable to close PIT tags denied file (%u)", errF );
 #endif 
-            sprintf( appError.message, "Unable to close PIT tags denied file (%u)", errF );
+            sprintf( appError.message, "Unable to close PIT tags accepted file (%u)", errF );
             appError.currentLineNumber = __LINE__;
             sprintf( appError.currentFileName, "%s", __FILE__ );
             FILEIO_ErrorClear( 'A' );
+            appError.number = ERROR_PIT_TAGS_ACCEPTED_FILE_CLOSE;
             return FILEIO_RESULT_FAILURE;
         }
 

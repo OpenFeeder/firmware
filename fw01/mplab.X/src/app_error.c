@@ -13,9 +13,9 @@
 void printError(void)
 {
     if (appError.currentLineNumber > 0)
-        printf("ERROR: %s\nIn %s (%d)\n", appError.message, appError.currentFileName, appError.currentLineNumber);
+        printf("ERROR %02d: %s\nIn %s (%d)\n", appError.number, appError.message, appError.currentFileName, appError.currentLineNumber);
     else
-        printf("ERROR: %s\n", appError.message);
+        printf("ERROR %02d: %s\n", appError.number, appError.message);
 
 }
 

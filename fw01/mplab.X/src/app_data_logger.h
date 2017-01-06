@@ -15,7 +15,7 @@
 /* Quantite de donnees a stocker dans le buffer avant ecriture dans le fichier LOG
  * --> donc nombre de passages d'oiseau
  */
-#define MAX_NUM_DATA_TO_STORE 5
+#define MAX_NUM_DATA_TO_STORE 25
 
 #define sizearray(a)  (sizeof(a) / sizeof((a)[0]))
 

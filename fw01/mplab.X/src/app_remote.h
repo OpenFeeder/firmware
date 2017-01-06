@@ -1,5 +1,5 @@
 /**
- * @file app_rc.h
+ * @file app_remote.h
  * @author OpenFeeder Team <https://github.com/orgs/OpenFeeder/people>
  * @version 1.0
  * @date 

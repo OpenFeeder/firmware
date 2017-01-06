@@ -220,7 +220,7 @@ int main( void )
     /* Initialize the USB Host API. */
     if ( !USBHostInit( 0 ) )
     {
-#if defined (DISPLAY_USB_INFO)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
         printf( "\nFailure to initialize USB Host API!\n" );
 #endif
         doLedsStatusBlink( LEDS_ERROR, 3, 83, 250 );
@@ -233,15 +233,17 @@ int main( void )
     /* Initialize the application. */
     APP_Initialize( );
 
+#if defined (USE_UART1_SERIAL_INTERFACE)
     /* Display information on serial terminal. */
     displayBootMessage( );
+#endif
+
+
 
     /* Main loop. */
     while ( 1 )
     {
         /* Maintain Device Drivers. */
-        //        USBHostTasks( );
-        //        USBHostMSDTasks( );
         USBTasks( );
 
         /* Maintain the application's state machine. */

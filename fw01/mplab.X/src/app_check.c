@@ -18,6 +18,12 @@ APP_CHECK checkImportantParameters( void )
     {
         return APP_CHECK_BATTERY_PB;
     }
+    
+    /* Check battery level at startup. */
+    if ( false == isPowerVbatGood( ) )
+    {
+        return APP_CHECK_VBAT_PB;
+    }
 
     /* Check food level */
     if ( false == isEnoughFood( ) )
@@ -56,6 +62,26 @@ bool isPowerBatteryGood( void )
 
 }
 
+bool isPowerVbatGood( void )
+{
+
+    bool vbatLevelOK;
+    getVBatLevel( );
+    vbatLevelOK = appData.vbat_level > LOW_VBAT_LEVEL;
+
+    if ( false == vbatLevelOK )
+    {
+        strcpy( appError.message, "Low vbat level" );
+        appError.currentLineNumber = __LINE__;
+        sprintf( appError.currentFileName, "%s", __FILE__ );
+
+        appError.number = ERROR_LOW_VBAT;
+        appError.ledColor = LED_PURPLE;
+    }
+
+    return (vbatLevelOK );
+
+}
 
 bool isEnoughFood( void )
 {
