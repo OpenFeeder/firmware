@@ -491,6 +491,16 @@ INI_READ_STATE config_read_ini( void )
     {
         appData.timeout_taking_reward = ( uint16_t ) read_parameter * 1000;
     }
+    /* New bird delay. */
+    read_parameter = ini_getl( "newbird", "delay", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
+    {
+        return INI_PB_NEW_BIRD_DELAY;
+    }
+    else
+    {
+        appData.new_bird_delay = ( uint16_t ) read_parameter * 1000;
+    }
 
     return INI_READ_OK;
 }
@@ -575,6 +585,13 @@ void config_print( void )
     printf( "\t\tPIR: %us\n", appData.timeout_pir / 1000 );
     printf( "\t\tTaking reward: %us\n", appData.timeout_taking_reward / 1000 );
 
+    printf( "\tNew bird\n" );
+    printf( "\t\tDelay: %us\n", appData.new_bird_delay / 1000 );
+
+    printf( "\tData logger\n" );
+    printf( "\t\tFile name: %s\n", appDataLog.filename );
+    printf( "\t\tData separator: %s\n", appDataLog.separator );
+
     printf( "\tPIT Tags denied or associated with color A\n" );
     if ( appDataPitTag.numPitTagDeniedOrColorA > 0 )
     {
@@ -600,9 +617,6 @@ void config_print( void )
         printf( "\t\tNone\n" );
     }
 
-    printf( "\tData logger\n" );
-    printf( "\t\tFile name: %s\n", appDataLog.filename );
-    printf( "\t\tData separator: %s\n", appDataLog.separator );
 }
 
 
@@ -701,6 +715,9 @@ void getIniPbChar( INI_READ_STATE state, char buf[] )
             break;
         case INI_PB_TIMEOUTS_REWARD:
             snprintf( buf, sizearray( buf ), "Timeouts: reward" );
+            break;
+        case INI_PB_NEW_BIRD_DELAY:
+            snprintf( buf, sizearray( buf ), "New bird: delay" );
             break;
         default:
             snprintf( buf, sizearray( buf ), "Error not listed" );

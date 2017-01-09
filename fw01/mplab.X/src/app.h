@@ -25,10 +25,10 @@
 // *****************************************************************************
 
 
-//#define USE_UART1_SERIAL_INTERFACE  // uncomment to display information dsent to UART
+#define USE_UART1_SERIAL_INTERFACE  // uncomment to display information dsent to UART
 //#define DISPLAY_CURRENT_STATE       // uncomment to display the current state of main state machine (app.c))
 
-//#define DISPLAY_USB_INFO          // uncomment to display USB information
+#define DISPLAY_USB_INFO          // uncomment to display USB information
 //#define DISPLAY_LOG_INFO 
 
 //#define DISPLAY_ISR_RTCC          // uncomment to display interruption event
@@ -230,6 +230,8 @@ typedef struct
     uint16_t rfid_rdyclk;
 
     APP_STATES rc_previous_state;
+    
+    uint16_t new_bird_delay;
 
 } APP_DATA;
 

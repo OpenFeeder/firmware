@@ -174,15 +174,11 @@ void APP_SerialDebugTasks( void )
             case 'f':
             case 'F':
                 /* Display configuration parameters (CONFIG.INI) */
-                if ( true == appData.flags.bit_value.systemInit )
+                config_print( );
+                if ( false == appData.flags.bit_value.systemInit )
                 {
-                    config_print( );
-                }
-                else
-                {
-                    printf( "System not configured.\n" );
-
-                }
+                    printf( "/!\\ SYSTEM NOT CORRECTLY CONFIGURED.\n" );
+                }                
                 break;
                 /* -------------------------------------------------------------- */
 

@@ -14,6 +14,7 @@
 
 #define DEFAULT_LOG_SEPARATOR ","
 
+
 typedef enum
 {
     INI_READ_OK = 0,
@@ -64,7 +65,9 @@ typedef enum
     INI_PB_TIMEOUTS_REWARD, // 30
 
     INI_PB_PIT_TAG_DENIED, // 31
-    INI_PB_PIT_TAG_ACCEPTED // 32
+    INI_PB_PIT_TAG_ACCEPTED, // 32
+
+    INI_PB_NEW_BIRD_DELAY // 33
 
 } INI_READ_STATE;
 

@@ -149,7 +149,7 @@ void APP_Tasks( void )
                     break;
                 case APP_CHECK_VBAT_PB:
                     appData.state = APP_STATE_LOW_VBAT;
-                    break;  
+                    break;
                 case APP_CHECK_FOOD_LEVEL_PB:
                     appData.state = APP_STATE_LOW_FOOD_LEVEL;
                     break;
@@ -493,6 +493,16 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) 
                     printf( "\tPIT tag %s denied.\n", appDataLog.bird_pit_tag_str );
 #endif
+                    if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number )
+                    {
+                        setAttractiveLedsOff( );
+                        /* Delay before reactivate attractiveLEDs */
+                        setDelayMs( appData.new_bird_delay );
+                        while ( false == isDelayMsEnding( ) )
+                        {
+                            Nop( );
+                        }
+                    }
                     appData.state = APP_STATE_DATA_LOG;
                 }
                 else
@@ -983,7 +993,7 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE)
                 printError( );
 #endif
-//                clearError( );
+                //                clearError( );
 
                 rtcc_stop_alarm( );
                 /* Set peripherals Off. */
@@ -1024,15 +1034,15 @@ void APP_Tasks( void )
                         appData.state = APP_STATE_REMOTE_CONTROL;
                         break;
                     }
-//                    else
-//                    {
-//                        appData.mcp23017.status_bit.found = false;
-//                        appData.mcp23017.status_bit.initialized = false;
-//#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
-//                        printf( "Remote control not found.\n" );
-//#endif
-//                        appData.state = APP_STATE_FLUSH_DATA_TO_USB;
-//                    }
+                    //                    else
+                    //                    {
+                    //                        appData.mcp23017.status_bit.found = false;
+                    //                        appData.mcp23017.status_bit.initialized = false;
+                    //#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
+                    //                        printf( "Remote control not found.\n" );
+                    //#endif
+                    //                        appData.state = APP_STATE_FLUSH_DATA_TO_USB;
+                    //                    }
                 }
                 else
                 {
@@ -1123,6 +1133,8 @@ void APP_Initialize( void )
 
     appError.ledColor = LED_RED;
     appError.number = ERROR_NONE;
+
+    appData.new_bird_delay = 0;
 
 }
 
