@@ -27,7 +27,6 @@
         <itemPath>src/delay.h</itemPath>
         <itemPath>src/digits.h</itemPath>
         <itemPath>src/em4095.h</itemPath>
-        <itemPath>src/fileio_config.h</itemPath>
         <itemPath>src/ir_sensor.h</itemPath>
         <itemPath>src/led_status.h</itemPath>
         <itemPath>src/mcp23017.h</itemPath>
@@ -39,6 +38,7 @@
         <logicalFolder name="fileio" displayName="fileio" projectFiles="true">
           <itemPath>framework/fileio/fileio.h</itemPath>
           <itemPath>framework/fileio/fileio_private.h</itemPath>
+          <itemPath>framework/fileio/fileio_config.h</itemPath>
         </logicalFolder>
         <logicalFolder name="usb" displayName="usb" projectFiles="true">
           <itemPath>framework/usb/usb.h</itemPath>
