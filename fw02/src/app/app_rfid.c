@@ -21,7 +21,7 @@ const char bin2ascii_tab[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 
 void APP_Rfid_Init( void )
 {
-    appDataUsb.getValidDeviceAdress = false;
+//    appDataUsb.getValidDeviceAdress = false;
     appDataUsb.key_is_nedded = false;
     appData.flags.bit_value.NewValidPitTag = false;
     appDataPitTag.didPitTagMatched = false;
@@ -71,6 +71,7 @@ bool APP_Rfid_Task( void )
 #endif
             }
             new_pit_tag_found = false;
+            appData.flags.bit_value.NewValidPitTag = false;
             g_rfid_reading_status = RFID_IDLE;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_PIT_TAG_INFO)
             printf( "\t\tPIT tag: " );

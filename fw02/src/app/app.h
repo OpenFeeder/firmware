@@ -32,14 +32,14 @@
 //#define DISPLAY_LOG_INFO 
 
 //#define DISPLAY_ISR_RTCC          // uncomment to display interruption event
-//#define DISPLAY_ISR_IR              // uncomment to display interruption event
+#define DISPLAY_ISR_IR              // uncomment to display interruption event
 //#define DISPLAY_ISR_PIR           // uncomment to display interruption event
 //#define DISPLAY_ISR_RFID          // uncomment to display interruption event
 //#define DISPLAY_ISR_I2C           // uncomment to display interruption event
 //#define DISPLAY_USB_ISR_INFO      // in USB_HostInterruptHandler( )
 
 //#define DISPLAY_RFID_STATE        // uncomment to display the current state
-//#define DISPLAY_PIT_TAG_INFO 
+#define DISPLAY_PIT_TAG_INFO 
 //#define DEBUG_RFID_WORKING_ON_LED_STATUS // uncomment to display hardware trace in RFID decoding routine
 
 //#define DISPLAY_REMOTE_CONTROL_INFO 

@@ -232,12 +232,12 @@ bool dataLog( bool newData )
         if ( FILEIO_RESULT_FAILURE == writeLogFile( ) )
         {
             usbUnmountDrive( );
-            CMD_VDD_APP_V_USB_SetLow( );
+//            CMD_VDD_APP_V_USB_SetLow( );
             return false;
         }
         appDataLog.numDataStored = 0;
         usbUnmountDrive( );
-        CMD_VDD_APP_V_USB_SetLow( );
+//        CMD_VDD_APP_V_USB_SetLow( );
     }
 
     return true;

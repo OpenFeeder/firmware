@@ -108,7 +108,7 @@ bool usbUnmountDrive( void )
     if ( appDataUsb.usbDriveStatus == USB_DRIVE_NOT_MOUNTED )
     {
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
-        printf( " drive is already mounted\n" );
+        printf( " drive is already not mounted\n" );
 #endif
         return appDataUsb.usbDriveStatus;
     }
@@ -209,6 +209,7 @@ bool USB_ApplicationEventHandler( uint8_t address, USB_EVENT event, void *data, 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
             printf( "USB event: EVENT_VBUS_REQUEST_POWER - Port: %u - Current: %u (x2mA)\n", ( ( USB_VBUS_POWER_EVENT_DATA* ) data )->port, ( ( USB_VBUS_POWER_EVENT_DATA* ) data )->current );
 #endif
+
             return true;
             break;
             /* -------------------------------------------------------------- */
@@ -218,7 +219,7 @@ bool USB_ApplicationEventHandler( uint8_t address, USB_EVENT event, void *data, 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
             printf( "USB event: EVENT_VBUS_RELEASE_POWER - Port: %u\n", ( ( USB_VBUS_POWER_EVENT_DATA* ) data )->port );
 #endif
-            CMD_VDD_APP_V_USB_SetLow( );
+//            CMD_VDD_APP_V_USB_SetLow( );
             return true;
             break;
             /* -------------------------------------------------------------- */
@@ -309,7 +310,6 @@ bool USB_ApplicationEventHandler( uint8_t address, USB_EVENT event, void *data, 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
             printf( "USB event: EVENT_HOLD_BEFORE_CONFIGURATION\n" );
 #endif
-            //            return false;
             break;
             /* -------------------------------------------------------------- */
 

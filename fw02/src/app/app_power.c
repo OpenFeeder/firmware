@@ -36,7 +36,7 @@ void powerUsbRfidEnable( void )
 
 void powerUsbRfidDisable( void )
 {
-    CMD_VDD_APP_V_USB_SetLow( );
+//    CMD_VDD_APP_V_USB_SetLow( );
 }
 
 

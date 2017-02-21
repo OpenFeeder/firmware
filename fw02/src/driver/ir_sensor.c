@@ -18,10 +18,15 @@ void IRSensor_Initialize( void )
 void IRSensorEnable( void )
 {
     /* Clear the interrupt flag and re-enable the interrupt */
-    VDD_IR_ON( ); /* powering IR command enable. */
     TMR4_Start( );
+    VDD_IR_ON( ); /* powering IR command enable. */    
+    Nop();
+    Nop();
+    Nop();
     EX_INT1_InterruptFlagClear( );
-    EX_INT1_InterruptEnable( );   
+    EX_INT1_InterruptEnable( );  
+    
+    g_flag_ir1_sensor = false;
 }
 
 void IRSensorDisable( void )
