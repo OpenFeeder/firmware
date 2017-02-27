@@ -38,8 +38,8 @@ void APP_SerialDebugTasks( void )
     // j or J: disable IR 
     // k or K: display battery level buffer
     // l or L: call i2cScanner( ) --> 0x02, 0x06 and 0xE0
-    // m or M: Toggle PCA9622 device
-    // n or N: call I2C1_MasterWritePCA9622() to write LED01
+    // m or M: Toggle PCA9622 device ON or OFF
+    // n or N: Toggle LED D16 color Green or Red
     // o or O: open reward door
     // p or P: change servomotor position
     // r or R: (set red color value of attractive LEDs) --> RFID SHD EM4095 ENABLE
@@ -286,27 +286,29 @@ void APP_SerialDebugTasks( void )
             case 'M':
             {
                 /* Toggle PCA9622 device */
-                static bool pca9622_oe_state = false;
                 I2C1_MESSAGE_STATUS i2c_status = I2C1_MESSAGE_COMPLETE; // the status of write data on I2C bus
                 uint8_t writeBuffer[3]; // data to transmit
 
                 /* Write I2C demo */
-                if ( false == pca9622_oe_state )
+                if ( true == PCA9622_OE_GetValue( ) )
                 {
-                    /* Enable PCA9622 device */
-                    pca9622_oe_state = true;
-                    PCA9622_OE_SetLow( );
-                    writeBuffer[0] = PCA9622_CTRLREG_MODE1; // MODE1 register
-                    writeBuffer[1] = PCA9622_RST_STATE | PCA9622_CTRLREG_MODE1;
-                    writeBuffer[2] = PCA9622_VAL_MODE1;
-                    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 3 );
+                    /* Enable PCA9622 device in Normal mode */
+                    PCA9622_OE_SetLow( ); // output enable pin is active LOW
+                    writeBuffer[0] = CTRLREG_MODE1;
+                    writeBuffer[1] = NORMAL_MODE;
+                    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+
+                    writeBuffer[0] = CTRLREG_LEDOUT3;
+                    writeBuffer[1] = 0xAA; // CTRLREG PWM on all output for LEDOUT3
+                    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+
                     printf( "PCA9622 enable.\n" );
                 }
                 else
                 {
                     /* Disable PCA9622 device */
-                    pca9622_oe_state = false;
                     PCA9622_OE_SetHigh( );
+                    i2c_status = I2C1_PCA9622_SoftwareReset( );
                     printf( "PCA9622 disable.\n" );
                 }
 
@@ -318,21 +320,40 @@ void APP_SerialDebugTasks( void )
             case 'n':
             case 'N':
             {
+                /* Toggle LED D16 on PCA9622 */
+                static bool led_d16_state = false;
                 I2C1_MESSAGE_STATUS i2c_status = I2C1_MESSAGE_COMPLETE; // the status of write data on I2C bus
-                uint8_t writeBuffer[3]; // data to transmit
+                uint8_t writeBuffer[2]; // data to transmit
 
                 /* Write I2C demo */
-                writeBuffer[0] = PCA9622_CTRLREG_MODE1; // MODE1 register
-                writeBuffer[1] = PCA9622_RST_STATE | PCA9622_CTRLREG_PWM0;
-                writeBuffer[2] = 125;
-                i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 3 );
-                printf( "i2c_status: %d\n", i2c_status );
-
-                writeBuffer[0] = PCA9622_CTRLREG_MODE1; // MODE1 register
-                writeBuffer[1] = PCA9622_RST_STATE | PCA9622_CTRLREG_LEDOUT0;
-                writeBuffer[2] = PCA9622_LDRx_FULLY_ON;
-                i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 3 );
-                printf( "i2c_status: %d\n", i2c_status );
+                if ( false == led_d16_state )
+                {
+                    /* Set Red LED low on D16 */
+                    writeBuffer[0] = CTRLREG_PWM12;
+                    writeBuffer[1] = 0x00;
+                    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+                    /* Set Green LED high on D16 */
+                    writeBuffer[0] = CTRLREG_PWM13;
+                    writeBuffer[1] = 0xFF;
+                    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+                    
+                    led_d16_state = true;
+                    printf( "LED D16 Green.\n" );
+                }
+                else
+                {
+                    /* Set Red LED high on D16 */
+                    writeBuffer[0] = CTRLREG_PWM12;
+                    writeBuffer[1] = 0xFF;
+                    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+                    /* Set Green LED low on D16 */
+                    writeBuffer[0] = CTRLREG_PWM13;
+                    writeBuffer[1] = 0x00;
+                    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+                    
+                    led_d16_state = false;
+                    printf( "LED D16 Red.\n" );
+                }
                 break;
             }
                 /* -------------------------------------------------------------- */

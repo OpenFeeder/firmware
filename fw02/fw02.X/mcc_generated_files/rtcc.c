@@ -78,11 +78,15 @@ void RTCC_Initialize(void)
 
    if(!RTCCTimeInitialized())
     {
-        // set 2017-02-06 22-22-37
-       DATEH = 0x1702;    // Year/Month
-       DATEL = 0x601;    // Date/Wday
-       TIMEH = 0x2222;    // hours/minutes
-       TIMEL = 0x3700;    // seconds
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        printf( "RTCCTimeInitialized\n" );
+#endif
+
+//        // set 2017-02-06 22-22-37
+//       DATEH = 0x1702;    // Year/Month
+//       DATEL = 0x601;    // Date/Wday
+//       TIMEH = 0x2222;    // hours/minutes
+//       TIMEL = 0x3700;    // seconds
     }
     // set 2017-02-06 22-23-31
    ALMDATEH = 0x1702;    // Year/Month
