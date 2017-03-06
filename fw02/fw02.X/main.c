@@ -118,17 +118,17 @@
  *  RFID with EM4095:
  *  . Output RC8 control EM4095 Shutdown, sleep mode control toggle every 161 ms
  *  25.5 ms is necessary for the module EM4095 to be activate, and function during 135 ms
- *  RC8 --> EM4095_SHD (toggle in tmr4.c)
+ *  RC8? --> EM4095_SHD (toggle in tmr4.c)
  *  . Use INT4 to capture the falling edge of EM4095 DEMOD_OUT signal
- *  RC6 --> EXT_INT:INT4;
+ *  RC6? --> EXT_INT:INT4;
  *  . Use Timer4 to capture the value of EM4095 DEMOD_OUT signal every 442 us
  * 
  *  RGB LED status:
- *  RA9 --> LED_STATUS_R
- *  RA7 --> LED_STATUS_G
- *  RA8 --> LED_STATUS_B
+ *  RE05/LED_STATUS_R --> LED_STATUS_R
+ *  RE06/LED_STATUS_G --> LED_STATUS_G
+ *  RE07/LED_STATUS_B --> LED_STATUS_B
  * 
- *  OC1 to OC3 in PWM mode at 31 kHz (TMR2 at 31,875 us)
+ *  !!!OC1 to OC3 in PWM mode at 31 kHz (TMR2 at 31,875 us)
  *  pin RC0 to RC2 --> LEDS_RGB_PWM
  *  --> 24-bit RGB
  *  256^3 = 16,777,216 colors (TrueColor)
@@ -139,11 +139,11 @@
  *  Exemple "Blue"  RGB triplet: (0, 0, 255) or Hex triplet: #0000FF
  *  https://en.wikipedia.org/wiki/List_of_colors_(compact)
  * 
- *  OC4 in PWM mode at 38 kHz
- *  pin RC3 --> BAR_IR_PWM
+ *  OC4 in PWM mode at 38 kHz (with TMR4 period 26.3 us)
+ *  pin RD06/PWM_LED_IR --> BAR_IR_PWM
  * 
  *  OC5 in PWM mode at 50 Hz
- *  pin RB3 --> CMD_SERVO
+ *  pin RB3? --> CMD_SERVO
  * 
  *  I2C Multiplexage of MCP23017 every 3.744 ms with TMR
  */

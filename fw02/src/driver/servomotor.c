@@ -19,7 +19,9 @@ void SERVO_Initialize( void )
     appDataServo.ton_min = SERVO_POSITION_MIN_DEFAULT;
     appDataServo.ton_max = SERVO_POSITION_MAX_DEFAULT;
     appDataServo.speed = SERVO_SPEED_INC_DEFAULT;
-    appDataServo.ton_cmd = appDataServo.ton_min;
+//    appDataServo.ton_cmd = appDataServo.ton_min;
+    appDataServo.ton_cmd = appDataServo.ton_max;
+//    appDataServo.ton_cmd = 0;
 }
 
 /**

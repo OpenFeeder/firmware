@@ -8,87 +8,66 @@
 #include "app.h"
 #include "app_attractive_leds.h"
 
-
-void setAttractiveLedsOff(void)
+void setAttractiveLedsOff( void )
 {
-//    uint16_t value = 0;
-
-    /* Set DC of PWM1 for red LEDs. */
-//    OC1_SingleCompareValueSet(value);
-//    /* Set DC of PWM2 for green LEDs. */
-//    OC2_SingleCompareValueSet(value);
-//    /* Set DC of PWM3 for blue LEDs. */
-//    OC3_SingleCompareValueSet(value);
+    /* Disable PCA9622 device */
+    PCA9622_OE_SetHigh( );
 
     appDataAttractiveLeds.status = ATTRACTIVE_LEDS_OFF;
-
 }
-
 
 /* Set attractive LEDs color. */
-void setAttractiveLedsOn(void)
+void setAttractiveLedsOn( void )
 {
-    /* Set DC of PWM1 for red LEDs. */
-//    OC1_SingleCompareValueSet(appDataAttractiveLeds.red[appDataAttractiveLeds.current_color_index]);
-//    /* Set DC of PWM2 for green LEDs. */
-//    OC2_SingleCompareValueSet(appDataAttractiveLeds.green[appDataAttractiveLeds.current_color_index]);
-//    /* Set DC of PWM3 for blue LEDs. */
-//    OC3_SingleCompareValueSet(appDataAttractiveLeds.blue[appDataAttractiveLeds.current_color_index]);
+    /* Enable PCA9622 device in Normal mode */
+    PCA9622_OE_SetLow( ); // output enable pin is active LOW
 
     appDataAttractiveLeds.status = ATTRACTIVE_LEDS_ON;
-
 }
 
-
 /* Set all color for attractive LEDs. */
-void setAttractiveLedsColor(void)
+void setAttractiveLedsColor( void )
 {
     /* Set color for red attractive LEDs. */
-//    OC1_SingleCompareValueSet(appDataAttractiveLeds.red[appDataAttractiveLeds.current_color_index]);
-//
-//    /* Set color for green attractive LEDs. */
-//    OC2_SingleCompareValueSet(appDataAttractiveLeds.green[appDataAttractiveLeds.current_color_index]);
-//
-//    /* Set color for blue attractive LEDs. */
-//    OC3_SingleCompareValueSet(appDataAttractiveLeds.blue[appDataAttractiveLeds.current_color_index]);
+    //    OC1_SingleCompareValueSet(appDataAttractiveLeds.red[appDataAttractiveLeds.current_color_index]);
+    //
+    //    /* Set color for green attractive LEDs. */
+    //    OC2_SingleCompareValueSet(appDataAttractiveLeds.green[appDataAttractiveLeds.current_color_index]);
+    //
+    //    /* Set color for blue attractive LEDs. */
+    //    OC3_SingleCompareValueSet(appDataAttractiveLeds.blue[appDataAttractiveLeds.current_color_index]);
 
     appDataAttractiveLeds.status = ATTRACTIVE_LEDS_ON;
-
 }
 
 /* Set color for red attractive LEDs. */
-void setAttractiveRedLedsColor(uint16_t dc_pwm)
+void setAttractiveRedLedsColor( uint16_t dc_pwm )
 {
     appDataAttractiveLeds.red[appDataAttractiveLeds.current_color_index] = dc_pwm;
     /* Set DC of PWM1 for red LEDs. */
-//    OC1_SingleCompareValueSet(appDataAttractiveLeds.red[appDataAttractiveLeds.current_color_index]);
+    //    OC1_SingleCompareValueSet(appDataAttractiveLeds.red[appDataAttractiveLeds.current_color_index]);
 
     appDataAttractiveLeds.status = ATTRACTIVE_LEDS_ON;
-
 }
 
-
 /* Set color for green attractive LEDs. */
-void setAttractiveGreenLedsColor(uint16_t dc_pwm)
+void setAttractiveGreenLedsColor( uint16_t dc_pwm )
 {
     appDataAttractiveLeds.green[appDataAttractiveLeds.current_color_index] = dc_pwm;
     /* Set DC of PWM2 for green LEDs. */
-//    OC2_SingleCompareValueSet(appDataAttractiveLeds.green[appDataAttractiveLeds.current_color_index]);
+    //    OC2_SingleCompareValueSet(appDataAttractiveLeds.green[appDataAttractiveLeds.current_color_index]);
 
     appDataAttractiveLeds.status = ATTRACTIVE_LEDS_ON;
-
 }
 
-
 /* Set color for blue attractive LEDs. */
-void setAttractiveBlueLedsColor(uint16_t dc_pwm)
+void setAttractiveBlueLedsColor( uint16_t dc_pwm )
 {
     appDataAttractiveLeds.blue[appDataAttractiveLeds.current_color_index] = dc_pwm;
     /* Set DC of PWM3 for blue LEDs. */
-//    OC3_SingleCompareValueSet(appDataAttractiveLeds.blue[appDataAttractiveLeds.current_color_index]);
+    //    OC3_SingleCompareValueSet(appDataAttractiveLeds.blue[appDataAttractiveLeds.current_color_index]);
 
     appDataAttractiveLeds.status = ATTRACTIVE_LEDS_ON;
-
 }
 
 

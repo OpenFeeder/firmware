@@ -14,29 +14,37 @@ APP_CHECK checkImportantParameters( void )
     /* Check battery level at startup. */
     if ( false == isPowerBatteryGood( ) )
     {
+#if defined (USE_UART1_SERIAL_INTERFACE)
         printf( "APP_CHECK_BATTERY_PB\n" );
+#endif
         return APP_CHECK_BATTERY_PB;
     }
 
     /* Check battery level at startup. */
     if ( false == isPowerVbatGood( ) )
     {
+#if defined (USE_UART1_SERIAL_INTERFACE)
         printf( "APP_CHECK_VBAT_PB\n" );
-//        return APP_CHECK_VBAT_PB;
+#endif
+        //        return APP_CHECK_VBAT_PB;
     }
 
     /* Check food level */
     if ( false == isEnoughFood( ) )
     {
+#if defined (USE_UART1_SERIAL_INTERFACE)
         printf( "APP_CHECK_FOOD_LEVEL_PB\n" );
-//        return APP_CHECK_FOOD_LEVEL_PB;
+#endif
+        return APP_CHECK_FOOD_LEVEL_PB;
     }
 
     /* Check RFID frequency */
     if ( false == isRfidFreqGood( ) )
     {
+#if defined (USE_UART1_SERIAL_INTERFACE)
         printf( "APP_CHECK_RFID_FREQ_PB\n" );
-//        return APP_CHECK_RFID_FREQ_PB;
+#endif
+        //        return APP_CHECK_RFID_FREQ_PB;
     }
 
     return APP_CHECK_OK;
@@ -85,7 +93,10 @@ bool isEnoughFood( void )
 
     /* Check food level */
     IRSensorEnable( );
-    foodLevelOK = ( BAR_IR2_OUT_GetValue( ) == 0 );
+    setDelayMs( 400 );
+    while ( false == isDelayMsEnding( ) );
+
+    foodLevelOK = ( 1 == BAR_IR2_OUT_GetValue( ) );
     IRSensorDisable( );
 
     if ( false == foodLevelOK )
@@ -100,19 +111,23 @@ bool isEnoughFood( void )
     return foodLevelOK;
 }
 
+// E: RFID frequency too low: 13410 (x10Hz))
+
 bool isRfidFreqGood( void )
 {
     bool rfidFreqOK;
 
     /* Check food level */
     measureRfidFreq( );
-//    measureRfidFreq( );
+    setDelayMs( 400 );
+    while ( false == isDelayMsEnding( ) );
+    measureRfidFreq( );
 
     rfidFreqOK = appData.rfid_rdyclk > MIN_RDYCLK_FREQ;
 
     if ( false == rfidFreqOK )
     {
-        strcpy( appError.message, "Rfid frequency too low" );
+        strcpy( appError.message, "RFID frequency too low" );
         appError.currentLineNumber = __LINE__;
         sprintf( appError.currentFileName, "%s", __FILE__ );
         appError.number = ERROR_LOW_RFID_FREQUENCY;

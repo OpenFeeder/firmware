@@ -11,12 +11,18 @@
 #include <xc.h>
 #include <time.h>
 
-#define EVERY_DAY        0xD800
-#define EVERY_HOUR       0xD400
-#define EVERY_10_MINUTES 0xD000
-#define EVERY_MINUTE     0xCC00
-#define EVERY_10_SECONDS 0xC800
-#define EVERY_SECOND     0xC400
+//#define EVERY_DAY        0xD800
+//#define EVERY_HOUR       0xD400
+//#define EVERY_10_MINUTES 0xD000
+//#define EVERY_MINUTE     0xCC00
+//#define EVERY_10_SECONDS 0xC800
+//#define EVERY_SECOND     0xC400
+#define EVERY_DAY        0b0110
+#define EVERY_HOUR       0b0101
+#define EVERY_10_MINUTES 0b0100
+#define EVERY_MINUTE     0b0011
+#define EVERY_10_SECONDS 0b0010
+#define EVERY_SECOND     0b0001
 
 
 typedef enum
@@ -40,9 +46,10 @@ typedef struct
 
 } APP_DATA_ALARM;
 
-
+unsigned char ConvertHexToBCD_A( unsigned char );
 void rtcc_set_alarm( int, int, int, int );
 void rtcc_stop_alarm( void );
+
 
 #endif /* APP_ALARM_H */
 

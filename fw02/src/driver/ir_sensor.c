@@ -8,7 +8,7 @@
 #include "app.h"
 #include "ir_sensor.h"
 
-bool g_flag_ir1_sensor = false;
+volatile bool g_flag_ir1_sensor = false;
 
 void IRSensor_Initialize( void )
 {
@@ -17,7 +17,30 @@ void IRSensor_Initialize( void )
 
 void IRSensorEnable( void )
 {
+    // http://www.farnell.com/datasheets/2050085.pdf
+    // 400 us IR detected
     /* Clear the interrupt flag and re-enable the interrupt */
+<<<<<<< HEAD
+    VDD_IR_ON( ); /* powering IR command enable. */
+    //    Nop( );
+    //    Nop( );
+    //    Nop( );
+    //    Nop( );
+    //    Nop( );
+    //    EX_INT1_InterruptFlagClear( );
+    //    EX_INT1_InterruptEnable( );
+    //    Nop( );
+    //    Nop( );
+    //    Nop( );
+    //    Nop( );
+    //    Nop( );
+    TMR4_Start( );
+    setDelayMs( 60 );
+    while ( false == isDelayMsEnding( ) );
+    EX_INT1_InterruptFlagClear( );
+    EX_INT1_InterruptEnable( );
+
+=======
     TMR4_Start( );
     VDD_IR_ON( ); /* powering IR command enable. */    
     Nop();
@@ -26,6 +49,7 @@ void IRSensorEnable( void )
     EX_INT1_InterruptFlagClear( );
     EX_INT1_InterruptEnable( );  
     
+>>>>>>> 8d5ab36d9af511bdef4d73545b416201138da4dd
     g_flag_ir1_sensor = false;
 }
 

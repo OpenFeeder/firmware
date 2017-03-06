@@ -50,17 +50,17 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "i2c1.h"
-#include "rtcc.h"
-#include "oc4.h"
-#include "tmr2.h"
-#include "oc5.h"
 #include "uart1.h"
+#include "oc4.h"
+#include "oc5.h"
 #include "ext_int.h"
-#include "tmr4.h"
-#include "tmr3.h"
-#include "adc1.h"
 #include "traps.h"
 #include "interrupt_manager.h"
+#include "rtcc.h"
+#include "tmr2.h"
+#include "adc1.h"
+#include "tmr4.h"
+#include "tmr3.h"
 
 #define _XTAL_FREQ  16000000UL
 

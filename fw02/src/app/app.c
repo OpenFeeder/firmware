@@ -186,6 +186,15 @@ void APP_Tasks(void)
             }
             else
             {
+<<<<<<< HEAD
+                /* Blue status LED blinks as long USB key is accessed. */
+                LedsStatusBlink( LED_RED, 25, 1975 );
+                break;
+            }
+
+            /* Blue status LED blinks as long USB key is accessed. */
+            LedsStatusBlink( LED_BLUE, 25, 475 );
+=======
                 /* Blue status LED blinks as long USB key is acessed. */
                 LedsStatusBlink(LED_RED, 25, 1975);
                 break;
@@ -193,6 +202,7 @@ void APP_Tasks(void)
 
             /* Blue status LED blinks as long USB key is acessed. */
             LedsStatusBlink(LED_BLUE, 25, 475);
+>>>>>>> 8d5ab36d9af511bdef4d73545b416201138da4dd
 
             /* Set log file name => 20yymmdd.CSV (one log file per day). */
             if (false == setLogFileName())
@@ -228,7 +238,11 @@ void APP_Tasks(void)
             else
             {
                 appDataUsb.key_is_nedded = false;
+<<<<<<< HEAD
+                powerUsbRfidDisable( );
+=======
                 powerUsbRfidDisable();
+>>>>>>> 8d5ab36d9af511bdef4d73545b416201138da4dd
                 appData.state = APP_STATE_ERROR;
                 break;
             }
@@ -239,7 +253,11 @@ void APP_Tasks(void)
             }
 
             appDataUsb.key_is_nedded = false;
+<<<<<<< HEAD
+            powerUsbRfidDisable( );
+=======
             powerUsbRfidDisable();
+>>>>>>> 8d5ab36d9af511bdef4d73545b416201138da4dd
             break;
             /* -------------------------------------------------------------- */
 
@@ -292,7 +310,11 @@ void APP_Tasks(void)
                     appDataLog.door_status_when_bird_arrived = 0;
                 }
 
+<<<<<<< HEAD
+                clearPitTagBuffers( );
+=======
                 clearPitTagBuffers();
+>>>>>>> 8d5ab36d9af511bdef4d73545b416201138da4dd
                 appData.state = APP_STATE_RFID_READING_PIT_TAG;
                 break;
             }
@@ -526,10 +548,17 @@ void APP_Tasks(void)
                 snprintf(appDataLog.bird_pit_tag_str, 11, "XXXXXXXXXX");
                 appDataLog.is_reward_taken = false;
                 appDataLog.is_pit_tag_denied = false;
+<<<<<<< HEAD
+                clearPitTagBuffers( );
+                appData.state = APP_STATE_DATA_LOG;
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                printf( "RFID timeout.\n" );
+=======
                 clearPitTagBuffers();
                 appData.state = APP_STATE_DATA_LOG;
 #if defined (USE_UART1_SERIAL_INTERFACE)
                 printf("RFID timeout.\n");
+>>>>>>> 8d5ab36d9af511bdef4d73545b416201138da4dd
 #endif
             }
             break;
@@ -582,17 +611,39 @@ void APP_Tasks(void)
                 printf("> APP_STATE_WAITING_CATCH_REWARD\n");
 #endif
 
+<<<<<<< HEAD
+                IRSensorEnable( );
+                //                EX_INT1_NegativeEdgeSet( );
+                EX_INT1_PositiveEdgeSet( );
+
+                setDelayMs( 60 );
+                while ( false == isDelayMsEnding( ) );
+                //    EX_INT1_InterruptFlagClear( );
+                //    EX_INT1_InterruptEnable( );
+
+                /* Timeout before door closing if reward is not taken */
+                                setDelayMs( appData.timeout_taking_reward );
+                clear_flag_ir1_sensor( );
+=======
                 IRSensorEnable();
                 /* Timeout before door closing if reward is not taken */
                 setDelayMs(appData.timeout_taking_reward);
+>>>>>>> 8d5ab36d9af511bdef4d73545b416201138da4dd
                 appData.bird_is_taking_reward = false;
             }
 
             if ((true == g_flag_ir1_sensor) && (false == appData.bird_is_taking_reward))
             {
+//                EX_INT1_PositiveEdgeSet( );
+                EX_INT1_NegativeEdgeSet( );
+
                 /* REWARD_IR_SENSOR true. */
 #if defined (USE_UART1_SERIAL_INTERFACE)
+<<<<<<< HEAD
+                printf( "\tTaking reward detected.\n" );
+=======
                 printf("Taking reward detected.\n");
+>>>>>>> 8d5ab36d9af511bdef4d73545b416201138da4dd
 #endif
                 g_flag_ir1_sensor = false;
                 appData.bird_is_taking_reward = true;
@@ -603,7 +654,11 @@ void APP_Tasks(void)
             if ((0 == BAR_IR1_OUT_GetValue()) && (true == appData.bird_is_taking_reward))
             {
 #if defined (USE_UART1_SERIAL_INTERFACE)
+<<<<<<< HEAD
+                printf( "\tReward taken.\n" );
+=======
                 printf("Reward taken.\n");
+>>>>>>> 8d5ab36d9af511bdef4d73545b416201138da4dd
 #endif
                 IRSensorDisable();
                 appData.bird_is_taking_reward = false;
@@ -616,7 +671,11 @@ void APP_Tasks(void)
             if (true == isDelayMsEnding() && 0 == BAR_IR1_OUT_GetValue())
             {
 #if defined (USE_UART1_SERIAL_INTERFACE)
+<<<<<<< HEAD
+                printf( "\tReward timeout.\n" );
+=======
                 printf("Reward timeout.\n");
+>>>>>>> 8d5ab36d9af511bdef4d73545b416201138da4dd
 #endif
                 IRSensorDisable();
                 appData.state = APP_STATE_CLOSING_DOOR;
@@ -640,7 +699,11 @@ void APP_Tasks(void)
                 /* Check if door must remain open */
                 if (1 == appDataDoor.remain_open)
                 {
+<<<<<<< HEAD
+                    //                    appDataUsb.getValidDeviceAdress = false;
+=======
 //                    appDataUsb.getValidDeviceAdress = false;
+>>>>>>> 8d5ab36d9af511bdef4d73545b416201138da4dd
                     appData.state = APP_STATE_DATA_LOG;
                     break;
                 }
@@ -663,12 +726,33 @@ void APP_Tasks(void)
             if (DOOR_CLOSED == appDataDoor.reward_door_status)
             {
                 /* Servomotor power command enable. */
+<<<<<<< HEAD
+                servomotorPowerDisable( );
+=======
                 servomotorPowerDisable();
+>>>>>>> 8d5ab36d9af511bdef4d73545b416201138da4dd
                 appData.state = APP_STATE_DATA_LOG;
             }
             break;
             /* -------------------------------------------------------------- */
 
+<<<<<<< HEAD
+            //        case APP_STATE_ATTACH_KEY:
+            //            if (appData.state != appData.previous_state)
+            //            {
+            //                appData.previous_state = appData.state;
+            //#if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
+            //                printf("> APP_STATE_ATTACH_KEY\n");
+            //#endif
+            //                powerUsbRfidEnable();
+            //            }
+            //
+            //            if (appDataUsb.getValidDeviceAdress)
+            //            {
+            //                appData.state = APP_STATE_DATA_LOG;
+            //            }
+            //            break;
+=======
 //        case APP_STATE_ATTACH_KEY:
 //            if (appData.state != appData.previous_state)
 //            {
@@ -684,6 +768,7 @@ void APP_Tasks(void)
 //                appData.state = APP_STATE_DATA_LOG;
 //            }
 //            break;
+>>>>>>> 8d5ab36d9af511bdef4d73545b416201138da4dd
             /* -------------------------------------------------------------- */
 
         case APP_STATE_DATA_LOG:
@@ -693,6 +778,16 @@ void APP_Tasks(void)
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
                 printf("> APP_STATE_DATA_LOG\n");
 #endif
+<<<<<<< HEAD
+                //                if ((appDataLog.numDataStored >= (MAX_NUM_DATA_TO_STORE - 1)) && (false == appDataUsb.getValidDeviceAdress))
+                //                {
+                //                    appDataUsb.key_is_nedded = true;
+                //                }
+                //                else
+                //                {
+                //                    appDataUsb.key_is_nedded = false;
+                //                }
+=======
 //                if ((appDataLog.numDataStored >= (MAX_NUM_DATA_TO_STORE - 1)) && (false == appDataUsb.getValidDeviceAdress))
 //                {
 //                    appDataUsb.key_is_nedded = true;
@@ -701,15 +796,24 @@ void APP_Tasks(void)
 //                {
 //                    appDataUsb.key_is_nedded = false;
 //                }
+>>>>>>> 8d5ab36d9af511bdef4d73545b416201138da4dd
             }
 
             LedsStatusBlink(LED_BLUE, 50, 250);
 
+<<<<<<< HEAD
+            //            if ((true == appDataUsb.key_is_nedded) && (false == appDataUsb.getValidDeviceAdress))
+            //            {
+            //                appData.state = APP_STATE_ATTACH_KEY;
+            //                break;
+            //            }
+=======
 //            if ((true == appDataUsb.key_is_nedded) && (false == appDataUsb.getValidDeviceAdress))
 //            {
 //                appData.state = APP_STATE_ATTACH_KEY;
 //                break;
 //            }
+>>>>>>> 8d5ab36d9af511bdef4d73545b416201138da4dd
 
             if (false == dataLog(true))
             {
@@ -720,6 +824,17 @@ void APP_Tasks(void)
                 appData.state = APP_STATE_IDLE;
             }
 
+<<<<<<< HEAD
+            //            if ((true == appDataUsb.key_is_nedded) && (true == appDataUsb.getValidDeviceAdress))
+            //            {
+            //                appDataUsb.getValidDeviceAdress = false;
+            //                appDataUsb.key_is_nedded = false;
+            //                powerUsbRfidDisable();
+            //            }
+            break;
+            /* -------------------------------------------------------------- */
+
+=======
 //            if ((true == appDataUsb.key_is_nedded) && (true == appDataUsb.getValidDeviceAdress))
 //            {
 //                appDataUsb.getValidDeviceAdress = false;
@@ -729,6 +844,7 @@ void APP_Tasks(void)
             break;
             /* -------------------------------------------------------------- */
             
+>>>>>>> 8d5ab36d9af511bdef4d73545b416201138da4dd
         case APP_STATE_FLUSH_DATA_TO_USB:
             if (appData.state != appData.previous_state)
             {
@@ -761,7 +877,11 @@ void APP_Tasks(void)
             {
                 break;
             }
+<<<<<<< HEAD
+            //            powerUsbRfidDisable();
+=======
 //            powerUsbRfidDisable();
+>>>>>>> 8d5ab36d9af511bdef4d73545b416201138da4dd
 
             appData.state = APP_STATE_IDLE;
             break;
@@ -846,7 +966,11 @@ void APP_Tasks(void)
                             break;
                         }
                     }
+<<<<<<< HEAD
+                    //                    powerUsbRfidDisable();
+=======
 //                    powerUsbRfidDisable();
+>>>>>>> 8d5ab36d9af511bdef4d73545b416201138da4dd
                 }
                 else
                 {
@@ -881,7 +1005,11 @@ void APP_Tasks(void)
 #if defined (USE_UART1_SERIAL_INTERFACE)
             printf("Awaken from sleep mode!\n");
 #endif 
+<<<<<<< HEAD
+            APP_Initialize( );
+=======
             APP_Initialize();
+>>>>>>> 8d5ab36d9af511bdef4d73545b416201138da4dd
             break;
             /* -------------------------------------------------------------- */
 
@@ -972,7 +1100,11 @@ void APP_Tasks(void)
                         }
                     }
 
+<<<<<<< HEAD
+                    //                    powerUsbRfidDisable();
+=======
 //                    powerUsbRfidDisable();
+>>>>>>> 8d5ab36d9af511bdef4d73545b416201138da4dd
                 }
                 else
                 {
@@ -1017,7 +1149,11 @@ void APP_Tasks(void)
 #if defined (USE_UART1_SERIAL_INTERFACE)
                 printError();
 #endif
+<<<<<<< HEAD
+                rtcc_stop_alarm( );
+=======
                 rtcc_stop_alarm();
+>>>>>>> 8d5ab36d9af511bdef4d73545b416201138da4dd
                 /* Set peripherals Off. */
                 setAttractiveLedsOff();
                 powerPIRDisable();

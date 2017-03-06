@@ -24,7 +24,7 @@
 #define set_flag_ir1_sensor( ) { g_flag_ir1_sensor = true; }
 #define clear_flag_ir1_sensor( ) { g_flag_ir1_sensor = false; }
 
-extern bool g_flag_ir1_sensor;
+extern volatile bool g_flag_ir1_sensor;
 
 void IRSensor_Initialize( void );
 void IRSensorEnable( void );
