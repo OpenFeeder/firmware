@@ -100,6 +100,7 @@ void __attribute__ ( ( interrupt, no_auto_psv ) ) _INT4Interrupt(void)
     printf( "_INT4Interrupt()\n" );
 #endif 
     /* Event on EM4095_DEMOD_OUT RFID signal. */
+    appData.rfid_signal_detected = true;
     /* EM4095_DEMOD_OUT interrupt on edge detect. */
     RFID_DecodingTasks( ); /* Call state machine decoding RFID. */
 

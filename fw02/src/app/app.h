@@ -228,6 +228,8 @@ typedef struct
     uint16_t light_level;
 
     uint16_t rfid_rdyclk;
+    
+    bool rfid_signal_detected;
 
     APP_STATES rc_previous_state;
 

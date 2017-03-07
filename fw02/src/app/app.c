@@ -532,7 +532,15 @@ void APP_Tasks( void )
                 RFID_Disable( );
                 powerUsbRfidDisable( );
                 clear_bird_sensor_detected( );
-                snprintf( appDataLog.bird_pit_tag_str, 11, "XXXXXXXXXX" );
+                if (false == appData.rfid_signal_detected) 
+                {
+                    snprintf( appDataLog.bird_pit_tag_str, 11, "XXXXXXXXXX" );
+                }
+                else
+                {
+                    snprintf( appDataLog.bird_pit_tag_str, 11, "??????????" );
+                }
+                appData.rfid_signal_detected = false;
                 appDataLog.is_reward_taken = false;
                 appDataLog.is_pit_tag_denied = false;
                 clearPitTagBuffers( );
@@ -1206,6 +1214,9 @@ void APP_Initialize( void )
     appError.number = ERROR_NONE;
 
     appData.new_bird_delay = 0;
+    
+    appData.rfid_signal_detected = false;
+        
 }
 
 
