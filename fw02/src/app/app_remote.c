@@ -272,7 +272,7 @@ void APP_remoteControlTask( void )
                     if ( currentDigitPosition < 0 )
                     {
                         currentDigitPosition = 0;
-                        printCurrentMenu( ); // TODO
+                        printCurrentMenu( ); // FIXME: printCurrentMenu( )
                         appDataRc.state = APP_STATE_RC_IDLE;
                     }
                     else

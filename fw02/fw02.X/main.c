@@ -9,30 +9,24 @@
 
   Summary:
     This is the main file generated using MPLAB(c) Code Configurator
-    Implement on OpenFeeder board01
+    Implement on OpenFeeder board02
+    Configure firmware option in \firmwares\fw02\src\app\app.h
 
   Description:
     This header file provides implementations for driver APIs for all modules selected in the GUI.
     Generation Information :
-        Product Revision  :  MPLAB(c) Code Configurator - 3.16
-        Device            :  PIC24FJ128GB204
-        Driver Version    :  2.00
+        Product Revision  :  MPLAB(c) Code Configurator - pic24-dspic-pic32mm : v1.25
+        Device            :  PIC24FJ256GB406
+        Driver Version    :  0.5
     The generated drivers are tested against the following:
-        Compiler          :  XC16 1.26
-        MPLAB             :  MPLAB X 3.40
+        Compiler          :  XC16 1.31
+        MPLAB             :  MPLAB X 3.55
  
   Source of inspiration:
     Project "USB Host - MSD - Simple" from Microchip Libraries for Applications (MLA) 
-        C:\microchip\mla\v2016_04_27\apps\usb\host\msd_simple_demo\firmware\exp16_pic24fj128gb204_pim.x\main.c
+        C:\microchip\mla\v2016_11_07\apps\usb\host\msd_simple_demo\firmware\demo_src\main.c
     Project "minIni" from http://www.compuphase.com/minini.htm
         https://github.com/compuphase/minIni
-    Project "RTCC ms"
-        C:\github_arnauld\openfeeder\project\demos\pic24\apps\pic24fj128gb204_rtcc\demo_rtcc_mc3.X
-    Project "EM4095 read PIT Tag"
-        C:\github_arnauld\openfeeder\project\demos\pic24\apps\rfid\em4095_read_tag_id.X
-   
-   File update:
-        ..\framework\usb\usb_host.c
  */
 
 /*
@@ -58,12 +52,12 @@
  */
 
 /**
- * @brief Development of a test program with PIC24FJ128GB204 MCU on OpenFeeder prototype board.
- * @see [OpenFeeder - Board01](https://docs.google.com/document/d/1MuPXdwcBcdYiER29TY8erCPw7mGYlfRxIeXWazllpBY/edit?usp=sharing)
+ * @brief Development of a test program with PIC24FJ256GB406 MCU on OpenFeeder prototype board.
+ * @see [OpenFeeder Board v2_0](https://docs.google.com/document/d/1EUuRprU-K5NVF4FKyMJyoSdlVwXycWjznXlICHy2UsM/edit?usp=sharing)
  * Author: OpenFeeder Team <https://github.com/orgs/OpenFeeder/people> 
- * @version fw01
+ * @version fw02
  * @revision 
- * @date 17/09/2016
+ * @date 13/02/2017
  */
 
 /**
@@ -71,7 +65,7 @@
  * info: http://tdinfo.phelma.grenoble-inp.fr/2Aproj/fiches/coding_styles.pdf
  * 
  * Le passage de paramètres entre les différentes fonctions du sytème se fait
- * par variables globales. Par exemple la commande du servomoteur enter
+ * par variables globales. Par exemple la commande du servomoteur entre
  * servomotor, tmr3...
  * 
  */
@@ -94,33 +88,27 @@
 
 /**
  * --------------------------- Documentations links ----------------------------
- *  > Boards prototypes of OpenFeeder
- *    https://docs.google.com/document/d/1MuPXdwcBcdYiER29TY8erCPw7mGYlfRxIeXWazllpBY/edit?usp=sharing
+ *  > OpenFeeder Board v2_0
+ *    https://drive.google.com/open?id=1EUuRprU-K5NVF4FKyMJyoSdlVwXycWjznXlICHy2UsM
  * 
- *  > OpenFeeder prototype v0-1-0 (board detail)
- *    https://docs.google.com/drawings/d/1q4b0Y3H9buA_Q7mJUtJPWDD17gppgqwepQL_1Hjc5_I/edit?usp=sharing
- * 
- *  > PIC24FJ128GB204 resources for proto v0-1-0 (FR: Ressources du PIC24FJ128GB204 pour proto v0-1-0 )
- *    https://docs.google.com/spreadsheets/d/1m1v5Y8z_wb_sX_NdWC2XxA9_l5nrbAusPvYKu8BXbQ0/edit?usp=sharing
- *
- *  > OpenFeeder - Presentation du Hardware (MCU resources)
- *    https://docs.google.com/presentation/d/1Eaiky3VBWBcO7YebayMSayr3wxSXI7rWN3clvQiNmDg/edit?usp=sharing
+ *  > PIC24FJ256GB406 resources for proto v2_0
+ *    https://drive.google.com/open?id=1iViNcH4uDjHy5RbMI0lRRTmK-bU2HOEeX6FlfLEffbg
  */
 
 /** 
  * ------------------ Definition and wiring for this project -------------------
- *  Debugging Interface
+ *  Debugging Interface:
  *  Used UART1 at 9600 bauds for communication (9600/8-N-1, see https://en.wikipedia.org/wiki/8-N-1)
  *  see https://fr.wikipedia.org/wiki/RS-232
- *  RC4 --> UART1:U1RX;
- *  RC5 --> UART1:U1TX;
+ *  RB14/UART1_RX --> U1RX
+ *  RB15/UART1_TX --> U1TX
  * 
  *  RFID with EM4095:
- *  . Output RC8 control EM4095 Shutdown, sleep mode control toggle every 161 ms
+ *  . Output "RE00/EM4095_SHD" control EM4095 Shutdown
  *  25.5 ms is necessary for the module EM4095 to be activate, and function during 135 ms
- *  RC8? --> EM4095_SHD (toggle in tmr4.c)
+ *  RE0 --> EM4095_SHD (toggle in tmr4.c)
  *  . Use INT4 to capture the falling edge of EM4095 DEMOD_OUT signal
- *  RC6? --> EXT_INT:INT4;
+ *  RD02/EM4095_DEMOD_OUT --> EXT_INT:INT4;
  *  . Use Timer4 to capture the value of EM4095 DEMOD_OUT signal every 442 us
  * 
  *  RGB LED status:
@@ -128,8 +116,6 @@
  *  RE06/LED_STATUS_G --> LED_STATUS_G
  *  RE07/LED_STATUS_B --> LED_STATUS_B
  * 
- *  !!!OC1 to OC3 in PWM mode at 31 kHz (TMR2 at 31,875 us)
- *  pin RC0 to RC2 --> LEDS_RGB_PWM
  *  --> 24-bit RGB
  *  256^3 = 16,777,216 colors (TrueColor)
  *  True color (24-bit) RGB24 color selected in file "CONFIG.INI".
@@ -142,25 +128,32 @@
  *  OC4 in PWM mode at 38 kHz (with TMR4 period 26.3 us)
  *  pin RD06/PWM_LED_IR --> BAR_IR_PWM
  * 
- *  OC5 in PWM mode at 50 Hz
- *  pin RB3? --> CMD_SERVO
+ *  OC5 in PWM mode at 50 Hz (with TMR3 period 20 ms)
+ *  pin RD07/PWM_SERVO --> CMD_SERVO
+ *  and RF01/CMD_VCC_SERVO use to command VDD_SERVO (5V)
  * 
  *  I2C Multiplexage of MCP23017 every 3.744 ms with TMR
+ * 
+ * C:\git\openfeeder\firmwares\fw02\src\driver\ir_sensor.c
+ * IR2 take 50 ms to check food with 60 ms, and with 200 ms delay is taking 330 ms and powering for 585 ms
+ * 
+ * on PIC24FJ256GB406
+ *   - RTCC_OUT --> Output of the RTCC clock signal = 1 Hz
+ *   - Pins available:
+ *      SPARE1: RE02/SPARE_4
+ *      SPARE2: RE03/SPARE_5
+ *      SPARE3: RE04
+ *      SPARE4: RF00/PWM6
  */
 
 /**
  * ------------------------------ Demo OpenFeeder ------------------------------
- * > Interface firmware terminal (Default)
- *   . TODO: send 'M' --> change mode, to confirm the mode change enter 'Y' or 'N' to abort.
- *           --> Default Mode = normal
- *           --> Debug Mode = serial interface for hardware test
- * 
  * > Interface firmware terminal (Debug)
  *   - RTCC module:
  *     . send 'T' --> Read date and time from the RTCC module
  *     . send 'S' --> Set RTCC module date and time (ex: 22/08/2016 15:59:30 --> 22 <CR> 8 <CR> 16 <CR> 15 <CR> 59 <CR> 30 <CR>)
  *   - Attractive RGB LED:
- *     . send 'R' --> Set PWM duty cycle of Red color (0-255, exemple for 50%: 128 <CR>)
+ *     . send 'R' --> Set PWM duty cycle of Red color (0-255, example for 50%: 128 <CR>)
  *     . send 'G' --> Set PWM duty cycle of Green color (0-255)
  *     . send 'B' --> Set PWM duty cycle of Blue color (0-255)
  *   - Servomotor:
@@ -173,25 +166,9 @@
  *     . send 'I' --> IR power setting ON
  *     . send 'J' --> IR power setting OFF
  *   - RFID module reader:
- *     . send 'E' --> Mesuring RDY/CLK period of EM4095 device
+ *     . send 'E' --> Measuring RDY/CLK period of EM4095 device
  *   - USB status:
  *     . send 'U': display USB device status 
- * 
- * > PIC24FJ128GB204
- * certaines PIN ne sont pas remappable
- * voir "TABLE 1-3: PIC24FJ128GB204 FAMILY PINOUT DESCRIPTION (CONTINUED)", DS30005009C-page 20
- * 
- * > Mesure RTCC_OUT (pad sous le connecteur J10 "SERVO")
- *   --> Signal carré de l'horloge interne: 1 Hz
- * 
- * > Broches disponibles
- * SPARE1: RB13 --> BAR_IR2_OUT
- * SPARE2: RC9 is 5.5V tolerant (org: CMD_VCC_IR) --> BAR_IR1_OUT
- * SPARE3: RA10 (non remappable) --> OUTPUT, Start High = CMD_VCC_IR (MOSFET P)
- * EM4095_CLK_OUT : RC7 (il faut couper la piste sur la v0.1.0)
- * 
- * > Activer pour chaque capteurs un process dans la machine à états
- *     . "BAR_IR1_OUT": RB5/IOC == low --> coupure de la barrière infra rouge (prise de récompense)
  */
 
 #include "mcc.h"
@@ -205,7 +182,7 @@
 
 int main( void )
 {
-    uint16_t toto = 0;
+    uint16_t toto = 0; // FIXME: reading RCON2 register
     /* Initialize the device. */
     SYSTEM_Initialize( );
     toto = RCON2;
@@ -254,6 +231,7 @@ int main( void )
 
     /* Execution should not come here during normal operation. */
     setLedsStatusColor( LED_RED );
+    
     return ( EXIT_FAILURE );
 }
 

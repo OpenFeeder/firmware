@@ -32,7 +32,7 @@
 //#define DISPLAY_LOG_INFO 
 
 //#define DISPLAY_ISR_RTCC          // uncomment to display interruption event
-#define DISPLAY_ISR_IR              // uncomment to display interruption event
+//#define DISPLAY_ISR_IR              // uncomment to display interruption event
 //#define DISPLAY_ISR_PIR           // uncomment to display interruption event
 //#define DISPLAY_ISR_RFID          // uncomment to display interruption event
 //#define DISPLAY_ISR_I2C           // uncomment to display interruption event
@@ -43,6 +43,8 @@
 //#define DEBUG_RFID_WORKING_ON_LED_STATUS // uncomment to display hardware trace in RFID decoding routine
 
 //#define DISPLAY_REMOTE_CONTROL_INFO 
+
+//#define PATH_HARDWARE_IR_SENSOR_DISABLE // FIXME: comment for normal use of OpenFeeder
 
 
 // *****************************************************************************
@@ -92,7 +94,6 @@
 
 /******************************************************************************/
 
-
 /* Application states
 
   Summary:
@@ -137,7 +138,6 @@ typedef enum
 
 } APP_STATES;
 
-
 typedef enum
 {
     NO_SCENARIO,
@@ -149,7 +149,6 @@ typedef enum
 } SCENARIO;
 
 // *****************************************************************************
-
 
 /* Application Data
 
@@ -175,7 +174,6 @@ typedef struct
     /* DateTime structure */
     struct tm current_time;
 
-
     /* Declaration of FLAGS type. */
     union
     {
@@ -193,7 +191,6 @@ typedef struct
 
     /* I2C - Slave Device found */
     uint8_t i2c_add_found[MAX_OF_UNKNOWN_I2C_8_BIT_SLAVE_ADD]; // FIXME: Do not place this here !
-
 
     /* I2C - Status of MCP23017 */
     union

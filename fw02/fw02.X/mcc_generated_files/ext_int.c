@@ -93,18 +93,17 @@ void __attribute__ ( ( interrupt, no_auto_psv ) ) _INT3Interrupt(void)
 void __attribute__ ( ( interrupt, no_auto_psv ) ) _INT4Interrupt(void)
 {
     //***User Area Begin->code: INT4 - External Interrupt 4***
+#if defined (DEBUG_RFID_WORKING_ON_LED_STATUS)
+    LED_STATUS_B_SetHigh( );
+#endif
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RFID)
     printf( "_INT4Interrupt()\n" );
 #endif 
     /* Event on EM4095_DEMOD_OUT RFID signal. */
-    /* EM4095_DEMOD_OUT interrupt on edge detect */
-    #if defined (DEBUG_RFID_WORKING_ON_LED_STATUS)
-       //  setLedsStatusColor( LED_YELLOW );
-       LED_STATUS_B_SetHigh( );
-    #endif
+    /* EM4095_DEMOD_OUT interrupt on edge detect. */
     RFID_DecodingTasks( ); /* Call state machine decoding RFID. */
 
-    // TODO : Update flag for DMOD_OUT presence
+    // TODO: Update flag for DMOD_OUT presence
     // Timeout_Detecting_RFID_Tag = REALOAD_VALUE;
 
     //***User Area End->code: INT4 - External Interrupt 4***

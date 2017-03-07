@@ -1,8 +1,8 @@
 /**
  * @file app_attractive_leds.h
  * @author OpenFeeder Team <https://github.com/orgs/OpenFeeder/people>
- * @version 1.0
- * @date 
+ * @version 2.0
+ * @date 07/03/2017
  */
 
 #ifndef APP_ATTRACT_LEDS_H
@@ -29,15 +29,16 @@ typedef struct
 
 } APP_DATA_LEDS;
 
-void setAttractiveLedsOff(void);
-void setAttractiveLedsOn(void);
-void setAttractiveLedsColor(void);
-void setAttractiveRedLedsColor(uint16_t);
-void setAttractiveGreenLedsColor(uint16_t);
-void setAttractiveBlueLedsColor(uint16_t);
+void initAttractiveLeds( void );
+void setAttractiveLedsOff( void );
+void setAttractiveLedsOn( void );
+void setAttractiveLedsColor( void );
+void setAttractiveRedLedsColor( uint8_t );
+void setAttractiveGreenLedsColor( uint8_t );
+void setAttractiveBlueLedsColor( uint8_t );
+
 
 #endif /* APP_ATTRACT_LEDS_H */
-
 
 /*******************************************************************************
  End of File

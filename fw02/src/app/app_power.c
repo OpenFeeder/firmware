@@ -10,7 +10,6 @@
 #include "app.h"
 #include "app_power.h"
 
-
 bool isPowerServoEnable( void )
 {
     return appDataServo.cmd_vcc_servo_state;
@@ -21,24 +20,20 @@ void powerPIREnable( void )
     CMD_VDD_ACC_PIR_SERVO_SetHigh( ); // CMD_ACC_PIR = EN pin of U7 (5V regulator for PIR sensor and accesoir "VDD_ACC": servomotor with "VDD_SERVO", )
 }
 
-
 void powerPIRDisable( void )
 {
     CMD_VDD_ACC_PIR_SERVO_SetLow( );
 }
-
 
 void powerUsbRfidEnable( void )
 {
     CMD_VDD_APP_V_USB_SetHigh( );
 }
 
-
 void powerUsbRfidDisable( void )
 {
-//    CMD_VDD_APP_V_USB_SetLow( );
+    //    CMD_VDD_APP_V_USB_SetLow( ); // FIXME: CMD_VDD_APP_V_USB_SetLow( ) disable for USB continue mode
 }
-
 
 uint16_t getADC1value( ADC1_CHANNEL channel )
 {
@@ -58,9 +53,6 @@ uint16_t getADC1value( ADC1_CHANNEL channel )
     return ADC1_ConversionResultGet( );
 }
 
-// FIXME : Can be replace by getADC1value()
-
-
 void getVBatLevel( void )
 {
     uint16_t i;
@@ -79,16 +71,12 @@ void getVBatLevel( void )
     appData.vbat_level = ADC1_ConversionResultGet( ) * 2;
 }
 
-
 void printVBatLevel( void )
 {
 #if defined (USE_UART1_SERIAL_INTERFACE) 
     printf( "VBat level: %2.3f V (%u)\n", appData.vbat_level * VBAT_VOLTAGE_FACTOR, appData.vbat_level );
 #endif 
 }
-
-// FIXME : Can be replace by getADC1value()
-
 
 void getBatteryLevel( void )
 {
@@ -108,7 +96,6 @@ void getBatteryLevel( void )
     appData.battery_level = ADC1_ConversionResultGet( );
 }
 
-
 void printBatteryLevel( void )
 {
 #if defined (USE_UART1_SERIAL_INTERFACE) 
@@ -116,7 +103,6 @@ void printBatteryLevel( void )
 #endif 
 
 }
-
 
 FILEIO_RESULT logBatteryLevel( void )
 {

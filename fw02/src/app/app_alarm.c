@@ -40,7 +40,7 @@ void rtcc_set_alarm( int hour, int minute, int second, int alarmMask )
     //    ALRMVAL = 16 * ( hour / 10 ) + hour % 10;
     //    ALRMVAL = ( ( 16 * ( minute / 10 ) + minute % 10 ) << 4 ) + 16 * ( second / 10 ) + second % 10;
     RTCCON1Hbits.AMASK = alarmMask;
-
+    RTCCON1Hbits.CHIME = 1;
     RTCCON1Hbits.ALRMEN = 1;
 
     RTCCON1Lbits.WRLOCK = 0;

@@ -122,7 +122,7 @@ I2C1_MESSAGE_STATUS APP_MultiplexingLEDsTasks( void )
         // Load LEDs register in MCP23017
         writeBuffer[0] = MCP23017_OLATA; // MCP23017 OLATA Register
 
-        // FIXME : Pb - on observe l'affichage du prochain digit éclairé faiblement !!!
+        // FIXME: Pb - on observe l'affichage du prochain digit éclairé faiblement !!!
         //        writeBuffer[1] = 0b11111111; // ceci ne permet pas de régler le pb d'affichage !
         //        writeBuffer[2] = ~appData.mcp23017.status_bit.cmd_digits; // MCP23017 OLATB Register
         //        i2c_status = I2C1_MasterWriteMCP23017( MCP23017_ADDRESS, writeBuffer, 3 ); // clear data on PORTA
