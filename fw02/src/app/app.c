@@ -505,7 +505,8 @@ void APP_Tasks( void )
 #endif
                     if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number )
                     {
-                        setAttractiveLedsOff( );
+//                        setAttractiveLedsOff( );
+                        setAttractiveLedsNoColor( );
                         /* Delay before reactivate attractiveLEDs */
                         setDelayMs( appData.new_bird_delay );
                         while ( false == isDelayMsEnding( ) )
@@ -876,7 +877,9 @@ void APP_Tasks( void )
                             break;
                         }
                     }
-                    //                    powerUsbRfidDisable();
+                    
+                    powerUsbRfidDisable();
+                    
                 }
                 else
                 {

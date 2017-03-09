@@ -73,6 +73,24 @@ void setAttractiveLedsOn( void )
 }
 
 /* Set all color for attractive LEDs. */
+void setAttractiveLedsNoColor( void )
+{
+    /* Set color for red attractive LEDs. */
+    //    OC1_SingleCompareValueSet(appDataAttractiveLeds.red[appDataAttractiveLeds.current_color_index]);
+    setAttractiveRedLedsColor( 0 );
+
+    //    /* Set color for green attractive LEDs. */
+    //    OC2_SingleCompareValueSet(appDataAttractiveLeds.green[appDataAttractiveLeds.current_color_index]);
+    setAttractiveGreenLedsColor( 0 );
+
+    //    /* Set color for blue attractive LEDs. */
+    //    OC3_SingleCompareValueSet(appDataAttractiveLeds.blue[appDataAttractiveLeds.current_color_index]);
+    setAttractiveBlueLedsColor( 0 );
+
+    appDataAttractiveLeds.status = ATTRACTIVE_LEDS_ON;
+}
+
+/* Set all color for attractive LEDs. */
 void setAttractiveLedsColor( void )
 {
     /* Set color for red attractive LEDs. */

@@ -33,6 +33,7 @@ void initAttractiveLeds( void );
 void setAttractiveLedsOff( void );
 void setAttractiveLedsOn( void );
 void setAttractiveLedsColor( void );
+void setAttractiveLedsNoColor( void );
 void setAttractiveRedLedsColor( uint8_t );
 void setAttractiveGreenLedsColor( uint8_t );
 void setAttractiveBlueLedsColor( uint8_t );
