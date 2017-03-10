@@ -222,7 +222,8 @@ bool dataLog( bool newData )
     /* If buffer is full then write log file on the USB device */
     if ( appDataLog.numDataStored == MAX_NUM_DATA_TO_STORE )
     {
-
+        setLedsStatusColor( LED_BLUE );
+        
         if ( USB_DRIVE_NOT_MOUNTED == usbMountDrive( ) )
         {
             return false;
@@ -238,6 +239,7 @@ bool dataLog( bool newData )
         appDataLog.numDataStored = 0;
         usbUnmountDrive( );
 //        CMD_VDD_APP_V_USB_SetLow( );
+        setLedsStatusColor( LEDS_OFF );
     }
 
     return true;

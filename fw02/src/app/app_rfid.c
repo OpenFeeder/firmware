@@ -78,6 +78,7 @@ bool APP_Rfid_Task( void )
             displayPitTag( );
             printf( " - bad checksum\n" );
 #endif
+            appData.rfid_signal_detected = true;
             break;
         }
 
@@ -97,6 +98,7 @@ bool APP_Rfid_Task( void )
             displayPitTag( );
             printf( " - good checksum\n" );
 #endif
+            appData.rfid_signal_detected = true;
             break;
         }
 

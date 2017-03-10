@@ -208,18 +208,19 @@ void APP_Tasks( void )
             }
 
             /* System configuration. */
+            setLedsStatusColor( LED_BLUE );
             appData.flags.bit_value.systemInit = config_set( );
 
             if ( true == appData.flags.bit_value.systemInit )
             {
+                setLedsStatusColor( LEDS_OFF );
+                
                 /* Servomotor power command enable. */
                 servomotorPowerEnable( );
                 appDataDoor.reward_door_status = DOOR_CLOSING;
                 while ( DOOR_CLOSED != appDataDoor.reward_door_status );
                 /* Servomotor power command disable. */
                 servomotorPowerDisable( );
-
-                setLedsStatusColor( LEDS_OFF );
 
                 rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_SECOND );
 
@@ -736,7 +737,7 @@ void APP_Tasks( void )
                 //                }
             }
 
-            LedsStatusBlink( LED_BLUE, 50, 250 );
+//            LedsStatusBlink( LED_BLUE, 50, 250 );
 
             //            if ((true == appDataUsb.key_is_nedded) && (false == appDataUsb.getValidDeviceAdress))
             //            {
@@ -780,6 +781,7 @@ void APP_Tasks( void )
             {
                 if ( appDataLog.numDataStored > 0 )
                 {
+                    setLedsStatusColor( LED_BLUE );
                     /* Force data to be written on the USB device */
                     appDataLog.numDataStored = MAX_NUM_DATA_TO_STORE;
                     if ( false == dataLog( false ) )
@@ -860,6 +862,7 @@ void APP_Tasks( void )
                 {
                     if ( appDataLog.numDataStored > 0 )
                     {
+                        setLedsStatusColor( LED_BLUE );
                         /* Force data to be written on the USB device */
                         appDataLog.numDataStored = MAX_NUM_DATA_TO_STORE;
                         if ( false == dataLog( false ) )
@@ -871,6 +874,7 @@ void APP_Tasks( void )
 
                     if ( appDataLog.numBatteryLevelStored > 0 )
                     {
+                        setLedsStatusColor( LED_BLUE );
                         if ( FILEIO_RESULT_FAILURE == logBatteryLevel( ) )
                         {
                             appData.state = APP_STATE_ERROR;
