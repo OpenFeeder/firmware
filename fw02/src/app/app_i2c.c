@@ -10,6 +10,47 @@
 
 extern const char bin2ascii_tab[];
 
+void print_I2C_message_status( I2C1_MESSAGE_STATUS status )
+{
+#if defined (USE_UART1_SERIAL_INTERFACE)
+    switch ( status )
+    {
+        case I2C1_MESSAGE_FAIL:
+            printf( "I2C1_MESSAGE_FAIL" );
+            break;
+
+        case I2C1_MESSAGE_PENDING:
+            printf( "I2C1_MESSAGE_PENDING" );
+            break;
+
+        case I2C1_MESSAGE_COMPLETE:
+            printf( "I2C1_MESSAGE_COMPLETE" );
+            break;
+
+        case I2C1_STUCK_START:
+            printf( "I2C1_STUCK_START" );
+            break;
+
+        case I2C1_MESSAGE_ADDRESS_NO_ACK:
+            printf( "I2C1_MESSAGE_ADDRESS_NO_ACK" );
+            break;
+
+        case I2C1_DATA_NO_ACK:
+            printf( "I2C1_DATA_NO_ACK" );
+            break;
+
+        case I2C1_LOST_STATE:
+            printf( "I2C1_LOST_STATE" );
+            break;
+
+        default:
+            // if nothing else matches, do the default
+            printf( "Unknown I2C status" );
+            break;
+    }
+#endif
+}
+
 /* Research slaves components present on the I2C bus. */
 uint8_t APP_I2CMasterSeeksSlaveDevice( uint16_t addr7bits_start, uint16_t addr7bits_stop )
 {
@@ -78,9 +119,9 @@ bool APP_isRemoteControlConnected( void )
     I2C1_MESSAGE_STATUS status;
     uint8_t writeBuffer[] = { 0 }; // no data to transmit
 
-//#if defined (DEBUG_UART)
-//    printf( "Scan I2C bus for Remote Control present.\n" );
-//#endif
+    //#if defined (DEBUG_UART)
+    //    printf( "Scan I2C bus for Remote Control present.\n" );
+    //#endif
     /* Write only address byte on bus (0 is the count of data byte to write) */
     I2C1_MasterWrite( writeBuffer, 0, MCP23017_ADDRESS, &status );
     /* Wait for the message to be sent or status has changed. */
@@ -92,15 +133,15 @@ bool APP_isRemoteControlConnected( void )
     /* If MCP23017 device found, then return true. */
     if ( status == I2C1_MESSAGE_COMPLETE )
     {
-//#if defined (DEBUG_UART)
-//    printf( "Remote Control found.\n" );
-//#endif
+        //#if defined (DEBUG_UART)
+        //    printf( "Remote Control found.\n" );
+        //#endif
         return true;
     }
 
-//#if defined (DEBUG_UART)
-//    printf( "Remote Control not found!\n" );
-//#endif
+    //#if defined (DEBUG_UART)
+    //    printf( "Remote Control not found!\n" );
+    //#endif
     return false;
 
 } /* End of APP_isRemoteControlConnected() */
@@ -147,7 +188,7 @@ I2C1_MESSAGE_STATUS APP_MultiplexingLEDsTasks( void )
         // Load 7 segment data from memory in writeBuffer[1] before trasmit on I2C
         switch ( appData.mcp23017.status_bit.cmd_digits )
         {
-//            case DIGIT_1:
+                //            case DIGIT_1:
             case DIGIT_4:
                 if ( ( blinkDigitEnable == true ) && ( blinkDigitState == OFF ) && ( blinkDigit == 0 ) )
                 {
@@ -159,7 +200,7 @@ I2C1_MESSAGE_STATUS APP_MultiplexingLEDsTasks( void )
                 }
                 break;
 
-//            case DIGIT_2:
+                //            case DIGIT_2:
             case DIGIT_3:
                 if ( ( blinkDigitEnable == true ) && ( blinkDigitState == OFF ) && ( blinkDigit == 1 ) )
                 {
@@ -171,7 +212,7 @@ I2C1_MESSAGE_STATUS APP_MultiplexingLEDsTasks( void )
                 }
                 break;
 
-//            case DIGIT_3:
+                //            case DIGIT_3:
             case DIGIT_2:
                 if ( ( blinkDigitEnable == true ) && ( blinkDigitState == OFF ) && ( blinkDigit == 2 ) )
                 {
@@ -183,7 +224,7 @@ I2C1_MESSAGE_STATUS APP_MultiplexingLEDsTasks( void )
                 }
                 break;
 
-//            case DIGIT_4:
+                //            case DIGIT_4:
             case DIGIT_1:
                 if ( ( blinkDigitEnable == true ) && ( blinkDigitState == OFF ) && ( blinkDigit == 3 ) )
                 {
@@ -241,7 +282,7 @@ I2C1_MESSAGE_STATUS APP_MultiplexingLEDsTasks( void )
             writeBuffer[2] = 0b11110000; // configure PORTB pin direction in IODIRB register
             i2c_status = I2C1_MasterWriteMCP23017( MCP23017_ADDRESS, writeBuffer, 3 );
             appData.mcp23017.status_bit.initialized = 1; // set MCP23017 initialized bit status
-//            printf( "done\r\n\n" );
+            //            printf( "done\r\n\n" );
         }
     }
 

@@ -162,7 +162,22 @@ void APP_Tasks( void )
             }
 
             i2c_status = I2C1_PCA9622_SoftwareReset( ); /* Reset PCA9622 device */
-            initAttractiveLeds( );
+#if defined (USE_UART1_SERIAL_INTERFACE)
+            print_I2C_message_status( i2c_status ); // I2C1_MESSAGE_STATUS
+            printf( "\n" );
+#endif
+
+            i2c_status = initAttractiveLeds( );
+#if defined (USE_UART1_SERIAL_INTERFACE)
+            if ( i2c_status )
+            {
+                printf( "Attractive LEDs initialized.\n" );
+            }
+            else
+            {
+                printf( "Attractive LEDs initialize failed!\n" );
+            }
+#endif
             break;
         }
             /* -------------------------------------------------------------- */
@@ -214,7 +229,7 @@ void APP_Tasks( void )
             if ( true == appData.flags.bit_value.systemInit )
             {
                 setLedsStatusColor( LEDS_OFF );
-                
+
                 /* Servomotor power command enable. */
                 servomotorPowerEnable( );
                 appDataDoor.reward_door_status = DOOR_CLOSING;
@@ -506,7 +521,7 @@ void APP_Tasks( void )
 #endif
                     if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number )
                     {
-//                        setAttractiveLedsOff( );
+                        //                        setAttractiveLedsOff( );
                         setAttractiveLedsNoColor( );
                         /* Delay before reactivate attractiveLEDs */
                         setDelayMs( appData.new_bird_delay );
@@ -534,7 +549,7 @@ void APP_Tasks( void )
                 RFID_Disable( );
                 powerUsbRfidDisable( );
                 clear_bird_sensor_detected( );
-                if (false == appData.rfid_signal_detected) 
+                if ( false == appData.rfid_signal_detected )
                 {
                     snprintf( appDataLog.bird_pit_tag_str, 11, "XXXXXXXXXX" );
                 }
@@ -737,7 +752,7 @@ void APP_Tasks( void )
                 //                }
             }
 
-//            LedsStatusBlink( LED_BLUE, 50, 250 );
+            //            LedsStatusBlink( LED_BLUE, 50, 250 );
 
             //            if ((true == appDataUsb.key_is_nedded) && (false == appDataUsb.getValidDeviceAdress))
             //            {
@@ -881,9 +896,9 @@ void APP_Tasks( void )
                             break;
                         }
                     }
-                    
-                    powerUsbRfidDisable();
-                    
+
+                    powerUsbRfidDisable( );
+
                 }
                 else
                 {
@@ -1221,9 +1236,9 @@ void APP_Initialize( void )
     appError.number = ERROR_NONE;
 
     appData.new_bird_delay = 0;
-    
+
     appData.rfid_signal_detected = false;
-        
+
 }
 
 

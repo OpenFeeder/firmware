@@ -11,15 +11,12 @@
 
 #define MAX_OF_UNKNOWN_I2C_8_BIT_SLAVE_ADD 255
 
-
 typedef struct i2c_add_t
 {
-
 
     union
     {
         uint8_t add8bit;
-
 
         struct
         {
@@ -28,6 +25,8 @@ typedef struct i2c_add_t
         };
     };
 } I2C_ADD;
+
+void print_I2C_message_status( I2C1_MESSAGE_STATUS status );
 
 /* Research slaves components present on the I2C bus. */
 uint8_t APP_I2CMasterSeeksSlaveDevice( uint16_t addr7bits_start, uint16_t addr7bits_stop );

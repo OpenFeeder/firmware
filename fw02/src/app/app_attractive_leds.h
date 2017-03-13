@@ -29,7 +29,7 @@ typedef struct
 
 } APP_DATA_LEDS;
 
-void initAttractiveLeds( void );
+bool initAttractiveLeds( void );
 void setAttractiveLedsOff( void );
 void setAttractiveLedsOn( void );
 void setAttractiveLedsColor( void );

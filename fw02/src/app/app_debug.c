@@ -12,6 +12,7 @@
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
 
+// USA A 629 004 160 21
 /* Display information on serial terminal. */
 void displayBootMessage( void )
 {
@@ -340,8 +341,8 @@ void APP_SerialDebugTasks( void )
                     {
                         /* Toggle LED D16 on PCA9622 */
                         static bool led_d16_state = false;
-                        I2C1_MESSAGE_STATUS i2c_status = I2C1_MESSAGE_COMPLETE; // the status of write data on I2C bus
-                        uint8_t writeBuffer[2]; // data to transmit
+//                        I2C1_MESSAGE_STATUS i2c_status = I2C1_MESSAGE_COMPLETE; // the status of write data on I2C bus
+//                        uint8_t writeBuffer[2]; // data to transmit
 
                         /* Write I2C demo for  */
                         if ( false == led_d16_state )
@@ -381,7 +382,11 @@ void APP_SerialDebugTasks( void )
                         break;
                 }
 
-                printf( "i2c_status: %d\n", i2c_status ); // if ok return 2
+//                printf( "i2c_status: %d\n", i2c_status );
+                print_I2C_message_status( i2c_status );
+                printf( "\n" );
+                // if ok return 2 = I2C1_MESSAGE_COMPLETE
+                // if pb return 5 = I2C1_DATA_NO_ACK
                 break;
             }
                 /* -------------------------------------------------------------- */
