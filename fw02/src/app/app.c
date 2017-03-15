@@ -141,7 +141,9 @@ void APP_Tasks( void )
             }
 
             chk = checkImportantParameters( );
-
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+                printf( "Check done.\n" ); // all check done.
+#endif
             switch ( chk )
             {
                 case APP_CHECK_OK:

@@ -12,6 +12,9 @@
 APP_CHECK checkImportantParameters( void )
 {
     /* Check battery level at startup. */
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+    printf( "APP_CHECK_BATTERY... " );
+#endif
     if ( false == isPowerBatteryGood( ) )
     {
 #if defined (USE_UART1_SERIAL_INTERFACE)
@@ -19,8 +22,14 @@ APP_CHECK checkImportantParameters( void )
 #endif
         return APP_CHECK_BATTERY_PB;
     }
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+    printf( "ok\n" );
+#endif
 
     /* Check battery level at startup. */
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+    printf( "APP_CHECK_VBAT... " );
+#endif
     if ( false == isPowerVbatGood( ) )
     {
 #if defined (USE_UART1_SERIAL_INTERFACE)
@@ -28,8 +37,14 @@ APP_CHECK checkImportantParameters( void )
 #endif
         //        return APP_CHECK_VBAT_PB;
     }
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+    printf( "ok\n" );
+#endif
 
-    /* Check food level */
+    /* Check food level. */
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+    printf( "APP_CHECK_FOOD_LEVEL... " );
+#endif
     if ( false == isEnoughFood( ) )
     {
 #if defined (USE_UART1_SERIAL_INTERFACE)
@@ -37,8 +52,14 @@ APP_CHECK checkImportantParameters( void )
 #endif
         return APP_CHECK_FOOD_LEVEL_PB;
     }
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+    printf( "ok\n" );
+#endif
 
-    /* Check RFID frequency */
+    /* Check RFID frequency. */
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+    printf( "APP_CHECK_RFID_FREQ... " );
+#endif
     if ( false == isRfidFreqGood( ) )
     {
 #if defined (USE_UART1_SERIAL_INTERFACE)
@@ -46,6 +67,9 @@ APP_CHECK checkImportantParameters( void )
 #endif
         //        return APP_CHECK_RFID_FREQ_PB;
     }
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+    printf( "ok\n" );
+#endif
 
     return APP_CHECK_OK;
 }

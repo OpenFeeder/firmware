@@ -12,12 +12,22 @@
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
 
-// USA A 629 004 160 21
+/* Current date as a C string (page 244)) */
+const uint8_t BUILD_DATE[] = { __DATE__ };
+const uint8_t BUILD_TIME[] = { __TIME__ };
+
 /* Display information on serial terminal. */
+void displayBuildDateTime( void )
+{
+    /* Displaying the build date and time. */
+    printf( "Build on %s, %s\n", BUILD_DATE, BUILD_TIME );
+}
+
 void displayBootMessage( void )
 {
     printf( "\n\n================ OpenFeeder ================\n" );
     printf( "       Board: v2.0 - Firmware: fw02\n" );
+    printf( "      Build on %s, %s\n", BUILD_DATE, BUILD_TIME );
     printf( "============================================\n" );
     printf( "   Web page: https://github.com/OpenFeeder\n" );
     printf( "   Mail: contact.openfeeder@gmail.com\n" );
@@ -41,6 +51,7 @@ void APP_SerialDebugTasks( void )
             case '?':
                 /* Interface firmware terminal (Debug) */
                 printf( "Key mapping:\n" );
+                printf( " !: displaying the build date and time\n" );
                 printf( " a or A: analog measure of the servomotor position, battery voltage and VBAT voltage\n" );
                 printf( " b or B: set blue color value of RGB attractive LEDs\n" );
                 printf( " c or C: close reward door\n" );
@@ -67,6 +78,9 @@ void APP_SerialDebugTasks( void )
                 printf( " u or U: display USB device status\n" );
                 printf( " v or V: set status of servomotor power command\n" );
                 printf( " w or W: toggle power command (CMD_ACC_PIR)\n\n" );
+
+            case '!':
+                displayBuildDateTime( );
                 break;
 
             case 'a':
@@ -341,8 +355,8 @@ void APP_SerialDebugTasks( void )
                     {
                         /* Toggle LED D16 on PCA9622 */
                         static bool led_d16_state = false;
-//                        I2C1_MESSAGE_STATUS i2c_status = I2C1_MESSAGE_COMPLETE; // the status of write data on I2C bus
-//                        uint8_t writeBuffer[2]; // data to transmit
+                        //                        I2C1_MESSAGE_STATUS i2c_status = I2C1_MESSAGE_COMPLETE; // the status of write data on I2C bus
+                        //                        uint8_t writeBuffer[2]; // data to transmit
 
                         /* Write I2C demo for  */
                         if ( false == led_d16_state )
@@ -382,7 +396,7 @@ void APP_SerialDebugTasks( void )
                         break;
                 }
 
-//                printf( "i2c_status: %d\n", i2c_status );
+                //                printf( "i2c_status: %d\n", i2c_status );
                 print_I2C_message_status( i2c_status );
                 printf( "\n" );
                 // if ok return 2 = I2C1_MESSAGE_COMPLETE
@@ -391,7 +405,7 @@ void APP_SerialDebugTasks( void )
             }
                 /* -------------------------------------------------------------- */
 
-            // FIXME: case 'N' can be released, see case 'M' option '3'
+                // FIXME: case 'N' can be released, see case 'M' option '3'
             case 'n':
             case 'N':
             {

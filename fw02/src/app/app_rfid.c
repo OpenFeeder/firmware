@@ -290,7 +290,7 @@ void measureRfidFreq( void )
     //    }
     EX_INT3_InterruptFlagClear( );
     EX_INT3_InterruptEnable( );
-    while ( false == g_new_value_of_em4095_rdyclk_measurement )
+    while ( false == g_new_value_of_em4095_rdyclk_measurement ) // FIXME: if EM4095 broken then programme stop here!
     {
         Nop( );
     }

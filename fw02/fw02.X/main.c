@@ -174,6 +174,22 @@
 #include "mcc.h"
 #include "app.h"
 
+/* Declaration of RCON2 flag. */
+union
+{
+    uint16_t status_reg;
+
+    struct
+    {
+        uint8_t unimplemented_h;
+        unsigned : 4;
+        unsigned  : 1; /* true if configuration success from "CONFIG.INI" */
+        unsigned  : 1; /* true if configuration success from "CONFIG.INI" */
+        unsigned  : 1; /* true if Remote Control is connected */
+        unsigned  : 1; /* true if a new PIT Tag is validated. */
+    } status_bit;
+} reset_system_control_register_2;
+
 
 /*
                          Main application
@@ -182,11 +198,27 @@
 
 int main( void )
 {
-    uint16_t toto = 0; // FIXME: reading RCON2 register
+    uint16_t rst_sys_ctrl2_value = 0; // variable for reading RCON2 register
+
     /* Initialize the device. */
     SYSTEM_Initialize( );
-    toto = RCON2;
-    RCON2 = 0;
+
+    /* RESET AND SYSTEM CONTROL REGISTER 2 */
+    // bit 3 VDDBOR : VDD Brown - out Reset Flag bit( 1 )
+    //    1 = A VDD Brown - out Reset has occurred( set by hardware )
+    //    0 = A VDD Brown - out Reset has not occurred
+    // bit 2 VDDPOR : VDD Power - on Reset Flag bit( 1, 2 )
+    //    1 = A VDD Power - on Reset has occurred( set by hardware )
+    //    0 = A VDD Power - on Reset has not occurred
+    // bit 1 VBPOR : VBPOR Flag bit( 1, 3 )
+    //    1 = A VBAT POR has occurred( no battery connected to VBAT pin or VBAT power below Deep Sleep
+    //                                 Semaphore register retention level is set by hardware )
+    //    0 = A VBAT POR has not occurred
+    // bit 0 VBAT : VBAT Flag bit( 1 )
+    //    1 = A POR exit has occurred while power was applied to VBAT pin( set by hardware )
+    //    0 = A POR exit from VBAT has not occurred
+    rst_sys_ctrl2_value = RCON2; // save register
+    RCON2 = 0; // clear register
 
     /* Initialize peripheral driver. */
     RFID_Initialize( );
@@ -231,7 +263,7 @@ int main( void )
 
     /* Execution should not come here during normal operation. */
     setLedsStatusColor( LED_RED );
-    
+
     return ( EXIT_FAILURE );
 }
 
