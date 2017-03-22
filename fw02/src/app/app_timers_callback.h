@@ -8,6 +8,12 @@
 #ifndef APP_TIMERS_CALLBACK_H
 #define APP_TIMERS_CALLBACK_H
 
+// *****************************************************************************
+// *****************************************************************************
+// Section: Constants
+// *****************************************************************************
+// *****************************************************************************
+
 #define TIMER_ISR_TICKER_FACTOR_FOR_160MS            6124 /* 160 ms */
 
 /* Param Fq RDY/CLK. */
@@ -19,6 +25,31 @@
 #define DECODING_RFID_THREE_QUARTER_PERIODE_READING 14 // --> ok avec 475 us de periode pour DEMOD_OUT (RDY/CLK = 134 kHz)
 //#define DECODING_RFID_HALF_PERIODE_READING          7 // 16 / 2
 #define DECODING_RFID_QUARTER_PERIODE_READING       4 // 16 / 4
+
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: extern declarations
+// *****************************************************************************
+// *****************************************************************************
+
+extern volatile uint16_t g_rdyclk_count_in_10ms;
+extern volatile uint16_t g_timeout_x20ms;
+extern volatile uint16_t g_timeout_em4095_x20ms;
+extern volatile uint16_t g_timeout_leds_status_x20ms;
+extern volatile uint8_t g_timeout_taking_reward;
+
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Application Callback Routines
+// *****************************************************************************
+// *****************************************************************************
+/* These routines are called by drivers when certain events occur.
+ */
+void TMR2_CallBack( void );
+void TMR3_CallBack( void );
+void TMR4_CallBack( void );
 
 
 #endif /* APP_TIMERS_CALLBACK_H */

@@ -1,3 +1,4 @@
+
 /**
   RTCC Generated Driver API Header File
 
@@ -77,9 +78,9 @@ void RTCC_Initialize(void)
 
    if(!RTCCTimeInitialized())
     {
-#if defined (USE_UART1_SERIAL_INTERFACE)
-        printf( "RTCCTimeInitialized\n" );
-#endif
+//#if defined (USE_UART1_SERIAL_INTERFACE)
+//        printf( "RTCCTimeInitialized\n" );
+//#endif
 
 //        // set 2017-02-06 22-22-37
 //       DATEH = 0x1702;    // Year/Month

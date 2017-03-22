@@ -8,16 +8,27 @@
 #include "app.h"
 #include "app_rfid.h"
 
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Global Data Definitions
+// *****************************************************************************
+// *****************************************************************************
+
 volatile bool g_new_value_of_em4095_rdyclk_measurement = false;
-
-
 RFID_STATES g_rfid_reading_status; // for serial display of state machine process of EM4095
 RFID_STATES g_rfid_reading_status_previous;
 volatile uint8_t g_timeout_reading_pit_tag;
-extern volatile uint16_t rdyclk_count_in_10ms;
 
 /* Binary to Ascii text converter with simple lookup array */
 const char bin2ascii_tab[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+
+
+//******************************************************************************
+//******************************************************************************
+//  Function Implementation
+//******************************************************************************
+//******************************************************************************
 
 void APP_Rfid_Init( void )
 {
@@ -294,10 +305,11 @@ void measureRfidFreq( void )
     {
         Nop( );
     }
+    EM4095_SHD_DISABLE( );
     EX_INT3_InterruptFlagClear( );
     EX_INT3_InterruptDisable( );
 
-    appData.rfid_rdyclk = rdyclk_count_in_10ms * 5;
+    appData.rfid_rdyclk = g_rdyclk_count_in_10ms * 5;
 
     g_new_value_of_em4095_rdyclk_measurement = false;
     if ( flag == true )

@@ -10,11 +10,6 @@
 #include "app.h"
 #include "delay.h"
 
-volatile uint16_t g_timeout_x20ms;
-volatile uint16_t g_timeout_em4095_x20ms;
-volatile uint16_t g_timeout_leds_status_x20ms;
-volatile uint8_t g_timeout_taking_reward;
-
 /* Not blocking delay function, can be used with this project. */
 // TODO: change g_timeout_x20ms
 

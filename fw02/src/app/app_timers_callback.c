@@ -9,16 +9,24 @@
 #include "app.h"
 #include "app_timers_callback.h"
 
-// FIXME: add to appData ?
-volatile uint16_t rdyclk_count_in_10ms; /* variable to display the number of positive edge counter on RDY/CLK in (10 ms ! --> 20 ms) */
-extern volatile bool g_new_value_of_em4095_rdyclk_measurement; // new value of a frequency measurement RDY/CLK of the EM4095 signal available
-extern volatile uint16_t counter_positive_edge_rdyclk;
+// *****************************************************************************
+// *****************************************************************************
+// Section: Global Data Definitions
+// *****************************************************************************
+// *****************************************************************************
 
-extern volatile uint16_t g_timeout_x20ms;
-extern volatile uint16_t g_timeout_em4095_x20ms;
-extern volatile uint16_t g_timeout_leds_status_x20ms;
-extern volatile uint8_t g_timeout_taking_reward;
-extern volatile uint8_t g_timeout_reading_pit_tag;
+volatile uint16_t g_rdyclk_count_in_10ms; /* variable to display the number of positive edge counter on RDY/CLK in (10 ms ! --> 20 ms) */ // FIXME: add to appData ?
+volatile uint16_t g_timeout_x20ms;
+volatile uint16_t g_timeout_em4095_x20ms;
+volatile uint16_t g_timeout_leds_status_x20ms;
+volatile uint8_t g_timeout_taking_reward;
+
+
+//******************************************************************************
+//******************************************************************************
+//  Function Implementation
+//******************************************************************************
+//******************************************************************************
 
 void TMR2_CallBack( void )
 {
@@ -66,7 +74,7 @@ void TMR3_CallBack( void )
         if ( capture_positive_edge_counter_in_10ms != previous_positive_edge_counter_in_10ms )
         {
             previous_positive_edge_counter_in_10ms = capture_positive_edge_counter_in_10ms;
-            rdyclk_count_in_10ms = capture_positive_edge_counter_in_10ms;
+            g_rdyclk_count_in_10ms = capture_positive_edge_counter_in_10ms;
             g_new_value_of_em4095_rdyclk_measurement = true;
         }
     }
@@ -185,7 +193,6 @@ void TMR4_CallBack( void )
         counter_timeout_160ms = 0;
     }
 }
-
 
 
 /*******************************************************************************

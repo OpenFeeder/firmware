@@ -12,7 +12,7 @@
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
 
-/* Current date as a C string (page 244)) */
+/* Current date to a C string (page 244)) */
 const uint8_t BUILD_DATE[] = { __DATE__ };
 const uint8_t BUILD_TIME[] = { __TIME__ };
 
@@ -331,6 +331,9 @@ void APP_SerialDebugTasks( void )
                         writeBuffer[1] = 0xAA; // CTRLREG PWM on all output for LEDOUT3
                         i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
 
+                        print_I2C_message_status( i2c_status );
+                        printf( "\n" );
+
                         printf( "PCA9622 Initialized.\n" );
                         break;
 
@@ -387,6 +390,9 @@ void APP_SerialDebugTasks( void )
                             led_d16_state = false;
                             printf( "LED D16 Red.\n" );
                         }
+
+                        print_I2C_message_status( i2c_status );
+                        printf( "\n" );
                         break;
                     }
 
@@ -396,9 +402,7 @@ void APP_SerialDebugTasks( void )
                         break;
                 }
 
-                //                printf( "i2c_status: %d\n", i2c_status );
-                print_I2C_message_status( i2c_status );
-                printf( "\n" );
+                // printf( "i2c_status: %d\n", i2c_status );
                 // if ok return 2 = I2C1_MESSAGE_COMPLETE
                 // if pb return 5 = I2C1_DATA_NO_ACK
                 break;

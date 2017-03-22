@@ -104,8 +104,6 @@ APP_DATA_RC appDataRc;
 APP_DATA_EVENT appDataEvent;
 APP_DATA_DOOR appDataDoor;
 
-extern volatile uint8_t g_timeout_reading_pit_tag;
-
 /******************************************************************************
   Function:
     void APP_Tasks( void )
@@ -141,9 +139,9 @@ void APP_Tasks( void )
             }
 
             chk = checkImportantParameters( );
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
-                printf( "Check done.\n" ); // all check done.
-#endif
+            //#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+            //            printf( "Check done.\n" ); // all check done.
+            //#endif
             switch ( chk )
             {
                 case APP_CHECK_OK:
@@ -162,11 +160,15 @@ void APP_Tasks( void )
                     appData.state = APP_STATE_LOW_RFID_FREQUENCY;
                     break;
             }
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+            printf( "Next APP_STATE num: %u\n", appData.state ); // all check done.
+#endif
 
             i2c_status = I2C1_PCA9622_SoftwareReset( ); /* Reset PCA9622 device */
 #if defined (USE_UART1_SERIAL_INTERFACE)
             print_I2C_message_status( i2c_status ); // I2C1_MESSAGE_STATUS
-            printf( "\n" );
+            //            printf( "\n" );
+            UART1_Write( '\n' );
 #endif
 
             i2c_status = initAttractiveLeds( );
@@ -338,11 +340,13 @@ void APP_Tasks( void )
                     appData.state = APP_STATE_SLEEP;
                     break;
                 }
+
                 if ( OPENFEEDER_IS_SLEEPING == appData.openfeeder_state && RTCC_ALARM_WAKEUP_OPENFEEDER == appData.rtcc_alarm_action )
                 {
                     appData.state = APP_STATE_WAKE_UP;
                     break;
                 }
+
                 if ( RTCC_ALARM_SET_ATTRACTIVE_LEDS_OFF == appData.rtcc_alarm_action )
                 {
                     if ( ATTRACTIVE_LEDS_ON == appDataAttractiveLeds.status )
@@ -350,6 +354,7 @@ void APP_Tasks( void )
                         setAttractiveLedsOff( );
                     }
                 }
+
                 if ( RTCC_ALARM_SET_ATTRACTIVE_LEDS_ON == appData.rtcc_alarm_action )
                 {
                     if ( ATTRACTIVE_LEDS_OFF == appDataAttractiveLeds.status )
@@ -357,6 +362,7 @@ void APP_Tasks( void )
                         setAttractiveLedsOn( );
                     }
                 }
+
                 if ( RTCC_ALARM_ALT_ATTRACTIVE_LEDS == appData.rtcc_alarm_action )
                 {
                     double t = rand( );
@@ -371,6 +377,7 @@ void APP_Tasks( void )
                     }
                     setAttractiveLedsColor( );
                 }
+
                 if ( DOOR_OPENED != appDataDoor.reward_door_status && RTCC_ALARM_OPEN_DOOR == appData.rtcc_alarm_action )
                 {
                     /* Open reward door */
@@ -382,6 +389,7 @@ void APP_Tasks( void )
                     while ( DOOR_OPENED != appDataDoor.reward_door_status );
                     servomotorPowerDisable( );
                 }
+
                 if ( DOOR_CLOSED != appDataDoor.reward_door_status && RTCC_ALARM_CLOSE_DOOR == appData.rtcc_alarm_action )
                 {
                     /* Close reward door */
@@ -393,9 +401,9 @@ void APP_Tasks( void )
                     while ( DOOR_CLOSED != appDataDoor.reward_door_status );
                     servomotorPowerDisable( );
                 }
+
                 if ( RTCC_BATTERY_LEVEL_CHECK == appData.rtcc_alarm_action )
                 {
-
                     flag = isPowerBatteryGood( );
                     appDataLog.battery_level[appDataLog.numBatteryLevelStored][0] = appData.current_time.tm_hour;
                     appDataLog.battery_level[appDataLog.numBatteryLevelStored][1] = appData.battery_level;
@@ -458,7 +466,6 @@ void APP_Tasks( void )
 #endif
                 }
             }
-
             break;
             /* -------------------------------------------------------------- */
 
@@ -551,6 +558,7 @@ void APP_Tasks( void )
                 RFID_Disable( );
                 powerUsbRfidDisable( );
                 clear_bird_sensor_detected( );
+
                 if ( false == appData.rfid_signal_detected )
                 {
                     snprintf( appDataLog.bird_pit_tag_str, 11, "XXXXXXXXXX" );
@@ -559,6 +567,7 @@ void APP_Tasks( void )
                 {
                     snprintf( appDataLog.bird_pit_tag_str, 11, "??????????" );
                 }
+
                 appData.rfid_signal_detected = false;
                 appDataLog.is_reward_taken = false;
                 appDataLog.is_pit_tag_denied = false;

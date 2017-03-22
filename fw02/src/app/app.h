@@ -84,6 +84,13 @@
 #include "app_timers_callback.h"
 #include "app_usb.h"
 
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Constants
+// *****************************************************************************
+// *****************************************************************************
+
 #define OPENFEEDER_IS_AWAKEN    1
 #define OPENFEEDER_IS_SLEEPING  0
 
@@ -229,7 +236,7 @@ typedef struct
     uint16_t light_level;
 
     uint16_t rfid_rdyclk;
-    
+
     bool rfid_signal_detected;
 
     APP_STATES rc_previous_state;
@@ -257,8 +264,16 @@ extern APP_DATA_RC appDataRc; /* Remote control application data. */
 extern APP_DATA_EVENT appDataEvent;
 extern APP_DATA_DOOR appDataDoor;
 
+
+//******************************************************************************
+//******************************************************************************
+// Function prototypes
+//******************************************************************************
+//******************************************************************************
+
 #define is_bird_sensor_detected( ) appDataLog.bird_pir_sensor_status /* Return the value of global variable. */
 #define clear_bird_sensor_detected( ) {appDataLog.bird_pir_sensor_status = 0;} /* Clear the bird detection sensor. */
+
 
 // *****************************************************************************
 // *****************************************************************************

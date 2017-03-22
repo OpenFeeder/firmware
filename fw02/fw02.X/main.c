@@ -175,20 +175,20 @@
 #include "app.h"
 
 /* Declaration of RCON2 flag. */
-union
+typedef union
 {
     uint16_t status_reg;
 
     struct
     {
-        uint8_t unimplemented_h;
-        unsigned : 4;
-        unsigned  : 1; /* true if configuration success from "CONFIG.INI" */
-        unsigned  : 1; /* true if configuration success from "CONFIG.INI" */
-        unsigned  : 1; /* true if Remote Control is connected */
-        unsigned  : 1; /* true if a new PIT Tag is validated. */
+        unsigned VBAT   : 1; /* VBAT Flag bit */
+        unsigned VBPOR  : 1; /* VBPOR Flag bit */
+        unsigned VDDPOR : 1; /* VDD Power-on Reset Flag bit */
+        unsigned VDDBOR : 1; /* VDD Brown-out Reset Flag bit */
+        unsigned : 4; /* Reserved */
+        unsigned : 8; /* Unimplemented */
     } status_bit;
-} reset_system_control_register_2;
+} RESET_SYSTEM_CONTROL_REGISTER_2_t;
 
 
 /*
@@ -198,7 +198,7 @@ union
 
 int main( void )
 {
-    uint16_t rst_sys_ctrl2_value = 0; // variable for reading RCON2 register
+    RESET_SYSTEM_CONTROL_REGISTER_2_t rst_sys_ctrl2_value; // variable for reading RCON2 register
 
     /* Initialize the device. */
     SYSTEM_Initialize( );
@@ -217,7 +217,7 @@ int main( void )
     // bit 0 VBAT : VBAT Flag bit( 1 )
     //    1 = A POR exit has occurred while power was applied to VBAT pin( set by hardware )
     //    0 = A POR exit from VBAT has not occurred
-    rst_sys_ctrl2_value = RCON2; // save register
+    rst_sys_ctrl2_value.status_reg = RCON2; // save register
     RCON2 = 0; // clear register
 
     /* Initialize peripheral driver. */
@@ -246,6 +246,11 @@ int main( void )
     APP_Initialize( );
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
+    printf( "\nBoard starting...\n", rst_sys_ctrl2_value.status_bit.VBAT );
+    printf( "VBAT bit  : %u\n", rst_sys_ctrl2_value.status_bit.VBAT );
+    printf( "VBPOR bit : %u\n", rst_sys_ctrl2_value.status_bit.VBPOR );
+    printf( "VDDPOR bit: %u\n", rst_sys_ctrl2_value.status_bit.VDDPOR );
+    printf( "VDDBOR bit: %u\n", rst_sys_ctrl2_value.status_bit.VDDBOR );
     /* Display information on serial terminal. */
     displayBootMessage( );
 #endif
