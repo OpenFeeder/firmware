@@ -209,7 +209,6 @@ bool USB_ApplicationEventHandler( uint8_t address, USB_EVENT event, void *data, 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
             printf( "USB event: EVENT_VBUS_REQUEST_POWER - Port: %u - Current: %u (x2mA)\n", ( ( USB_VBUS_POWER_EVENT_DATA* ) data )->port, ( ( USB_VBUS_POWER_EVENT_DATA* ) data )->current );
 #endif
-
             return true;
             break;
             /* -------------------------------------------------------------- */
@@ -219,7 +218,7 @@ bool USB_ApplicationEventHandler( uint8_t address, USB_EVENT event, void *data, 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
             printf( "USB event: EVENT_VBUS_RELEASE_POWER - Port: %u\n", ( ( USB_VBUS_POWER_EVENT_DATA* ) data )->port );
 #endif
-//            CMD_VDD_APP_V_USB_SetLow( );
+//            CMD_VDD_APP_V_USB_SetLow( ); // FIXME: EVENT_VBUS_RELEASE_POWER must change USB power to OFF
             return true;
             break;
             /* -------------------------------------------------------------- */

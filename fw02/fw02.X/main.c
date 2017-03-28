@@ -181,15 +181,14 @@ typedef union
 
     struct
     {
-        unsigned VBAT   : 1; /* VBAT Flag bit */
-        unsigned VBPOR  : 1; /* VBPOR Flag bit */
+        unsigned VBAT : 1; /* VBAT Flag bit */
+        unsigned VBPOR : 1; /* VBPOR Flag bit */
         unsigned VDDPOR : 1; /* VDD Power-on Reset Flag bit */
         unsigned VDDBOR : 1; /* VDD Brown-out Reset Flag bit */
         unsigned : 4; /* Reserved */
         unsigned : 8; /* Unimplemented */
     } status_bit;
 } RESET_SYSTEM_CONTROL_REGISTER_2_t;
-
 
 /*
                          Main application
@@ -246,7 +245,7 @@ int main( void )
     APP_Initialize( );
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
-    printf( "\nBoard starting...\n", rst_sys_ctrl2_value.status_bit.VBAT );
+    printf( "\nBoard starting...\n" );
     printf( "VBAT bit  : %u\n", rst_sys_ctrl2_value.status_bit.VBAT );
     printf( "VBPOR bit : %u\n", rst_sys_ctrl2_value.status_bit.VBPOR );
     printf( "VDDPOR bit: %u\n", rst_sys_ctrl2_value.status_bit.VDDPOR );

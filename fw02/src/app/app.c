@@ -858,6 +858,7 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_SLEEP\n" );
 #endif
+                /* Set alarm for wake up time */
                 rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_DAY );
 
                 /* Close the door if it is opened */
@@ -909,7 +910,7 @@ void APP_Tasks( void )
                     }
 
                     powerUsbRfidDisable( );
-
+                    CMD_VDD_APP_V_USB_SetLow( ); // --> powerUsbRfidDisable( );
                 }
                 else
                 {
@@ -919,7 +920,8 @@ void APP_Tasks( void )
 
             /* Turn status LED off */
             setLedsStatusColor( LEDS_OFF );
-
+            
+//            setDateTime( 17, 3, 27, 6, 29, 55 ); /* FIXME: Set date and time. */
             Sleep( );
 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
@@ -939,6 +941,8 @@ void APP_Tasks( void )
             }
 
             rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_SECOND );
+
+//            setDateTime( 17, 3, 27, 22, 22, 55 ); /* FIXME: Set date and time. */
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
             printf( "Awaken from sleep mode!\n" );
