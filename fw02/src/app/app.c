@@ -867,7 +867,9 @@ void APP_Tasks( void )
                     /* Close reward door */
                     servomotorPowerEnable( );
                     appDataDoor.reward_door_status = DOOR_CLOSING;
+#if defined (USE_UART1_SERIAL_INTERFACE)
                     printf( "Closing reward door in action.\n" );
+#endif
                     while ( DOOR_CLOSED != appDataDoor.reward_door_status );
                     servomotorPowerDisable( );
                 }
@@ -1036,8 +1038,6 @@ void APP_Tasks( void )
                             break;
                         }
                     }
-
-                    //                    powerUsbRfidDisable();
                 }
                 else
                 {
@@ -1085,6 +1085,20 @@ void APP_Tasks( void )
                 printError( );
 #endif
                 rtcc_stop_alarm( );
+                
+                /* Close the door if it is opened */
+                if ( DOOR_CLOSED != appDataDoor.reward_door_status )
+                {
+                    /* Close reward door */
+                    servomotorPowerEnable( );
+                    appDataDoor.reward_door_status = DOOR_CLOSING;
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                    printf( "Closing reward door in action.\n" );
+#endif
+                    while ( DOOR_CLOSED != appDataDoor.reward_door_status );
+                    servomotorPowerDisable( );
+                }
+                
                 /* Set peripherals Off. */
                 setAttractiveLedsOff( );
                 powerPIRDisable( );
@@ -1096,10 +1110,12 @@ void APP_Tasks( void )
                 TMR3_Start( );
                 setDelayMs( 5000 );
 
+#if defined (USE_UART1_SERIAL_INTERFACE) 
                 if ( appError.number > ERROR_LOW_VBAT )
                 {
                     printf( "%d - Need to reset\n", T3CONbits.TON );
                 }
+#endif
             }
 
             /* FIXME : Reset every 5 sec */
@@ -1107,7 +1123,9 @@ void APP_Tasks( void )
             {
                 if ( isDelayMsEnding( ) )
                 {
+#if defined (USE_UART1_SERIAL_INTERFACE)               
                     printf( "RESET...\n" );
+#endif
                     __asm__ volatile ( "reset" ); /* reboot the board!!! */
                 }
             }
