@@ -16,36 +16,36 @@ void print_I2C_message_status( I2C1_MESSAGE_STATUS status )
     switch ( status )
     {
         case I2C1_MESSAGE_FAIL:
-            printf( "I2C1_MESSAGE_FAIL" );
+            printf( "\tI2C1_MESSAGE_FAIL" );
             break;
 
         case I2C1_MESSAGE_PENDING:
-            printf( "I2C1_MESSAGE_PENDING" );
+            printf( "\tI2C1_MESSAGE_PENDING" );
             break;
 
         case I2C1_MESSAGE_COMPLETE:
-            printf( "I2C1_MESSAGE_COMPLETE" );
+            printf( "\tI2C1_MESSAGE_COMPLETE" );
             break;
 
         case I2C1_STUCK_START:
-            printf( "I2C1_STUCK_START" );
+            printf( "\tI2C1_STUCK_START" );
             break;
 
         case I2C1_MESSAGE_ADDRESS_NO_ACK:
-            printf( "I2C1_MESSAGE_ADDRESS_NO_ACK" );
+            printf( "\tI2C1_MESSAGE_ADDRESS_NO_ACK" );
             break;
 
         case I2C1_DATA_NO_ACK:
-            printf( "I2C1_DATA_NO_ACK" );
+            printf( "\tI2C1_DATA_NO_ACK" );
             break;
 
         case I2C1_LOST_STATE:
-            printf( "I2C1_LOST_STATE" );
+            printf( "\tI2C1_LOST_STATE" );
             break;
 
         default:
             // if nothing else matches, do the default
-            printf( "Unknown I2C status" );
+            printf( "\tUnknown I2C status" );
             break;
     }
 #endif

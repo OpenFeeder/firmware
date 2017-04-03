@@ -38,7 +38,7 @@ I2C1_MESSAGE_STATUS I2C1_PCA9622_SoftwareReset( void )
     }
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
-    printf( "PCA9622 SWRST.\n" );
+    printf( "\tPCA9622 SWRST.\n" );
 #endif
 
     return i2c_status;

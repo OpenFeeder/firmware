@@ -245,11 +245,11 @@ int main( void )
     APP_Initialize( );
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
-    printf( "\nBoard starting...\n" );
-    printf( "VBAT bit  : %u\n", rst_sys_ctrl2_value.status_bit.VBAT );
-    printf( "VBPOR bit : %u\n", rst_sys_ctrl2_value.status_bit.VBPOR );
-    printf( "VDDPOR bit: %u\n", rst_sys_ctrl2_value.status_bit.VDDPOR );
-    printf( "VDDBOR bit: %u\n", rst_sys_ctrl2_value.status_bit.VDDBOR );
+    printf( "\n\nReset flag bits (for debug purpose only)\n" );
+    printf( "\tVBAT bit  : %u\n", rst_sys_ctrl2_value.status_bit.VBAT );
+    printf( "\tVBPOR bit : %u\n", rst_sys_ctrl2_value.status_bit.VBPOR );
+    printf( "\tVDDPOR bit: %u\n", rst_sys_ctrl2_value.status_bit.VDDPOR );
+    printf( "\tVDDBOR bit: %u\n", rst_sys_ctrl2_value.status_bit.VDDBOR );
     /* Display information on serial terminal. */
     displayBootMessage( );
 #endif

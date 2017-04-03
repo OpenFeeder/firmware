@@ -26,7 +26,7 @@ void displayBuildDateTime( void )
 void displayBootMessage( void )
 {
     printf( "\n\n================ OpenFeeder ================\n" );
-    printf( "       Board: v2.0 - Firmware: fw02\n" );
+    printf( "      Board: v2.0 - Firmware: fw02\n" );
     printf( "      Build on %s, %s\n", BUILD_DATE, BUILD_TIME );
     printf( "============================================\n" );
     printf( "   Web page: https://github.com/OpenFeeder\n" );
@@ -518,7 +518,7 @@ void APP_SerialDebugTasks( void )
                 printf( "Battery level buffer:\n" );
                 for ( i = 0; i < 24; i++ )
                 {
-                    printf( "%d - %d\n",
+                    printf( "\t%d - %d\n",
                             appDataLog.battery_level[i][0],
                             appDataLog.battery_level[i][1] );
                 }
@@ -574,42 +574,42 @@ void APP_SerialDebugTasks( void )
                 uint8_t mday, mon, year, hour, min, sec;
                 printf( "Set date dd/mm/20yy and time hh:mm:ss\n" );
 
-                printf( "Set date dd, enter a value from 1 to 31:\n" );
+                printf( "Set day (1 to 31):\n" );
                 mday = readIntFromUart1( );
                 if ( ( mday > 31 ) || ( mday == 0 ) )
                 {
                     mday = 1;
                 }
 
-                printf( "Set date mm, enter a value from 1 to 12:\n" );
+                printf( "Set month (1 to 12):\n" );
                 mon = readIntFromUart1( );
                 if ( ( mon > 12 ) || ( mon == 0 ) )
                 {
                     mon = 1;
                 }
 
-                printf( "Set date yy, enter a value from 0 to 99:\n" );
+                printf( "Set year (0 to 99):\n" );
                 year = readIntFromUart1( );
                 if ( year > 99 )
                 {
                     year = 0;
                 }
 
-                printf( "Set time hh, enter a value from 0 to 23:\n" );
+                printf( "Set hours (0 to 23):\n" );
                 hour = readIntFromUart1( );
                 if ( hour > 23 )
                 {
                     hour = 0;
                 }
 
-                printf( "Set time mm, enter a value from 0 to 59:\n" );
+                printf( "Set minutes (0 to 59):\n" );
                 min = readIntFromUart1( );
                 if ( min > 59 )
                 {
                     min = 0;
                 }
 
-                printf( "Set time ss, enter a value from 0 to 59:\n" );
+                printf( "Set seconds (0 to 59):\n" );
                 sec = readIntFromUart1( );
                 if ( sec > 59 )
                 {

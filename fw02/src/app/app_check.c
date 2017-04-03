@@ -13,12 +13,12 @@ APP_CHECK checkImportantParameters( void )
 {
     /* Check battery level at startup. */
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
-    printf( "APP_CHECK_BATTERY... " );
+    printf( "\tBattery level: " );
 #endif
     if ( false == isPowerBatteryGood( ) )
     {
-#if defined (USE_UART1_SERIAL_INTERFACE)
-        printf( "APP_CHECK_BATTERY_PB\n" );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+        printf( "pb\n" );
 #endif
         return APP_CHECK_BATTERY_PB;
     }
@@ -28,12 +28,12 @@ APP_CHECK checkImportantParameters( void )
 
     /* Check battery level at startup. */
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
-    printf( "APP_CHECK_VBAT... " );
+    printf( "\tVBat level: " );
 #endif
     if ( false == isPowerVbatGood( ) )
     {
 #if defined (USE_UART1_SERIAL_INTERFACE)
-        printf( "APP_CHECK_VBAT_PB\n" );
+        printf( "pb\n" );
 #endif
         //        return APP_CHECK_VBAT_PB;
     }
@@ -43,12 +43,12 @@ APP_CHECK checkImportantParameters( void )
 
     /* Check food level. */
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
-    printf( "APP_CHECK_FOOD_LEVEL... " );
+    printf( "\tFood level: " );
 #endif
     if ( false == isEnoughFood( ) )
     {
-#if defined (USE_UART1_SERIAL_INTERFACE)
-        printf( "APP_CHECK_FOOD_LEVEL_PB\n" );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+        printf( "pb\n" );
 #endif
         return APP_CHECK_FOOD_LEVEL_PB;
     }
@@ -58,12 +58,12 @@ APP_CHECK checkImportantParameters( void )
 
     /* Check RFID frequency. */
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
-    printf( "APP_CHECK_RFID_FREQ... " );
+    printf( "\tRFID frequency: " );
 #endif
     if ( false == isRfidFreqGood( ) )
     {
-#if defined (USE_UART1_SERIAL_INTERFACE)
-        printf( "APP_CHECK_RFID_FREQ_PB\n" );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+        printf( "pb\n" );
 #endif
         //        return APP_CHECK_RFID_FREQ_PB;
     }

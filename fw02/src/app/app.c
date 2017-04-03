@@ -139,9 +139,6 @@ void APP_Tasks( void )
             }
 
             chk = checkImportantParameters( );
-            //#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
-            //            printf( "Check done.\n" ); // all check done.
-            //#endif
             switch ( chk )
             {
                 case APP_CHECK_OK:
@@ -160,26 +157,27 @@ void APP_Tasks( void )
                     appData.state = APP_STATE_LOW_RFID_FREQUENCY;
                     break;
             }
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
-            printf( "Next APP_STATE num: %u\n", appData.state ); // all check done.
-#endif
+//#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+//            printf( "Next APP_STATE num: %u\n", appData.state ); // all check done.
+//#endif
 
             i2c_status = I2C1_PCA9622_SoftwareReset( ); /* Reset PCA9622 device */
 #if defined (USE_UART1_SERIAL_INTERFACE)
             print_I2C_message_status( i2c_status ); // I2C1_MESSAGE_STATUS
             //            printf( "\n" );
-            UART1_Write( '\n' );
+//            UART1_Write( '\n' );
+            printf( "\n" );
 #endif
 
             i2c_status = initAttractiveLeds( );
 #if defined (USE_UART1_SERIAL_INTERFACE)
             if ( i2c_status )
             {
-                printf( "Attractive LEDs initialized.\n" );
+                printf( "\tAttractive LEDs: ok\n" );
             }
             else
             {
-                printf( "Attractive LEDs initialize failed!\n" );
+                printf( "\tAttractive LEDs: pb\n" );
             }
 #endif
             break;
