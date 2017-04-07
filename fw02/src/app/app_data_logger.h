@@ -49,12 +49,18 @@ typedef struct
     int16_t battery_level[24][2];
     uint8_t numBatteryLevelStored;
      
+    int16_t rfid_freq[96][3];
+    uint8_t numRfidFreqStored;
+    
 } APP_DATA_LOG;
 
 bool dataLog( bool );
 bool setLogFileName( void );
 void GetTimestamp( FILEIO_TIMESTAMP * );
 void clearLogBuffer( void );
+
+FILEIO_RESULT logBatteryLevel( void );
+FILEIO_RESULT logRfidFreq( void );
 
 #endif /* APP_DATA_LOGGER_H */
 

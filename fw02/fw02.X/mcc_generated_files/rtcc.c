@@ -490,6 +490,18 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
 #endif 
                     appData.rtcc_alarm_action = RTCC_BATTERY_LEVEL_CHECK;
                 }
+                
+                /* RFID frequency */
+                if (( appData.current_time.tm_min == 0 || 
+                     appData.current_time.tm_min == 15 || 
+                     appData.current_time.tm_min == 30 || 
+                     appData.current_time.tm_min == 45) && appData.current_time.tm_sec == 45 )
+                {
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
+                    printf( "- RFID check\n" );
+#endif 
+                    appData.rtcc_alarm_action = RTCC_RFID_FREQ_CHECK;
+                }
 
             }
         }

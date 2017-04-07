@@ -38,7 +38,7 @@ void displayBootMessage( void )
 void APP_SerialDebugTasks( void )
 {
     uint16_t dc_pwm;
-    int i;
+    int i, j;
 
     if ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) )
     {
@@ -78,6 +78,7 @@ void APP_SerialDebugTasks( void )
                 printf( " u or U: display USB device status\n" );
                 printf( " v or V: set status of servomotor power command\n" );
                 printf( " w or W: toggle power command (CMD_ACC_PIR)\n\n" );
+                printf( " x or X: display RFID frequency buffer\n" );
 
             case '!':
                 displayBuildDateTime( );
@@ -518,9 +519,10 @@ void APP_SerialDebugTasks( void )
                 printf( "Battery level buffer:\n" );
                 for ( i = 0; i < 24; i++ )
                 {
-                    printf( "\t%d - %d\n",
+                    printf( "\t%02d - %04d - %2.3f\n",
                             appDataLog.battery_level[i][0],
-                            appDataLog.battery_level[i][1] );
+                            appDataLog.battery_level[i][1],
+                            appDataLog.battery_level[i][1] * BATTERY_VOLTAGE_FACTOR);
                 }
                 break;
                 /* -------------------------------------------------------------- */
@@ -680,7 +682,25 @@ void APP_SerialDebugTasks( void )
                 }
                 break;
                 /* -------------------------------------------------------------- */
-
+                
+            case 'x':
+            case 'X':
+                /* Display RFID frequency buffer  */
+                printf( "RFID frequency buffer:\n" );
+                for ( i = 0; i < 24; i++ )
+                {
+                    for (j = 0 ; j <4 ; j++) 
+                    {
+                        printf( "\t%02d - %02d - %06ld",
+                            appDataLog.rfid_freq[i*4+j][0],
+                            appDataLog.rfid_freq[i*4+j][1], 
+                            (long)appDataLog.rfid_freq[i*4+j][2]*10);
+                    }
+                    printf( "\n");
+                }
+                break;
+                /* -------------------------------------------------------------- */
+                
             default:
                 putchar( data_from_uart1 ); /* echo RX data if doesn't match */
                 break;

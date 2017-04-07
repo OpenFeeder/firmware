@@ -104,6 +104,7 @@ APP_DATA_RC appDataRc;
 APP_DATA_EVENT appDataEvent;
 APP_DATA_DOOR appDataDoor;
 
+
 /******************************************************************************
   Function:
     void APP_Tasks( void )
@@ -157,15 +158,15 @@ void APP_Tasks( void )
                     appData.state = APP_STATE_LOW_RFID_FREQUENCY;
                     break;
             }
-//#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
-//            printf( "Next APP_STATE num: %u\n", appData.state ); // all check done.
-//#endif
+            //#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+            //            printf( "Next APP_STATE num: %u\n", appData.state ); // all check done.
+            //#endif
 
             i2c_status = I2C1_PCA9622_SoftwareReset( ); /* Reset PCA9622 device */
 #if defined (USE_UART1_SERIAL_INTERFACE)
             print_I2C_message_status( i2c_status ); // I2C1_MESSAGE_STATUS
             //            printf( "\n" );
-//            UART1_Write( '\n' );
+            //            UART1_Write( '\n' );
             printf( "\n" );
 #endif
 
@@ -410,6 +411,20 @@ void APP_Tasks( void )
                     if ( false == flag )
                     {
                         appData.state = APP_STATE_LOW_BATTERY;
+                        break;
+                    }
+                }
+                if ( RTCC_RFID_FREQ_CHECK == appData.rtcc_alarm_action )
+                {
+                    flag = isRfidFreqGood( );
+                    appDataLog.rfid_freq[appDataLog.numRfidFreqStored][0] = appData.current_time.tm_hour;
+                    appDataLog.rfid_freq[appDataLog.numRfidFreqStored][1] = appData.current_time.tm_min;
+                    appDataLog.rfid_freq[appDataLog.numRfidFreqStored][2] = appData.rfid_rdyclk;
+                    ++appDataLog.numRfidFreqStored;
+
+                    if ( false == flag )
+                    {
+                        appData.state = APP_STATE_LOW_RFID_FREQUENCY;
                         break;
                     }
                 }
@@ -814,12 +829,32 @@ void APP_Tasks( void )
                         break;
                     }
                 }
+
+                if ( appDataLog.numBatteryLevelStored > 0 )
+                {
+                    setLedsStatusColor( LED_BLUE );
+                    if ( FILEIO_RESULT_FAILURE == logBatteryLevel( ) )
+                    {
+                        appData.state = APP_STATE_ERROR;
+                        break;
+                    }
+                }
+
+                if ( appDataLog.numRfidFreqStored > 0 )
+                {
+                    setLedsStatusColor( LED_BLUE );
+                    if ( FILEIO_RESULT_FAILURE == logRfidFreq( ) )
+                    {
+                        appData.state = APP_STATE_ERROR;
+                        break;
+                    }
+                }
+
             }
             else
             {
                 break;
             }
-            //            powerUsbRfidDisable();
 
             appData.state = APP_STATE_IDLE;
             break;
@@ -909,6 +944,16 @@ void APP_Tasks( void )
                         }
                     }
 
+                    if ( appDataLog.numRfidFreqStored > 0 )
+                    {
+                        setLedsStatusColor( LED_BLUE );
+                        if ( FILEIO_RESULT_FAILURE == logRfidFreq( ) )
+                        {
+                            appData.state = APP_STATE_ERROR;
+                            break;
+                        }
+                    }
+
                     powerUsbRfidDisable( );
                     CMD_VDD_APP_V_USB_SetLow( ); // --> powerUsbRfidDisable( );
                 }
@@ -920,8 +965,8 @@ void APP_Tasks( void )
 
             /* Turn status LED off */
             setLedsStatusColor( LEDS_OFF );
-            
-//            setDateTime( 17, 3, 27, 6, 29, 55 ); /* FIXME: Set date and time. */
+
+            //            setDateTime( 17, 3, 27, 6, 29, 55 ); /* FIXME: Set date and time. */
             Sleep( );
 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
@@ -942,7 +987,7 @@ void APP_Tasks( void )
 
             rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_SECOND );
 
-//            setDateTime( 17, 3, 27, 22, 22, 55 ); /* FIXME: Set date and time. */
+            //            setDateTime( 17, 3, 27, 22, 22, 55 ); /* FIXME: Set date and time. */
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
             printf( "Awaken from sleep mode!\n" );
@@ -1083,7 +1128,7 @@ void APP_Tasks( void )
                 printError( );
 #endif
                 rtcc_stop_alarm( );
-                
+
                 /* Close the door if it is opened */
                 if ( DOOR_CLOSED != appDataDoor.reward_door_status )
                 {
@@ -1096,7 +1141,7 @@ void APP_Tasks( void )
                     while ( DOOR_CLOSED != appDataDoor.reward_door_status );
                     servomotorPowerDisable( );
                 }
-                
+
                 /* Set peripherals Off. */
                 setAttractiveLedsOff( );
                 powerPIRDisable( );
@@ -1187,6 +1232,7 @@ void APP_Tasks( void )
     }
 }
 
+
 void APP_Initialize( void )
 {
     int i, j;
@@ -1262,6 +1308,15 @@ void APP_Initialize( void )
         }
     }
     appDataLog.numBatteryLevelStored = 0;
+
+    for ( i = 0; i < 96; ++i )
+    {
+        for ( j = 0; j < 3; ++j )
+        {
+            appDataLog.rfid_freq[i][j] = 0;
+        }
+    }
+    appDataLog.numRfidFreqStored = 0;
 
     appError.ledColor = LED_RED;
     appError.number = ERROR_NONE;

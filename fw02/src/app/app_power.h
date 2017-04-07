@@ -40,7 +40,6 @@ void getVBatLevel( void );
 void printVBatLevel( void );
 void getBatteryLevel( void );
 void printBatteryLevel( void );
-FILEIO_RESULT logBatteryLevel( void );
 
 #endif	/* APP_POWER_H */
 
