@@ -65,7 +65,7 @@ APP_CHECK checkImportantParameters( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
         printf( "pb\n" );
 #endif
-        return APP_CHECK_RFID_FREQ_PB;
+//        return APP_CHECK_RFID_FREQ_PB;
     }
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
     printf( "ok\n" );
