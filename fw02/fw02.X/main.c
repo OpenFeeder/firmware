@@ -241,6 +241,8 @@ int main( void )
         doLedsStatusBlink( LED_GREEN, 3, 83, 250 );
     }
 
+    TMR4_Start( );
+    
     /* Initialize the application. */
     APP_Initialize( );
 

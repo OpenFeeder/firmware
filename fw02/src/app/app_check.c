@@ -116,12 +116,7 @@ bool isEnoughFood( void )
     bool foodLevelOK;
 
     /* Check food level */
-    IRSensorEnable( );
-    setDelayMs( 400 );
-    while ( false == isDelayMsEnding( ) );
-
     foodLevelOK = ( 1 == BAR_IR2_OUT_GetValue( ) );
-    IRSensorDisable( );
 
     if ( false == foodLevelOK )
     {

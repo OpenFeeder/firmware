@@ -54,6 +54,21 @@ void __attribute__ ( ( interrupt, no_auto_psv ) ) _INT1Interrupt(void)
     EX_INT1_InterruptFlagClear();
 }
 /**
+  Interrupt Handler for EX_INT2 - INT2
+*/
+void __attribute__ ( ( interrupt, no_auto_psv ) ) _INT2Interrupt(void)
+{
+    //***User Area Begin->code: INT1 - External Interrupt 1***
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_IR)
+    printf( "_INT2Interrupt()\n" );
+#endif 
+    /* Event on infrared barrier sensor for detect if bird taking a reward. */
+    set_flag_ir2_sensor( );
+
+    //***User Area End->code: INT2 - External Interrupt 2***
+    EX_INT2_InterruptFlagClear();
+}
+/**
   Interrupt Handler for EX_INT0 - INT0
 */
 void __attribute__ ( ( interrupt, no_auto_psv ) ) _INT0Interrupt(void)
@@ -118,6 +133,7 @@ void __attribute__ ( ( interrupt, no_auto_psv ) ) _INT4Interrupt(void)
 
     Initializer for the following external interrupts
     INT1
+    INT2
     INT0
     INT3
     INT4
@@ -132,7 +148,14 @@ void EXT_INT_Initialize(void)
      ********/
     EX_INT1_InterruptFlagClear();   
     EX_INT1_PositiveEdgeSet();
-    EX_INT1_InterruptEnable();
+    /*******
+     * INT2
+     * Clear the interrupt flag
+     * Set the external interrupt edge detect
+     * Enable the interrupt, if enabled in the UI. 
+     ********/
+    EX_INT2_InterruptFlagClear();   
+    EX_INT2_NegativeEdgeSet();
     /*******
      * INT0
      * Clear the interrupt flag

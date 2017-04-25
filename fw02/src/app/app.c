@@ -158,15 +158,15 @@ void APP_Tasks( void )
                     appData.state = APP_STATE_LOW_RFID_FREQUENCY;
                     break;
             }
-            //#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
-            //            printf( "Next APP_STATE num: %u\n", appData.state ); // all check done.
-            //#endif
-
+            
+            if (appData.state != APP_STATE_CONFIGURE_SYSTEM)
+            {
+                break;
+            }
+            
             i2c_status = I2C1_PCA9622_SoftwareReset( ); /* Reset PCA9622 device */
 #if defined (USE_UART1_SERIAL_INTERFACE)
             print_I2C_message_status( i2c_status ); // I2C1_MESSAGE_STATUS
-            //            printf( "\n" );
-            //            UART1_Write( '\n' );
             printf( "\n" );
 #endif
 
@@ -246,7 +246,12 @@ void APP_Tasks( void )
                 powerPIREnable( );
                 EX_INT0_InterruptFlagClear( );
                 EX_INT0_InterruptEnable( );
-
+                
+                /* Enable IR barrier interruption for food level detection */
+                EX_INT2_InterruptEnable( );
+                EX_INT2_InterruptFlagClear( );            
+                clear_flag_ir2_sensor( );
+                
                 appData.state = APP_STATE_IDLE;
             }
             else
@@ -286,8 +291,27 @@ void APP_Tasks( void )
                     /* Timeout before going to sleep mode */
                     setDelayMs( appData.timeout_standby );
                 }
+                
+                clear_flag_ir2_sensor( );
+                
             }
 
+            // Check food level
+            if ( true == g_flag_ir2_sensor )
+            {
+                EX_INT2_InterruptDisable( );
+                clear_flag_ir2_sensor( );
+                strcpy( appError.message, "Not enough food" );
+                appError.currentLineNumber = __LINE__;
+                sprintf( appError.currentFileName, "%s", __FILE__ );
+                appError.number = ERROR_LOW_FOOD;
+                appError.ledColor = LED_PURPLE;
+        
+                appData.state = APP_STATE_LOW_FOOD_LEVEL;
+                break;
+                    
+            }
+            
             /* Check PIR SENSOR detected.
              *  - recording the time of detected of the bird
              *  - if true go to APP_STATE_ERROR
@@ -543,7 +567,6 @@ void APP_Tasks( void )
 #endif
                     if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number )
                     {
-                        //                        setAttractiveLedsOff( );
                         setAttractiveLedsNoColor( );
                         /* Delay before reactivate attractiveLEDs */
                         setDelayMs( appData.new_bird_delay );
@@ -564,7 +587,6 @@ void APP_Tasks( void )
                 break;
             }
 
-            //            printf("%d - %d\n", g_rfid_activate, g_timeout_reading_pit_tag);
             /* Test if delay detect PIT Tags in ending. (Xx 160 ms) */
             if ( 0 == g_timeout_reading_pit_tag ) // && (Timeout_Detecting_RFID_Tag != 0)
             {
@@ -638,17 +660,14 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_WAITING_CATCH_REWARD\n" );
 #endif
-                IRSensorEnable( );
                 EX_INT1_PositiveEdgeSet( );
-
-                setDelayMs( 60 );
-                while ( false == isDelayMsEnding( ) );
-                //    EX_INT1_InterruptFlagClear( );
-                //    EX_INT1_InterruptEnable( );
-
+                EX_INT1_InterruptFlagClear( );
+                EX_INT1_InterruptEnable();
+                clear_flag_ir1_sensor( );
+                
                 /* Timeout before door closing if reward is not taken */
                 setDelayMs( appData.timeout_taking_reward );
-                clear_flag_ir1_sensor( );
+                
                 appData.bird_is_taking_reward = false;
             }
 
@@ -661,18 +680,23 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE)
                 printf( "\tTaking reward detected.\n" );
 #endif
-                g_flag_ir1_sensor = false;
                 appData.bird_is_taking_reward = true;
+                clear_flag_ir1_sensor( );
                 break;
             }
 
             /* low --> Breaking of the infrared barrier */
-            if ( ( 0 == BAR_IR1_OUT_GetValue( ) ) && ( true == appData.bird_is_taking_reward ) )
+            if ( ( true == g_flag_ir1_sensor ) && ( true == appData.bird_is_taking_reward ) )
+//            if ( ( 0 == BAR_IR1_OUT_GetValue( ) ) && ( true == appData.bird_is_taking_reward ) )
             {
 #if defined (USE_UART1_SERIAL_INTERFACE)
                 printf( "\tReward taken.\n" );
 #endif
-                IRSensorDisable( );
+                EX_INT1_PositiveEdgeSet( );
+                EX_INT1_InterruptFlagClear( );
+                EX_INT1_InterruptDisable();
+                clear_flag_ir1_sensor( );
+                
                 appData.bird_is_taking_reward = false;
                 appDataLog.is_reward_taken = true;
                 appData.state = APP_STATE_CLOSING_DOOR;
@@ -691,7 +715,12 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE)
                 printf( "\tReward timeout.\n" );
 #endif
-                IRSensorDisable( );
+                
+                EX_INT1_PositiveEdgeSet( );
+                EX_INT1_InterruptFlagClear( );
+                EX_INT1_InterruptDisable();
+                clear_flag_ir1_sensor( );
+                
                 appData.state = APP_STATE_CLOSING_DOOR;
             }
             break;
@@ -1162,6 +1191,7 @@ void APP_Tasks( void )
             }
 
             /* FIXME : Reset every 5 sec */
+            /* Reset the system if non critical error occurred */
             if ( appError.number > ERROR_LOW_VBAT )
             {
                 if ( isDelayMsEnding( ) )

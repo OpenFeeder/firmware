@@ -9,47 +9,27 @@
 #include "ir_sensor.h"
 
 volatile bool g_flag_ir1_sensor = false;
+volatile bool g_flag_ir2_sensor = false;
 
 void IRSensor_Initialize( void )
 {
-    IRSensorDisable( );
+    
+    IRSensorEnable( );
+
 }
 
 void IRSensorEnable( void )
 {
-    // http://www.farnell.com/datasheets/2050085.pdf
-    // 400 us IR detected
-    /* Clear the interrupt flag and re-enable the interrupt */
-    VDD_IR_ON( ); /* powering IR command enable. */
-    //    Nop( );
-    //    Nop( );
-    //    Nop( );
-    //    Nop( );
-    //    Nop( );
-    //    EX_INT1_InterruptFlagClear( );
-    //    EX_INT1_InterruptEnable( );
-    //    Nop( );
-    //    Nop( );
-    //    Nop( );
-    //    Nop( );
-    //    Nop( );
-    TMR4_Start( );
-    setDelayMs( 200 );
-    while ( false == isDelayMsEnding( ) );
-    EX_INT1_InterruptFlagClear( );
-    EX_INT1_InterruptEnable( );
 
-    g_flag_ir1_sensor = false;
+    VDD_IR_ON( ); /* IR power enable. */
+
 }
 
 void IRSensorDisable( void )
 {
-    /* Clear the interrupt flag and re-enable the interrupt */
-    EX_INT1_InterruptDisable( );
-    VDD_IR_OFF( ); /* powering IR command disable. */
-    TMR4_Stop( ); /* en commun avec l'EM4095 */
-    _LATC3 = 1; // couper l'alimentation PWM de la LED IR en se mettant à l'état haut
-    clear_ir1_sensor_detected( );
+
+    VDD_IR_OFF( ); /* IR power disable. */
+
 }
 
 

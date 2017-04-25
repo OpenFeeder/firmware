@@ -57,11 +57,10 @@ bool initAttractiveLeds( void )
     if ( I2C1_MESSAGE_COMPLETE != i2c_status )
     {
         return false;
-        //printf( "Attractive LEDs initialize failed!\n" );
     }
 
     return true;
-    //printf( "Attractive LEDs initialized.\n" );
+
 }
 
 void setAttractiveLedsOff( void )
@@ -85,15 +84,12 @@ void setAttractiveLedsOn( void )
 void setAttractiveLedsNoColor( void )
 {
     /* Set color for red attractive LEDs. */
-    //    OC1_SingleCompareValueSet(appDataAttractiveLeds.red[appDataAttractiveLeds.current_color_index]);
     setAttractiveRedLedsColor( 0 );
 
-    //    /* Set color for green attractive LEDs. */
-    //    OC2_SingleCompareValueSet(appDataAttractiveLeds.green[appDataAttractiveLeds.current_color_index]);
+    /* Set color for green attractive LEDs. */
     setAttractiveGreenLedsColor( 0 );
 
-    //    /* Set color for blue attractive LEDs. */
-    //    OC3_SingleCompareValueSet(appDataAttractiveLeds.blue[appDataAttractiveLeds.current_color_index]);
+    /* Set color for blue attractive LEDs. */
     setAttractiveBlueLedsColor( 0 );
 
     appDataAttractiveLeds.status = ATTRACTIVE_LEDS_ON;
@@ -103,15 +99,12 @@ void setAttractiveLedsNoColor( void )
 void setAttractiveLedsColor( void )
 {
     /* Set color for red attractive LEDs. */
-    //    OC1_SingleCompareValueSet(appDataAttractiveLeds.red[appDataAttractiveLeds.current_color_index]);
     setAttractiveRedLedsColor( appDataAttractiveLeds.red[appDataAttractiveLeds.current_color_index] );
 
-    //    /* Set color for green attractive LEDs. */
-    //    OC2_SingleCompareValueSet(appDataAttractiveLeds.green[appDataAttractiveLeds.current_color_index]);
+    /* Set color for green attractive LEDs. */
     setAttractiveGreenLedsColor( appDataAttractiveLeds.green[appDataAttractiveLeds.current_color_index] );
 
-    //    /* Set color for blue attractive LEDs. */
-    //    OC3_SingleCompareValueSet(appDataAttractiveLeds.blue[appDataAttractiveLeds.current_color_index]);
+    /* Set color for blue attractive LEDs. */
     setAttractiveBlueLedsColor( appDataAttractiveLeds.blue[appDataAttractiveLeds.current_color_index] );
 
     appDataAttractiveLeds.status = ATTRACTIVE_LEDS_ON;

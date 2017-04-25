@@ -74,9 +74,6 @@ void INTERRUPT_Initialize (void)
     //    INT4I: INT4 - External Interrupt 4
     //    Priority: 1
         IPC13bits.INT4IP = 1;
-    //    INT1I: INT1 - External Interrupt 1
-    //    Priority: 3
-        IPC5bits.INT1IP = 3;
     //    MICI: MI2C1 - I2C1 Master Events
     //    Priority: 5
         IPC4bits.MI2C1IP = 5;
