@@ -31,7 +31,6 @@
 #include "app.h"
 
 volatile uint16_t counter_positive_edge_rdyclk = 0;
-extern volatile bool g_new_value_of_em4095_rdyclk_measurement;
 
 //***User Area End->code: Add External Interrupt handler specific headers
 
@@ -48,7 +47,7 @@ void __attribute__ ( ( interrupt, no_auto_psv ) ) _INT1Interrupt(void)
     printf( "_INT1Interrupt()\n" );
 #endif 
     /* Event on infrared barrier sensor for detect if bird taking a reward. */
-    set_flag_ir1_sensor( );
+    set_ir1_sensor( );
 
     //***User Area End->code: INT1 - External Interrupt 1***
     EX_INT1_InterruptFlagClear();
@@ -60,10 +59,8 @@ void __attribute__ ( ( interrupt, no_auto_psv ) ) _INT2Interrupt(void)
 {
     //***User Area Begin->code: INT1 - External Interrupt 1***
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_IR)
-    printf( "_INT2Interrupt()\n" );
+        printf( "_INT2Interrupt()\n" );    
 #endif 
-    /* Event on infrared barrier sensor for detect if bird taking a reward. */
-    set_flag_ir2_sensor( );
 
     //***User Area End->code: INT2 - External Interrupt 2***
     EX_INT2_InterruptFlagClear();
@@ -89,7 +86,7 @@ void __attribute__ ( ( interrupt, no_auto_psv ) ) _INT0Interrupt(void)
 void __attribute__ ( ( interrupt, no_auto_psv ) ) _INT3Interrupt(void)
 {
     //***User Area Begin->code: INT3 - External Interrupt 3***
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RFID)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RFID) 
     printf( "_INT3Interrupt()\n" );
 #endif 
     /* Mesuring RDY/CLK signal frequency. */

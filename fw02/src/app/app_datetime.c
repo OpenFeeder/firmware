@@ -36,6 +36,8 @@ void getDateTime( struct tm *currentTime )
 
 void printCurrentDate( void )
 {
+    // Print date and time on serial terminal (PC)
+    
     struct tm current_time;
 
     /* Get current Time. */
@@ -44,7 +46,6 @@ void printCurrentDate( void )
         Nop( );
     }
 
-    // === print date and time on serial terminal (PC)
     printf( "%02u/%02u/%02u %02u:%02u:%02u",
             current_time.tm_mday,
             current_time.tm_mon,

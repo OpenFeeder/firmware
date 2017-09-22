@@ -30,7 +30,7 @@
 
 //#define DISPLAY_USB_INFO          // uncomment to display USB information
 //#define DISPLAY_LOG_INFO 
-#define DISPLAY_CHECK_INFO 
+//#define DISPLAY_CHECK_INFO 
 
 //#define DISPLAY_ISR_RTCC          // uncomment to display interruption event
 //#define DISPLAY_ISR_IR              // uncomment to display interruption event
@@ -47,6 +47,7 @@
 
 //#define PATH_HARDWARE_IR_SENSOR_DISABLE // FIXME: comment for normal use of OpenFeeder
 
+//#define TEST_RTCC_SLEEP_WAKEUP
 
 // *****************************************************************************
 // *****************************************************************************
@@ -55,6 +56,7 @@
 // *****************************************************************************
 
 #include "mcc.h"
+#include "stdio.h"
 
 #include "delay.h"
 #include "em4095.h"
@@ -136,7 +138,7 @@ typedef enum
 
     APP_STATE_REMOTE_CONTROL,
     APP_STATE_FLUSH_DATA_TO_USB,
-    APP_STATE_LOW_BATTERY,
+    APP_STATE_LOW_BATTERY_LEVEL,
     APP_STATE_LOW_VBAT,
     APP_STATE_LOW_FOOD_LEVEL,
     APP_STATE_LOW_RFID_FREQUENCY,
@@ -241,7 +243,7 @@ typedef struct
 
     APP_STATES rc_previous_state;
 
-    uint16_t new_bird_delay;
+    uint16_t punishment_delay;
 
 } APP_DATA;
 

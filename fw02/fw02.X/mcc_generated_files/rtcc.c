@@ -71,10 +71,11 @@ static uint8_t ConvertBCDToHex(uint8_t bcdvalue);
 void RTCC_Initialize(void)
 {
 
+    // Clear WRLOCK to modify RTCC as needed
+    __builtin_write_RTCC_WRLOCK();
+    
+    // Disable RTCC
     RTCCON1Lbits.RTCEN = 0;
-
-   __builtin_write_RTCC_WRLOCK();
-
 
    if(!RTCCTimeInitialized())
     {
@@ -89,10 +90,10 @@ void RTCC_Initialize(void)
 //       TIMEL = 0x3700;    // seconds
     }
     // set 2017-02-06 22-23-31
-   ALMDATEH = 0x1702;    // Year/Month
-   ALMDATEL = 0x601;    // Date/Wday
-   ALMTIMEH = 0x2223;    // hours/minutes
-   ALMTIMEL = 0x3100;    // seconds
+    ALMDATEH = 0x1702;    // Year/Month
+    ALMDATEL = 0x601;    // Date/Wday
+    ALMTIMEH = 0x2223;    // hours/minutes
+    ALMTIMEL = 0x3100;    // seconds
     // AMASK Every Day; ALMRPT 0; CHIME disabled; ALRMEN enabled; 
     RTCCON1H = 0x8600;
 
@@ -103,8 +104,8 @@ void RTCC_Initialize(void)
     // PWCSTAB 0; PWCSAMP 0; 
     RTCCON3L = 0x0000;
 
-   // RTCEN enabled; OUTSEL Seconds Clock; PWCPOE disabled; TSBEN disabled; PWCEN disabled; WRLOCK enabled; PWCPOL disabled; TSAEN disabled; RTCOE enabled; 
-   RTCCON1L = 0x8B90; 
+    // RTCEN enabled; OUTSEL Seconds Clock; PWCPOE disabled; TSBEN disabled; PWCEN disabled; WRLOCK enabled; PWCPOL disabled; TSAEN disabled; RTCOE enabled; 
+    RTCCON1L = 0x8B90; 
 
    RTCC_Lock();
 
@@ -128,7 +129,6 @@ bool RTCC_TimeGet(struct tm *currentTime)
     if(RTCSTATLbits.SYNC){
         return false;
     }
-
 
     __builtin_write_RTCC_WRLOCK();
 
@@ -155,25 +155,33 @@ bool RTCC_TimeGet(struct tm *currentTime)
 void RTCC_TimeSet(struct tm *initialTime)
 {
 
-  __builtin_write_RTCC_WRLOCK();
+    // Clear WRLOCK to modify RTCC as needed
+    __builtin_write_RTCC_WRLOCK();
 
+    // Disable RTCC
     RTCCON1Lbits.RTCEN = 0;
 
+    // Disable RTCC interrupt
     IFS3bits.RTCIF = false;
     IEC3bits.RTCIE = 0;
 
-    // set RTCC initial time
-   DATEH = (ConvertHexToBCD(initialTime->tm_year) << 8) | ConvertHexToBCD(initialTime->tm_mon) ;  // YEAR/MONTH-1
-   DATEL = (ConvertHexToBCD(initialTime->tm_mday) << 8) | ConvertHexToBCD(initialTime->tm_wday) ;  // /DAY-1/WEEKDAY
-   TIMEH = (ConvertHexToBCD(initialTime->tm_hour) << 8)  | ConvertHexToBCD(initialTime->tm_min); // /HOURS/MINUTES
-   TIMEL = (ConvertHexToBCD(initialTime->tm_sec) << 8) ;   // SECOND
+    // Set RTCC initial time
+    DATEH = (ConvertHexToBCD(initialTime->tm_year) << 8) | ConvertHexToBCD(initialTime->tm_mon) ;  // YEAR/MONTH-1
+    DATEL = (ConvertHexToBCD(initialTime->tm_mday) << 8) | ConvertHexToBCD(initialTime->tm_wday) ;  // /DAY-1/WEEKDAY
+    TIMEH = (ConvertHexToBCD(initialTime->tm_hour) << 8)  | ConvertHexToBCD(initialTime->tm_min); // /HOURS/MINUTES
+    TIMEL = (ConvertHexToBCD(initialTime->tm_sec) << 8) ;   // SECOND
 
-    // Enable RTCC, clear RTCWREN         
+    // Enable RTCC        
     RTCCON1Lbits.RTCEN = 1;
-   RTCC_Lock();
-
-    //Enable RTCC interrupt
+    // Enable RTCC interrupt
     IEC3bits.RTCIE = 1;
+    
+    // Lock the RTCC registers
+    RTCCON1Lbits.WRLOCK = 1; 
+    
+//    RTCC_Lock();
+    
+    
 }
 
 bool RTCC_BCDTimeGet(bcdTime_t *currentTime)
@@ -429,25 +437,28 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
             {
 
                 /* Attractive LEDs on/off */
-                if ( ( appData.current_time.tm_hour * 60 + appData.current_time.tm_min ) >= ( appDataAttractiveLeds.wake_up_time.tm_hour * 60 + appDataAttractiveLeds.wake_up_time.tm_min ) &&
-                     ( appData.current_time.tm_hour * 60 + appData.current_time.tm_min )< ( appDataAttractiveLeds.sleep_time.tm_hour * 60 + appDataAttractiveLeds.sleep_time.tm_min ) )
+                if (true == appData.flags.bit_value.attractive_leds_status)
+                {
+                    if ( ( appData.current_time.tm_hour * 60 + appData.current_time.tm_min ) >= ( appDataAttractiveLeds.wake_up_time.tm_hour * 60 + appDataAttractiveLeds.wake_up_time.tm_min ) &&
+                         ( appData.current_time.tm_hour * 60 + appData.current_time.tm_min )< ( appDataAttractiveLeds.sleep_time.tm_hour * 60 + appDataAttractiveLeds.sleep_time.tm_min ) )
 
-                {
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
-                    printf( "- LEDs on\n" );
-#endif 
-                    appData.rtcc_alarm_action = RTCC_ALARM_SET_ATTRACTIVE_LEDS_ON;
-                }
-                else
-                {
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
-                    printf( "- LEDs off\n" );
-#endif 
-                    appData.rtcc_alarm_action = RTCC_ALARM_SET_ATTRACTIVE_LEDS_OFF;
+                    {
+    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
+                        printf( "- LEDs on\n" );
+    #endif 
+                        appData.rtcc_alarm_action = RTCC_ALARM_SET_ATTRACTIVE_LEDS_ON;
+                    }
+                    else
+                    {
+    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
+                        printf( "- LEDs off\n" );
+    #endif 
+                        appData.rtcc_alarm_action = RTCC_ALARM_SET_ATTRACTIVE_LEDS_OFF;
+                    }
                 }
 
                 /* Door open/close */
-                if ( 1 == appDataDoor.remain_open )
+                if ( 0 == appDataDoor.remain_open )
                 {
 
                     if ( ( appData.current_time.tm_hour * 60 + appData.current_time.tm_min ) >= ( appDataDoor.open_time.tm_hour * 60 + appDataDoor.open_time.tm_min ) &&
@@ -489,6 +500,15 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
                     printf( "- Battery check\n" );
 #endif 
                     appData.rtcc_alarm_action = RTCC_BATTERY_LEVEL_CHECK;
+                }
+                
+                /* Food level */
+                if ( appData.current_time.tm_min == 5 && appData.current_time.tm_sec == 30 )
+                {
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
+                    printf( "- Food check\n" );
+#endif 
+                    appData.rtcc_alarm_action = RTCC_FOOD_LEVEL_CHECK;
                 }
                 
                 /* RFID frequency */

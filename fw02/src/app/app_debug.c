@@ -55,7 +55,7 @@ void APP_SerialDebugTasks( void )
                 printf( " a or A: analog measure of the servomotor position, battery voltage and VBAT voltage\n" );
                 printf( " b or B: set blue color value of RGB attractive LEDs\n" );
                 printf( " c or C: close reward door\n" );
-                printf( " d or D: display data logger buffer\n" );
+                printf( " d or D: display internal buffers\n" );
                 printf( " e or E: measuring RDY/CLK period of EM4095\n" );
                 printf( " f or F: display configuration parameters (CONFIG.INI)\n" );
                 printf( " g or G: set green color value of RGB attractive LEDs\n" );
@@ -68,17 +68,22 @@ void APP_SerialDebugTasks( void )
                 printf( "\t> 1: initialize the PCA9622 device\n" );
                 printf( "\t> 2: Toggle Output Enable (OE) pin\n" );
                 printf( "\t> 3: Toggle LED D16 color green or red\n" );
-                //                printf( " n or N: \n" );
+                printf( " n or N: NOT AFFECTED\n" );
                 printf( " o or O: open reward door\n" );
                 printf( " p or P: change servomotor position\n" );
-                printf( " q or Q: display battery level buffer\n" );
+                printf( " q or Q: NOT AFFECTED\n" );
                 printf( " r or R: set red color value of RGB attractive LEDs\n" );
                 printf( " s or S: set RTCC module date and time value\n" );
                 printf( " t or T: display date and time from RTCC module\n" );
                 printf( " u or U: display USB device status\n" );
                 printf( " v or V: set status of servomotor power command\n" );
-                printf( " w or W: toggle power command (CMD_ACC_PIR)\n\n" );
-                printf( " x or X: display RFID frequency buffer\n" );
+                printf( " w or W: toggle power command (CMD_ACC_PIR)\n" );
+                printf( " x or X: display external interrupt and timers states\n" );
+                printf( " y or Y: display all commands values\n");
+                printf( " z or Z: check important parameters\n" );
+                
+                
+                break;
 
             case '!':
                 displayBuildDateTime( );
@@ -89,30 +94,16 @@ void APP_SerialDebugTasks( void )
             {
                 /* analogic measure of the current position of the servomotor. */
                 uint16_t analog_measure;
-                //                uint16_t battery_measuring_analog;
-                //                uint16_t i;
-                //                ADC1_ChannelSelect( ADC1_CHANNEL_MA_SERVO );
-                //                ADC1_Start( );
-                //                for ( i = 0; i < 1000; i++ ); /* Provide Delay */
-                //                ADC1_Stop( );
-                //                while ( !ADC1_IsConversionComplete( ) )
-                //                {
-                //                    putchar( '.' ); // FIXME: Add for debug... ==> do only on time
-                //                    ADC1_Tasks( );
-                //                }
-                //                servomotor_position_analog = ADC1_ConversionResultGet( );
                 analog_measure = getADC1value( ADC1_CHANNEL_MA_SERVO );
 
-                /* Mesure with jumper closed
-                 * from 3904 to 4078 --> ~4060
-                 */
+                /* Mesure with jumper closed from 3904 to 4078 --> ~4060 */
                 printf( "servo_position_analog = %u\n", analog_measure );
 
-                //getBatteryLevel( );
+                /* Battery level */
                 appData.battery_level = getADC1value( ADC1_CHANNEL_MA_12V );
                 printBatteryLevel( );
 
-                //getVBatLevel( );
+                /* VBat level */
                 appData.vbat_level = getADC1value( ADC1_CHANNEL_AVSS );
                 Nop( );
                 Nop( );
@@ -120,11 +111,14 @@ void APP_SerialDebugTasks( void )
                 appData.vbat_level = getADC1value( ADC1_CHANNEL_VBAT_2 );
                 printVBatLevel( );
 
+                /* Light level */
                 appData.light_level = getADC1value( ADC1_CHANNEL_MA_LIGHT );
                 printf( "Light level: (%u)\n", appData.light_level );
 
+                /* CTMU */
                 analog_measure = getADC1value( ADC1_CHANNEL_CTMU_TEMPERATURE_SENSOR_INPUT );
                 printf( "CTMU temperature sensor: (%u)\n", analog_measure );
+                
                 break;
             }
                 /* -------------------------------------------------------------- */
@@ -154,7 +148,6 @@ void APP_SerialDebugTasks( void )
             case 'c':
             case 'C':
                 /* Close reward door */
-                //                if ( CMD_VCC_SERVO_GetValue( ) == 0 )
                 if ( false == isPowerServoEnable( ) )
                 {
                     servomotorPowerEnable( );
@@ -192,7 +185,7 @@ void APP_SerialDebugTasks( void )
 
             case 'd':
             case 'D':
-                /* Display current state of the datalogger buffer. */
+                /* Display datalogger buffers. */
                 printf( "Data logger buffer:\n" );
                 if ( appDataLog.nCharBuffer > 0 )
                 {
@@ -201,6 +194,28 @@ void APP_SerialDebugTasks( void )
                 else
                 {
                     printf( "<empty buffer>\n" );
+                }
+                /* Display battery level buffer  */
+                printf( "\nBattery level buffer:\n" );
+                for ( i = 0; i < 24; i++ )
+                {
+                    printf( "\t%02d - %04d - %2.3f\n",
+                            appDataLog.battery_level[i][0],
+                            appDataLog.battery_level[i][1],
+                            appDataLog.battery_level[i][1] * BATTERY_VOLTAGE_FACTOR);
+                }
+                /* Display RFID frequency buffer  */
+                printf( "\nRFID frequency buffer:\n" );
+                for ( i = 0; i < 24; i++ )
+                {
+                    for (j = 0 ; j <4 ; j++) 
+                    {
+                        printf( "\t%02d - %02d - %06ld",
+                            appDataLog.rfid_freq[i*4+j][0],
+                            appDataLog.rfid_freq[i*4+j][1], 
+                            (long)appDataLog.rfid_freq[i*4+j][2]*10);
+                    }
+                    printf( "\n");
                 }
                 break;
                 /* -------------------------------------------------------------- */
@@ -265,18 +280,9 @@ void APP_SerialDebugTasks( void )
             case 'I':
                 /* Enable IR */
                 IRSensorEnable( );
-                //                CMD_VCC_IR_Toggle( ); /* Change IR command setting. */
-                //                Nop();
-                //                Nop();
-                //                Nop();
-                //                if ( CMD_VCC_IR_GetValue( ) )
-                //                {
-                //                    printf( "IR command disable, mode low power.\n" );
-                //                }
-                //                else
-                //                {
+                setDelayMs( 250 ); // TODO: adjust delay according to the datasheet
+                while ( false == isDelayMsEnding( ) );
                 printf( "IR command enable, detecting mode.\n" );
-                //                }
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -455,7 +461,6 @@ void APP_SerialDebugTasks( void )
             case 'o':
             case 'O':
                 /* Open reward door */
-                //                if ( CMD_VCC_SERVO_GetValue( ) == 0 )
                 if ( false == isPowerServoEnable( ) )
                 {
                     servomotorPowerEnable( );
@@ -481,7 +486,6 @@ void APP_SerialDebugTasks( void )
                  * HS-322HD: 600 us < servo_position < 2400 us, flexible nylon noise --> Ok
                  * PARRALAX: 600 us < servo_position < 2400 us (Product ID: 900-00005), sound gear 
                  */
-                // printf( "Set servomotor position, enter a value from 500 to 2500:\n" );
                 printf( "Set servomotor position, enter a value from %u to %u:\n", appDataServo.ton_min, appDataServo.ton_max );
 
                 /* Read uint16_t from terminal. */
@@ -515,15 +519,7 @@ void APP_SerialDebugTasks( void )
 
             case 'q':
             case 'Q':
-                /* Display battery level buffer  */
-                printf( "Battery level buffer:\n" );
-                for ( i = 0; i < 24; i++ )
-                {
-                    printf( "\t%02d - %04d - %2.3f\n",
-                            appDataLog.battery_level[i][0],
-                            appDataLog.battery_level[i][1],
-                            appDataLog.battery_level[i][1] * BATTERY_VOLTAGE_FACTOR);
-                }
+                
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -547,25 +543,6 @@ void APP_SerialDebugTasks( void )
 
                 setLedsStatusColor( LEDS_OFF );
 
-                //                g_rfid_activate ^= 1; // Toggle state "RFID"
-                //                Nop( );
-                //                Nop( );
-                //                Nop( );
-                //                if ( true == g_rfid_activate )
-                //                {
-                //                    appDataUsb.key_is_nedded = false;
-                //                    powerUsbRfidEnable( );
-                //                    //RFID_Enable( );
-                //                    EM4095_SHD_ENABLE( );
-                //                    printf( "RFID enable.\n" );
-                //                }
-                //                else
-                //                {
-                //                    powerUsbRfidDisable( );
-                //                    //RFID_Disable( );
-                //                    EM4095_SHD_DISABLE( );
-                //                    printf( "RFID disable.\n" );
-                //                }
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -646,7 +623,6 @@ void APP_SerialDebugTasks( void )
             case 'V':
                 printf( "%d\n", appDataDoor.reward_door_status );
                 /* Set status of servomotor power command. */
-                //CMD_VCC_SERVO_Toggle( ); /* Change servomotor command setting. */
                 appDataServo.cmd_vcc_servo_state ^= 1; // Toggle state "CMD_VCC_SERVO"
                 Nop( );
                 Nop( );
@@ -685,22 +661,80 @@ void APP_SerialDebugTasks( void )
                 
             case 'x':
             case 'X':
-                /* Display RFID frequency buffer  */
-                printf( "RFID frequency buffer:\n" );
-                for ( i = 0; i < 24; i++ )
+                /* Display external interrupt and timers states */
+                printf("External interrupt states\n");
+                printf("\tINT0: %d\n", IEC0bits.INT0IE);
+                printf("\tINT1: %d\n", IEC1bits.INT1IE);
+                printf("\tINT2: %d\n", IEC1bits.INT2IE);
+                printf("\tINT3: %d\n", IEC3bits.INT3IE);
+                printf("\tINT4: %d\n", IEC3bits.INT4IE);
+                printf("Timers\n");
+                printf("\tTimer2: %d\n", T2CONbits.TON);
+                printf("\tTimer3: %d\n", T3CONbits.TON);
+                printf("\tTimer4: %d\n", T4CONbits.TON);
+                break;
+                /* -------------------------------------------------------------- */
+            
+            case 'y':
+            case 'Y':
+                /* Display all commands values */
+                if ( CMD_VDD_APP_V_USB_GetValue( ) == 0 )
                 {
-                    for (j = 0 ; j <4 ; j++) 
-                    {
-                        printf( "\t%02d - %02d - %06ld",
-                            appDataLog.rfid_freq[i*4+j][0],
-                            appDataLog.rfid_freq[i*4+j][1], 
-                            (long)appDataLog.rfid_freq[i*4+j][2]*10);
-                    }
-                    printf( "\n");
+                    printf("VDD RFID/USB: off\n");
+                }
+                else
+                {
+                    printf("VDD RFID/USB: on\n");
+                }
+                if ( CMD_VCC_IR_GetValue( ) == 1 )
+                {
+                    printf("VDD IR: off\n");
+                }
+                else
+                {
+                    printf("VDD IR: on\n");
                 }
                 break;
                 /* -------------------------------------------------------------- */
                 
+            case 'z':
+            case 'Z':
+                /* Check important parameters */
+                printf("Important parameters\n");
+                if (true==isPowerBatteryGood( ))
+                {
+                    printf("\tBattery OK\n");
+                }
+                else
+                {
+                    printf("\tBattery PB\n");
+                }
+                if (true==isPowerVbatGood( ))
+                {
+                    printf("\tVbat OK\n");
+                }
+                else
+                {
+                    printf("\tVbat PB\n");
+                }
+                if (true==isEnoughFood( ))
+                {
+                    printf("\tFood OK\n");
+                }
+                else
+                {
+                    printf("\tFood PB\n");
+                }
+                if (true==isRfidFreqGood( ))
+                {
+                    printf("\tRFID OK\n");
+                }
+                else
+                {
+                    printf("\tRFID PB\n");                    
+                }                   
+                break;
+                /* -------------------------------------------------------------- */    
             default:
                 putchar( data_from_uart1 ); /* echo RX data if doesn't match */
                 break;

@@ -65,7 +65,7 @@ APP_CHECK checkImportantParameters( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
         printf( "pb\n" );
 #endif
-//        return APP_CHECK_RFID_FREQ_PB;
+        return APP_CHECK_RFID_FREQ_PB;
     }
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
     printf( "ok\n" );
@@ -114,7 +114,16 @@ bool isPowerVbatGood( void )
 bool isEnoughFood( void )
 {
     bool foodLevelOK;
-
+    bool flag = false;
+    
+    if ( CMD_VCC_IR_GetValue( ) == 1 )
+    {
+        flag = true;
+        IRSensorEnable( );
+        setDelayMs( 250 ); // TODO: adjust delay according to the datasheet
+        while ( false == isDelayMsEnding( ) );
+    }
+        
     /* Check food level */
     foodLevelOK = ( 1 == BAR_IR2_OUT_GetValue( ) );
 
@@ -127,6 +136,11 @@ bool isEnoughFood( void )
         appError.ledColor = LED_PURPLE;
     }
 
+    if ( true == flag )
+    {
+        IRSensorDisable( );
+    }
+    
     return foodLevelOK;
 }
 
@@ -135,9 +149,6 @@ bool isRfidFreqGood( void )
     bool rfidFreqOK;
 
     /* Check food level */
-    measureRfidFreq( );
-    setDelayMs( 400 );
-    while ( false == isDelayMsEnding( ) );
     measureRfidFreq( );
 
     rfidFreqOK = appData.rfid_rdyclk > MIN_RDYCLK_FREQ;

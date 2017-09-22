@@ -17,6 +17,7 @@
 
 volatile uint16_t g_rdyclk_count_in_10ms; /* variable to display the number of positive edge counter on RDY/CLK in (10 ms ! --> 20 ms) */ // FIXME: add to appData ?
 volatile uint16_t g_timeout_x20ms;
+volatile uint16_t g_timeout_standby_x20ms;
 volatile uint16_t g_timeout_em4095_x20ms;
 volatile uint16_t g_timeout_leds_status_x20ms;
 volatile uint8_t g_timeout_taking_reward;
@@ -114,6 +115,11 @@ void TMR3_CallBack( void )
     if ( g_timeout_em4095_x20ms )
     {
         --g_timeout_em4095_x20ms;
+    }
+    
+    if ( g_timeout_standby_x20ms )
+    {
+        --g_timeout_standby_x20ms;
     }
 
     if ( g_timeout_leds_status_x20ms )

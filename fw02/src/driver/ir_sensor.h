@@ -17,15 +17,13 @@
 
 /* Taking reward detected. */
 #define is_ir1_sensor_detected( ) g_flag_ir1_sensor
-#define clear_ir1_sensor_detected( ) {g_flag_ir1_sensor = false;} /* Clear the reward detection sensor. */
+#define set_ir1_sensor( ) { g_flag_ir1_sensor = true; }
+#define clear_ir1_sensor( ) {g_flag_ir1_sensor = false;} /* Clear the reward detection sensor. */
 
-#define set_flag_ir1_sensor( ) { g_flag_ir1_sensor = true; }
-#define clear_flag_ir1_sensor( ) { g_flag_ir1_sensor = false; }
-#define set_flag_ir2_sensor( ) { g_flag_ir2_sensor = true; }
-#define clear_flag_ir2_sensor( ) { g_flag_ir2_sensor = false; }
+
+//#define clear_flag_ir1_sensor( ) { g_flag_ir1_sensor = false; }
 
 extern volatile bool g_flag_ir1_sensor;
-extern volatile bool g_flag_ir2_sensor;
 
 void IRSensor_Initialize( void );
 void IRSensorEnable( void );

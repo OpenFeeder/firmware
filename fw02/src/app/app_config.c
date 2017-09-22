@@ -157,7 +157,9 @@ INI_READ_STATE config_read_ini( void )
 {
 
     int32_t read_parameter;
-
+    int s;
+    char str[20];
+    
     /* Scenario number */
     read_parameter = ini_getl( "scenario", "num", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
@@ -215,112 +217,125 @@ INI_READ_STATE config_read_ini( void )
     appDataAlarmSleep.time.tm_sec = 0;
 
     /* Attractive LEDs Color. */
-    read_parameter = ini_getl( "attractiveleds", "red_a", -1, "CONFIG.INI" );
-    if ( -1 == read_parameter )
+    appData.flags.bit_value.attractive_leds_status = 0;
+    /* Check if "attractiveleds" is present in the INI file */ 
+    for (s = 0; ini_getsection(s, str, 20, "CONFIG.INI") > 0; s++)
     {
-        return INI_PB_ATTRACTIVE_LEDS_RED_A;
+        if ( 0 == strcmp( str, "attractiveleds" ) )
+        {
+            appData.flags.bit_value.attractive_leds_status = true;
+        }
     }
-    else
+        
+    if (true == appData.flags.bit_value.attractive_leds_status)
     {
-        appDataAttractiveLeds.red[0] = ( uint8_t ) read_parameter;
-    }
-    read_parameter = ini_getl( "attractiveleds", "green_a", -1, "CONFIG.INI" );
-    if ( -1 == read_parameter )
-    {
-        return INI_PB_ATTRACTIVE_LEDS_GREEN_A;
-    }
-    else
-    {
-        appDataAttractiveLeds.green[0] = ( uint8_t ) read_parameter;
-    }
-    read_parameter = ini_getl( "attractiveleds", "blue_a", -1, "CONFIG.INI" );
-    if ( -1 == read_parameter )
-    {
-        return INI_PB_ATTRACTIVE_LEDS_BLUE_A;
-    }
-    else
-    {
-        appDataAttractiveLeds.blue[0] = ( uint8_t ) read_parameter;
-    }
-    read_parameter = ini_getl( "attractiveleds", "red_b", -1, "CONFIG.INI" );
-    if ( -1 == read_parameter )
-    {
-        return INI_PB_ATTRACTIVE_LEDS_RED_B;
-    }
-    else
-    {
-        appDataAttractiveLeds.red[1] = ( uint8_t ) read_parameter;
-    }
-    read_parameter = ini_getl( "attractiveleds", "green_b", -1, "CONFIG.INI" );
-    if ( -1 == read_parameter )
-    {
-        return INI_PB_ATTRACTIVE_LEDS_GREEN_B;
-    }
-    else
-    {
-        appDataAttractiveLeds.green[1] = ( uint8_t ) read_parameter;
-    }
-    read_parameter = ini_getl( "attractiveleds", "blue_b", -1, "CONFIG.INI" );
-    if ( -1 == read_parameter )
-    {
-        return INI_PB_ATTRACTIVE_LEDS_BLUE_B;
-    }
-    else
-    {
-        appDataAttractiveLeds.blue[1] = ( uint8_t ) read_parameter;
-    }
-    /* Attractive LEDs alternate delay. */
-    read_parameter = ini_getl( "attractiveleds", "alt_delay", -1, "CONFIG.INI" );
-    if ( -1 == read_parameter )
-    {
-        return INI_PB_ATTRACTIVE_LEDS_ALT_DELAY;
-    }
-    else
-    {
-        appDataAttractiveLeds.alt_delay = ( uint8_t ) read_parameter;
-    }
-    /* Attractive LEDs wake up time. */
-    read_parameter = ini_getl( "attractiveleds", "on_hour", -1, "CONFIG.INI" );
-    if ( -1 == read_parameter )
-    {
-        return INI_PB_ATTRACTIVE_LEDS_ON_HOUR;
-    }
-    else
-    {
-        appDataAttractiveLeds.wake_up_time.tm_hour = ( int ) read_parameter;
-    }
-    read_parameter = ini_getl( "attractiveleds", "on_minute", -1, "CONFIG.INI" );
-    if ( -1 == read_parameter )
-    {
-        return INI_PB_ATTRACTIVE_LEDS_ON_MINUTE;
-    }
-    else
-    {
-        appDataAttractiveLeds.wake_up_time.tm_min = ( int ) read_parameter;
-    }
+        read_parameter = ini_getl( "attractiveleds", "red_a", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_ATTRACTIVE_LEDS_RED_A;
+        }
+        else
+        {
+            appDataAttractiveLeds.red[0] = ( uint8_t ) read_parameter;
+        }
+        read_parameter = ini_getl( "attractiveleds", "green_a", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_ATTRACTIVE_LEDS_GREEN_A;
+        }
+        else
+        {
+            appDataAttractiveLeds.green[0] = ( uint8_t ) read_parameter;
+        }
+        read_parameter = ini_getl( "attractiveleds", "blue_a", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_ATTRACTIVE_LEDS_BLUE_A;
+        }
+        else
+        {
+            appDataAttractiveLeds.blue[0] = ( uint8_t ) read_parameter;
+        }
+        read_parameter = ini_getl( "attractiveleds", "red_b", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_ATTRACTIVE_LEDS_RED_B;
+        }
+        else
+        {
+            appDataAttractiveLeds.red[1] = ( uint8_t ) read_parameter;
+        }
+        read_parameter = ini_getl( "attractiveleds", "green_b", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_ATTRACTIVE_LEDS_GREEN_B;
+        }
+        else
+        {
+            appDataAttractiveLeds.green[1] = ( uint8_t ) read_parameter;
+        }
+        read_parameter = ini_getl( "attractiveleds", "blue_b", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_ATTRACTIVE_LEDS_BLUE_B;
+        }
+        else
+        {
+            appDataAttractiveLeds.blue[1] = ( uint8_t ) read_parameter;
+        }
+        /* Attractive LEDs alternate delay. */
+        read_parameter = ini_getl( "attractiveleds", "alt_delay", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_ATTRACTIVE_LEDS_ALT_DELAY;
+        }
+        else
+        {
+            appDataAttractiveLeds.alt_delay = ( uint8_t ) read_parameter;
+        }
+        /* Attractive LEDs wake up time. */
+        read_parameter = ini_getl( "attractiveleds", "on_hour", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_ATTRACTIVE_LEDS_ON_HOUR;
+        }
+        else
+        {
+            appDataAttractiveLeds.wake_up_time.tm_hour = ( int ) read_parameter;
+        }
+        read_parameter = ini_getl( "attractiveleds", "on_minute", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_ATTRACTIVE_LEDS_ON_MINUTE;
+        }
+        else
+        {
+            appDataAttractiveLeds.wake_up_time.tm_min = ( int ) read_parameter;
+        }
 
-    appDataAttractiveLeds.wake_up_time.tm_sec = 0;
+        appDataAttractiveLeds.wake_up_time.tm_sec = 0;
 
-    /* Attractive LEDs sleep time. */
-    read_parameter = ini_getl( "attractiveleds", "off_hour", -1, "CONFIG.INI" );
-    if ( -1 == read_parameter )
-    {
-        return INI_PB_ATTRACTIVE_LEDS_OFF_HOUR;
+        /* Attractive LEDs sleep time. */
+        read_parameter = ini_getl( "attractiveleds", "off_hour", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_ATTRACTIVE_LEDS_OFF_HOUR;
+        }
+        else
+        {
+            appDataAttractiveLeds.sleep_time.tm_hour = ( int ) read_parameter;
+        }
+        read_parameter = ini_getl( "attractiveleds", "off_minute", -1, "CONFIG.INI" );
+        if ( read_parameter == -1 )
+        {
+            return INI_PB_ATTRACTIVE_LEDS_OFF_MINUTE;
+        }
+        else
+        {
+            appDataAttractiveLeds.sleep_time.tm_min = ( int ) read_parameter;
+        }
+        appDataAttractiveLeds.sleep_time.tm_sec = 0;
     }
-    else
-    {
-        appDataAttractiveLeds.sleep_time.tm_hour = ( int ) read_parameter;
-    }
-    read_parameter = ini_getl( "attractiveleds", "off_minute", -1, "CONFIG.INI" );
-    if ( read_parameter == -1 )
-    {
-        return INI_PB_ATTRACTIVE_LEDS_OFF_MINUTE;
-    }
-    else
-    {
-        appDataAttractiveLeds.sleep_time.tm_min = ( int ) read_parameter;
-    }
-    appDataAttractiveLeds.sleep_time.tm_sec = 0;
 
     /* PIT Tags denied or associated with color A. */
     read_parameter = ini_getl( "pittagsdenied", "num", -1, "CONFIG.INI" );
@@ -388,7 +403,7 @@ INI_READ_STATE config_read_ini( void )
         appDataServo.speed = ( uint8_t ) read_parameter;
     }
     /* Door open/closee delays. */
-    read_parameter = ini_getl( "door", "opendelay", -1, "CONFIG.INI" );
+    read_parameter = ini_getl( "door", "open_delay", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
     {
         return INI_PB_DOOR_OPEN_DELAY;
@@ -397,7 +412,7 @@ INI_READ_STATE config_read_ini( void )
     {
         appDataDoor.open_delay = ( uint16_t ) read_parameter * 1000;
     }
-    read_parameter = ini_getl( "door", "closedelay", -1, "CONFIG.INI" );
+    read_parameter = ini_getl( "door", "close_delay", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
     {
         return INI_PB_DOOR_CLOSE_DELAY;
@@ -407,7 +422,7 @@ INI_READ_STATE config_read_ini( void )
         appDataDoor.close_delay = ( uint16_t ) read_parameter * 1000;
     }
     /* Door remain open */
-    read_parameter = ini_getl( "door", "remainopen", -1, "CONFIG.INI" );
+    read_parameter = ini_getl( "door", "remain_open", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
     {
         return INI_PB_DOOR_REMAIN_OPEN;
@@ -416,6 +431,11 @@ INI_READ_STATE config_read_ini( void )
     {
         appDataDoor.remain_open = ( uint8_t ) read_parameter;
     }
+    /* Door reward probability */
+//    read_parameter = ini_getf( "door", "reward_probability", -1, "CONFIG.INI" );
+    ini_gets( "door", "reward_probability", "1.0", str, sizearray( str ), "CONFIG.INI" );
+    appDataDoor.reward_probability = atof(str);
+
     /* Door open time. */
     read_parameter = ini_getl( "door", "open_hour", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
@@ -491,15 +511,15 @@ INI_READ_STATE config_read_ini( void )
     {
         appData.timeout_taking_reward = ( uint16_t ) read_parameter * 1000;
     }
-    /* New bird delay. */
-    read_parameter = ini_getl( "newbird", "delay", -1, "CONFIG.INI" );
+    /* Punishment delay. */
+    read_parameter = ini_getl( "punishment", "delay", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
     {
-        return INI_PB_NEW_BIRD_DELAY;
+        return INI_PB_PUNISHMENT_DELAY;
     }
     else
     {
-        appData.new_bird_delay = ( uint16_t ) read_parameter * 1000;
+        appData.punishment_delay = ( uint16_t ) read_parameter * 1000;
     }
 
     return INI_READ_OK;
@@ -516,6 +536,9 @@ void config_print( void )
             appData.scenario_number );
     switch ( appData.scenario_number )
     {
+        case NO_SCENARIO:
+            printf( " no scenario\n" );
+            break;
         case OPEN_BAR:
             printf( " open-bar\n" );
             break;
@@ -541,22 +564,25 @@ void config_print( void )
             appDataAlarmSleep.time.tm_hour,
             appDataAlarmSleep.time.tm_min );
 
-    printf( "\tAttractive LEDs\n" );
-    printf( "\t\tColor A: RGB(%d, %d, %d)\n",
-            appDataAttractiveLeds.red[0],
-            appDataAttractiveLeds.green[0],
-            appDataAttractiveLeds.blue[0] );
-    printf( "\t\tColor B: RGB(%d, %d, %d)\n",
-            appDataAttractiveLeds.red[1],
-            appDataAttractiveLeds.green[1],
-            appDataAttractiveLeds.blue[1] );
-    printf( "\t\tAlternate delay: %us\n", appDataAttractiveLeds.alt_delay );
-    printf( "\t\tOn time: %02d:%02d\n",
-            appDataAttractiveLeds.wake_up_time.tm_hour,
-            appDataAttractiveLeds.wake_up_time.tm_min );
-    printf( "\t\tOff time: %02d:%02d\n",
-            appDataAttractiveLeds.sleep_time.tm_hour,
-            appDataAttractiveLeds.sleep_time.tm_min );
+    if (true == appData.flags.bit_value.attractive_leds_status)
+    {
+        printf( "\tAttractive LEDs\n" );
+        printf( "\t\tColor A: RGB(%d, %d, %d)\n",
+                appDataAttractiveLeds.red[0],
+                appDataAttractiveLeds.green[0],
+                appDataAttractiveLeds.blue[0] );
+        printf( "\t\tColor B: RGB(%d, %d, %d)\n",
+                appDataAttractiveLeds.red[1],
+                appDataAttractiveLeds.green[1],
+                appDataAttractiveLeds.blue[1] );
+        printf( "\t\tAlternate delay: %us\n", appDataAttractiveLeds.alt_delay );
+        printf( "\t\tOn time: %02d:%02d\n",
+                appDataAttractiveLeds.wake_up_time.tm_hour,
+                appDataAttractiveLeds.wake_up_time.tm_min );
+        printf( "\t\tOff time: %02d:%02d\n",
+                appDataAttractiveLeds.sleep_time.tm_hour,
+                appDataAttractiveLeds.sleep_time.tm_min );
+    }
 
     printf( "\tDoor\n" );
     printf( "\t\tServomotor position min: %d\n", appDataServo.ton_min );
@@ -584,9 +610,12 @@ void config_print( void )
     printf( "\t\tSleep: %us\n", appData.timeout_standby / 1000 );
     printf( "\t\tPIR: %us\n", appData.timeout_pir / 1000 );
     printf( "\t\tTaking reward: %us\n", appData.timeout_taking_reward / 1000 );
-
-    printf( "\tNew bird\n" );
-    printf( "\t\tDelay: %us\n", appData.new_bird_delay / 1000 );
+    
+    if (true == appData.flags.bit_value.attractive_leds_status)
+    {
+        printf( "\tPunishment\n" );
+        printf( "\t\tDelay: %us\n", appData.punishment_delay / 1000 );
+    }
 
     printf( "\tData logger\n" );
     printf( "\t\tFile name: %s\n", appDataLog.filename );
@@ -716,7 +745,7 @@ void getIniPbChar( INI_READ_STATE state, char buf[] )
         case INI_PB_TIMEOUTS_REWARD:
             snprintf( buf, sizearray( buf ), "Timeouts: reward" );
             break;
-        case INI_PB_NEW_BIRD_DELAY:
+        case INI_PB_PUNISHMENT_DELAY:
             snprintf( buf, sizearray( buf ), "New bird: delay" );
             break;
         default:

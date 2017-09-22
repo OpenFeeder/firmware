@@ -222,7 +222,7 @@ int main( void )
     /* Initialize peripheral driver. */
     RFID_Initialize( );
     SERVO_Initialize( );
-    IRSensor_Initialize( );
+//    IRSensor_Initialize( );
 
     /* Initialize the file IO system. */
     FILEIO_Initialize( );
@@ -241,8 +241,6 @@ int main( void )
         doLedsStatusBlink( LED_GREEN, 3, 83, 250 );
     }
 
-    TMR4_Start( );
-    
     /* Initialize the application. */
     APP_Initialize( );
 
@@ -255,7 +253,6 @@ int main( void )
     /* Display information on serial terminal. */
     displayBootMessage( );
 #endif
-
 
     /* Main loop. */
     while ( 1 )

@@ -9,25 +9,26 @@
 #include "ir_sensor.h"
 
 volatile bool g_flag_ir1_sensor = false;
-volatile bool g_flag_ir2_sensor = false;
 
 void IRSensor_Initialize( void )
 {
     
-    IRSensorEnable( );
+    IRSensorDisable( );
 
 }
 
 void IRSensorEnable( void )
 {
 
+    TMR4_Start( );
     VDD_IR_ON( ); /* IR power enable. */
 
 }
 
 void IRSensorDisable( void )
 {
-
+        
+    TMR4_Stop( );
     VDD_IR_OFF( ); /* IR power disable. */
 
 }

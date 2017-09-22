@@ -37,6 +37,30 @@ bool isDelayMsEnding( void )
     }
 }
 
+void setDelayMsStandBy( uint16_t timeout_ms )
+{
+    if ( timeout_ms < 20 )
+    {
+        g_timeout_standby_x20ms = 1;
+    }
+    else
+    {
+        g_timeout_standby_x20ms = timeout_ms / 20;
+    }
+}
+
+bool isDelayMsEndingStandBy( void )
+{
+    if ( g_timeout_standby_x20ms == 0 )
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 void setDelayMsEM4095( uint16_t timeout_ms )
 {
     if ( timeout_ms < 20 )

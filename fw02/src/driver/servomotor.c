@@ -19,9 +19,8 @@ void SERVO_Initialize( void )
     appDataServo.ton_min = SERVO_POSITION_MIN_DEFAULT;
     appDataServo.ton_max = SERVO_POSITION_MAX_DEFAULT;
     appDataServo.speed = SERVO_SPEED_INC_DEFAULT;
-//    appDataServo.ton_cmd = appDataServo.ton_min;
     appDataServo.ton_cmd = appDataServo.ton_max;
-//    appDataServo.ton_cmd = 0;
+
 }
 
 /**
@@ -80,7 +79,6 @@ bool servomotorCloseTheDoor( void )
 
 void servomotorPowerEnable( void )
 {
-    //powerPIREnable( );
     CMD_VDD_ACC_PIR_SERVO_SetHigh( );
     CMD_VCC_SERVO_SetLow( );
     CMD_VCC_SERVO_SetDigitalOutput( );
@@ -89,8 +87,6 @@ void servomotorPowerEnable( void )
 
 void servomotorPowerDisable( void )
 {
-    //    __delay_ms( 10 );
-//    CMD_VCC_SERVO_SetHigh( );
     CMD_VCC_SERVO_SetDigitalInput();
     appDataServo.cmd_vcc_servo_state = false;
 }

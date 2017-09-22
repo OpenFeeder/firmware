@@ -30,6 +30,10 @@
 #define PORTABLE_STRNICMP
 #define NDEBUG
 
+//#define INI_REAL float
+//#define ini_ftoa(string,value) sprintf((string),"%f",(value))
+//#define ini_atof(string) (INI_REAL)strtod((string),NULL)
+
 //static int ini_read( char *buffer, int size, INI_FILETYPE *file );
 int ini_read( char *buffer, int size, INI_FILETYPE *file );
 

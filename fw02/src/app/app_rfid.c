@@ -19,6 +19,7 @@ volatile bool g_new_value_of_em4095_rdyclk_measurement = false;
 RFID_STATES g_rfid_reading_status; // for serial display of state machine process of EM4095
 RFID_STATES g_rfid_reading_status_previous;
 volatile uint8_t g_timeout_reading_pit_tag;
+extern volatile uint16_t rdyclk_count_in_10ms;
 
 /* Binary to Ascii text converter with simple lookup array */
 const char bin2ascii_tab[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
@@ -274,45 +275,65 @@ void displayRfidFreq( void )
 
 void measureRfidFreq( void )
 {
-    bool flag = false;
+    bool flag_cmd_vdd_app = false;
+    bool flag_timeout = false;
 
-    g_new_value_of_em4095_rdyclk_measurement = false;
-
+//    TMR4_Stop( );
+                
     if ( CMD_VDD_APP_V_USB_GetValue( ) == 0 )
     {
-        flag = true;
+        flag_cmd_vdd_app = true;
         appDataUsb.key_is_nedded = false;
         powerUsbRfidEnable( );
     }
-
-
+    
     EM4095_SHD_ENABLE( );
-    /* Set-up time after a sleep period - Tset: 35ms */
-    /* Tableau page 5 - datasheet EM4095*/
+    
     setDelayMsEM4095( EM4095_TSET_DELAY_MS );
     while ( false == isDelayMsEndingEM4095( ) )
     {
         Nop( );
     }
-
-    //    while ( false == EM4095_SHD_GetValue( ) )
-    //    {
-    //        Nop( );
-    //    }
+   
+    setDelayMsEM4095( 500 );
+    
     EX_INT3_InterruptFlagClear( );
-    EX_INT3_InterruptEnable( );
-    while ( false == g_new_value_of_em4095_rdyclk_measurement ) // FIXME: if EM4095 broken then programme stop here!
+    EX_INT3_InterruptEnable( );    
+        
+    counter_positive_edge_rdyclk = 0;
+    g_new_value_of_em4095_rdyclk_measurement = false;    
+    while ( false == g_new_value_of_em4095_rdyclk_measurement )
     {
         Nop( );
+        if (true == isDelayMsEndingEM4095( ))
+        {
+            flag_timeout = true;
+            break;
+        }
     }
+    
+    EX_INT3_InterruptFlagClear( ); 
+    EX_INT3_InterruptDisable( );       
+    
     EM4095_SHD_DISABLE( );
-    EX_INT3_InterruptFlagClear( );
-    EX_INT3_InterruptDisable( );
 
-    appData.rfid_rdyclk = g_rdyclk_count_in_10ms * 5;
+    if (false == flag_timeout)
+    {
+        appData.rfid_rdyclk = g_rdyclk_count_in_10ms * 5;
+    }
+    else
+    {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        printf(" !!timeout!! ");
+#endif
+        appData.rfid_rdyclk = 65535;
+    }
 
     g_new_value_of_em4095_rdyclk_measurement = false;
-    if ( flag == true )
+    
+//    TMR4_Start( );
+    
+    if ( flag_cmd_vdd_app == true )
     {
         powerUsbRfidDisable( );
     }

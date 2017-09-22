@@ -36,6 +36,7 @@ typedef enum
     RTCC_ALARM_SET_ATTRACTIVE_LEDS_OFF,
     RTCC_ALARM_ALT_ATTRACTIVE_LEDS,
     RTCC_BATTERY_LEVEL_CHECK,
+    RTCC_FOOD_LEVEL_CHECK,
     RTCC_RFID_FREQ_CHECK
         
 } RTCC_ALARM_ACTION;
@@ -49,6 +50,7 @@ typedef struct
 
 unsigned char ConvertHexToBCD_A( unsigned char );
 void rtcc_set_alarm( int, int, int, int );
+void rtcc_start_alarm( void );
 void rtcc_stop_alarm( void );
 
 

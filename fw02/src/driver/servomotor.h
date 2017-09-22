@@ -41,6 +41,8 @@ typedef struct
     uint8_t remain_open;
 
     DOOR_STATUS reward_door_status;
+    
+    double reward_probability;
 
 } APP_DATA_DOOR;
 

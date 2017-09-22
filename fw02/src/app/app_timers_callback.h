@@ -35,6 +35,7 @@
 
 extern volatile uint16_t g_rdyclk_count_in_10ms;
 extern volatile uint16_t g_timeout_x20ms;
+extern volatile uint16_t g_timeout_standby_x20ms;
 extern volatile uint16_t g_timeout_em4095_x20ms;
 extern volatile uint16_t g_timeout_leds_status_x20ms;
 extern volatile uint8_t g_timeout_taking_reward;

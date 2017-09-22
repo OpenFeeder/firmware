@@ -146,7 +146,7 @@ void APP_Tasks( void )
                     appData.state = APP_STATE_CONFIGURE_SYSTEM;
                     break;
                 case APP_CHECK_BATTERY_PB:
-                    appData.state = APP_STATE_LOW_BATTERY;
+                    appData.state = APP_STATE_LOW_BATTERY_LEVEL;
                     break;
                 case APP_CHECK_VBAT_PB:
                     appData.state = APP_STATE_LOW_VBAT;
@@ -164,14 +164,18 @@ void APP_Tasks( void )
                 break;
             }
             
-            i2c_status = I2C1_PCA9622_SoftwareReset( ); /* Reset PCA9622 device */
-#if defined (USE_UART1_SERIAL_INTERFACE)
+            /* Power PIR sensor early in the code because of starting delay before usable */
+            powerPIREnable( );
+            
+            /* Reset PCA9622 device */
+            i2c_status = I2C1_PCA9622_SoftwareReset( ); 
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
             print_I2C_message_status( i2c_status ); // I2C1_MESSAGE_STATUS
             printf( "\n" );
 #endif
 
             i2c_status = initAttractiveLeds( );
-#if defined (USE_UART1_SERIAL_INTERFACE)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
             if ( i2c_status )
             {
                 printf( "\tAttractive LEDs: ok\n" );
@@ -237,27 +241,41 @@ void APP_Tasks( void )
                 servomotorPowerEnable( );
                 appDataDoor.reward_door_status = DOOR_CLOSING;
                 while ( DOOR_CLOSED != appDataDoor.reward_door_status );
+                /* Check if door must remain open */
+                if ( 1 == appDataDoor.remain_open )
+                {
+                    appDataDoor.reward_door_status = DOOR_OPENING;
+                    while ( DOOR_OPENED != appDataDoor.reward_door_status );
+                }
                 /* Servomotor power command disable. */
                 servomotorPowerDisable( );
 
+                if ( true == appData.flags.bit_value.attractive_leds_status )
+                {
+                    while ( !RTCC_TimeGet( &appData.current_time ) )
+                    {
+                        Nop( );
+                    }
+                    if ( ( appData.current_time.tm_hour * 60 + appData.current_time.tm_min ) >= ( appDataAttractiveLeds.wake_up_time.tm_hour * 60 + appDataAttractiveLeds.wake_up_time.tm_min ) &&
+                         ( appData.current_time.tm_hour * 60 + appData.current_time.tm_min )< ( appDataAttractiveLeds.sleep_time.tm_hour * 60 + appDataAttractiveLeds.sleep_time.tm_min ) )
+                    {
+                        setAttractiveLedsOn( );
+                    }   
+                }
+                else
+                {
+                    TMR2_Stop( );
+                }
+                
                 rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_SECOND );
-
-                /* Enable PIR sensor interruption for bird detection */
-                powerPIREnable( );
-                EX_INT0_InterruptFlagClear( );
-                EX_INT0_InterruptEnable( );
-                
-                /* Enable IR barrier interruption for food level detection */
-                EX_INT2_InterruptEnable( );
-                EX_INT2_InterruptFlagClear( );            
-                clear_flag_ir2_sensor( );
-                
                 appData.state = APP_STATE_IDLE;
+                
             }
             else
             {
                 appDataUsb.key_is_nedded = false;
                 powerUsbRfidDisable( );
+                powerPIRDisable( );
                 appData.state = APP_STATE_ERROR;
                 break;
             }
@@ -269,6 +287,7 @@ void APP_Tasks( void )
 
             appDataUsb.key_is_nedded = false;
             powerUsbRfidDisable( );
+            
             break;
             /* -------------------------------------------------------------- */
 
@@ -285,33 +304,21 @@ void APP_Tasks( void )
                 appData.previous_state = appData.state;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_IDLE\n" );
-#endif
+#endif              
                 if ( appData.timeout_standby > 0 )
                 {
-                    /* Timeout before going to sleep mode */
-                    setDelayMs( appData.timeout_standby );
+                    /* Timeout before going to standby mode */
+                    setDelayMsStandBy( appData.timeout_standby );
                 }
                 
-                clear_flag_ir2_sensor( );
+                rtcc_start_alarm( );
+                
+                /* Enable PIR sensor interruption for bird detection */
+                EX_INT0_InterruptFlagClear( );
+                EX_INT0_InterruptEnable( );  
                 
             }
-
-            // Check food level
-            if ( true == g_flag_ir2_sensor )
-            {
-                EX_INT2_InterruptDisable( );
-                clear_flag_ir2_sensor( );
-                strcpy( appError.message, "Not enough food" );
-                appError.currentLineNumber = __LINE__;
-                sprintf( appError.currentFileName, "%s", __FILE__ );
-                appError.number = ERROR_LOW_FOOD;
-                appError.ledColor = LED_PURPLE;
-        
-                appData.state = APP_STATE_LOW_FOOD_LEVEL;
-                break;
-                    
-            }
-            
+           
             /* Check PIR SENSOR detected.
              *  - recording the time of detected of the bird
              *  - if true go to APP_STATE_ERROR
@@ -345,14 +352,15 @@ void APP_Tasks( void )
                 break;
             }
 
-            /* Check TIMEOUT IDLE MODE endding.
+            /* Check TIMEOUT IDLE MODE ending.
              *  - if false go to APP_STATE_STANDBY
              */
             if ( false == appData.flags.bit_value.attractive_leds_status )
             {
-                if ( appData.timeout_standby > 0 && isDelayMsEnding( ) )
+                if ( appData.timeout_standby > 0 && isDelayMsEndingStandBy( ) )
                 {
                     appData.state = APP_STATE_STANDBY;
+                    break;
                 }
             }
 
@@ -434,7 +442,16 @@ void APP_Tasks( void )
 
                     if ( false == flag )
                     {
-                        appData.state = APP_STATE_LOW_BATTERY;
+                        appData.state = APP_STATE_LOW_BATTERY_LEVEL;
+                        break;
+                    }
+                }
+                if ( RTCC_FOOD_LEVEL_CHECK == appData.rtcc_alarm_action )
+                {
+                    flag = isEnoughFood( );
+                    if ( false == flag )
+                    {
+                        appData.state = APP_STATE_LOW_FOOD_LEVEL;
                         break;
                     }
                 }
@@ -503,6 +520,13 @@ void APP_Tasks( void )
 #endif
                 }
             }
+//            
+//#if defined (TEST_RTCC_SLEEP_WAKEUP)
+//            /* Next line for debugging sleep/wakeup only */
+//            /* Should be commented in normal mode */
+//            /* Modify time value according to sleep values in the CONFIG.INI file */
+//            setDateTime( 17, 9, 21, 22, 59, 55 );
+//#endif   
             break;
             /* -------------------------------------------------------------- */
 
@@ -516,6 +540,11 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_RFID_READING_PIT_TAG\n" );
 #endif
+                
+                EX_INT0_InterruptFlagClear( );
+                EX_INT0_InterruptDisable( );
+                rtcc_stop_alarm( );
+                
                 APP_Rfid_Init( );
             }
 
@@ -559,7 +588,7 @@ void APP_Tasks( void )
                 RFID_Disable( );
                 powerUsbRfidDisable( );
                 clear_bird_sensor_detected( );
-
+                
                 if ( true == appDataLog.is_pit_tag_denied )
                 {
 #if defined (USE_UART1_SERIAL_INTERFACE) 
@@ -569,7 +598,7 @@ void APP_Tasks( void )
                     {
                         setAttractiveLedsNoColor( );
                         /* Delay before reactivate attractiveLEDs */
-                        setDelayMs( appData.new_bird_delay );
+                        setDelayMs( appData.punishment_delay );
                         while ( false == isDelayMsEnding( ) )
                         {
                             Nop( );
@@ -611,6 +640,7 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE)
                 printf( "RFID timeout.\n" );
 #endif
+
             }
             break;
             /* -------------------------------------------------------------- */
@@ -622,25 +652,38 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_OPENING_REWARD_DOOR\n" );
 #endif
+                
+                /* Power IR sensor here because start delay */
+                IRSensorEnable( );
+                /* Enable IR 1 sensor interruption (reward)*/
+                EX_INT1_InterruptDisable();                    
+                EX_INT1_PositiveEdgeSet( );  
+                EX_INT1_InterruptFlagClear( );
+                EX_INT1_InterruptEnable( );
+                    
                 appDataLog.is_reward_taken = false;
 
-                /* Check if door is already open */
+                /* Skip opening door if the "remain open" flag is set */
                 if ( 1 == appDataDoor.remain_open )
                 {
                     appData.state = APP_STATE_WAITING_CATCH_REWARD;
                     break;
                 }
 
-                /* Delay before door open */
-                setDelayMs( appDataDoor.open_delay );
-                while ( false == isDelayMsEnding( ) )
+                /* Optional delay before opening the door */
+                if ( appDataDoor.open_delay > 0 )
                 {
-                    Nop( );
+                   setDelayMs( appDataDoor.open_delay );
+                    while ( false == isDelayMsEnding( ) )
+                    {
+                        Nop( );
+                    } 
                 }
 
                 /* Servomotor power command enable. */
                 servomotorPowerEnable( );
                 appDataDoor.reward_door_status = DOOR_OPENING;
+                
             }
 
             if ( DOOR_OPENED == appDataDoor.reward_door_status )
@@ -659,44 +702,50 @@ void APP_Tasks( void )
                 appData.previous_state = appData.state;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_WAITING_CATCH_REWARD\n" );
-#endif
-                EX_INT1_PositiveEdgeSet( );
-                EX_INT1_InterruptFlagClear( );
-                EX_INT1_InterruptEnable();
-                clear_flag_ir1_sensor( );
-                
+#endif           
+
                 /* Timeout before door closing if reward is not taken */
-                setDelayMs( appData.timeout_taking_reward );
+                if (appData.timeout_taking_reward > 0)
+                {
+                    setDelayMs( appData.timeout_taking_reward );
+                }
                 
                 appData.bird_is_taking_reward = false;
+
+                clear_ir1_sensor( );
+                
             }
 
 #if !defined (PATH_HARDWARE_IR_SENSOR_DISABLE)
             if ( ( true == g_flag_ir1_sensor ) && ( false == appData.bird_is_taking_reward ) )
             {
-                EX_INT1_NegativeEdgeSet( );
-
+                EX_INT1_InterruptDisable();                    
+                EX_INT1_NegativeEdgeSet( );  
+                EX_INT1_InterruptFlagClear( );
+                EX_INT1_InterruptEnable(); 
+                clear_ir1_sensor( );
+                
                 /* REWARD_IR_SENSOR true. */
 #if defined (USE_UART1_SERIAL_INTERFACE)
                 printf( "\tTaking reward detected.\n" );
 #endif
                 appData.bird_is_taking_reward = true;
-                clear_flag_ir1_sensor( );
+                
                 break;
             }
 
             /* low --> Breaking of the infrared barrier */
             if ( ( true == g_flag_ir1_sensor ) && ( true == appData.bird_is_taking_reward ) )
-//            if ( ( 0 == BAR_IR1_OUT_GetValue( ) ) && ( true == appData.bird_is_taking_reward ) )
             {
 #if defined (USE_UART1_SERIAL_INTERFACE)
                 printf( "\tReward taken.\n" );
 #endif
-                EX_INT1_PositiveEdgeSet( );
+                IRSensorDisable( );
+                EX_INT1_InterruptDisable();                    
+                EX_INT1_PositiveEdgeSet( );  
                 EX_INT1_InterruptFlagClear( );
-                EX_INT1_InterruptDisable();
-                clear_flag_ir1_sensor( );
-                
+                clear_ir1_sensor( );
+
                 appData.bird_is_taking_reward = false;
                 appDataLog.is_reward_taken = true;
                 appData.state = APP_STATE_CLOSING_DOOR;
@@ -709,18 +758,20 @@ void APP_Tasks( void )
 #warning "PATH_HARDWARE_IR_SENSOR_DISABLE is defined! See in fw02\src\app\app.h file for normal use of OpenFeeder"
             if ( true == isDelayMsEnding( ) )
 #else
-            if ( true == isDelayMsEnding( ) && 0 == BAR_IR1_OUT_GetValue( ) )
+//            if ( true == isDelayMsEnding( ) && 0 == BAR_IR1_OUT_GetValue( ) )
+            if ( true == isDelayMsEnding( ) && false == appData.bird_is_taking_reward )
 #endif
             {
 #if defined (USE_UART1_SERIAL_INTERFACE)
                 printf( "\tReward timeout.\n" );
 #endif
                 
-                EX_INT1_PositiveEdgeSet( );
+                IRSensorDisable( );
+                EX_INT1_InterruptDisable();                    
+                EX_INT1_PositiveEdgeSet( );  
                 EX_INT1_InterruptFlagClear( );
-                EX_INT1_InterruptDisable();
-                clear_flag_ir1_sensor( );
-                
+                clear_ir1_sensor( );
+
                 appData.state = APP_STATE_CLOSING_DOOR;
             }
             break;
@@ -738,22 +789,25 @@ void APP_Tasks( void )
                 {
                     Nop( );
                 }
-
-                /* Check if door must remain open */
+                
+                /* Skip closing door if the "remain open" flag is set */
                 if ( 1 == appDataDoor.remain_open )
                 {
-                    //                    appDataUsb.getValidDeviceAdress = false;
+                    // appDataUsb.getValidDeviceAdress = false;
                     appData.state = APP_STATE_DATA_LOG;
                     break;
                 }
 
-                /* Delay before door close */
-                setDelayMs( appDataDoor.close_delay );
-                while ( false == isDelayMsEnding( ) )
+                /* Optional delay before closing the door */
+                if (appDataDoor.close_delay > 0) 
                 {
-                    Nop( );
+                    setDelayMs( appDataDoor.close_delay );
+                    while ( false == isDelayMsEnding( ) )
+                    {
+                        Nop( );
+                    }
                 }
-
+                
                 /* Servomotor power command enable. */
                 servomotorPowerEnable( );
                 appDataDoor.reward_door_status = DOOR_CLOSING;
@@ -920,9 +974,10 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_SLEEP\n" );
 #endif
-                /* Set alarm for wake up time */
-                rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_DAY );
-
+                
+                /* Stop RTCC interuption during shutdown process */
+                rtcc_stop_alarm();
+                
                 /* Close the door if it is opened */
                 if ( DOOR_CLOSED != appDataDoor.reward_door_status )
                 {
@@ -937,7 +992,8 @@ void APP_Tasks( void )
                 }
 
                 /* Set peripherals Off. */
-                setAttractiveLedsOff( );
+                setAttractiveLedsOff( );                
+                powerPIRDisable( );
                 EX_INT0_InterruptDisable( );
                 RFID_Disable( );
                 IRSensorDisable( );
@@ -994,13 +1050,30 @@ void APP_Tasks( void )
 
             /* Turn status LED off */
             setLedsStatusColor( LEDS_OFF );
+            
+#if defined (TEST_RTCC_SLEEP_WAKEUP)
+            /* Next line for debugging sleep/wakeup only */
+            /* Should be commented in normal mode */
+            /* Modify time value according to wake up values in the CONFIG.INI file */
+            setDateTime( 17, 9, 21, 5, 59, 30 );
+#endif
+            
+            /* Set alarm for wake up time */
+            rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_DAY );
 
-            //            setDateTime( 17, 3, 27, 6, 29, 55 ); /* FIXME: Set date and time. */
+            rtcc_start_alarm();
+            
+            setDelayMs( 500 );
+            while ( false == isDelayMsEnding( ) )
+            {
+                Nop( );
+            }
+                    
             Sleep( );
 
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
-            printf( "\n" );
-#endif
+//#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
+//            printf( "\n" );
+//#endif
             appData.state = APP_STATE_WAKE_UP;
             break;
             /* -------------------------------------------------------------- */
@@ -1013,14 +1086,16 @@ void APP_Tasks( void )
                 printf( "> APP_STATE_WAKE_UP_FROM_SLEEP\n" );
 #endif
             }
-
+            
+#if defined (TEST_RTCC_SLEEP_WAKEUP)
+            /* Next line for debugging sleep/wakeup only */
+            /* Should be commented in normal mode */
+            /* Modify time value according to sleep values in the CONFIG.INI file */
+            setDateTime( 17, 9, 21, 22, 59, 0 );
+#endif
+            
             rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_SECOND );
-
-            //            setDateTime( 17, 3, 27, 22, 22, 55 ); /* FIXME: Set date and time. */
-
-#if defined (USE_UART1_SERIAL_INTERFACE)
-            printf( "Awaken from sleep mode!\n" );
-#endif 
+            
             APP_Initialize( );
             break;
             /* -------------------------------------------------------------- */
@@ -1074,7 +1149,7 @@ void APP_Tasks( void )
             break;
             /* -------------------------------------------------------------- */
 
-        case APP_STATE_LOW_BATTERY:
+        case APP_STATE_LOW_BATTERY_LEVEL:
             if ( appData.state != appData.previous_state )
             {
                 appData.previous_state = appData.state;
@@ -1154,6 +1229,8 @@ void APP_Tasks( void )
                 }
 #endif
 #if defined (USE_UART1_SERIAL_INTERFACE)
+                printCurrentDate( );
+                printf(" ");
                 printError( );
 #endif
                 rtcc_stop_alarm( );
@@ -1267,6 +1344,8 @@ void APP_Initialize( void )
 {
     int i, j;
 
+    TMR4_Stop( );
+    
     /* Attractive LEDs initialize */
     setAttractiveLedsOff( );
     appDataAttractiveLeds.current_color_index = 0;
@@ -1351,7 +1430,7 @@ void APP_Initialize( void )
     appError.ledColor = LED_RED;
     appError.number = ERROR_NONE;
 
-    appData.new_bird_delay = 0;
+    appData.punishment_delay = 0;
 
     appData.rfid_signal_detected = false;
 

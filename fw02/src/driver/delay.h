@@ -15,6 +15,8 @@
 
 void setDelayMs( uint16_t );
 bool isDelayMsEnding( void );
+void setDelayMsStandBy( uint16_t );
+bool isDelayMsEndingStandBy( void );
 void setDelayMsEM4095( uint16_t );
 bool isDelayMsEndingEM4095( void );
 void setDelayMsLEDsStatus( uint16_t );
