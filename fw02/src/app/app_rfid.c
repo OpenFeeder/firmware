@@ -277,8 +277,7 @@ void measureRfidFreq( void )
 {
     bool flag_cmd_vdd_app = false;
     bool flag_timeout = false;
-
-//    TMR4_Stop( );
+    int i;
                 
     if ( CMD_VDD_APP_V_USB_GetValue( ) == 0 )
     {
@@ -287,51 +286,61 @@ void measureRfidFreq( void )
         powerUsbRfidEnable( );
     }
     
-    EM4095_SHD_ENABLE( );
-    
-    setDelayMsEM4095( EM4095_TSET_DELAY_MS );
-    while ( false == isDelayMsEndingEM4095( ) )
+    /* Up to MAX_MEASURE_ATTEMPTS attempts to measure a valid RFID frequency */
+    for (i=0; i<MAX_MEASURE_ATTEMPTS; i++)
     {
-        Nop( );
-    }
-   
-    setDelayMsEM4095( 500 );
     
-    EX_INT3_InterruptFlagClear( );
-    EX_INT3_InterruptEnable( );    
-        
-    counter_positive_edge_rdyclk = 0;
-    g_new_value_of_em4095_rdyclk_measurement = false;    
-    while ( false == g_new_value_of_em4095_rdyclk_measurement )
-    {
-        Nop( );
-        if (true == isDelayMsEndingEM4095( ))
+        EM4095_SHD_ENABLE( );
+
+        setDelayMsEM4095( EM4095_TSET_DELAY_MS );
+        while ( false == isDelayMsEndingEM4095( ) )
         {
-            flag_timeout = true;
+            Nop( );
+        }
+
+        setDelayMsEM4095( 500 );
+
+        EX_INT3_InterruptFlagClear( );
+        EX_INT3_InterruptEnable( );    
+
+        counter_positive_edge_rdyclk = 0;
+        g_new_value_of_em4095_rdyclk_measurement = false;    
+        while ( false == g_new_value_of_em4095_rdyclk_measurement )
+        {
+            Nop( );
+            if (true == isDelayMsEndingEM4095( ))
+            {
+                flag_timeout = true;
+                break;
+            }
+        }
+
+        EX_INT3_InterruptFlagClear( ); 
+        EX_INT3_InterruptDisable( );       
+
+        EM4095_SHD_DISABLE( );
+
+        if (false == flag_timeout)
+        {
+            appData.rfid_rdyclk = g_rdyclk_count_in_10ms * 5;
+        }
+        else
+        {
+    #if defined (USE_UART1_SERIAL_INTERFACE)
+            printf(" !!timeout!! ");
+    #endif
+            appData.rfid_rdyclk = 65535;
+        }
+
+        g_new_value_of_em4095_rdyclk_measurement = false;
+
+        /* If frequency is OK or if timeout occurs, quit the measure process */
+        if (appData.rfid_rdyclk > MIN_RDYCLK_FREQ)
+        {
             break;
         }
+        
     }
-    
-    EX_INT3_InterruptFlagClear( ); 
-    EX_INT3_InterruptDisable( );       
-    
-    EM4095_SHD_DISABLE( );
-
-    if (false == flag_timeout)
-    {
-        appData.rfid_rdyclk = g_rdyclk_count_in_10ms * 5;
-    }
-    else
-    {
-#if defined (USE_UART1_SERIAL_INTERFACE)
-        printf(" !!timeout!! ");
-#endif
-        appData.rfid_rdyclk = 65535;
-    }
-
-    g_new_value_of_em4095_rdyclk_measurement = false;
-    
-//    TMR4_Start( );
     
     if ( flag_cmd_vdd_app == true )
     {
