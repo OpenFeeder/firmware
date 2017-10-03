@@ -458,7 +458,7 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
                 }
 
                 /* Door open/close */
-                if ( 0 == appDataDoor.remain_open )
+                if ( 1 == appDataDoor.remain_open )
                 {
 
                     if ( ( appData.current_time.tm_hour * 60 + appData.current_time.tm_min ) >= ( appDataDoor.open_time.tm_hour * 60 + appDataDoor.open_time.tm_min ) &&
