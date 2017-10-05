@@ -432,7 +432,8 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appDataDoor.habituation_percent = ( uint8_t ) read_parameter;
-            appDataServo.ton_max = (appDataServo.ton_max-appDataServo.ton_min)/100*appDataDoor.habituation_percent+appDataServo.ton_min;
+//            appDataServo.ton_max = (appDataServo.ton_max-appDataServo.ton_min)/100*appDataDoor.habituation_percent+appDataServo.ton_min;
+            appDataServo.ton_min = (appDataServo.ton_max-appDataServo.ton_min)/100*appDataDoor.habituation_percent+appDataServo.ton_min;
         }
     }
     /* Door remain open */
