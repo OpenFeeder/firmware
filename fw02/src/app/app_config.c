@@ -421,6 +421,20 @@ INI_READ_STATE config_read_ini( void )
     {
         appDataDoor.close_delay = ( uint16_t ) read_parameter * 1000;
     }
+    /* Door habituation */
+    if (DOOR_HABITUATION == appData.scenario_number)
+    {
+        read_parameter = ini_getl( "door", "habituation", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_DOOR_CLOSE_DELAY;
+        }
+        else
+        {
+            appDataDoor.habituation_percent = ( uint8_t ) read_parameter;
+            appDataServo.ton_max = (appDataServo.ton_max-appDataServo.ton_min)/100*appDataDoor.habituation_percent+appDataServo.ton_min;
+        }
+    }
     /* Door remain open */
     read_parameter = ini_getl( "door", "remain_open", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
@@ -551,6 +565,9 @@ void config_print( void )
         case COLOR_ASSOCIATIVE_LEARNING:
             printf( " color associative learning\n" );
             break;
+        case DOOR_HABITUATION:
+            printf( " door habituation\n" );
+            break;
     }
 
     printf( "\tSite ID\n\t\tZone: %s\n",
@@ -586,7 +603,15 @@ void config_print( void )
 
     printf( "\tDoor\n" );
     printf( "\t\tServomotor position min: %d\n", appDataServo.ton_min );
-    printf( "\t\tServomotor position max: %d\n", appDataServo.ton_max );
+    
+    if (DOOR_HABITUATION != appData.scenario_number)
+    {           
+        printf( "\t\tServomotor position max: %d\n", appDataServo.ton_max );
+    }
+    else
+    {
+        printf( "\t\tServomotor position max: %d (%d%% opened)\n", appDataServo.ton_max, appDataDoor.habituation_percent );
+    }
     printf( "\t\tServomotor increment position: %d\n", appDataServo.speed ); /* Increment pace of the servomotor position. */
     printf( "\t\tOpen delay: %ds\n\t\tClose delay: %ds\n",
             appDataDoor.open_delay / 1000,

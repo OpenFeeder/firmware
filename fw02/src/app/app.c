@@ -583,6 +583,11 @@ void APP_Tasks( void )
                             appDataLog.is_pit_tag_denied = false;
                         }
                         break;
+                        
+                    case DOOR_HABITUATION:
+                        /* No PIT tag denied */
+                        appDataLog.is_pit_tag_denied = false;
+                        break;
                 }
 
                 RFID_Disable( );

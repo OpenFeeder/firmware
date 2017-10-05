@@ -37,6 +37,7 @@ bool servomotorOpenTheDoor( void )
         if ( appDataServo.ton_cmd >= appDataServo.ton_max )
         {
             appDataServo.ton_cmd = appDataServo.ton_max;
+            // The next statement is not clear. The door status is set to the opposite to stop its move.
             appDataDoor.reward_door_status = DOOR_CLOSED;
             return true;
         }
@@ -64,7 +65,8 @@ bool servomotorCloseTheDoor( void )
         if ( appDataServo.ton_cmd <= appDataServo.ton_min )
         {
             appDataServo.ton_cmd = appDataServo.ton_min;
-            appDataDoor.reward_door_status = DOOR_OPENED;
+            // The next statement is not clear. The door status is set to the opposite to stop its move.
+            appDataDoor.reward_door_status = DOOR_OPENED; 
             return true;
         }
 
