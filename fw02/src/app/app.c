@@ -693,7 +693,7 @@ void APP_Tasks( void )
 
             if ( DOOR_OPENED == appDataDoor.reward_door_status )
             {
-                /* Servomotor power command enable. */
+                /* Servomotor power command disable. */
                 servomotorPowerDisable( );
                 appData.state = APP_STATE_WAITING_CATCH_REWARD;
             }
@@ -745,7 +745,7 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE)
                 printf( "\tReward taken.\n" );
 #endif
-                IRSensorDisable( );
+//                IRSensorDisable( );
                 EX_INT1_InterruptDisable();                    
                 EX_INT1_PositiveEdgeSet( );  
                 EX_INT1_InterruptFlagClear( );
@@ -771,7 +771,7 @@ void APP_Tasks( void )
                 printf( "\tReward timeout.\n" );
 #endif
                 
-                IRSensorDisable( );
+//                IRSensorDisable( );
                 EX_INT1_InterruptDisable();                    
                 EX_INT1_PositiveEdgeSet( );  
                 EX_INT1_InterruptFlagClear( );
@@ -818,18 +818,66 @@ void APP_Tasks( void )
                 appDataDoor.reward_door_status = DOOR_CLOSING;
 #if defined (USE_UART1_SERIAL_INTERFACE) 
                 printf( "Closing reward door in action.\n" );
-#endif
+#endif              
+            }
+            
+            /* Check if the bird put its head in during door close */
+            if (DOOR_CLOSING == appDataDoor.reward_door_status && 1 == BAR_IR1_OUT_GetValue( ) )
+            {                
+                appData.state = APP_STATE_REOPEN_DOOR;
+                break;
             }
 
             if ( DOOR_CLOSED == appDataDoor.reward_door_status )
             {
-                /* Servomotor power command enable. */
+                /* Servomotor power command disable. */
                 servomotorPowerDisable( );
+                
+                IRSensorDisable( );
+                EX_INT1_InterruptDisable();                    
+                EX_INT1_PositiveEdgeSet( );  
+                EX_INT1_InterruptFlagClear( );
+                clear_ir1_sensor( );
+                
+                appDataDoor.num_reopen_attempt = 0;
+                    
                 appData.state = APP_STATE_DATA_LOG;
             }
             break;
             /* -------------------------------------------------------------- */
 
+            case APP_STATE_REOPEN_DOOR:
+            if ( appData.state != appData.previous_state )
+            {
+                appData.previous_state = appData.state;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
+                printf( "> APP_STATE_REOPEN_DOOR\n" );
+#endif           
+                appDataDoor.reward_door_status = DOOR_OPENING;
+                
+                appDataDoor.num_reopen_attempt += 1;
+                
+            }
+
+            if ( DOOR_OPENED == appDataDoor.reward_door_status )
+            {
+                if (MAX_NUM_DOOR_REOPEN_ATTEMPT < appDataDoor.num_reopen_attempt)
+                {
+                    sprintf( appError.message, "Unable to close the door after %d attempts", MAX_NUM_DOOR_REOPEN_ATTEMPT);
+                    appError.currentLineNumber = __LINE__;
+                    sprintf( appError.currentFileName, "%s", __FILE__ );
+                    appError.number = ERROR_DOOR_CANT_CLOSE;
+                    appData.state = APP_STATE_ERROR;
+                }
+                else
+                {
+                    appData.state = APP_STATE_CLOSING_DOOR;
+                }
+            } 
+            
+            break;
+            /* -------------------------------------------------------------- */
+            
             //        case APP_STATE_ATTACH_KEY:
             //            if (appData.state != appData.previous_state)
             //            {
@@ -1241,7 +1289,7 @@ void APP_Tasks( void )
                 rtcc_stop_alarm( );
 
                 /* Close the door if it is opened */
-                if ( DOOR_CLOSED != appDataDoor.reward_door_status )
+                if ( ERROR_DOOR_CANT_CLOSE!=appError.number && DOOR_CLOSED != appDataDoor.reward_door_status )
                 {
                     /* Close reward door */
                     servomotorPowerEnable( );
@@ -1265,7 +1313,7 @@ void APP_Tasks( void )
                 setDelayMs( 5000 );
 
 #if defined (USE_UART1_SERIAL_INTERFACE) 
-                if ( appError.number > ERROR_LOW_VBAT )
+                if ( appError.number > ERROR_CRITICAL )
                 {
                     printf( "%d - Need to reset\n", T3CONbits.TON );
                 }
@@ -1274,7 +1322,7 @@ void APP_Tasks( void )
 
             /* FIXME : Reset every 5 sec */
             /* Reset the system if non critical error occurred */
-            if ( appError.number > ERROR_LOW_VBAT )
+            if ( appError.number > ERROR_CRITICAL )
             {
                 if ( isDelayMsEnding( ) )
                 {

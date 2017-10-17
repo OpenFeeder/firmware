@@ -26,6 +26,8 @@ typedef enum
     ERROR_LOW_BATTERY,
     ERROR_LOW_FOOD,
     ERROR_LOW_VBAT,
+    ERROR_DOOR_CANT_CLOSE,
+    ERROR_CRITICAL,        
     /* Non critical errors: the system resets if errors below occurred */
     ERROR_USB,
     ERROR_INI_FILE_READ,
@@ -35,7 +37,7 @@ typedef enum
     ERROR_PIT_TAGS_DENIED_FILE_OPEN,
     ERROR_PIT_TAGS_DENIED_FILE_READ,
     ERROR_PIT_TAGS_DENIED_FILE_CLOSE,
-    ERROR_DOOR,    
+    ERROR_DOOR,
     ERROR_LOW_RFID_FREQUENCY,
     ERROR_POPULATE_DATA_BUFFER,
     ERROR_LOG_FILE_OPEN,

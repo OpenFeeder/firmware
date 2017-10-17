@@ -20,6 +20,8 @@
 #define SERVO_START_POSITION_DEFAULT    1500    /* initial servomotor position at the middle */
 #define SERVO_SPEED_INC_DEFAULT         10      /* servomotor position increment every 20 ms */
 
+#define MAX_NUM_DOOR_REOPEN_ATTEMPT 10
+
 typedef enum
 {
     DOOR_IDLE, /* Not in use. */
@@ -45,6 +47,8 @@ typedef struct
     double reward_probability;
     
     uint8_t habituation_percent;
+    
+    uint8_t num_reopen_attempt;
 
 } APP_DATA_DOOR;
 
