@@ -25,13 +25,22 @@ void powerPIRDisable( void )
     CMD_VDD_ACC_PIR_SERVO_SetLow( );
 }
 
+/* VDD_APP Enable function */
 void powerUsbRfidEnable( void )
 {
-    CMD_VDD_APP_V_USB_SetHigh( );
+    CMD_VDD_APP_V_USB_SetHigh( ); // Power ON the U5 => MIC39101 - 5.0YM
+    
+    //!\ FIXME: We must put "CMD_VDD_USB" (RF0) Low to powered the USB 
+    CMD_VDD_USB_SetLow(); // powered the USB connector
+    CMD_VDD_USB_SetDigitalOutput();
 }
 
+/* VDD_APP Disable function */
 void powerUsbRfidDisable( void )
 {
+    // CMD_VDD_USB_SetDigitalInput(); // USB power down, VDD_USB = OFF
+    
+    // TODO: complete powerUsbRfidDisable( )
     //    CMD_VDD_APP_V_USB_SetLow( ); // FIXME: CMD_VDD_APP_V_USB_SetLow( ) disable for USB continue mode
 }
 

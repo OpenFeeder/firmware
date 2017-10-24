@@ -81,8 +81,6 @@ void APP_SerialDebugTasks( void )
                 printf( " x or X: display external interrupt and timers states\n" );
                 printf( " y or Y: display all commands values\n");
                 printf( " z or Z: check important parameters\n" );
-                
-                
                 break;
 
             case '!':
@@ -648,7 +646,7 @@ void APP_SerialDebugTasks( void )
                 Nop( );
                 Nop( );
                 Nop( );
-                if ( false == CMD_VDD_ACC_PIR_SERVO_GetValue( ) )
+                if ( true == CMD_VDD_ACC_PIR_SERVO_GetValue( ) )
                 {
                     printf( "CMD_ACC_PIR enable.\n" );
                 }

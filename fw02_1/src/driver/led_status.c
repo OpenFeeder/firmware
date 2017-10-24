@@ -9,7 +9,6 @@
 #include "led_status.h"
 #include <libpic30.h>
 
-
 void setLedsStatusColor( LED_STATUS status )
 {
 #if !defined (DEBUG_RFID_WORKING_ON_LED_STATUS)
@@ -17,57 +16,59 @@ void setLedsStatusColor( LED_STATUS status )
     {
         case LEDS_OFF:
             /* all leds off */
-            LED_STATUS_R_SetHigh( );
-            LED_STATUS_G_SetHigh( );
-            LED_STATUS_B_SetHigh( );
+            LED_STATUS_R_SetLow( );
+            LED_STATUS_G_SetLow( );
+            LED_STATUS_B_SetLow( );
+            LED_STATUS_Y_SetLow( );
             break;
 
         case LED_WHITE:
         case LEDS_ON:
             /* all leds on */
-            LED_STATUS_R_SetLow( );
-            LED_STATUS_G_SetLow( );
-            LED_STATUS_B_SetLow( );
+            LED_STATUS_R_SetHigh( );
+            LED_STATUS_G_SetHigh( );
+            LED_STATUS_B_SetHigh( );
+            LED_STATUS_Y_SetHigh( );
             break;
 
         case LED_GREEN:
         case LEDS_OK:
             /* set only green led */
-            LED_STATUS_R_SetHigh( );
-            LED_STATUS_G_SetLow( );
-            LED_STATUS_B_SetHigh( );
+            LED_STATUS_R_SetLow( );
+            LED_STATUS_G_SetHigh( );
+            LED_STATUS_B_SetLow( );
+            LED_STATUS_Y_SetLow( );
             break;
 
         case LED_BLUE:
+        case LED_PURPLE:
+        case LEDS_WAIT_USB_KEY:
             //        case LEDS_INIT:
             /* set only blue led */
-            LED_STATUS_R_SetHigh( );
-            LED_STATUS_G_SetHigh( );
-            LED_STATUS_B_SetLow( );
-            break;
-
-        case LED_YELLOW:
-            //        case LEDS_IDLE:
-            /* set green and red leds, make orange color */
             LED_STATUS_R_SetLow( );
             LED_STATUS_G_SetLow( );
             LED_STATUS_B_SetHigh( );
+            LED_STATUS_Y_SetLow( );
             break;
+            //            /* set blue color */
+            //            LED_STATUS_B_SetHigh( );
+            //            break;
 
-        case LED_PURPLE:
-        case LEDS_WAIT_USB_KEY:
-            /* set blue and red leds, make purple color */
+        case LED_YELLOW:
+            /* set green and red leds, make orange color */
             LED_STATUS_R_SetLow( );
-            LED_STATUS_G_SetHigh( );
+            LED_STATUS_G_SetLow( );
             LED_STATUS_B_SetLow( );
+            LED_STATUS_Y_SetHigh( );
             break;
 
         case LED_RED:
         case LEDS_ERROR:
             /* set only red led */
-            LED_STATUS_R_SetLow( );
-            LED_STATUS_G_SetHigh( );
-            LED_STATUS_B_SetHigh( );
+            LED_STATUS_R_SetHigh( );
+            LED_STATUS_G_SetLow( );
+            LED_STATUS_B_SetLow( );
+            LED_STATUS_Y_SetLow( );
             break;
     }
 #endif
@@ -107,9 +108,9 @@ void doLedsStatusBlink( LED_STATUS color, uint8_t blink_number, uint16_t t_on, u
     for (; blink_number > 0; --blink_number )
     {
         setLedsStatusColor( color );
-//        __delay_ms( t_on );
+        //        __delay_ms( t_on );
         setLedsStatusColor( LEDS_OFF );
-//        __delay_ms( t_off );
+        //        __delay_ms( t_off );
     }
 #endif
 }
