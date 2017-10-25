@@ -26,13 +26,60 @@ void displayBuildDateTime( void )
 void displayBootMessage( void )
 {
     printf( "\n\n================ OpenFeeder ================\n" );
-    printf( "      Board: v2.0 - Firmware: fw02\n" );
+    printf( "      Board: v3.0 - Firmware: fw02_1\n" );
     printf( "      Build on %s, %s\n", BUILD_DATE, BUILD_TIME );
     printf( "============================================\n" );
     printf( "   Web page: https://github.com/OpenFeeder\n" );
     printf( "   Mail: contact.openfeeder@gmail.com\n" );
     printf( "============================================\n" );
     printf( "Type [?] key to display the Key mapping interface.\n\n" );
+}
+
+void displayResetRegisters( void )
+{
+    RESET_SYSTEM_CONTROL_REGISTER_1_t rst_sys_ctrl1_value; // variable for reading RCON1 register
+    RESET_SYSTEM_CONTROL_REGISTER_2_t rst_sys_ctrl2_value; // variable for reading RCON2 register
+        
+    rst_sys_ctrl1_value.status_reg = RCON; // save register
+    RCON = 0; // clear register
+    
+    /* RESET AND SYSTEM CONTROL REGISTER 2 */
+    // bit 3 VDDBOR : VDD Brown - out Reset Flag bit( 1 )
+    //    1 = A VDD Brown - out Reset has occurred( set by hardware )
+    //    0 = A VDD Brown - out Reset has not occurred
+    // bit 2 VDDPOR : VDD Power - on Reset Flag bit( 1, 2 )
+    //    1 = A VDD Power - on Reset has occurred( set by hardware )
+    //    0 = A VDD Power - on Reset has not occurred
+    // bit 1 VBPOR : VBPOR Flag bit( 1, 3 )
+    //    1 = A VBAT POR has occurred( no battery connected to VBAT pin or VBAT power below Deep Sleep
+    //                                 Semaphore register retention level is set by hardware )
+    //    0 = A VBAT POR has not occurred
+    // bit 0 VBAT : VBAT Flag bit( 1 )
+    //    1 = A POR exit has occurred while power was applied to VBAT pin( set by hardware )
+    //    0 = A POR exit from VBAT has not occurred
+    rst_sys_ctrl2_value.status_reg = RCON2; // save register
+    RCON2 = 0; // clear register
+    
+//    printf( "\nReset flag bits\n" );
+    printf( "\t-----------------------\n" );
+    printf( "\t|   RCON1  |   RCON2  |\n" );
+    printf( "\t| POR    %u | VBAT   %u |\n", rst_sys_ctrl1_value.status_bit.POR, rst_sys_ctrl2_value.status_bit.VBAT );
+    printf( "\t| BOR    %u | VBPOR  %u |\n", rst_sys_ctrl1_value.status_bit.BOR, rst_sys_ctrl2_value.status_bit.VBPOR );
+    printf( "\t| IDLE   %u | VDDPOR %u |\n", rst_sys_ctrl1_value.status_bit.IDLE, rst_sys_ctrl2_value.status_bit.VDDPOR );
+    printf( "\t| SLEEP  %u | VDDBOR %u |\n", rst_sys_ctrl1_value.status_bit.SLEEP, rst_sys_ctrl2_value.status_bit.VDDBOR );
+    printf( "\t| WDTO   %u |     -    |\n", rst_sys_ctrl1_value.status_bit.WDTO );
+    printf( "\t| SWDTEN %u |     -    |\n", rst_sys_ctrl1_value.status_bit.SWDTEN );
+    printf( "\t| SWR    %u |     -    |\n", rst_sys_ctrl1_value.status_bit.SWR );
+    printf( "\t| EXTR   %u |     -    |\n", rst_sys_ctrl1_value.status_bit.EXTR );
+    printf( "\t| PMSLP  %u |     -    |\n", rst_sys_ctrl1_value.status_bit.PMSLP );
+    printf( "\t| CM     %u |     -    |\n", rst_sys_ctrl1_value.status_bit.CM );
+    printf( "\t| DPSLP  %u |     -    |\n", rst_sys_ctrl1_value.status_bit.DPSLP );
+    printf( "\t|     -    |     -    |\n");
+    printf( "\t| RETEN  %u |     -    |\n", rst_sys_ctrl1_value.status_bit.RETEN );
+    printf( "\t|     -    |     -    |\n");
+    printf( "\t| IOPUWR %u |     -    |\n", rst_sys_ctrl1_value.status_bit.IOPUWR );
+    printf( "\t| TRAPR  %u |     -    |\n", rst_sys_ctrl1_value.status_bit.TRAPR );
+    printf( "\t-----------------------\n\n" );
 }
 
 void APP_SerialDebugTasks( void )
@@ -278,7 +325,7 @@ void APP_SerialDebugTasks( void )
             case 'I':
                 /* Enable IR */
                 IRSensorEnable( );
-                setDelayMs( 250 ); // TODO: adjust delay according to the datasheet
+                setDelayMs( DELAY_MS_BEFORE_IR_ENABLE ); // TODO: adjust delay according to the datasheet
                 while ( false == isDelayMsEnding( ) );
                 printf( "IR command enable, detecting mode.\n" );
                 break;

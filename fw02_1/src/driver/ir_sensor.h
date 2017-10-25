@@ -12,6 +12,7 @@
 #include "ext_int.h"
 #include "tmr4.h"
 
+#define DELAY_MS_BEFORE_IR_ENABLE 500  // TODO: adjust delay according to the datasheet
 #define VDD_IR_ON()  {CMD_VCC_IR_SetLow( );}  /* Powering IR command enable.  */
 #define VDD_IR_OFF() {CMD_VCC_IR_SetHigh( );} /* Powering IR command disable. */
 

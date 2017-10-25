@@ -174,55 +174,18 @@
 #include "mcc.h"
 #include "app.h"
 
-/* Declaration of RCON2 flag. */
-typedef union
-{
-    uint16_t status_reg;
-
-    struct
-    {
-        unsigned VBAT : 1; /* VBAT Flag bit */
-        unsigned VBPOR : 1; /* VBPOR Flag bit */
-        unsigned VDDPOR : 1; /* VDD Power-on Reset Flag bit */
-        unsigned VDDBOR : 1; /* VDD Brown-out Reset Flag bit */
-        unsigned : 4; /* Reserved */
-        unsigned : 8; /* Unimplemented */
-    } status_bit;
-} RESET_SYSTEM_CONTROL_REGISTER_2_t;
-
 /*
                          Main application
-
  */
 
 int main( void )
 {
-    RESET_SYSTEM_CONTROL_REGISTER_2_t rst_sys_ctrl2_value; // variable for reading RCON2 register
-
     /* Initialize the device. */
     SYSTEM_Initialize( );
-
-    /* RESET AND SYSTEM CONTROL REGISTER 2 */
-    // bit 3 VDDBOR : VDD Brown - out Reset Flag bit( 1 )
-    //    1 = A VDD Brown - out Reset has occurred( set by hardware )
-    //    0 = A VDD Brown - out Reset has not occurred
-    // bit 2 VDDPOR : VDD Power - on Reset Flag bit( 1, 2 )
-    //    1 = A VDD Power - on Reset has occurred( set by hardware )
-    //    0 = A VDD Power - on Reset has not occurred
-    // bit 1 VBPOR : VBPOR Flag bit( 1, 3 )
-    //    1 = A VBAT POR has occurred( no battery connected to VBAT pin or VBAT power below Deep Sleep
-    //                                 Semaphore register retention level is set by hardware )
-    //    0 = A VBAT POR has not occurred
-    // bit 0 VBAT : VBAT Flag bit( 1 )
-    //    1 = A POR exit has occurred while power was applied to VBAT pin( set by hardware )
-    //    0 = A POR exit from VBAT has not occurred
-    rst_sys_ctrl2_value.status_reg = RCON2; // save register
-    RCON2 = 0; // clear register
 
     /* Initialize peripheral driver. */
     RFID_Initialize( );
     SERVO_Initialize( );
-//    IRSensor_Initialize( );
 
     /* Initialize the file IO system. */
     FILEIO_Initialize( );
@@ -245,13 +208,13 @@ int main( void )
     APP_Initialize( );
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
-    printf( "\n\nReset flag bits (for debug purpose only)\n" );
-    printf( "\tVBAT bit  : %u\n", rst_sys_ctrl2_value.status_bit.VBAT );
-    printf( "\tVBPOR bit : %u\n", rst_sys_ctrl2_value.status_bit.VBPOR );
-    printf( "\tVDDPOR bit: %u\n", rst_sys_ctrl2_value.status_bit.VDDPOR );
-    printf( "\tVDDBOR bit: %u\n", rst_sys_ctrl2_value.status_bit.VDDBOR );
     /* Display information on serial terminal. */
     displayBootMessage( );
+    
+#if defined (DISPLAY_RESET_REGISTERS)
+    /* Display reset registers. */
+    displayResetRegisters( );
+#endif
 #endif
 
     /* Main loop. */

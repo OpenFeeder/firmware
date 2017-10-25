@@ -120,10 +120,10 @@ bool isEnoughFood( void )
     {
         flag = true;
         IRSensorEnable( );
-        setDelayMs( 250 ); // TODO: adjust delay according to the datasheet
+        setDelayMs( DELAY_MS_BEFORE_IR_ENABLE );
         while ( false == isDelayMsEnding( ) );
     }
-        
+
     /* Check food level */
     foodLevelOK = ( 1 == BAR_IR2_OUT_GetValue( ) );
 
