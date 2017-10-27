@@ -12,7 +12,7 @@ That way you can coordinate with the OpenFeeder Team and others, giving your wor
 of being integrated into the official release.
 
 
-Development environment uses
+Development tools
 ----------------------------
 - [MPLAB® X Integrated Development Environment (IDE) and tools](http://www.microchip.com/mplab/mplab-x-ide)
 - [MPLAB® XC16 Compiler](http://www.microchip.com/mplab/compilers)
@@ -23,16 +23,10 @@ Development environment uses
 
 Credits
 --------
-OpenFeeder is an open source project ;-)
-
 The OpenFeeder team is composed of [Maxime CAUCHOIX](http://www.iast.fr/member/maxime-cauchoix), [Arnauld BIGANZOLI](http://tonic.inserm.fr/arnauld-biganzoli-404340.kjsp), [Vincent GUIRAUD](http://select-design.net/), [Jérôme BRIOT](http://blog.developpez.com/dut/) and [Maurice CRESPIN](mcrespin31@gmail.com).
 
 
-Copyright Notice
+License
 ----------------
-Contents of the OpenFeeder project are released as Creative Commons Attribution ShareAlike 3.0.
-
-![CC BY-SA 3.0](img_cc_by_sa.png?raw=true "CC BY-SA 3.0")
-
-This means you can use them on your own derived works, in part or completely, as long as you also adopt the same license.
-You find the complete text of the license [here](http://creativecommons.org/licenses/by-sa/3.0/legalcode).
+[![Creative Commons License](https://i.creativecommons.org/l/by-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-sa/4.0/)
+This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-sa/4.0/).
