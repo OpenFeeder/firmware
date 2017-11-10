@@ -536,13 +536,22 @@ void APP_SerialDebugTasks( void )
                 /* Read uint16_t from terminal. */
                 appDataServo.ton_cmd = readIntFromUart1( );
 
-                if ( appDataServo.ton_cmd > appDataServo.ton_max )
+//                if ( appDataServo.ton_cmd > appDataServo.ton_max )
+//                {
+//                    appDataServo.ton_cmd = appDataServo.ton_max;
+//                }
+//                else if ( appDataServo.ton_cmd < appDataServo.ton_min )
+//                {
+//                    appDataServo.ton_cmd = appDataServo.ton_min;
+//                }
+                
+                if ( appDataServo.ton_cmd > SERVO_POSITION_MAX_DEFAULT )
                 {
-                    appDataServo.ton_cmd = appDataServo.ton_max;
+                    appDataServo.ton_cmd = SERVO_POSITION_MAX_DEFAULT;
                 }
-                else if ( appDataServo.ton_cmd < appDataServo.ton_min )
+                else if ( appDataServo.ton_cmd < SERVO_POSITION_MIN_DEFAULT )
                 {
-                    appDataServo.ton_cmd = appDataServo.ton_min;
+                    appDataServo.ton_cmd = SERVO_POSITION_MIN_DEFAULT;
                 }
 
                 if ( false == isPowerServoEnable( ) )

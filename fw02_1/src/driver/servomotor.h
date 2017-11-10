@@ -15,8 +15,8 @@
  * HS-322HD: 600 us < servo_position < 2400 us, flexible nylon noise --> Ok
  * PARRALAX: 600 us < servo_position < 2400 us (Product ID: 900-00005), sound gear 
  */
-#define SERVO_POSITION_MIN_DEFAULT      500     /* min:  500 us */
-#define SERVO_POSITION_MAX_DEFAULT      2500    /* max: 2500 us */
+#define SERVO_POSITION_MIN_DEFAULT      600     /* min:  600 us */
+#define SERVO_POSITION_MAX_DEFAULT      2400    /* max: 2400 us */
 #define SERVO_START_POSITION_DEFAULT    1500    /* initial servomotor position at the middle */
 #define SERVO_SPEED_INC_DEFAULT         10      /* servomotor position increment every 20 ms */
 
