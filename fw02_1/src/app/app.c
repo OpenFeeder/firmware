@@ -857,8 +857,21 @@ void APP_Tasks( void )
                 
                 appDataDoor.num_reopen_attempt += 1;
                 
+                /* Timeout before going to error. */
+                setDelayMs( 10000 );
+                
             }
 
+            if ( true == isDelayMsEnding( ) ) 
+            {
+                sprintf( appError.message, "Unable to close the door after %d seconds", 10);
+                appError.currentLineNumber = __LINE__;
+                sprintf( appError.currentFileName, "%s", __FILE__ );
+                appError.number = ERROR_DOOR_CANT_CLOSE;
+                appData.state = APP_STATE_ERROR;
+                break;
+            }                                                 
+                                         
             if ( DOOR_OPENED == appDataDoor.reward_door_status )
             {
                 if (MAX_NUM_DOOR_REOPEN_ATTEMPT < appDataDoor.num_reopen_attempt)
@@ -871,7 +884,10 @@ void APP_Tasks( void )
                 }
                 else
                 {
-                    appData.state = APP_STATE_CLOSING_DOOR;
+                    if (0 == BAR_IR1_OUT_GetValue( ))
+                    {
+                        appData.state = APP_STATE_CLOSING_DOOR;
+                    }
                 }
             } 
             
