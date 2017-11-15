@@ -23,6 +23,64 @@ void SERVO_Initialize( void )
 
 }
 
+uint16_t getDoorPosition( void )
+{
+    return getADC1value( ADC1_CHANNEL_MA_SERVO );
+}
+
+bool servomotorMoveTheDoor( void )
+{
+    if ( appDataServo.ton_cmd != appDataServo.ton_goal )
+    {
+
+        /* Change servomotor position. */        
+        if (appDataServo.direction == 1)
+        {
+            appDataServo.ton_cmd += ( uint16_t ) appDataServo.speed;
+        }
+        else
+        {
+            appDataServo.ton_cmd -= ( uint16_t ) appDataServo.speed;
+        }
+//#if defined (USE_UART1_SERIAL_INTERFACE)
+//        printf( "%u %u\n", appDataServo.ton_cmd, getDoorPosition());
+//#endif 
+        if ( appDataServo.direction == 1 && appDataServo.ton_cmd >= appDataServo.ton_goal )
+        {
+            appDataServo.ton_cmd -= (appDataServo.ton_cmd - appDataServo.ton_goal);
+//#if defined (USE_UART1_SERIAL_INTERFACE)
+//            printf( "%u %u\n", appDataServo.ton_cmd, getDoorPosition());
+//#endif
+            OC5_PrimaryValueSet( appDataServo.ton_cmd );
+//#if defined (USE_UART1_SERIAL_INTERFACE)
+//            printf( "%u %u (last)\n", appDataServo.ton_cmd, getDoorPosition());
+//#endif
+            appDataServo.ton_cmd = appDataServo.ton_goal;
+            return true;
+        }
+        else if ( appDataServo.direction == -1 && appDataServo.ton_cmd <= appDataServo.ton_goal )
+        {
+            appDataServo.ton_cmd += (appDataServo.ton_goal - appDataServo.ton_cmd);
+//#if defined (USE_UART1_SERIAL_INTERFACE)
+//            printf( "%u %u\n", appDataServo.ton_cmd, getDoorPosition());
+//#endif
+            OC5_PrimaryValueSet( appDataServo.ton_cmd );
+//#if defined (USE_UART1_SERIAL_INTERFACE)
+//            printf( "%u %u (last)\n", appDataServo.ton_cmd, getDoorPosition());
+//#endif
+            appDataServo.ton_cmd = appDataServo.ton_goal;
+            return true;
+        }
+        
+        /* Set DC of PWM5. */
+        OC5_PrimaryValueSet( appDataServo.ton_cmd );
+
+        return false;
+    }
+
+    return true;
+}
+
 /**
  * bool servomotorOpenTheDoor( void )
  * @return true if appDataServo.ton_max is reach

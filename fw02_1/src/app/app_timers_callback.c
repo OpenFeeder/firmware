@@ -97,6 +97,14 @@ void TMR3_CallBack( void )
                 appDataDoor.reward_door_status = DOOR_CLOSED;
             }
             break;
+            
+        case DOOR_MOVING:
+            /* Moving in action. */
+            if ( servomotorMoveTheDoor( ) )
+            {
+                appDataDoor.reward_door_status = DOOR_MOVED;
+            }
+            break;
 
         case DOOR_IDLE:
         default:

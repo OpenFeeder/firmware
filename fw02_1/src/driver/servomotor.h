@@ -27,8 +27,10 @@ typedef enum
     DOOR_IDLE, /* Not in use. */
     DOOR_OPENED,
     DOOR_CLOSED,
+    DOOR_MOVED,
     DOOR_OPENING, /* Opening in action. */
-    DOOR_CLOSING /* Closing in action. */
+    DOOR_CLOSING, /* Closing in action. */
+    DOOR_MOVING
 
 } DOOR_STATUS;
 
@@ -59,9 +61,10 @@ typedef struct
     uint16_t ton_cmd; /* command servomotor position */
     uint16_t ton_min; /* minimum servomotor position */
     uint16_t ton_max; /* maximum servomotor position */
+    uint16_t ton_goal; /* maximum servomotor position */
     uint8_t speed; /* servomotor speed increment to move from position A to B(ex: every 20 ms) */
     uint16_t measure_position; /* measured servomotor position */
-
+    int8_t direction;
 } APP_DATA_SERVO;
 
 // *****************************************************************************
@@ -86,9 +89,12 @@ bool servomotorOpenTheDoor( void );
  */
 bool servomotorCloseTheDoor( void );
 
+bool servomotorMoveTheDoor(void);
+
 void servomotorPowerEnable( void );
 void servomotorPowerDisable( void );
 
+uint16_t getDoorPosition( void );
 
 #endif	/* SERVOMOTOR_H */
 

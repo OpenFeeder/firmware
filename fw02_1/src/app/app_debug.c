@@ -101,7 +101,7 @@ void APP_SerialDebugTasks( void )
                 printf( " !: displaying the build date and time\n" );
                 printf( " a or A: analog measure of the servomotor position, battery voltage and VBAT voltage\n" );
                 printf( " b or B: set blue color value of RGB attractive LEDs\n" );
-                printf( " c or C: close reward door\n" );
+                printf( " c or C: close door\n" );
                 printf( " d or D: display internal buffers\n" );
                 printf( " e or E: measuring RDY/CLK period of EM4095\n" );
                 printf( " f or F: display configuration parameters (CONFIG.INI)\n" );
@@ -116,7 +116,7 @@ void APP_SerialDebugTasks( void )
                 printf( "\t> 2: Toggle Output Enable (OE) pin\n" );
                 printf( "\t> 3: Toggle LED D16 color green or red\n" );
                 printf( " n or N: NOT AFFECTED\n" );
-                printf( " o or O: open reward door\n" );
+                printf( " o or O: open door\n" );
                 printf( " p or P: change servomotor position\n" );
                 printf( " q or Q: NOT AFFECTED\n" );
                 printf( " r or R: set red color value of RGB attractive LEDs\n" );
@@ -139,11 +139,13 @@ void APP_SerialDebugTasks( void )
             {
                 /* analogic measure of the current position of the servomotor. */
                 uint16_t analog_measure;
-                analog_measure = getADC1value( ADC1_CHANNEL_MA_SERVO );
+//                analog_measure = getADC1value( ADC1_CHANNEL_MA_SERVO );
 
                 /* Mesure with jumper closed from 3904 to 4078 --> ~4060 */
-                printf( "servo_position_analog = %u\n", analog_measure );
+//                printf( "servo_position_analog = %u\n", analog_measure );
 
+                printf( "servo_position_analog = %u\n", getDoorPosition() );
+                   
                 /* Battery level */
                 appData.battery_level = getADC1value( ADC1_CHANNEL_MA_12V );
                 printBatteryLevel( );
@@ -200,14 +202,15 @@ void APP_SerialDebugTasks( void )
                     if ( 1 == appDataDoor.remain_open )
                     {
                         appDataDoor.remain_open = 0;
-                        printf( "Closing reward door in action. Remain door open set to off\n" );
+                        printf( "Closing door in action. Remain door open set to off\n" );
                     }
                     else
                     {
-                        printf( "Closing reward door in action.\n" );
+                        printf( "Closing door in action.\n" );
                     }
 
                     while ( DOOR_CLOSED != appDataDoor.reward_door_status );
+                    printf( "Door closed - Servo position: %u\n", getADC1value( ADC1_CHANNEL_MA_SERVO ) ); 
                     servomotorPowerDisable( );
                 }
                 else
@@ -216,14 +219,15 @@ void APP_SerialDebugTasks( void )
                     if ( 1 == appDataDoor.remain_open )
                     {
                         appDataDoor.remain_open = 0;
-                        printf( "Closing reward door in action. Remain door open set to off\n" );
+                        printf( "Closing door in action. Remain door open set to off\n" );
                     }
                     else
                     {
-                        printf( "Closing reward door in action.\n" );
+                        printf( "Closing door in action.\n" );
                     }
 
                     while ( DOOR_OPENED != appDataDoor.reward_door_status );
+                    printf( "Door closed - Servo position: %u\n", getADC1value( ADC1_CHANNEL_MA_SERVO ) ); 
                 }
                 break;
                 /* -------------------------------------------------------------- */
@@ -510,15 +514,17 @@ void APP_SerialDebugTasks( void )
                 {
                     servomotorPowerEnable( );
                     appDataDoor.reward_door_status = DOOR_OPENING;
-                    printf( "Opening reward door in action.\n" );
-                    while ( DOOR_OPENED != appDataDoor.reward_door_status );
+                    printf( "Opening door in action.\n" );
+                    while ( DOOR_OPENED != appDataDoor.reward_door_status );                    
+                    printf( "Door opened - Servo position: %u\n", getADC1value( ADC1_CHANNEL_MA_SERVO ) );                
                     servomotorPowerDisable( );
                 }
                 else
                 {
                     appDataDoor.reward_door_status = DOOR_OPENING;
-                    printf( "Opening reward door in action.\n" );
+                    printf( "Opening door in action.\n" );
                     while ( DOOR_OPENED != appDataDoor.reward_door_status );
+                    printf( "Door opened - Servo position: %u\n", getADC1value( ADC1_CHANNEL_MA_SERVO ) ); 
                 }
                 break;
                 /* -------------------------------------------------------------- */
@@ -527,47 +533,78 @@ void APP_SerialDebugTasks( void )
             case 'P':
                 /* Change servomotor position
                  * Servomotor:
-                 * Absolute range: 500 us < servo_position < 2500 us
                  * HS-322HD: 600 us < servo_position < 2400 us, flexible nylon noise --> Ok
                  * PARRALAX: 600 us < servo_position < 2400 us (Product ID: 900-00005), sound gear 
                  */
-                printf( "Set servomotor position, enter a value from %u to %u:\n", appDataServo.ton_min, appDataServo.ton_max );
-
-                /* Read uint16_t from terminal. */
-                appDataServo.ton_cmd = readIntFromUart1( );
-
-//                if ( appDataServo.ton_cmd > appDataServo.ton_max )
-//                {
-//                    appDataServo.ton_cmd = appDataServo.ton_max;
-//                }
-//                else if ( appDataServo.ton_cmd < appDataServo.ton_min )
-//                {
-//                    appDataServo.ton_cmd = appDataServo.ton_min;
-//                }
                 
-                if ( appDataServo.ton_cmd > SERVO_POSITION_MAX_DEFAULT )
-                {
-                    appDataServo.ton_cmd = SERVO_POSITION_MAX_DEFAULT;
-                }
-                else if ( appDataServo.ton_cmd < SERVO_POSITION_MIN_DEFAULT )
-                {
-                    appDataServo.ton_cmd = SERVO_POSITION_MIN_DEFAULT;
-                }
-
+                /* Get current position. */
                 if ( false == isPowerServoEnable( ) )
                 {
                     servomotorPowerEnable( );
+                    appDataServo.ton_cmd = getDoorPosition();
+                    servomotorPowerDisable( );
+                }
+                else
+                {
+                   appDataServo.ton_cmd = getDoorPosition(); 
+                }
+                                
+                printf( "Set servomotor position\n\tRange MAX: [%u %u]\n\tRange INI:[%u %u]\n\tCurrent position: %u\n", SERVO_POSITION_MIN_DEFAULT, SERVO_POSITION_MAX_DEFAULT, appDataServo.ton_min, appDataServo.ton_max, appDataServo.ton_cmd );
+                
+                /* Read uint16_t from terminal. */
+                appDataServo.ton_goal = readIntFromUart1( );
+                
+                if ( appDataServo.ton_goal > SERVO_POSITION_MAX_DEFAULT )
+                {
+                    printf("No move because goal position (%u) is more than maximal position (%u)\n", appDataServo.ton_goal, SERVO_POSITION_MAX_DEFAULT );
+                    break;
+                }
+                else if ( appDataServo.ton_goal < SERVO_POSITION_MIN_DEFAULT )
+                {
+                    printf("No move because goal position (%u) is less than minimal position (%u)\n", appDataServo.ton_goal, SERVO_POSITION_MIN_DEFAULT );
+                    break;
+                }
+                else if ( appDataServo.ton_goal >  appDataServo.ton_max )
+                {
+                    printf("Warning: goal position (%u) is outside range specified in the INI file ([%u %u])\n", appDataServo.ton_goal, appDataServo.ton_min , appDataServo.ton_max );
+                }
+                else if ( appDataServo.ton_goal <  appDataServo.ton_min )
+                {
+                    printf("Warning: goal position (%u) is outside range specified in the INI file ([%u %u])\n", appDataServo.ton_goal, appDataServo.ton_min , appDataServo.ton_max );
                 }
 
+                if (appDataServo.ton_cmd == appDataServo.ton_goal)
+                {
+                   printf( "Door already at goal position.\n" ); 
+                   break;
+                }
+                
+                if (appDataServo.ton_cmd > appDataServo.ton_goal)
+                {
+                    appDataServo.direction = -1;
+                }
+                else
+                {
+                    appDataServo.direction = 1;
+                }
+                
                 TMR3_Start( );
+               
+                if ( false == isPowerServoEnable( ) )
+                {
+                    servomotorPowerEnable( );
+                    appDataDoor.reward_door_status = DOOR_MOVING;
+//                    printf( "Moving door in action.\n" );
+                    while ( DOOR_MOVED != appDataDoor.reward_door_status );
+                    servomotorPowerDisable( );
+                }
+                else
+                {
+                    appDataDoor.reward_door_status = DOOR_MOVING;
+//                    printf( "Moving door in action.\n" );
+                    while ( DOOR_MOVED != appDataDoor.reward_door_status );
+                }
 
-                /* Set DC of PWM5. */
-                OC5_PrimaryValueSet( appDataServo.ton_cmd );
-                printf( "servo_position = %u\n", appDataServo.ton_cmd );
-
-                setDelayMs( 1500 );
-                while ( false == isDelayMsEnding( ) );
-                servomotorPowerDisable( );
                 break;
                 /* -------------------------------------------------------------- */
 

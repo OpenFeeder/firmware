@@ -415,7 +415,7 @@ void APP_Tasks( void )
                     servomotorPowerEnable( );
                     appDataDoor.reward_door_status = DOOR_OPENING;
 #if defined (USE_UART1_SERIAL_INTERFACE)
-                    printf( "Opening reward door in action.\n" );
+                    printf( "Opening door in action.\n" );
 #endif
                     while ( DOOR_OPENED != appDataDoor.reward_door_status );
                     servomotorPowerDisable( );
@@ -427,7 +427,7 @@ void APP_Tasks( void )
                     servomotorPowerEnable( );
                     appDataDoor.reward_door_status = DOOR_CLOSING;
 #if defined (USE_UART1_SERIAL_INTERFACE)
-                    printf( "Closing reward door in action.\n" );
+                    printf( "Closing door in action.\n" );
 #endif
                     while ( DOOR_CLOSED != appDataDoor.reward_door_status );
                     servomotorPowerDisable( );
@@ -693,6 +693,9 @@ void APP_Tasks( void )
 
             if ( DOOR_OPENED == appDataDoor.reward_door_status )
             {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                printf( "Door opened - Servo position: %u\n", getADC1value( ADC1_CHANNEL_MA_SERVO ) ); 
+#endif
                 /* Servomotor power command disable. */
                 servomotorPowerDisable( );
                 appData.state = APP_STATE_WAITING_CATCH_REWARD;
@@ -817,7 +820,7 @@ void APP_Tasks( void )
                 servomotorPowerEnable( );
                 appDataDoor.reward_door_status = DOOR_CLOSING;
 #if defined (USE_UART1_SERIAL_INTERFACE) 
-                printf( "Closing reward door in action.\n" );
+                printf( "Closing door in action.\n" );
 #endif              
             }
             
@@ -830,6 +833,9 @@ void APP_Tasks( void )
 
             if ( DOOR_CLOSED == appDataDoor.reward_door_status )
             {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                printf( "Door closed - Servo position: %u\n", getADC1value( ADC1_CHANNEL_MA_SERVO ) ); 
+#endif
                 /* Servomotor power command disable. */
                 servomotorPowerDisable( );
                 
@@ -1054,9 +1060,12 @@ void APP_Tasks( void )
                     servomotorPowerEnable( );
                     appDataDoor.reward_door_status = DOOR_CLOSING;
 #if defined (USE_UART1_SERIAL_INTERFACE)
-                    printf( "Closing reward door in action.\n" );
+                    printf( "Closing door in action.\n" );
 #endif
                     while ( DOOR_CLOSED != appDataDoor.reward_door_status );
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                    printf( "Door closed - Servo position: %u\n", getADC1value( ADC1_CHANNEL_MA_SERVO ) ); 
+#endif
                     servomotorPowerDisable( );
                 }
 
@@ -1311,7 +1320,7 @@ void APP_Tasks( void )
                     servomotorPowerEnable( );
                     appDataDoor.reward_door_status = DOOR_CLOSING;
 #if defined (USE_UART1_SERIAL_INTERFACE)
-                    printf( "Closing reward door in action.\n" );
+                    printf( "Closing door in action.\n" );
 #endif
                     while ( DOOR_CLOSED != appDataDoor.reward_door_status );
                     servomotorPowerDisable( );
