@@ -100,7 +100,7 @@ void setLedsStatusColor( LED_STATUS status )
             LED_STATUS_R_SetLow( );
             LED_STATUS_G_SetHigh( );
             LED_STATUS_B_SetLow( );
-            LED_STATUS_Y_SetLow( );
+            LED_STATUS_Y_SetHigh( );
             break;
 
         case LEDS_ERROR_RFID_FREQ:
