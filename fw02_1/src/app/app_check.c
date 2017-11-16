@@ -85,9 +85,7 @@ bool isPowerBatteryGood( void )
         strcpy( appError.message, "Low battery level" );
         appError.currentLineNumber = __LINE__;
         sprintf( appError.currentFileName, "%s", __FILE__ );
-
         appError.number = ERROR_LOW_BATTERY;
-        appError.ledColor = LED_PURPLE;
     }
 
     return (batteryLevelOK );
@@ -105,7 +103,6 @@ bool isPowerVbatGood( void )
         appError.currentLineNumber = __LINE__;
         sprintf( appError.currentFileName, "%s", __FILE__ );
         appError.number = ERROR_LOW_VBAT;
-        appError.ledColor = LED_PURPLE;
     }
 
     return (vbatLevelOK );
@@ -133,7 +130,6 @@ bool isEnoughFood( void )
         appError.currentLineNumber = __LINE__;
         sprintf( appError.currentFileName, "%s", __FILE__ );
         appError.number = ERROR_LOW_FOOD;
-        appError.ledColor = LED_PURPLE;
     }
 
     if ( true == flag )
@@ -159,7 +155,6 @@ bool isRfidFreqGood( void )
         appError.currentLineNumber = __LINE__;
         sprintf( appError.currentFileName, "%s", __FILE__ );
         appError.number = ERROR_LOW_RFID_FREQUENCY;
-        appError.ledColor = LED_PURPLE;
     }
 
     return rfidFreqOK;

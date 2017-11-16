@@ -118,7 +118,7 @@ void APP_SerialDebugTasks( void )
                 printf( " n or N: NOT AFFECTED\n" );
                 printf( " o or O: open door\n" );
                 printf( " p or P: change servomotor position\n" );
-                printf( " q or Q: NOT AFFECTED\n" );
+                printf( " q or Q: check status LEDs\n" );
                 printf( " r or R: set red color value of RGB attractive LEDs\n" );
                 printf( " s or S: set RTCC module date and time value\n" );
                 printf( " t or T: display date and time from RTCC module\n" );
@@ -609,7 +609,9 @@ void APP_SerialDebugTasks( void )
                 /* -------------------------------------------------------------- */
 
             case 'q':
-            case 'Q':
+            case 'Q':                
+                /* Check status LEDs */   
+                checkLedsStatus( );            
                 
                 break;
                 /* -------------------------------------------------------------- */

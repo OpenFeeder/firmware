@@ -62,7 +62,8 @@ typedef struct
     //    uint8_t priority; // Message priority: 0 => high priority
     //                      //                   1 => low priority 
 
-    LED_STATUS ledColor;
+    LED_STATUS ledColor_1;
+    LED_STATUS ledColor_2;
 
     ERROR_NUMBER number;
 

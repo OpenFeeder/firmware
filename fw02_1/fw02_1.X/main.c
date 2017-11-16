@@ -197,11 +197,13 @@ int main( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
         printf( "\nFailure to initialize USB Host API!\n" );
 #endif
-        doLedsStatusBlink( LEDS_ERROR, 3, 83, 250 );
+//        doLedsStatusBlink( LEDS_ERROR, 3, 83, 250 );
+        LedsStatusBlink( LEDS_ERROR, LEDS_OFF, 83, 250 );
     }
     else
     {
-        doLedsStatusBlink( LED_GREEN, 3, 83, 250 );
+//        doLedsStatusBlink( LED_GREEN, 3, 83, 250 );
+        LedsStatusBlink( LEDS_ERROR, LEDS_OFF, 83, 250 );
     }
 
     /* Initialize the application. */

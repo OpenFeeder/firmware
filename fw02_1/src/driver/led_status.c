@@ -9,22 +9,20 @@
 #include "led_status.h"
 #include <libpic30.h>
 
+
 void setLedsStatusColor( LED_STATUS status )
 {
 #if !defined (DEBUG_RFID_WORKING_ON_LED_STATUS)
     switch ( status )
     {
         case LEDS_OFF:
-            /* all leds off */
             LED_STATUS_R_SetLow( );
             LED_STATUS_G_SetLow( );
             LED_STATUS_B_SetLow( );
             LED_STATUS_Y_SetLow( );
             break;
-
-        case LED_WHITE:
+            
         case LEDS_ON:
-            /* all leds on */
             LED_STATUS_R_SetHigh( );
             LED_STATUS_G_SetHigh( );
             LED_STATUS_B_SetHigh( );
@@ -41,22 +39,29 @@ void setLedsStatusColor( LED_STATUS status )
             break;
 
         case LED_BLUE:
-        case LED_PURPLE:
         case LEDS_WAIT_USB_KEY:
-            //        case LEDS_INIT:
-            /* set only blue led */
             LED_STATUS_R_SetLow( );
             LED_STATUS_G_SetLow( );
             LED_STATUS_B_SetHigh( );
             LED_STATUS_Y_SetLow( );
             break;
-            //            /* set blue color */
-            //            LED_STATUS_B_SetHigh( );
-            //            break;
+
+        case LED_PURPLE:
+            LED_STATUS_R_SetHigh( );
+            LED_STATUS_G_SetLow( );
+            LED_STATUS_B_SetHigh( );
+            LED_STATUS_Y_SetLow( );
+            break;
 
         case LED_YELLOW:
-            /* set green and red leds, make orange color */
             LED_STATUS_R_SetLow( );
+            LED_STATUS_G_SetLow( );
+            LED_STATUS_B_SetLow( );
+            LED_STATUS_Y_SetHigh( );
+            break;
+
+        case LED_ORANGE:
+            LED_STATUS_R_SetHigh( );
             LED_STATUS_G_SetLow( );
             LED_STATUS_B_SetLow( );
             LED_STATUS_Y_SetHigh( );
@@ -64,12 +69,47 @@ void setLedsStatusColor( LED_STATUS status )
 
         case LED_RED:
         case LEDS_ERROR:
-            /* set only red led */
             LED_STATUS_R_SetHigh( );
             LED_STATUS_G_SetLow( );
             LED_STATUS_B_SetLow( );
             LED_STATUS_Y_SetLow( );
             break;
+
+        case LEDS_ERROR_CRITICAL_BATTERY:
+            LED_STATUS_R_SetLow( );
+            LED_STATUS_G_SetLow( );
+            LED_STATUS_B_SetLow( );
+            LED_STATUS_Y_SetHigh( );
+            break;
+
+        case LEDS_ERROR_CRITICAL_FOOD:
+            LED_STATUS_R_SetLow( );
+            LED_STATUS_G_SetLow( );
+            LED_STATUS_B_SetHigh( );
+            LED_STATUS_Y_SetLow( );
+            break;
+
+        case LEDS_ERROR_CRITICAL_VBAT:
+            LED_STATUS_R_SetLow( );
+            LED_STATUS_G_SetHigh( );
+            LED_STATUS_B_SetHigh( );
+            LED_STATUS_Y_SetLow( );
+            break;
+
+        case LEDS_ERROR_CRITICAL_DOOR:
+            LED_STATUS_R_SetLow( );
+            LED_STATUS_G_SetHigh( );
+            LED_STATUS_B_SetLow( );
+            LED_STATUS_Y_SetLow( );
+            break;
+
+        case LEDS_ERROR_RFID_FREQ:
+            LED_STATUS_R_SetLow( );
+            LED_STATUS_G_SetHigh( );
+            LED_STATUS_B_SetHigh( );
+            LED_STATUS_Y_SetHigh( );
+            break;
+
     }
 #endif
 }
@@ -102,20 +142,21 @@ void setLedsStatusColor( LED_STATUS status )
 
 //void doLedsStatusBlink( LED_STATUS color, uint8_t blink_number, const uint16_t t_on, const uint16_t t_off )
 
-void doLedsStatusBlink( LED_STATUS color, uint8_t blink_number, uint16_t t_on, uint16_t t_off )
-{
-#if !defined (DEBUG_RFID_WORKING_ON_LED_STATUS)
-    for (; blink_number > 0; --blink_number )
-    {
-        setLedsStatusColor( color );
-        //        __delay_ms( t_on );
-        setLedsStatusColor( LEDS_OFF );
-        //        __delay_ms( t_off );
-    }
-#endif
-}
+//void doLedsStatusBlink( LED_STATUS color, uint8_t blink_number, uint16_t t_on, uint16_t t_off )
+//{
+//#if !defined (DEBUG_RFID_WORKING_ON_LED_STATUS)
+//    for (; blink_number > 0; --blink_number )
+//    {
+//        setLedsStatusColor( color );
+//        //        __delay_ms( t_on );
+//        setLedsStatusColor( LEDS_OFF );
+//        //        __delay_ms( t_off );
+//    }
+//#endif
+//}
 
-void LedsStatusBlink( LED_STATUS color, uint16_t t_on_ms, uint16_t t_off_ms )
+
+void LedsStatusBlink( LED_STATUS color_1, LED_STATUS color_2, uint16_t t_on_ms, uint16_t t_off_ms )
 {
     static bool next_blink_state = false;
 
@@ -125,16 +166,48 @@ void LedsStatusBlink( LED_STATUS color, uint16_t t_on_ms, uint16_t t_off_ms )
         if ( next_blink_state )
         {
             setDelayMsLEDsStatus( t_on_ms ); /* Reload the delay for LEDs status. */
-            setLedsStatusColor( color );
+            setLedsStatusColor( color_1 );
             next_blink_state = false; /* Change state for next time. */
         }
         else
         {
             setDelayMsLEDsStatus( t_off_ms ); /* Reload the delay for LEDs status. */
-            setLedsStatusColor( LEDS_OFF );
+            setLedsStatusColor( color_2 );
             next_blink_state = true; /* Change state for next time. */
         }
     }
+}
+
+
+void checkLedsStatus( void )
+{
+    uint16_t delay_ms = 250;
+    
+    setLedsStatusColor( LEDS_OFF );
+
+    setLedsStatusColor( LED_GREEN );
+    setDelayMsLEDsStatus( delay_ms );
+    while ( false == isDelayMsEndingLEDsStatus( ) );
+    setLedsStatusColor( LED_BLUE );
+    setDelayMsLEDsStatus( delay_ms );
+    while ( false == isDelayMsEndingLEDsStatus( ) );
+    setLedsStatusColor( LED_YELLOW );
+    setDelayMsLEDsStatus( delay_ms );
+    while ( false == isDelayMsEndingLEDsStatus( ) );
+    setLedsStatusColor( LED_RED );
+    setDelayMsLEDsStatus( delay_ms );
+    while ( false == isDelayMsEndingLEDsStatus( ) );
+    setLedsStatusColor( LED_YELLOW );
+    setDelayMsLEDsStatus( delay_ms );
+    while ( false == isDelayMsEndingLEDsStatus( ) );
+    setLedsStatusColor( LED_BLUE );
+    setDelayMsLEDsStatus( delay_ms );
+    while ( false == isDelayMsEndingLEDsStatus( ) );
+    setLedsStatusColor( LED_GREEN );
+    setDelayMsLEDsStatus( delay_ms );
+    while ( false == isDelayMsEndingLEDsStatus( ) );
+
+    setLedsStatusColor( LEDS_OFF );
 }
 
 

@@ -145,6 +145,7 @@ typedef enum
     APP_STATE_LOW_VBAT,
     APP_STATE_LOW_FOOD_LEVEL,
     APP_STATE_LOW_RFID_FREQUENCY,
+    APP_STATE_DOOR_DONT_CLOSE,
 
     /* Application error state */
     APP_STATE_ERROR

@@ -139,6 +139,9 @@ void APP_Tasks( void )
 #endif
             }
 
+            /* Check all status LEDs */        
+            checkLedsStatus( );
+            
             chk = checkImportantParameters( );
             switch ( chk )
             {
@@ -199,6 +202,15 @@ void APP_Tasks( void )
 #endif
                 powerUsbRfidEnable( );
                 appDataUsb.key_is_nedded = true;
+                
+                /* Set log file name => 20yymmdd.CSV (one log file per day). */
+                if ( false == setLogFileName( ) )
+                {
+                    appDataUsb.key_is_nedded = false;                   
+                    appData.state = APP_STATE_ERROR;
+                    break;
+                }
+                
             }
 
             if ( appDataUsb.getValidDeviceAdress )
@@ -214,28 +226,18 @@ void APP_Tasks( void )
             else
             {
                 /* Blue status LED blinks as long USB key is accessed. */
-                LedsStatusBlink( LED_RED, 25, 1975 );
+                LedsStatusBlink( LED_BLUE, LED_YELLOW, 500, 500 );
                 break;
             }
 
-            /* Blue status LED blinks as long USB key is accessed. */
-            LedsStatusBlink( LED_BLUE, 25, 475 );
-
-            /* Set log file name => 20yymmdd.CSV (one log file per day). */
-            if ( false == setLogFileName( ) )
-            {
-                appDataUsb.key_is_nedded = false;
-                appData.state = APP_STATE_ERROR;
-                break;
-            }
-
-            /* System configuration. */
             setLedsStatusColor( LED_BLUE );
+            
+            /* System configuration. */            
             appData.flags.bit_value.systemInit = config_set( );
 
             if ( true == appData.flags.bit_value.systemInit )
             {
-                setLedsStatusColor( LEDS_OFF );
+                setLedsStatusColor( LED_YELLOW );
 
                 /* Servomotor power command enable. */
                 servomotorPowerEnable( );
@@ -319,6 +321,9 @@ void APP_Tasks( void )
                 
             }
            
+            /* Green status LED blinks in idle mode. */
+            LedsStatusBlink( LED_GREEN, LEDS_OFF, 25, 1975 );
+            
             /* Check PIR SENSOR detected.
              *  - recording the time of detected of the bird
              *  - if true go to APP_STATE_ERROR
@@ -472,9 +477,6 @@ void APP_Tasks( void )
 
                 appData.rtcc_alarm_action = RTCC_ALARM_IDLE;
             }
-
-            /* Green status LED blinks in idle mode. */
-            LedsStatusBlink( LED_GREEN, 25, 1975 );
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
             /* Get interaction with the serial terminal. */
@@ -886,7 +888,7 @@ void APP_Tasks( void )
                     appError.currentLineNumber = __LINE__;
                     sprintf( appError.currentFileName, "%s", __FILE__ );
                     appError.number = ERROR_DOOR_CANT_CLOSE;
-                    appData.state = APP_STATE_ERROR;
+                    appData.state = APP_STATE_DOOR_DONT_CLOSE;
                 }
                 else
                 {
@@ -934,7 +936,7 @@ void APP_Tasks( void )
                 //                }
             }
 
-            //            LedsStatusBlink( LED_BLUE, 50, 250 );
+            //            LedsStatusBlink( LED_BLUE, LEDS_OFF, 50, 250 );
 
             //            if ((true == appDataUsb.key_is_nedded) && (false == appDataUsb.getValidDeviceAdress))
             //            {
@@ -972,7 +974,7 @@ void APP_Tasks( void )
                 powerUsbRfidEnable( );
             }
 
-            LedsStatusBlink( LED_BLUE, 50, 250 );
+            LedsStatusBlink( LED_BLUE, LEDS_OFF, 50, 250 );
 
             if ( appDataUsb.getValidDeviceAdress )
             {
@@ -1193,7 +1195,7 @@ void APP_Tasks( void )
             }
 
             /* Blue status LED blinks when the remote control is plugged. */
-            LedsStatusBlink( LED_BLUE, 500, 500 );
+            LedsStatusBlink( LED_BLUE, LEDS_OFF, 500, 500 );
 
             /* Check USER BUTTON detected.
              *  - if true RemoteControlConnected = false and go to APP_STATE_IDLE
@@ -1277,6 +1279,7 @@ void APP_Tasks( void )
         case APP_STATE_LOW_VBAT:
         case APP_STATE_LOW_FOOD_LEVEL:
         case APP_STATE_LOW_RFID_FREQUENCY:
+        case APP_STATE_DOOR_DONT_CLOSE:
         case APP_STATE_ERROR:
             /* Step in APP_Tasks( ) failed.
              * TODO: APP_STATE_ERROR - This state should not be blocking!
@@ -1289,21 +1292,31 @@ void APP_Tasks( void )
                 if ( appData.state == APP_STATE_ERROR )
                 {
                     printf( "> APP_STATE_ERROR\n" );
+                    appError.ledColor_2 = LEDS_OFF;
                 }
-
+                
+                if ( appData.state == APP_STATE_DOOR_DONT_CLOSE )
+                {
+                    printf( "> APP_STATE_DOOR_DONT_CLOSE\n" );
+                    appError.ledColor_2 = LEDS_ERROR_CRITICAL_DOOR;
+                }
+                
                 if ( appData.state == APP_STATE_LOW_VBAT )
                 {
                     printf( "> APP_STATE_LOW_VBAT\n" );
+                    appError.ledColor_2 = LEDS_ERROR_CRITICAL_VBAT;
                 }
 
                 if ( appData.state == APP_STATE_LOW_FOOD_LEVEL )
                 {
                     printf( "> APP_STATE_LOW_FOOD_LEVEL\n" );
+                    appError.ledColor_2 = LEDS_ERROR_CRITICAL_FOOD;
                 }
 
                 if ( appData.state == APP_STATE_LOW_RFID_FREQUENCY )
                 {
                     printf( "> APP_STATE_LOW_RFID_FREQUENCY\n" );
+                    appError.ledColor_2 = LEDS_ERROR_RFID_FREQ;
                 }
 #endif
 #if defined (USE_UART1_SERIAL_INTERFACE)
@@ -1359,7 +1372,7 @@ void APP_Tasks( void )
             }
 
             /* Red status LED blinks */
-            LedsStatusBlink( appError.ledColor, 50, 450 );
+            LedsStatusBlink( appError.ledColor_1, appError.ledColor_2, 50, 250 );
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
             /* Get interaction with the serial terminal. */
@@ -1505,7 +1518,7 @@ void APP_Initialize( void )
     }
     appDataLog.numRfidFreqStored = 0;
 
-    appError.ledColor = LED_RED;
+    appError.ledColor_1 = LEDS_ERROR;
     appError.number = ERROR_NONE;
 
     appData.punishment_delay = 0;
