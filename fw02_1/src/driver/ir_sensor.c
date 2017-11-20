@@ -20,6 +20,7 @@ void IRSensor_Initialize( void )
 void IRSensorEnable( void )
 {
 
+    OC4_Start();
     TMR4_Start( );
     VDD_IR_ON( ); /* IR power enable. */
 
@@ -28,6 +29,7 @@ void IRSensorEnable( void )
 void IRSensorDisable( void )
 {
         
+    OC4_Stop();
     TMR4_Stop( );
     VDD_IR_OFF( ); /* IR power disable. */
 

@@ -78,7 +78,7 @@
 
 // FPOR
 #pragma config BOREN = ON    // Brown-out Reset Enable bits->Brown-out Reset Enable
-#pragma config LPCFG = ON    // Low power regulator control->Disabled
+#pragma config LPCFG = OFF // ON    // Low power regulator control->Disabled
 
 // FICD
 #pragma config ICS = PGx1    // Emulator Pin Placement Select bits->Emulator functions are shared with PGEC1/PGED1
@@ -87,8 +87,8 @@
 
 // FDS
 #pragma config DSWDTPS = DSWDTPS1F    // Deep Sleep Watchdog Timer Postscale Select bits->1:68,719,476,736 (25.7 days)
-#pragma config DSWDTOSC = SOSC //LPRC    // DSWDT Reference Clock Select bit->DSWDT uses Low Power RC Oscillator (LPRC)
-#pragma config DSBOREN = ON    // Deep Sleep Zero-Power BOR Enable bit->Deep Sleep BOR enabled in Deep Sleep
+#pragma config DSWDTOSC = LPRC //SOSC    // DSWDT Reference Clock Select bit->DSWDT uses Low Power RC Oscillator (LPRC)
+#pragma config DSBOREN = OFF //ON    // Deep Sleep Zero-Power BOR Enable bit->Deep Sleep BOR enabled in Deep Sleep
 #pragma config DSWDTEN = OFF //on    // Deep Sleep Watchdog Timer Enable bit->DSWDT enabled
 #pragma config DSSWEN = ON    // Deep Sleep Software Control Select Bit->Deep Sleep enabled and controlled by the DSEN bit
 

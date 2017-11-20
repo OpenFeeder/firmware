@@ -47,9 +47,15 @@
 
 //#define PATH_HARDWARE_IR_SENSOR_DISABLE // FIXME: comment for normal use of OpenFeeder
 
-#define DISPLAY_RESET_REGISTERS
+//#define DISPLAY_RESET_REGISTERS
+
+//#define DISPLAY_SERVO_POSITION
 
 //#define TEST_RTCC_SLEEP_WAKEUP
+
+#define ENABLE_ERROR_LEDS
+
+//#define ENABLE_DEEP_SLEEP
 
 // *****************************************************************************
 // *****************************************************************************

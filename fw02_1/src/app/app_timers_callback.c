@@ -98,6 +98,14 @@ void TMR3_CallBack( void )
             }
             break;
             
+        case DOOR_CLOSING_AT_NIGHT:
+            /* Closing in action. */
+            if ( servomotorCloseTheDoorAtNight( ) )
+            {
+                appDataDoor.reward_door_status = DOOR_CLOSED_AT_NIGHT;
+            }
+            break;
+            
         case DOOR_MOVING:
             /* Moving in action. */
             if ( servomotorMoveTheDoor( ) )

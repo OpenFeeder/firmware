@@ -16,12 +16,14 @@
 const uint8_t BUILD_DATE[] = { __DATE__ };
 const uint8_t BUILD_TIME[] = { __TIME__ };
 
+
 /* Display information on serial terminal. */
 void displayBuildDateTime( void )
 {
     /* Displaying the build date and time. */
     printf( "Build on %s, %s\n", BUILD_DATE, BUILD_TIME );
 }
+
 
 void displayBootMessage( void )
 {
@@ -35,14 +37,15 @@ void displayBootMessage( void )
     printf( "Type [?] key to display the Key mapping interface.\n\n" );
 }
 
+
 void displayResetRegisters( void )
 {
     RESET_SYSTEM_CONTROL_REGISTER_1_t rst_sys_ctrl1_value; // variable for reading RCON1 register
     RESET_SYSTEM_CONTROL_REGISTER_2_t rst_sys_ctrl2_value; // variable for reading RCON2 register
-        
+
     rst_sys_ctrl1_value.status_reg = RCON; // save register
     RCON = 0; // clear register
-    
+
     /* RESET AND SYSTEM CONTROL REGISTER 2 */
     // bit 3 VDDBOR : VDD Brown - out Reset Flag bit( 1 )
     //    1 = A VDD Brown - out Reset has occurred( set by hardware )
@@ -59,8 +62,8 @@ void displayResetRegisters( void )
     //    0 = A POR exit from VBAT has not occurred
     rst_sys_ctrl2_value.status_reg = RCON2; // save register
     RCON2 = 0; // clear register
-    
-//    printf( "\nReset flag bits\n" );
+
+    //    printf( "\nReset flag bits\n" );
     printf( "\t-----------------------\n" );
     printf( "\t|   RCON1  |   RCON2  |\n" );
     printf( "\t| POR    %u | VBAT   %u |\n", rst_sys_ctrl1_value.status_bit.POR, rst_sys_ctrl2_value.status_bit.VBAT );
@@ -74,13 +77,14 @@ void displayResetRegisters( void )
     printf( "\t| PMSLP  %u |     -    |\n", rst_sys_ctrl1_value.status_bit.PMSLP );
     printf( "\t| CM     %u |     -    |\n", rst_sys_ctrl1_value.status_bit.CM );
     printf( "\t| DPSLP  %u |     -    |\n", rst_sys_ctrl1_value.status_bit.DPSLP );
-    printf( "\t|     -    |     -    |\n");
+    printf( "\t|     -    |     -    |\n" );
     printf( "\t| RETEN  %u |     -    |\n", rst_sys_ctrl1_value.status_bit.RETEN );
-    printf( "\t|     -    |     -    |\n");
+    printf( "\t|     -    |     -    |\n" );
     printf( "\t| IOPUWR %u |     -    |\n", rst_sys_ctrl1_value.status_bit.IOPUWR );
     printf( "\t| TRAPR  %u |     -    |\n", rst_sys_ctrl1_value.status_bit.TRAPR );
     printf( "\t-----------------------\n\n" );
 }
+
 
 void APP_SerialDebugTasks( void )
 {
@@ -126,7 +130,7 @@ void APP_SerialDebugTasks( void )
                 printf( " v or V: set status of servomotor power command\n" );
                 printf( " w or W: toggle power command (CMD_ACC_PIR)\n" );
                 printf( " x or X: display external interrupt and timers states\n" );
-                printf( " y or Y: display all commands values\n");
+                printf( " y or Y: display all commands values\n" );
                 printf( " z or Z: check important parameters\n" );
                 break;
 
@@ -137,15 +141,13 @@ void APP_SerialDebugTasks( void )
             case 'a':
             case 'A':
             {
-                /* analogic measure of the current position of the servomotor. */
+                /* Analogic measures */
+
+                /* Position of the servomotor. */
                 uint16_t analog_measure;
-//                analog_measure = getADC1value( ADC1_CHANNEL_MA_SERVO );
+                analog_measure = getDoorPosition( );
+                printf( "Servo position: %u\n", analog_measure );
 
-                /* Mesure with jumper closed from 3904 to 4078 --> ~4060 */
-//                printf( "servo_position_analog = %u\n", analog_measure );
-
-                printf( "servo_position_analog = %u\n", getDoorPosition() );
-                   
                 /* Battery level */
                 appData.battery_level = getADC1value( ADC1_CHANNEL_MA_12V );
                 printBatteryLevel( );
@@ -159,13 +161,13 @@ void APP_SerialDebugTasks( void )
                 printVBatLevel( );
 
                 /* Light level --> not in v3_0 board */
-//                appData.light_level = getADC1value( ADC1_CHANNEL_MA_LIGHT );
-//                printf( "Light level: (%u)\n", appData.light_level );
+                //                appData.light_level = getADC1value( ADC1_CHANNEL_MA_LIGHT );
+                //                printf( "Light level: (%u)\n", appData.light_level );
 
                 /* CTMU */
                 analog_measure = getADC1value( ADC1_CHANNEL_CTMU_TEMPERATURE_SENSOR_INPUT );
                 printf( "CTMU temperature sensor: (%u)\n", analog_measure );
-                
+
                 break;
             }
                 /* -------------------------------------------------------------- */
@@ -195,6 +197,12 @@ void APP_SerialDebugTasks( void )
             case 'c':
             case 'C':
                 /* Close reward door */
+                if ( DOOR_CLOSED == appDataDoor.reward_door_status )
+                {
+                    printf( "Door already closed.\n" );
+                    break;
+                }
+
                 if ( false == isPowerServoEnable( ) )
                 {
                     servomotorPowerEnable( );
@@ -202,15 +210,15 @@ void APP_SerialDebugTasks( void )
                     if ( 1 == appDataDoor.remain_open )
                     {
                         appDataDoor.remain_open = 0;
-                        printf( "Closing door in action. Remain door open set to off\n" );
+                        printf( "Closing door (remain door open set to off)... " );
                     }
                     else
                     {
-                        printf( "Closing door in action.\n" );
+                        printf( "Closing door... " );
                     }
 
                     while ( DOOR_CLOSED != appDataDoor.reward_door_status );
-                    printf( "Door closed - Servo position: %u\n", getADC1value( ADC1_CHANNEL_MA_SERVO ) ); 
+                    printf( "Door closed - Servo position: %u\n", getDoorPosition( ) );
                     servomotorPowerDisable( );
                 }
                 else
@@ -219,15 +227,15 @@ void APP_SerialDebugTasks( void )
                     if ( 1 == appDataDoor.remain_open )
                     {
                         appDataDoor.remain_open = 0;
-                        printf( "Closing door in action. Remain door open set to off\n" );
+                        printf( "Closing door (remain door open set to off)... " );
                     }
                     else
                     {
-                        printf( "Closing door in action.\n" );
+                        printf( "Closing door... " );
                     }
 
                     while ( DOOR_OPENED != appDataDoor.reward_door_status );
-                    printf( "Door closed - Servo position: %u\n", getADC1value( ADC1_CHANNEL_MA_SERVO ) ); 
+                    printf( "Door closed - Servo position: %u\n", getDoorPosition( ) );
                 }
                 break;
                 /* -------------------------------------------------------------- */
@@ -248,23 +256,40 @@ void APP_SerialDebugTasks( void )
                 printf( "\nBattery level buffer:\n" );
                 for ( i = 0; i < 24; i++ )
                 {
+                    if ( 0 == appDataLog.battery_level[i][0] && 0 == appDataLog.battery_level[i][1] && 0 == appDataLog.battery_level[i][2] )
+                    {
+                        if ( 0 == i )
+                        {
+                            printf( "<empty buffer>\n" );
+                        }
+                        break;
+                    }
                     printf( "\t%02d - %04d - %2.3f\n",
                             appDataLog.battery_level[i][0],
                             appDataLog.battery_level[i][1],
-                            appDataLog.battery_level[i][1] * BATTERY_VOLTAGE_FACTOR);
+                            appDataLog.battery_level[i][1] * BATTERY_VOLTAGE_FACTOR );
                 }
                 /* Display RFID frequency buffer  */
                 printf( "\nRFID frequency buffer:\n" );
                 for ( i = 0; i < 24; i++ )
                 {
-                    for (j = 0 ; j <4 ; j++) 
+                    if ( 0 == appDataLog.rfid_freq[i * 4][0] && 0 == appDataLog.rfid_freq[i * 4][1] && 0 == appDataLog.rfid_freq[i * 4][2] )
+                    {
+                        if ( 0 == i )
+                        {
+                            printf( "<empty buffer>\n" );
+                        }
+                        break;
+                    }
+
+                    for ( j = 0; j < 4; j++ )
                     {
                         printf( "\t%02d - %02d - %06ld",
-                            appDataLog.rfid_freq[i*4+j][0],
-                            appDataLog.rfid_freq[i*4+j][1], 
-                            (long)appDataLog.rfid_freq[i*4+j][2]*10);
+                                appDataLog.rfid_freq[i * 4 + j][0],
+                                appDataLog.rfid_freq[i * 4 + j][1],
+                                ( long ) appDataLog.rfid_freq[i * 4 + j][2]*10 );
                     }
-                    printf( "\n");
+                    printf( "\n" );
                 }
                 break;
                 /* -------------------------------------------------------------- */
@@ -280,10 +305,16 @@ void APP_SerialDebugTasks( void )
             case 'f':
             case 'F':
                 /* Display configuration parameters (CONFIG.INI) */
-                config_print( );
+
                 if ( false == appData.flags.bit_value.systemInit )
                 {
                     printf( "/!\\ SYSTEM NOT CORRECTLY CONFIGURED.\n" );
+                    config_print( );
+                    printf( "/!\\ SYSTEM NOT CORRECTLY CONFIGURED.\n" );
+                }
+                else
+                {
+                    config_print( );
                 }
                 break;
                 /* -------------------------------------------------------------- */
@@ -331,7 +362,7 @@ void APP_SerialDebugTasks( void )
                 IRSensorEnable( );
                 setDelayMs( DELAY_MS_BEFORE_IR_ENABLE ); // TODO: adjust delay according to the datasheet
                 while ( false == isDelayMsEnding( ) );
-                printf( "IR command enable, detecting mode.\n" );
+                printf( "IR command enable (detecting mode).\n" );
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -339,7 +370,7 @@ void APP_SerialDebugTasks( void )
             case 'J':
                 /* Disable IR  */
                 IRSensorDisable( );
-                printf( "IR command disable, mode low power.\n" );
+                printf( "IR command disable (low power mode).\n" );
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -510,21 +541,28 @@ void APP_SerialDebugTasks( void )
             case 'o':
             case 'O':
                 /* Open reward door */
+
+                if ( DOOR_OPENED == appDataDoor.reward_door_status )
+                {
+                    printf( "Door already opened.\n" );
+                    break;
+                }
+
                 if ( false == isPowerServoEnable( ) )
                 {
                     servomotorPowerEnable( );
                     appDataDoor.reward_door_status = DOOR_OPENING;
-                    printf( "Opening door in action.\n" );
-                    while ( DOOR_OPENED != appDataDoor.reward_door_status );                    
-                    printf( "Door opened - Servo position: %u\n", getADC1value( ADC1_CHANNEL_MA_SERVO ) );                
+                    printf( "Opening door... " );
+                    while ( DOOR_OPENED != appDataDoor.reward_door_status );
+                    printf( "Door opened - Servo position: %u\n", getDoorPosition( ) );
                     servomotorPowerDisable( );
                 }
                 else
                 {
                     appDataDoor.reward_door_status = DOOR_OPENING;
-                    printf( "Opening door in action.\n" );
+                    printf( "Opening door... " );
                     while ( DOOR_OPENED != appDataDoor.reward_door_status );
-                    printf( "Door opened - Servo position: %u\n", getADC1value( ADC1_CHANNEL_MA_SERVO ) ); 
+                    printf( "Door opened - Servo position: %u\n", getDoorPosition( ) );
                 }
                 break;
                 /* -------------------------------------------------------------- */
@@ -536,50 +574,50 @@ void APP_SerialDebugTasks( void )
                  * HS-322HD: 600 us < servo_position < 2400 us, flexible nylon noise --> Ok
                  * PARRALAX: 600 us < servo_position < 2400 us (Product ID: 900-00005), sound gear 
                  */
-                
+
                 /* Get current position. */
                 if ( false == isPowerServoEnable( ) )
                 {
                     servomotorPowerEnable( );
-                    appDataServo.ton_cmd = getDoorPosition();
+                    appDataServo.ton_cmd = getDoorPosition( );
                     servomotorPowerDisable( );
                 }
                 else
                 {
-                   appDataServo.ton_cmd = getDoorPosition(); 
+                    appDataServo.ton_cmd = getDoorPosition( );
                 }
-                                
+
                 printf( "Set servomotor position\n\tRange MAX: [%u %u]\n\tRange INI:[%u %u]\n\tCurrent position: %u\n", SERVO_POSITION_MIN_DEFAULT, SERVO_POSITION_MAX_DEFAULT, appDataServo.ton_min, appDataServo.ton_max, appDataServo.ton_cmd );
-                
+
                 /* Read uint16_t from terminal. */
                 appDataServo.ton_goal = readIntFromUart1( );
-                
+
                 if ( appDataServo.ton_goal > SERVO_POSITION_MAX_DEFAULT )
                 {
-                    printf("No move because goal position (%u) is more than maximal position (%u)\n", appDataServo.ton_goal, SERVO_POSITION_MAX_DEFAULT );
+                    printf( "No move because goal position (%u) is more than maximal position (%u)\n", appDataServo.ton_goal, SERVO_POSITION_MAX_DEFAULT );
                     break;
                 }
                 else if ( appDataServo.ton_goal < SERVO_POSITION_MIN_DEFAULT )
                 {
-                    printf("No move because goal position (%u) is less than minimal position (%u)\n", appDataServo.ton_goal, SERVO_POSITION_MIN_DEFAULT );
+                    printf( "No move because goal position (%u) is less than minimal position (%u)\n", appDataServo.ton_goal, SERVO_POSITION_MIN_DEFAULT );
                     break;
                 }
-                else if ( appDataServo.ton_goal >  appDataServo.ton_max )
+                else if ( appDataServo.ton_goal > appDataServo.ton_max )
                 {
-                    printf("Warning: goal position (%u) is outside range specified in the INI file ([%u %u])\n", appDataServo.ton_goal, appDataServo.ton_min , appDataServo.ton_max );
+                    printf( "Warning: goal position (%u) is outside range specified in the INI file ([%u %u])\n", appDataServo.ton_goal, appDataServo.ton_min, appDataServo.ton_max );
                 }
-                else if ( appDataServo.ton_goal <  appDataServo.ton_min )
+                else if ( appDataServo.ton_goal < appDataServo.ton_min )
                 {
-                    printf("Warning: goal position (%u) is outside range specified in the INI file ([%u %u])\n", appDataServo.ton_goal, appDataServo.ton_min , appDataServo.ton_max );
+                    printf( "Warning: goal position (%u) is outside range specified in the INI file ([%u %u])\n", appDataServo.ton_goal, appDataServo.ton_min, appDataServo.ton_max );
                 }
 
-                if (appDataServo.ton_cmd == appDataServo.ton_goal)
+                if ( appDataServo.ton_cmd == appDataServo.ton_goal )
                 {
-                   printf( "Door already at goal position.\n" ); 
-                   break;
+                    printf( "Door already at goal position.\n" );
+                    break;
                 }
-                
-                if (appDataServo.ton_cmd > appDataServo.ton_goal)
+
+                if ( appDataServo.ton_cmd > appDataServo.ton_goal )
                 {
                     appDataServo.direction = -1;
                 }
@@ -587,32 +625,34 @@ void APP_SerialDebugTasks( void )
                 {
                     appDataServo.direction = 1;
                 }
-                
+
                 TMR3_Start( );
-               
+
                 if ( false == isPowerServoEnable( ) )
                 {
                     servomotorPowerEnable( );
                     appDataDoor.reward_door_status = DOOR_MOVING;
-//                    printf( "Moving door in action.\n" );
+                    printf( "Moving door... " );
                     while ( DOOR_MOVED != appDataDoor.reward_door_status );
+                    printf( "Door moved - Servo position: %u\n", getDoorPosition( ) );
                     servomotorPowerDisable( );
                 }
                 else
                 {
                     appDataDoor.reward_door_status = DOOR_MOVING;
-//                    printf( "Moving door in action.\n" );
+                    printf( "Moving door... " );
                     while ( DOOR_MOVED != appDataDoor.reward_door_status );
+                    printf( "Door moved - Servo position: %u\n", getDoorPosition( ) );
                 }
 
                 break;
                 /* -------------------------------------------------------------- */
 
             case 'q':
-            case 'Q':                
-                /* Check status LEDs */   
-                checkLedsStatus( );            
-                
+            case 'Q':
+                /* Check status LEDs */
+                checkLedsStatus( );
+
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -751,89 +791,90 @@ void APP_SerialDebugTasks( void )
                 }
                 break;
                 /* -------------------------------------------------------------- */
-                
+
             case 'x':
             case 'X':
                 /* Display external interrupt and timers states */
-                printf("External interrupt states\n");
-                printf("\tINT0: %d\n", IEC0bits.INT0IE);
-                printf("\tINT1: %d\n", IEC1bits.INT1IE);
-                printf("\tINT2: %d\n", IEC1bits.INT2IE);
-                printf("\tINT3: %d\n", IEC3bits.INT3IE);
-                printf("\tINT4: %d\n", IEC3bits.INT4IE);
-                printf("Timers\n");
-                printf("\tTimer2: %d\n", T2CONbits.TON);
-                printf("\tTimer3: %d\n", T3CONbits.TON);
-                printf("\tTimer4: %d\n", T4CONbits.TON);
+                printf( "External interrupt states\n" );
+                printf( "\tINT0: %d\n", IEC0bits.INT0IE );
+                printf( "\tINT1: %d\n", IEC1bits.INT1IE );
+                printf( "\tINT2: %d\n", IEC1bits.INT2IE );
+                printf( "\tINT3: %d\n", IEC3bits.INT3IE );
+                printf( "\tINT4: %d\n", IEC3bits.INT4IE );
+                printf( "Timers\n" );
+                printf( "\tTimer2: %d\n", T2CONbits.TON );
+                printf( "\tTimer3: %d\n", T3CONbits.TON );
+                printf( "\tTimer4: %d\n", T4CONbits.TON );
                 break;
                 /* -------------------------------------------------------------- */
-            
+
             case 'y':
             case 'Y':
                 /* Display all commands values */
                 if ( CMD_VDD_APP_V_USB_GetValue( ) == 0 )
                 {
-                    printf("VDD RFID/USB: off\n");
+                    printf( "VDD RFID/USB: off\n" );
                 }
                 else
                 {
-                    printf("VDD RFID/USB: on\n");
+                    printf( "VDD RFID/USB: on\n" );
                 }
                 if ( CMD_VCC_IR_GetValue( ) == 1 )
                 {
-                    printf("VDD IR: off\n");
+                    printf( "VDD IR: off\n" );
                 }
                 else
                 {
-                    printf("VDD IR: on\n");
+                    printf( "VDD IR: on\n" );
                 }
                 break;
                 /* -------------------------------------------------------------- */
-                
+
             case 'z':
             case 'Z':
                 /* Check important parameters */
-                printf("Important parameters\n");
-                if (true==isPowerBatteryGood( ))
+                printf( "Important parameters\n" );
+                if ( true == isPowerBatteryGood( ) )
                 {
-                    printf("\tBattery OK\n");
+                    printf( "\tBattery OK\n" );
                 }
                 else
                 {
-                    printf("\tBattery PB\n");
+                    printf( "\tBattery PB\n" );
                 }
-                if (true==isPowerVbatGood( ))
+                if ( true == isPowerVbatGood( ) )
                 {
-                    printf("\tVbat OK\n");
-                }
-                else
-                {
-                    printf("\tVbat PB\n");
-                }
-                if (true==isEnoughFood( ))
-                {
-                    printf("\tFood OK\n");
+                    printf( "\tVbat OK\n" );
                 }
                 else
                 {
-                    printf("\tFood PB\n");
+                    printf( "\tVbat PB\n" );
                 }
-                if (true==isRfidFreqGood( ))
+                if ( true == isEnoughFood( ) )
                 {
-                    printf("\tRFID OK\n");
+                    printf( "\tFood OK\n" );
                 }
                 else
                 {
-                    printf("\tRFID PB\n");                    
-                }                   
+                    printf( "\tFood PB\n" );
+                }
+                if ( true == isRfidFreqGood( ) )
+                {
+                    printf( "\tRFID OK\n" );
+                }
+                else
+                {
+                    printf( "\tRFID PB\n" );
+                }
                 break;
-                /* -------------------------------------------------------------- */    
+                /* -------------------------------------------------------------- */
             default:
                 putchar( data_from_uart1 ); /* echo RX data if doesn't match */
                 break;
         }
     } /* end of if ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) */
 }
+
 
 uint16_t readIntFromUart1( void )
 {
@@ -868,6 +909,7 @@ uint16_t readIntFromUart1( void )
 
     return ( int ) strtol( rx_data_buffer, NULL, 10 );
 } /* End of readIntFromUart1( ) */
+
 
 /**
  * Print the status of USBHostDeviceStatus()

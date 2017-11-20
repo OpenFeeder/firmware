@@ -118,13 +118,14 @@ void APP_Tasks( void )
     static bool previous_button_user_state = BUTTON_NOT_PRESSED;
     APP_CHECK chk;
     bool flag;
+    I2C1_MESSAGE_STATUS i2c_status;
 
     /* Check the Application State. */
     switch ( appData.state )
     {
         case APP_STATE_INITIALIZE:
         {
-            I2C1_MESSAGE_STATUS i2c_status;
+            //            I2C1_MESSAGE_STATUS i2c_status;
 
             /**
              * Initializing the application.
@@ -139,9 +140,9 @@ void APP_Tasks( void )
 #endif
             }
 
-            /* Check all status LEDs */        
+            /* Check all status LEDs */
             checkLedsStatus( );
-            
+
             chk = checkImportantParameters( );
             switch ( chk )
             {
@@ -161,33 +162,33 @@ void APP_Tasks( void )
                     appData.state = APP_STATE_LOW_RFID_FREQUENCY;
                     break;
             }
-            
-            if (appData.state != APP_STATE_CONFIGURE_SYSTEM)
+
+            if ( appData.state != APP_STATE_CONFIGURE_SYSTEM )
             {
                 break;
             }
-            
+
             /* Power PIR sensor early in the code because of starting delay before usable */
             powerPIREnable( );
-            
-            /* Reset PCA9622 device */
-            i2c_status = I2C1_PCA9622_SoftwareReset( ); 
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
-            print_I2C_message_status( i2c_status ); // I2C1_MESSAGE_STATUS
-            printf( "\n" );
-#endif
 
-            i2c_status = initAttractiveLeds( );
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
-            if ( i2c_status )
-            {
-                printf( "\tAttractive LEDs: ok\n" );
-            }
-            else
-            {
-                printf( "\tAttractive LEDs: pb\n" );
-            }
-#endif
+            //            /* Reset PCA9622 device */
+            //            i2c_status = I2C1_PCA9622_SoftwareReset( );
+            //#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+            //            print_I2C_message_status( i2c_status ); // I2C1_MESSAGE_STATUS
+            //            printf( "\n" );
+            //#endif
+            //
+            //            i2c_status = initAttractiveLeds( );
+            //#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+            //            if ( i2c_status )
+            //            {
+            //                printf( "\tAttractive LEDs: ok\n" );
+            //            }
+            //            else
+            //            {
+            //                printf( "\tAttractive LEDs: pb\n" );
+            //            }
+            //#endif
             break;
         }
             /* -------------------------------------------------------------- */
@@ -202,15 +203,15 @@ void APP_Tasks( void )
 #endif
                 powerUsbRfidEnable( );
                 appDataUsb.key_is_nedded = true;
-                
+
                 /* Set log file name => 20yymmdd.CSV (one log file per day). */
                 if ( false == setLogFileName( ) )
                 {
-                    appDataUsb.key_is_nedded = false;                   
+                    appDataUsb.key_is_nedded = false;
                     appData.state = APP_STATE_ERROR;
                     break;
                 }
-                
+
             }
 
             if ( appDataUsb.getValidDeviceAdress )
@@ -225,14 +226,14 @@ void APP_Tasks( void )
             }
             else
             {
-                /* Blue status LED blinks as long USB key is accessed. */
+                /* Blue and yellow status LEDs blink as long USB key is accessed. */
                 LedsStatusBlink( LED_BLUE, LED_YELLOW, 500, 500 );
                 break;
             }
 
             setLedsStatusColor( LED_BLUE );
-            
-            /* System configuration. */            
+
+            /* System configuration. */
             appData.flags.bit_value.systemInit = config_set( );
 
             if ( true == appData.flags.bit_value.systemInit )
@@ -241,19 +242,57 @@ void APP_Tasks( void )
 
                 /* Servomotor power command enable. */
                 servomotorPowerEnable( );
-                appDataDoor.reward_door_status = DOOR_CLOSING;
-                while ( DOOR_CLOSED != appDataDoor.reward_door_status );
-                /* Check if door must remain open */
-                if ( 1 == appDataDoor.remain_open )
+
+                appDataServo.ton_cmd = getDoorPosition( );
+
+                /* Open the door */
+                appDataServo.ton_goal = appDataServo.ton_max;
+                if ( appDataServo.ton_cmd != appDataServo.ton_goal )
                 {
-                    appDataDoor.reward_door_status = DOOR_OPENING;
-                    while ( DOOR_OPENED != appDataDoor.reward_door_status );
+                    appDataDoor.reward_door_status = DOOR_MOVING;
+                    while ( DOOR_MOVED != appDataDoor.reward_door_status );
                 }
+                appDataDoor.reward_door_status = DOOR_OPENED;
+
+                if ( 0 == appDataDoor.remain_open )
+                {
+                    /* Close the door */
+                    appDataServo.ton_cmd = getDoorPosition( );
+                    /* Close the door */
+                    appDataServo.ton_goal = appDataServo.ton_min;
+                    if ( appDataServo.ton_cmd != appDataServo.ton_goal )
+                    {
+                        appDataDoor.reward_door_status = DOOR_MOVING;
+                        while ( DOOR_MOVED != appDataDoor.reward_door_status );
+                    }
+                    appDataDoor.reward_door_status = DOOR_CLOSED;
+                }
+
                 /* Servomotor power command disable. */
                 servomotorPowerDisable( );
 
                 if ( true == appData.flags.bit_value.attractive_leds_status )
                 {
+
+                    /* Reset PCA9622 device */
+                    i2c_status = I2C1_PCA9622_SoftwareReset( );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+                    print_I2C_message_status( i2c_status ); // I2C1_MESSAGE_STATUS
+                    printf( "\n" );
+#endif
+
+                    i2c_status = initAttractiveLeds( );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+                    if ( i2c_status )
+                    {
+                        printf( "\tAttractive LEDs: ok\n" );
+                    }
+                    else
+                    {
+                        printf( "\tAttractive LEDs: pb\n" );
+                    }
+#endif
+
                     while ( !RTCC_TimeGet( &appData.current_time ) )
                     {
                         Nop( );
@@ -262,22 +301,20 @@ void APP_Tasks( void )
                          ( appData.current_time.tm_hour * 60 + appData.current_time.tm_min )< ( appDataAttractiveLeds.sleep_time.tm_hour * 60 + appDataAttractiveLeds.sleep_time.tm_min ) )
                     {
                         setAttractiveLedsOn( );
-                    }   
+                    }
                 }
                 else
                 {
                     TMR2_Stop( );
                 }
-                
+
                 rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_SECOND );
                 appData.state = APP_STATE_IDLE;
-                
+
             }
             else
             {
                 appDataUsb.key_is_nedded = false;
-                powerUsbRfidDisable( );
-                powerPIRDisable( );
                 appData.state = APP_STATE_ERROR;
                 break;
             }
@@ -288,8 +325,7 @@ void APP_Tasks( void )
             }
 
             appDataUsb.key_is_nedded = false;
-            powerUsbRfidDisable( );
-            
+
             break;
             /* -------------------------------------------------------------- */
 
@@ -312,18 +348,18 @@ void APP_Tasks( void )
                     /* Timeout before going to standby mode */
                     setDelayMsStandBy( appData.timeout_standby );
                 }
-                
+
                 rtcc_start_alarm( );
-                
+
                 /* Enable PIR sensor interruption for bird detection */
                 EX_INT0_InterruptFlagClear( );
-                EX_INT0_InterruptEnable( );  
-                
+                EX_INT0_InterruptEnable( );
+
             }
-           
+
             /* Green status LED blinks in idle mode. */
             LedsStatusBlink( LED_GREEN, LEDS_OFF, 25, 1975 );
-            
+
             /* Check PIR SENSOR detected.
              *  - recording the time of detected of the bird
              *  - if true go to APP_STATE_ERROR
@@ -335,7 +371,7 @@ void APP_Tasks( void )
                     Nop( );
                 }
 #if defined (USE_UART1_SERIAL_INTERFACE)
-                printf( "Bird detected\n" );
+                printf( "\tBird detected\n" );
 #endif
                 /* Inizialised global variable datalogging. */
                 clear_bird_sensor_detected( );
@@ -418,11 +454,17 @@ void APP_Tasks( void )
                 {
                     /* Open reward door */
                     servomotorPowerEnable( );
-                    appDataDoor.reward_door_status = DOOR_OPENING;
-#if defined (USE_UART1_SERIAL_INTERFACE)
-                    printf( "Opening door in action.\n" );
-#endif
-                    while ( DOOR_OPENED != appDataDoor.reward_door_status );
+
+                    appDataServo.ton_cmd = getDoorPosition( );
+                    appDataServo.ton_goal = appDataServo.ton_max;
+
+                    if ( appDataServo.ton_cmd != appDataServo.ton_goal )
+                    {
+                        appDataDoor.reward_door_status = DOOR_MOVING;
+                        while ( DOOR_MOVED != appDataDoor.reward_door_status );
+                    }
+                    appDataDoor.reward_door_status = DOOR_OPENED;
+
                     servomotorPowerDisable( );
                 }
 
@@ -430,11 +472,17 @@ void APP_Tasks( void )
                 {
                     /* Close reward door */
                     servomotorPowerEnable( );
-                    appDataDoor.reward_door_status = DOOR_CLOSING;
-#if defined (USE_UART1_SERIAL_INTERFACE)
-                    printf( "Closing door in action.\n" );
-#endif
-                    while ( DOOR_CLOSED != appDataDoor.reward_door_status );
+
+                    appDataServo.ton_cmd = getDoorPosition( );
+                    appDataServo.ton_goal = appDataServo.ton_min;
+
+                    if ( appDataServo.ton_cmd != appDataServo.ton_goal )
+                    {
+                        appDataDoor.reward_door_status = DOOR_MOVING;
+                        while ( DOOR_MOVED != appDataDoor.reward_door_status );
+                    }
+                    appDataDoor.reward_door_status = DOOR_CLOSED;
+
                     servomotorPowerDisable( );
                 }
 
@@ -522,13 +570,13 @@ void APP_Tasks( void )
 #endif
                 }
             }
-//            
-//#if defined (TEST_RTCC_SLEEP_WAKEUP)
-//            /* Next line for debugging sleep/wakeup only */
-//            /* Should be commented in normal mode */
-//            /* Modify time value according to sleep values in the CONFIG.INI file */
-//            setDateTime( 17, 9, 21, 22, 59, 55 );
-//#endif   
+                        
+            //#if defined (TEST_RTCC_SLEEP_WAKEUP)
+            //            /* Next line for debugging sleep/wakeup only */
+            //            /* Should be commented in normal mode */
+            //            /* Modify time value according to sleep values in the CONFIG.INI file */
+            //            setDateTime( 17, 9, 21, 22, 59, 55 );
+            //#endif   
             break;
             /* -------------------------------------------------------------- */
 
@@ -542,11 +590,11 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_RFID_READING_PIT_TAG\n" );
 #endif
-                
+
                 EX_INT0_InterruptFlagClear( );
                 EX_INT0_InterruptDisable( );
                 rtcc_stop_alarm( );
-                
+
                 APP_Rfid_Init( );
             }
 
@@ -585,7 +633,7 @@ void APP_Tasks( void )
                             appDataLog.is_pit_tag_denied = false;
                         }
                         break;
-                        
+
                     case DOOR_HABITUATION:
                         /* No PIT tag denied */
                         appDataLog.is_pit_tag_denied = false;
@@ -593,9 +641,9 @@ void APP_Tasks( void )
                 }
 
                 RFID_Disable( );
-                powerUsbRfidDisable( );
+
                 clear_bird_sensor_detected( );
-                
+
                 if ( true == appDataLog.is_pit_tag_denied )
                 {
 #if defined (USE_UART1_SERIAL_INTERFACE) 
@@ -627,7 +675,7 @@ void APP_Tasks( void )
             if ( 0 == g_timeout_reading_pit_tag ) // && (Timeout_Detecting_RFID_Tag != 0)
             {
                 RFID_Disable( );
-                powerUsbRfidDisable( );
+
                 clear_bird_sensor_detected( );
 
                 if ( false == appData.rfid_signal_detected )
@@ -645,7 +693,7 @@ void APP_Tasks( void )
                 clearPitTagBuffers( );
                 appData.state = APP_STATE_DATA_LOG;
 #if defined (USE_UART1_SERIAL_INTERFACE)
-                printf( "RFID timeout.\n" );
+                printf( "\tRFID timeout.\n" );
 #endif
 
             }
@@ -659,15 +707,15 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_OPENING_REWARD_DOOR\n" );
 #endif
-                
+
                 /* Power IR sensor here because start delay */
                 IRSensorEnable( );
                 /* Enable IR 1 sensor interruption (reward)*/
-                EX_INT1_InterruptDisable();                    
-                EX_INT1_PositiveEdgeSet( );  
+                EX_INT1_InterruptDisable( );
+                EX_INT1_PositiveEdgeSet( );
                 EX_INT1_InterruptFlagClear( );
                 EX_INT1_InterruptEnable( );
-                    
+
                 appDataLog.is_reward_taken = false;
 
                 /* Skip opening door if the "remain open" flag is set */
@@ -680,28 +728,38 @@ void APP_Tasks( void )
                 /* Optional delay before opening the door */
                 if ( appDataDoor.open_delay > 0 )
                 {
-                   setDelayMs( appDataDoor.open_delay );
+                    setDelayMs( appDataDoor.open_delay );
                     while ( false == isDelayMsEnding( ) )
                     {
                         Nop( );
-                    } 
+                    }
                 }
 
-                /* Servomotor power command enable. */
-                servomotorPowerEnable( );
-                appDataDoor.reward_door_status = DOOR_OPENING;
-                
             }
 
-            if ( DOOR_OPENED == appDataDoor.reward_door_status )
+            /* Servomotor power command enable. */
+            servomotorPowerEnable( );
+
+            appDataServo.ton_cmd = getDoorPosition( );
+            appDataServo.ton_goal = appDataServo.ton_max;
+
+            if ( appDataServo.ton_cmd != appDataServo.ton_goal )
             {
-#if defined (USE_UART1_SERIAL_INTERFACE)
-                printf( "Door opened - Servo position: %u\n", getADC1value( ADC1_CHANNEL_MA_SERVO ) ); 
-#endif
-                /* Servomotor power command disable. */
-                servomotorPowerDisable( );
-                appData.state = APP_STATE_WAITING_CATCH_REWARD;
+                appDataDoor.reward_door_status = DOOR_MOVING;
+                while ( DOOR_MOVED != appDataDoor.reward_door_status );
             }
+
+            appDataDoor.reward_door_status = DOOR_OPENED;
+
+            /* Servomotor power command disable. */
+            servomotorPowerDisable( );
+
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
+            printf( "\tDoor opened - Servo position: %u\n", getDoorPosition( ) );
+#endif
+
+            appData.state = APP_STATE_WAITING_CATCH_REWARD;
+
             break;
             /* -------------------------------------------------------------- */
 
@@ -715,32 +773,32 @@ void APP_Tasks( void )
 #endif           
 
                 /* Timeout before door closing if reward is not taken */
-                if (appData.timeout_taking_reward > 0)
+                if ( appData.timeout_taking_reward > 0 )
                 {
                     setDelayMs( appData.timeout_taking_reward );
                 }
-                
+
                 appData.bird_is_taking_reward = false;
 
                 clear_ir1_sensor( );
-                
+
             }
 
 #if !defined (PATH_HARDWARE_IR_SENSOR_DISABLE)
             if ( ( true == g_flag_ir1_sensor ) && ( false == appData.bird_is_taking_reward ) )
             {
-                EX_INT1_InterruptDisable();                    
-                EX_INT1_NegativeEdgeSet( );  
+                EX_INT1_InterruptDisable( );
+                EX_INT1_NegativeEdgeSet( );
                 EX_INT1_InterruptFlagClear( );
-                EX_INT1_InterruptEnable(); 
+                EX_INT1_InterruptEnable( );
                 clear_ir1_sensor( );
-                
+
                 /* REWARD_IR_SENSOR true. */
 #if defined (USE_UART1_SERIAL_INTERFACE)
                 printf( "\tTaking reward detected.\n" );
 #endif
                 appData.bird_is_taking_reward = true;
-                
+
                 break;
             }
 
@@ -750,9 +808,8 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE)
                 printf( "\tReward taken.\n" );
 #endif
-//                IRSensorDisable( );
-                EX_INT1_InterruptDisable();                    
-                EX_INT1_PositiveEdgeSet( );  
+                EX_INT1_InterruptDisable( );
+                EX_INT1_PositiveEdgeSet( );
                 EX_INT1_InterruptFlagClear( );
                 clear_ir1_sensor( );
 
@@ -768,17 +825,16 @@ void APP_Tasks( void )
 #warning "PATH_HARDWARE_IR_SENSOR_DISABLE is defined! See in fw02\src\app\app.h file for normal use of OpenFeeder"
             if ( true == isDelayMsEnding( ) )
 #else
-//            if ( true == isDelayMsEnding( ) && 0 == BAR_IR1_OUT_GetValue( ) )
+            //            if ( true == isDelayMsEnding( ) && 0 == BAR_IR1_OUT_GetValue( ) )
             if ( true == isDelayMsEnding( ) && false == appData.bird_is_taking_reward )
 #endif
             {
 #if defined (USE_UART1_SERIAL_INTERFACE)
                 printf( "\tReward timeout.\n" );
 #endif
-                
-//                IRSensorDisable( );
-                EX_INT1_InterruptDisable();                    
-                EX_INT1_PositiveEdgeSet( );  
+
+                EX_INT1_InterruptDisable( );
+                EX_INT1_PositiveEdgeSet( );
                 EX_INT1_InterruptFlagClear( );
                 clear_ir1_sensor( );
 
@@ -799,7 +855,7 @@ void APP_Tasks( void )
                 {
                     Nop( );
                 }
-                
+
                 /* Skip closing door if the "remain open" flag is set */
                 if ( 1 == appDataDoor.remain_open )
                 {
@@ -809,7 +865,7 @@ void APP_Tasks( void )
                 }
 
                 /* Optional delay before closing the door */
-                if (appDataDoor.close_delay > 0) 
+                if ( appDataDoor.close_delay > 0 )
                 {
                     setDelayMs( appDataDoor.close_delay );
                     while ( false == isDelayMsEnding( ) )
@@ -817,44 +873,56 @@ void APP_Tasks( void )
                         Nop( );
                     }
                 }
-                
-                /* Servomotor power command enable. */
-                servomotorPowerEnable( );
-                appDataDoor.reward_door_status = DOOR_CLOSING;
-#if defined (USE_UART1_SERIAL_INTERFACE) 
-                printf( "Closing door in action.\n" );
-#endif              
+
             }
-            
-            /* Check if the bird put its head in during door close */
-            if (DOOR_CLOSING == appDataDoor.reward_door_status && 1 == BAR_IR1_OUT_GetValue( ) )
-            {                
-                appData.state = APP_STATE_REOPEN_DOOR;
+
+            /* Servomotor power command enable. */
+            servomotorPowerEnable( );
+
+            appDataServo.ton_cmd = getDoorPosition( );
+            appDataServo.ton_goal = appDataServo.ton_min;
+
+            if ( appDataServo.ton_cmd != appDataServo.ton_goal )
+            {
+                appDataDoor.reward_door_status = DOOR_MOVING;
+                while ( DOOR_MOVED != appDataDoor.reward_door_status )
+                {
+                    /* Check if the bird put its head in during door close */
+                    if ( 1 == BAR_IR1_OUT_GetValue( ) )
+                    {
+                        appData.state = APP_STATE_REOPEN_DOOR;
+                        break;
+                    }
+                }
+            }
+
+            if ( APP_STATE_REOPEN_DOOR == appData.state )
+            {
                 break;
             }
 
-            if ( DOOR_CLOSED == appDataDoor.reward_door_status )
-            {
-#if defined (USE_UART1_SERIAL_INTERFACE)
-                printf( "Door closed - Servo position: %u\n", getADC1value( ADC1_CHANNEL_MA_SERVO ) ); 
+            appDataDoor.reward_door_status = DOOR_CLOSED;
+
+            /* Servomotor power command disable. */
+            servomotorPowerDisable( );
+
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
+            printf( "\tDoor closed - Servo position: %u\n", getDoorPosition( ) );
 #endif
-                /* Servomotor power command disable. */
-                servomotorPowerDisable( );
-                
-                IRSensorDisable( );
-                EX_INT1_InterruptDisable();                    
-                EX_INT1_PositiveEdgeSet( );  
-                EX_INT1_InterruptFlagClear( );
-                clear_ir1_sensor( );
-                
-                appDataDoor.num_reopen_attempt = 0;
-                    
-                appData.state = APP_STATE_DATA_LOG;
-            }
+            IRSensorDisable( );
+            EX_INT1_InterruptDisable( );
+            EX_INT1_PositiveEdgeSet( );
+            EX_INT1_InterruptFlagClear( );
+            clear_ir1_sensor( );
+
+            appDataDoor.num_reopen_attempt = 0;
+
+            appData.state = APP_STATE_DATA_LOG;
+
             break;
             /* -------------------------------------------------------------- */
 
-            case APP_STATE_REOPEN_DOOR:
+        case APP_STATE_REOPEN_DOOR:
             if ( appData.state != appData.previous_state )
             {
                 appData.previous_state = appData.state;
@@ -862,29 +930,29 @@ void APP_Tasks( void )
                 printf( "> APP_STATE_REOPEN_DOOR\n" );
 #endif           
                 appDataDoor.reward_door_status = DOOR_OPENING;
-                
+
                 appDataDoor.num_reopen_attempt += 1;
-                
+
                 /* Timeout before going to error. */
                 setDelayMs( 10000 );
-                
+
             }
 
-            if ( true == isDelayMsEnding( ) ) 
+            if ( true == isDelayMsEnding( ) )
             {
-                sprintf( appError.message, "Unable to close the door after %d seconds", 10);
+                sprintf( appError.message, "Unable to close the door after %d seconds", 10 );
                 appError.currentLineNumber = __LINE__;
                 sprintf( appError.currentFileName, "%s", __FILE__ );
                 appError.number = ERROR_DOOR_CANT_CLOSE;
                 appData.state = APP_STATE_ERROR;
                 break;
-            }                                                 
-                                         
+            }
+
             if ( DOOR_OPENED == appDataDoor.reward_door_status )
             {
-                if (MAX_NUM_DOOR_REOPEN_ATTEMPT < appDataDoor.num_reopen_attempt)
+                if ( MAX_NUM_DOOR_REOPEN_ATTEMPT < appDataDoor.num_reopen_attempt )
                 {
-                    sprintf( appError.message, "Unable to close the door after %d attempts", MAX_NUM_DOOR_REOPEN_ATTEMPT);
+                    sprintf( appError.message, "Unable to close the door after %d attempts", MAX_NUM_DOOR_REOPEN_ATTEMPT );
                     appError.currentLineNumber = __LINE__;
                     sprintf( appError.currentFileName, "%s", __FILE__ );
                     appError.number = ERROR_DOOR_CANT_CLOSE;
@@ -892,31 +960,14 @@ void APP_Tasks( void )
                 }
                 else
                 {
-                    if (0 == BAR_IR1_OUT_GetValue( ))
+                    if ( 0 == BAR_IR1_OUT_GetValue( ) )
                     {
                         appData.state = APP_STATE_CLOSING_DOOR;
                     }
                 }
-            } 
-            
+            }
+
             break;
-            /* -------------------------------------------------------------- */
-            
-            //        case APP_STATE_ATTACH_KEY:
-            //            if (appData.state != appData.previous_state)
-            //            {
-            //                appData.previous_state = appData.state;
-            //#if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
-            //                printf("> APP_STATE_ATTACH_KEY\n");
-            //#endif
-            //                powerUsbRfidEnable();
-            //            }
-            //
-            //            if (appDataUsb.getValidDeviceAdress)
-            //            {
-            //                appData.state = APP_STATE_DATA_LOG;
-            //            }
-            //            break;
             /* -------------------------------------------------------------- */
 
         case APP_STATE_DATA_LOG:
@@ -926,23 +977,7 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_DATA_LOG\n" );
 #endif
-                //                if ((appDataLog.numDataStored >= (MAX_NUM_DATA_TO_STORE - 1)) && (false == appDataUsb.getValidDeviceAdress))
-                //                {
-                //                    appDataUsb.key_is_nedded = true;
-                //                }
-                //                else
-                //                {
-                //                    appDataUsb.key_is_nedded = false;
-                //                }
             }
-
-            //            LedsStatusBlink( LED_BLUE, LEDS_OFF, 50, 250 );
-
-            //            if ((true == appDataUsb.key_is_nedded) && (false == appDataUsb.getValidDeviceAdress))
-            //            {
-            //                appData.state = APP_STATE_ATTACH_KEY;
-            //                break;
-            //            }
 
             if ( false == dataLog( true ) )
             {
@@ -953,12 +988,6 @@ void APP_Tasks( void )
                 appData.state = APP_STATE_IDLE;
             }
 
-            //            if ((true == appDataUsb.key_is_nedded) && (true == appDataUsb.getValidDeviceAdress))
-            //            {
-            //                appDataUsb.getValidDeviceAdress = false;
-            //                appDataUsb.key_is_nedded = false;
-            //                powerUsbRfidDisable();
-            //            }
             break;
             /* -------------------------------------------------------------- */
 
@@ -1051,28 +1080,34 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_SLEEP\n" );
 #endif
-                
+
                 /* Stop RTCC interuption during shutdown process */
-                rtcc_stop_alarm();
-                
+                rtcc_stop_alarm( );
+
                 /* Close the door if it is opened */
-                if ( DOOR_CLOSED != appDataDoor.reward_door_status )
+                if ( DOOR_CLOSED_AT_NIGHT != appDataDoor.reward_door_status )
                 {
-                    /* Close reward door */
+                    /* Servomotor power command enable. */
                     servomotorPowerEnable( );
-                    appDataDoor.reward_door_status = DOOR_CLOSING;
-#if defined (USE_UART1_SERIAL_INTERFACE)
-                    printf( "Closing door in action.\n" );
-#endif
-                    while ( DOOR_CLOSED != appDataDoor.reward_door_status );
-#if defined (USE_UART1_SERIAL_INTERFACE)
-                    printf( "Door closed - Servo position: %u\n", getADC1value( ADC1_CHANNEL_MA_SERVO ) ); 
-#endif
+
+                    appDataServo.ton_cmd = getDoorPosition( );
+                    appDataServo.ton_goal = appDataServo.ton_min_night;
+
+                    if ( appDataServo.ton_cmd != appDataServo.ton_goal )
+                    {
+                        appDataDoor.reward_door_status = DOOR_MOVING;
+                        while ( DOOR_MOVED != appDataDoor.reward_door_status );
+                    }
+
+                    appDataDoor.reward_door_status = DOOR_CLOSED_AT_NIGHT;
+
+                    /* Servomotor power command disable. */
                     servomotorPowerDisable( );
+
                 }
 
                 /* Set peripherals Off. */
-                setAttractiveLedsOff( );                
+                setAttractiveLedsOff( );
                 powerPIRDisable( );
                 EX_INT0_InterruptDisable( );
                 RFID_Disable( );
@@ -1120,7 +1155,6 @@ void APP_Tasks( void )
                     }
 
                     powerUsbRfidDisable( );
-                    CMD_VDD_APP_V_USB_SetLow( ); // --> powerUsbRfidDisable( );
                 }
                 else
                 {
@@ -1130,30 +1164,99 @@ void APP_Tasks( void )
 
             /* Turn status LED off */
             setLedsStatusColor( LEDS_OFF );
-            
+
 #if defined (TEST_RTCC_SLEEP_WAKEUP)
             /* Next line for debugging sleep/wakeup only */
             /* Should be commented in normal mode */
             /* Modify time value according to wake up values in the CONFIG.INI file */
-            setDateTime( 17, 9, 21, 5, 59, 30 );
+            setDateTime( 17, 9, 21, 5, 59, 50 );
 #endif
-            
+
             /* Set alarm for wake up time */
             rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_DAY );
 
-            rtcc_start_alarm();
-            
+            rtcc_start_alarm( );
+
             setDelayMs( 500 );
             while ( false == isDelayMsEnding( ) )
             {
                 Nop( );
             }
-                    
-            Sleep( );
 
-//#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
-//            printf( "\n" );
-//#endif
+#if defined (ENABLE_DEEP_SLEEP)
+
+            // https://github.com/dsoze1138/Microchip/tree/master/PIC/24F/24FJ128GC010/24FJ128GC010_deepsleep
+            //            RCONbits.RETEN = 1; /* Enable regulator to retain RAM during Deep Sleep */
+            //            RCONbits.DPSLP = 0; /* clear all previous deep sleep wake flags */
+            //            DSWAKE = 0; /* clear all previous deep sleep wake flags */
+            //            /* enter deep sleep code cut and paste from data sheet */
+            //            asm( "disi #5" );
+            //            asm( "bset  DSCON, #15" ); /* the data sheet says we need to set DSCON twice */
+            //            asm( "bset  DSCON, #15" );
+            //            asm( "nop" );
+            //            asm( "nop" );
+            //            asm( "nop" );
+
+            //            DSCONbits.RELEASE = 0;
+            //            DSCONbits.RELEASE = 0;
+            //            DSCONbits.DSEN = 1;
+            //            asm("NOP"); //Writes to the DSEN bit do not need
+            //            asm("NOP"); //to be sequential (back-to-back)
+            //            asm("NOP");
+            //            DSCONbits.DSEN = 1;
+
+            //            DSCONbits.DSEN = 1;
+            //            Nop( );
+            //            Nop( );
+            //            Nop( );
+
+            //            RCONbits.DPSLP = 0;
+            //            asm("nop");
+            //            asm("nop");
+            //            asm("nop");
+
+            //Resetting DeepSleep flags
+            //    RCONbits.DPSLP = 0; /* clear all previous deep sleep wake flags */
+            //    DSWAKE = 0;         /* clear all previous deep sleep wake flags */
+            //            
+            //            asm("bset DSCON, #15");
+            //            asm("nop");
+            //            asm("nop");
+            //            asm("nop");
+            //            asm("bset DSCON, #15");
+
+            asm( "MOV #0x8000, W2" );
+            asm( "MOV W2, DSCON" );
+            asm( "MOV W2, DSCON" );
+            asm( "nop" );
+            asm( "nop" );
+            asm( "nop" );
+            _DSEN = 1;
+
+
+#endif
+            asm( "pwrsav #0" ); // Sleep( );
+
+//            if ( RCONbits.DPSLP )
+//            {
+//                RCONbits.DPSLP = 0;
+//                Nop( );
+//                Nop( );
+//                Nop( );
+//                DSCONbits.RELEASE = 0;
+//                Nop( );
+//                Nop( );
+//                Nop( );
+//                printf( "\tWoke up from Deep Sleep\n" );
+//            }
+
+//            if ( RCONbits.SLEEP )
+//            {
+//                printf( "\tWoke up from Sleep\n" );
+//            }
+//
+//            DSCONbits.DSEN = 0;
+
             appData.state = APP_STATE_WAKE_UP;
             break;
             /* -------------------------------------------------------------- */
@@ -1166,16 +1269,16 @@ void APP_Tasks( void )
                 printf( "> APP_STATE_WAKE_UP_FROM_SLEEP\n" );
 #endif
             }
-            
+
 #if defined (TEST_RTCC_SLEEP_WAKEUP)
             /* Next line for debugging sleep/wakeup only */
             /* Should be commented in normal mode */
             /* Modify time value according to sleep values in the CONFIG.INI file */
-            setDateTime( 17, 9, 21, 22, 59, 0 );
+            setDateTime( 17, 9, 21, 22, 59, 30 );
 #endif
-            
+
             rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_SECOND );
-            
+
             APP_Initialize( );
             break;
             /* -------------------------------------------------------------- */
@@ -1281,9 +1384,7 @@ void APP_Tasks( void )
         case APP_STATE_LOW_RFID_FREQUENCY:
         case APP_STATE_DOOR_DONT_CLOSE:
         case APP_STATE_ERROR:
-            /* Step in APP_Tasks( ) failed.
-             * TODO: APP_STATE_ERROR - This state should not be blocking!
-             */
+
             if ( appData.state != appData.previous_state )
             {
 
@@ -1294,13 +1395,13 @@ void APP_Tasks( void )
                     printf( "> APP_STATE_ERROR\n" );
                     appError.ledColor_2 = LEDS_OFF;
                 }
-                
+
                 if ( appData.state == APP_STATE_DOOR_DONT_CLOSE )
                 {
                     printf( "> APP_STATE_DOOR_DONT_CLOSE\n" );
                     appError.ledColor_2 = LEDS_ERROR_CRITICAL_DOOR;
                 }
-                
+
                 if ( appData.state == APP_STATE_LOW_VBAT )
                 {
                     printf( "> APP_STATE_LOW_VBAT\n" );
@@ -1321,21 +1422,28 @@ void APP_Tasks( void )
 #endif
 #if defined (USE_UART1_SERIAL_INTERFACE)
                 printCurrentDate( );
-                printf(" ");
+                printf( " " );
                 printError( );
 #endif
                 rtcc_stop_alarm( );
 
                 /* Close the door if it is opened */
-                if ( ERROR_DOOR_CANT_CLOSE!=appError.number && DOOR_CLOSED != appDataDoor.reward_door_status )
+                if ( ERROR_DOOR_CANT_CLOSE != appError.number && DOOR_CLOSED_AT_NIGHT != appDataDoor.reward_door_status )
                 {
-                    /* Close reward door */
+
+                    /* Servomotor power command enable. */
                     servomotorPowerEnable( );
-                    appDataDoor.reward_door_status = DOOR_CLOSING;
-#if defined (USE_UART1_SERIAL_INTERFACE)
-                    printf( "Closing door in action.\n" );
-#endif
-                    while ( DOOR_CLOSED != appDataDoor.reward_door_status );
+
+                    appDataServo.ton_cmd = getDoorPosition( );
+                    appDataServo.ton_goal = appDataServo.ton_min_night;
+
+                    if ( appDataServo.ton_cmd != appDataServo.ton_goal )
+                    {
+                        appDataDoor.reward_door_status = DOOR_CLOSING_AT_NIGHT;
+                        while ( DOOR_CLOSED_AT_NIGHT != appDataDoor.reward_door_status );
+                    }
+
+                    /* Servomotor power command disable. */
                     servomotorPowerDisable( );
                 }
 
@@ -1345,34 +1453,53 @@ void APP_Tasks( void )
                 EX_INT0_InterruptDisable( );
                 RFID_Disable( );
                 USBHostShutdown( );
-                powerUsbRfidDisable( );
                 IRSensorDisable( );
-                TMR3_Start( );
-                setDelayMs( 5000 );
+                powerUsbRfidDisable( );
+
+                /* FIXME : Reset every 5 sec */
+                /* Reset the system if non critical error occurred */
+                if ( appError.number > ERROR_CRITICAL )
+                {
+                    TMR3_Start( );
+                    setDelayMs( 5000 );
+                }
 
 #if defined (USE_UART1_SERIAL_INTERFACE) 
                 if ( appError.number > ERROR_CRITICAL )
                 {
-                    printf( "%d - Need to reset\n", T3CONbits.TON );
+                    printf( "\t%d - Need to reset\n", T3CONbits.TON );
                 }
 #endif
             }
 
             /* FIXME : Reset every 5 sec */
             /* Reset the system if non critical error occurred */
-            if ( appError.number > ERROR_CRITICAL )
+            //            if ( appError.number > ERROR_CRITICAL)
+            //            {
+            //                if ( isDelayMsEnding( ) )
+            //                {
+            //                    TMR3_Stop( );
+            //#if defined (USE_UART1_SERIAL_INTERFACE)               
+            //                    printf( "\tRESET...\n" );
+            //#endif
+            //                    __asm__ volatile ( "reset" ); /* reboot the board!!! */
+            //                }
+            //            }
+
+            if ( appError.number > ERROR_CRITICAL && isDelayMsEnding( ) )
             {
-                if ( isDelayMsEnding( ) )
-                {
+                TMR3_Stop( );
 #if defined (USE_UART1_SERIAL_INTERFACE)               
-                    printf( "RESET...\n" );
+                printf( "\tRESET...\n" );
 #endif
-                    __asm__ volatile ( "reset" ); /* reboot the board!!! */
-                }
+                __asm__ volatile ( "reset" ); /* reboot the board!!! */
+
             }
 
-            /* Red status LED blinks */
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (ENABLE_ERROR_LEDS)
+            /* Status LED blinks */
             LedsStatusBlink( appError.ledColor_1, appError.ledColor_2, 50, 250 );
+#endif
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
             /* Get interaction with the serial terminal. */
@@ -1421,7 +1548,7 @@ void APP_Tasks( void )
             /* -------------------------------------------------------------- */
 
         default:
-            //            Nop( );
+
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
             printf( "> APP_STATE_DEFAULT\n" );
 #endif
@@ -1435,8 +1562,10 @@ void APP_Initialize( void )
 {
     int i, j;
 
+    OC4_Stop( );
+    OC5_Stop( );
     TMR4_Stop( );
-    
+
     /* Attractive LEDs initialize */
     setAttractiveLedsOff( );
     appDataAttractiveLeds.current_color_index = 0;
@@ -1524,6 +1653,10 @@ void APP_Initialize( void )
     appData.punishment_delay = 0;
 
     appData.rfid_signal_detected = false;
+
+    appDataDoor.reward_door_status = DOOR_CLOSED_AT_NIGHT;
+
+
 
 }
 

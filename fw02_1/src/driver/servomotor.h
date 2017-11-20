@@ -27,9 +27,11 @@ typedef enum
     DOOR_IDLE, /* Not in use. */
     DOOR_OPENED,
     DOOR_CLOSED,
+    DOOR_CLOSED_AT_NIGHT,
     DOOR_MOVED,
     DOOR_OPENING, /* Opening in action. */
     DOOR_CLOSING, /* Closing in action. */
+    DOOR_CLOSING_AT_NIGHT,
     DOOR_MOVING
 
 } DOOR_STATUS;
@@ -62,6 +64,7 @@ typedef struct
     uint16_t ton_min; /* minimum servomotor position */
     uint16_t ton_max; /* maximum servomotor position */
     uint16_t ton_goal; /* maximum servomotor position */
+    uint16_t ton_min_night; /* minimum servomotor position to ensure door close at night */
     uint8_t speed; /* servomotor speed increment to move from position A to B(ex: every 20 ms) */
     uint16_t measure_position; /* measured servomotor position */
     int8_t direction;
@@ -88,7 +91,7 @@ bool servomotorOpenTheDoor( void );
  * @return true if the door is closed
  */
 bool servomotorCloseTheDoor( void );
-
+bool servomotorCloseTheDoorAtNight( void );
 bool servomotorMoveTheDoor(void);
 
 void servomotorPowerEnable( void );

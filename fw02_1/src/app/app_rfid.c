@@ -344,7 +344,7 @@ void measureRfidFreq( void )
     
     if ( flag_cmd_vdd_app == true )
     {
-        powerUsbRfidDisable( );
+//        powerUsbRfidDisable( );
     }
 
 }

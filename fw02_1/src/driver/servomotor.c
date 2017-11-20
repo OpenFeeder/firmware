@@ -11,6 +11,7 @@
 #include "servomotor.h"
 #include <libpic30.h>
 
+
 void SERVO_Initialize( void )
 {
     /* Servomotor power command disable. */
@@ -23,18 +24,35 @@ void SERVO_Initialize( void )
 
 }
 
+
 uint16_t getDoorPosition( void )
 {
-    return getADC1value( ADC1_CHANNEL_MA_SERVO );
+
+    uint16_t position;
+
+    position = getADC1value( ADC1_CHANNEL_MA_SERVO );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
+    printf( "\tServo at %u\n", position );
+#endif 
+    return position;
 }
+
 
 bool servomotorMoveTheDoor( void )
 {
     if ( appDataServo.ton_cmd != appDataServo.ton_goal )
     {
 
-        /* Change servomotor position. */        
-        if (appDataServo.direction == 1)
+        if ( appDataServo.ton_cmd > appDataServo.ton_goal )
+        {
+            appDataServo.direction = -1;
+        }
+        else
+        {
+            appDataServo.direction = 1;
+        }
+        /* Change servomotor position. */
+        if ( appDataServo.direction == 1 )
         {
             appDataServo.ton_cmd += ( uint16_t ) appDataServo.speed;
         }
@@ -42,36 +60,42 @@ bool servomotorMoveTheDoor( void )
         {
             appDataServo.ton_cmd -= ( uint16_t ) appDataServo.speed;
         }
-//#if defined (USE_UART1_SERIAL_INTERFACE)
-//        printf( "%u %u\n", appDataServo.ton_cmd, getDoorPosition());
-//#endif 
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
+        printf( "\t\tMoving at %u\n", appDataServo.ton_cmd );
+#endif 
         if ( appDataServo.direction == 1 && appDataServo.ton_cmd >= appDataServo.ton_goal )
         {
-            appDataServo.ton_cmd -= (appDataServo.ton_cmd - appDataServo.ton_goal);
-//#if defined (USE_UART1_SERIAL_INTERFACE)
-//            printf( "%u %u\n", appDataServo.ton_cmd, getDoorPosition());
-//#endif
+            appDataServo.ton_cmd -= ( appDataServo.ton_cmd - appDataServo.ton_goal );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
+            printf( "\t\tMoving at %u\n", appDataServo.ton_cmd );
+#endif
             OC5_PrimaryValueSet( appDataServo.ton_cmd );
-//#if defined (USE_UART1_SERIAL_INTERFACE)
-//            printf( "%u %u (last)\n", appDataServo.ton_cmd, getDoorPosition());
-//#endif
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
+            printf( "\t\tMoving at %u\n", appDataServo.ton_cmd );
+#endif
             appDataServo.ton_cmd = appDataServo.ton_goal;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
+            getDoorPosition( );
+#endif  
             return true;
         }
         else if ( appDataServo.direction == -1 && appDataServo.ton_cmd <= appDataServo.ton_goal )
         {
-            appDataServo.ton_cmd += (appDataServo.ton_goal - appDataServo.ton_cmd);
-//#if defined (USE_UART1_SERIAL_INTERFACE)
-//            printf( "%u %u\n", appDataServo.ton_cmd, getDoorPosition());
-//#endif
+            appDataServo.ton_cmd += ( appDataServo.ton_goal - appDataServo.ton_cmd );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
+            printf( "\t\tMoving at %u\n", appDataServo.ton_cmd );
+#endif
             OC5_PrimaryValueSet( appDataServo.ton_cmd );
-//#if defined (USE_UART1_SERIAL_INTERFACE)
-//            printf( "%u %u (last)\n", appDataServo.ton_cmd, getDoorPosition());
-//#endif
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
+            printf( "\t\tMoving at %u\n", appDataServo.ton_cmd );
+#endif
             appDataServo.ton_cmd = appDataServo.ton_goal;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
+            getDoorPosition( );
+#endif  
             return true;
         }
-        
+
         /* Set DC of PWM5. */
         OC5_PrimaryValueSet( appDataServo.ton_cmd );
 
@@ -80,6 +104,7 @@ bool servomotorMoveTheDoor( void )
 
     return true;
 }
+
 
 /**
  * bool servomotorOpenTheDoor( void )
@@ -107,6 +132,7 @@ bool servomotorOpenTheDoor( void )
     return true;
 }
 
+
 /**
  * bool servomotorCloseTheDoor( void )
  * @return true if appDataServo.ton_min is reach
@@ -133,18 +159,45 @@ bool servomotorCloseTheDoor( void )
     return true;
 }
 
+
+bool servomotorCloseTheDoorAtNight( void )
+{
+    if ( appDataServo.ton_cmd != appDataServo.ton_min_night )
+    {
+        /* Change servomotor position. */
+        appDataServo.ton_cmd = appDataServo.ton_cmd - ( uint16_t ) appDataServo.speed;
+
+        if ( appDataServo.ton_cmd <= appDataServo.ton_min_night )
+        {
+            appDataServo.ton_cmd = appDataServo.ton_min_night;
+            return true;
+        }
+
+        /* Set DC of PWM5. */
+        OC5_PrimaryValueSet( appDataServo.ton_cmd );
+
+        return false;
+    }
+
+    return true;
+}
+
+
 void servomotorPowerEnable( void )
 {
+    OC5_Start();
     CMD_VDD_ACC_PIR_SERVO_SetHigh( );
     CMD_VCC_SERVO_SetLow( );
     CMD_VCC_SERVO_SetDigitalOutput( );
     appDataServo.cmd_vcc_servo_state = true;
 }
 
+
 void servomotorPowerDisable( void )
 {
-    CMD_VCC_SERVO_SetDigitalInput();
-    appDataServo.cmd_vcc_servo_state = false;
+    OC5_Stop();
+    CMD_VCC_SERVO_SetDigitalInput( );
+    appDataServo.cmd_vcc_servo_state = false;    
 }
 
 

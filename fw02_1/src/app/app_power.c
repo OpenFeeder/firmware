@@ -10,39 +10,45 @@
 #include "app.h"
 #include "app_power.h"
 
+
 bool isPowerServoEnable( void )
 {
     return appDataServo.cmd_vcc_servo_state;
 }
+
 
 void powerPIREnable( void )
 {
     CMD_VDD_ACC_PIR_SERVO_SetHigh( ); // CMD_ACC_PIR = EN pin of U7 (5V regulator for PIR sensor and accesoir "VDD_ACC": servomotor with "VDD_SERVO", )
 }
 
+
 void powerPIRDisable( void )
 {
     CMD_VDD_ACC_PIR_SERVO_SetLow( );
 }
 
+
 /* VDD_APP Enable function */
 void powerUsbRfidEnable( void )
 {
     CMD_VDD_APP_V_USB_SetHigh( ); // Power ON the U5 => MIC39101 - 5.0YM
-    
+
     //!\ FIXME: We must put "CMD_VDD_USB" (RF0) Low to powered the USB 
-    CMD_VDD_USB_SetLow(); // powered the USB connector
-    CMD_VDD_USB_SetDigitalOutput();
+    CMD_VDD_USB_SetLow( ); // powered the USB connector
+    CMD_VDD_USB_SetDigitalOutput( );
 }
+
 
 /* VDD_APP Disable function */
 void powerUsbRfidDisable( void )
 {
-    // CMD_VDD_USB_SetDigitalInput(); // USB power down, VDD_USB = OFF
-    
+    CMD_VDD_USB_SetDigitalInput( ); // USB power down, VDD_USB = OFF
+
     // TODO: complete powerUsbRfidDisable( )
-    //    CMD_VDD_APP_V_USB_SetLow( ); // FIXME: CMD_VDD_APP_V_USB_SetLow( ) disable for USB continue mode
+    CMD_VDD_APP_V_USB_SetLow( ); // FIXME: CMD_VDD_APP_V_USB_SetLow( ) disable for USB continue mode
 }
+
 
 uint16_t getADC1value( ADC1_CHANNEL channel )
 {
@@ -62,6 +68,7 @@ uint16_t getADC1value( ADC1_CHANNEL channel )
     return ADC1_ConversionResultGet( );
 }
 
+
 void getVBatLevel( void )
 {
     uint16_t i;
@@ -80,12 +87,14 @@ void getVBatLevel( void )
     appData.vbat_level = ADC1_ConversionResultGet( ) * 2;
 }
 
+
 void printVBatLevel( void )
 {
 #if defined (USE_UART1_SERIAL_INTERFACE) 
     printf( "VBat level: %2.3f V (%u)\n", appData.vbat_level * VBAT_VOLTAGE_FACTOR, appData.vbat_level );
 #endif 
 }
+
 
 void getBatteryLevel( void )
 {
@@ -104,6 +113,7 @@ void getBatteryLevel( void )
 
     appData.battery_level = ADC1_ConversionResultGet( );
 }
+
 
 void printBatteryLevel( void )
 {

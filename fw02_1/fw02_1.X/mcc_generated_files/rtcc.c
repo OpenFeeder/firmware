@@ -105,10 +105,12 @@ void RTCC_Initialize(void)
 
     // RTCEN enabled; OUTSEL Seconds Clock; PWCPOE disabled; TSBEN disabled; PWCEN disabled; WRLOCK enabled; PWCPOL disabled; TSAEN disabled; RTCOE enabled; 
     RTCCON1L = 0x8B90; 
+    
+IEC3bits.RTCIE = 1;
 
    RTCC_Lock();
 
-    IEC3bits.RTCIE = 1;
+    
 }
 
 static void RTCC_Lock(void)
@@ -179,7 +181,7 @@ void RTCC_TimeSet(struct tm *initialTime)
     // Lock the RTCC registers
     RTCCON1Lbits.WRLOCK = 1; 
     
-//    RTCC_Lock();
+    RTCC_Lock();
     
     
 }

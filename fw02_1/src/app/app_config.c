@@ -369,10 +369,12 @@ INI_READ_STATE config_read_ini( void )
         if ( read_parameter >= SERVO_POSITION_MIN_DEFAULT )
         {
             appDataServo.ton_min = ( uint16_t ) read_parameter;
+            appDataServo.ton_min_night = appDataServo.ton_min;
         }
         else
         {
             appDataServo.ton_min = SERVO_POSITION_MIN_DEFAULT;
+            appDataServo.ton_min_night = appDataServo.ton_min;
         }
     }
 
@@ -603,17 +605,14 @@ void config_print( void )
     }
 
     printf( "\tDoor\n" );
-    printf( "\t\tServomotor position min: %d\n", appDataServo.ton_min );
+    printf( "\t\tServo\n\t\t\tPosition full closed: %d\n", appDataServo.ton_min_night );
+    printf( "\t\t\tPosition full opened: %d\n", appDataServo.ton_max );
     
-    if (DOOR_HABITUATION != appData.scenario_number)
-    {           
-        printf( "\t\tServomotor position max: %d\n", appDataServo.ton_max );
-    }
-    else
+    if (DOOR_HABITUATION == appData.scenario_number)
     {
-        printf( "\t\tServomotor position max: %d (%d%% opened)\n", appDataServo.ton_max, appDataDoor.habituation_percent );
+        printf( "\t\t\tDoor habituation: %d%%\n\t\t\tPosition habituation closed: %d\n", appDataDoor.habituation_percent, appDataServo.ton_min );
     }
-    printf( "\t\tServomotor increment position: %d\n", appDataServo.speed ); /* Increment pace of the servomotor position. */
+    printf( "\t\t\tServo increment position: %d\n", appDataServo.speed );
     printf( "\t\tOpen delay: %ds\n\t\tClose delay: %ds\n",
             appDataDoor.open_delay / 1000,
             appDataDoor.close_delay / 1000 );
