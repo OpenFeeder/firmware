@@ -42,24 +42,18 @@ bool servomotorMoveTheDoor( void )
 {
     if ( appDataServo.ton_cmd != appDataServo.ton_goal )
     {
-
+        /* Change servomotor position. */
         if ( appDataServo.ton_cmd > appDataServo.ton_goal )
         {
             appDataServo.direction = -1;
+            appDataServo.ton_cmd -= ( uint16_t ) appDataServo.speed;
         }
         else
         {
             appDataServo.direction = 1;
-        }
-        /* Change servomotor position. */
-        if ( appDataServo.direction == 1 )
-        {
             appDataServo.ton_cmd += ( uint16_t ) appDataServo.speed;
         }
-        else
-        {
-            appDataServo.ton_cmd -= ( uint16_t ) appDataServo.speed;
-        }
+
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
         printf( "\t\tMoving at %u\n", appDataServo.ton_cmd );
 #endif 
@@ -70,13 +64,7 @@ bool servomotorMoveTheDoor( void )
             printf( "\t\tMoving at %u\n", appDataServo.ton_cmd );
 #endif
             OC5_PrimaryValueSet( appDataServo.ton_cmd );
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
-            printf( "\t\tMoving at %u\n", appDataServo.ton_cmd );
-#endif
             appDataServo.ton_cmd = appDataServo.ton_goal;
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
-            getDoorPosition( );
-#endif  
             return true;
         }
         else if ( appDataServo.direction == -1 && appDataServo.ton_cmd <= appDataServo.ton_goal )
@@ -86,13 +74,7 @@ bool servomotorMoveTheDoor( void )
             printf( "\t\tMoving at %u\n", appDataServo.ton_cmd );
 #endif
             OC5_PrimaryValueSet( appDataServo.ton_cmd );
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
-            printf( "\t\tMoving at %u\n", appDataServo.ton_cmd );
-#endif
             appDataServo.ton_cmd = appDataServo.ton_goal;
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
-            getDoorPosition( );
-#endif  
             return true;
         }
 
@@ -110,77 +92,77 @@ bool servomotorMoveTheDoor( void )
  * bool servomotorOpenTheDoor( void )
  * @return true if appDataServo.ton_max is reach
  */
-bool servomotorOpenTheDoor( void )
-{
-    if ( appDataServo.ton_cmd != appDataServo.ton_max )
-    {
-        /* Change servomotor position. */
-        appDataServo.ton_cmd = appDataServo.ton_cmd + ( uint16_t ) appDataServo.speed;
-
-        if ( appDataServo.ton_cmd >= appDataServo.ton_max )
-        {
-            appDataServo.ton_cmd = appDataServo.ton_max;
-            return true;
-        }
-
-        /* Set DC of PWM5. */
-        OC5_PrimaryValueSet( appDataServo.ton_cmd );
-
-        return false;
-    }
-
-    return true;
-}
+//bool servomotorOpenTheDoor( void )
+//{
+//    if ( appDataServo.ton_cmd != appDataServo.ton_max )
+//    {
+//        /* Change servomotor position. */
+//        appDataServo.ton_cmd = appDataServo.ton_cmd + ( uint16_t ) appDataServo.speed;
+//
+//        if ( appDataServo.ton_cmd >= appDataServo.ton_max )
+//        {
+//            appDataServo.ton_cmd = appDataServo.ton_max;
+//            return true;
+//        }
+//
+//        /* Set DC of PWM5. */
+//        OC5_PrimaryValueSet( appDataServo.ton_cmd );
+//
+//        return false;
+//    }
+//
+//    return true;
+//}
 
 
 /**
  * bool servomotorCloseTheDoor( void )
  * @return true if appDataServo.ton_min is reach
  */
-bool servomotorCloseTheDoor( void )
-{
-    if ( appDataServo.ton_cmd != appDataServo.ton_min )
-    {
-        /* Change servomotor position. */
-        appDataServo.ton_cmd = appDataServo.ton_cmd - ( uint16_t ) appDataServo.speed;
+//bool servomotorCloseTheDoor( void )
+//{
+//    if ( appDataServo.ton_cmd != appDataServo.ton_min )
+//    {
+//        /* Change servomotor position. */
+//        appDataServo.ton_cmd = appDataServo.ton_cmd - ( uint16_t ) appDataServo.speed;
+//
+//        if ( appDataServo.ton_cmd <= appDataServo.ton_min )
+//        {
+//            appDataServo.ton_cmd = appDataServo.ton_min;
+//            return true;
+//        }
+//
+//        /* Set DC of PWM5. */
+//        OC5_PrimaryValueSet( appDataServo.ton_cmd );
+//
+//        return false;
+//    }
+//
+//    return true;
+//}
 
-        if ( appDataServo.ton_cmd <= appDataServo.ton_min )
-        {
-            appDataServo.ton_cmd = appDataServo.ton_min;
-            return true;
-        }
 
-        /* Set DC of PWM5. */
-        OC5_PrimaryValueSet( appDataServo.ton_cmd );
-
-        return false;
-    }
-
-    return true;
-}
-
-
-bool servomotorCloseTheDoorAtNight( void )
-{
-    if ( appDataServo.ton_cmd != appDataServo.ton_min_night )
-    {
-        /* Change servomotor position. */
-        appDataServo.ton_cmd = appDataServo.ton_cmd - ( uint16_t ) appDataServo.speed;
-
-        if ( appDataServo.ton_cmd <= appDataServo.ton_min_night )
-        {
-            appDataServo.ton_cmd = appDataServo.ton_min_night;
-            return true;
-        }
-
-        /* Set DC of PWM5. */
-        OC5_PrimaryValueSet( appDataServo.ton_cmd );
-
-        return false;
-    }
-
-    return true;
-}
+//bool servomotorCloseTheDoorAtNight( void )
+//{
+//    if ( appDataServo.ton_cmd != appDataServo.ton_min_night )
+//    {
+//        /* Change servomotor position. */
+//        appDataServo.ton_cmd = appDataServo.ton_cmd - ( uint16_t ) appDataServo.speed;
+//
+//        if ( appDataServo.ton_cmd <= appDataServo.ton_min_night )
+//        {
+//            appDataServo.ton_cmd = appDataServo.ton_min_night;
+//            return true;
+//        }
+//
+//        /* Set DC of PWM5. */
+//        OC5_PrimaryValueSet( appDataServo.ton_cmd );
+//
+//        return false;
+//    }
+//
+//    return true;
+//}
 
 
 void servomotorPowerEnable( void )

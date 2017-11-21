@@ -82,29 +82,29 @@ void TMR3_CallBack( void )
 
     switch ( appDataDoor.reward_door_status )
     {
-        case DOOR_OPENING:
-            /* Opening in action. */
-            if ( servomotorOpenTheDoor( ) )
-            {
-                appDataDoor.reward_door_status = DOOR_OPENED;
-            }
-            break;
-
-        case DOOR_CLOSING:
-            /* Closing in action. */
-            if ( servomotorCloseTheDoor( ) )
-            {
-                appDataDoor.reward_door_status = DOOR_CLOSED;
-            }
-            break;
-            
-        case DOOR_CLOSING_AT_NIGHT:
-            /* Closing in action. */
-            if ( servomotorCloseTheDoorAtNight( ) )
-            {
-                appDataDoor.reward_door_status = DOOR_CLOSED_AT_NIGHT;
-            }
-            break;
+//        case DOOR_OPENING:
+//            /* Opening in action. */
+//            if ( servomotorOpenTheDoor( ) )
+//            {
+//                appDataDoor.reward_door_status = DOOR_OPENED;
+//            }
+//            break;
+//
+//        case DOOR_CLOSING:
+//            /* Closing in action. */
+//            if ( servomotorCloseTheDoor( ) )
+//            {
+//                appDataDoor.reward_door_status = DOOR_CLOSED;
+//            }
+//            break;
+//            
+//        case DOOR_CLOSING_AT_NIGHT:
+//            /* Closing in action. */
+//            if ( servomotorCloseTheDoorAtNight( ) )
+//            {
+//                appDataDoor.reward_door_status = DOOR_CLOSED_AT_NIGHT;
+//            }
+//            break;
             
         case DOOR_MOVING:
             /* Moving in action. */

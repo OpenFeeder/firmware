@@ -82,7 +82,7 @@ bool APP_Rfid_Task( void );
 void findPitTagInList( void );
 bool isPitTagDenied( void );
 void clearPitTagBuffers( void );
-void measureRfidFreq( void );
+bool measureRfidFreq( void );
 void displayRfidFreq( void );
 
 

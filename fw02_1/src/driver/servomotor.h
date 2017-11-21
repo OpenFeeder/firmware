@@ -29,9 +29,9 @@ typedef enum
     DOOR_CLOSED,
     DOOR_CLOSED_AT_NIGHT,
     DOOR_MOVED,
-    DOOR_OPENING, /* Opening in action. */
-    DOOR_CLOSING, /* Closing in action. */
-    DOOR_CLOSING_AT_NIGHT,
+//    DOOR_OPENING, /* Opening in action. */
+//    DOOR_CLOSING, /* Closing in action. */
+//    DOOR_CLOSING_AT_NIGHT,
     DOOR_MOVING
 
 } DOOR_STATUS;
@@ -83,15 +83,15 @@ void SERVO_Initialize( void );
  * The servomotor open the door.
  * @return true if the door is open
  */
-bool servomotorOpenTheDoor( void );
+//bool servomotorOpenTheDoor( void );
 
 /**
  * servomotorCloseTheDoor()
  * The servomotor close the door.
  * @return true if the door is closed
  */
-bool servomotorCloseTheDoor( void );
-bool servomotorCloseTheDoorAtNight( void );
+//bool servomotorCloseTheDoor( void );
+//bool servomotorCloseTheDoorAtNight( void );
 bool servomotorMoveTheDoor(void);
 
 void servomotorPowerEnable( void );

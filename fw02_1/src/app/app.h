@@ -24,6 +24,7 @@
 // *****************************************************************************
 // *****************************************************************************
 
+#define DELAY_BEFORE_RESET 5000
 
 #define USE_UART1_SERIAL_INTERFACE  // uncomment to display information dsent to UART
 #define DISPLAY_CURRENT_STATE       // uncomment to display the current state of main state machine (app.c))
@@ -147,11 +148,11 @@ typedef enum
 
     APP_STATE_REMOTE_CONTROL,
     APP_STATE_FLUSH_DATA_TO_USB,
-    APP_STATE_LOW_BATTERY_LEVEL,
-    APP_STATE_LOW_VBAT,
-    APP_STATE_LOW_FOOD_LEVEL,
-    APP_STATE_LOW_RFID_FREQUENCY,
-    APP_STATE_DOOR_DONT_CLOSE,
+    APP_STATE_ERROR_BATTERY_LEVEL,
+    APP_STATE_ERROR_VBAT,
+    APP_STATE_ERROR_FOOD_LEVEL,
+    APP_STATE_ERROR_RFID_FREQUENCY,
+    APP_STATE_ERROR_DOOR_DONT_CLOSE,
 
     /* Application error state */
     APP_STATE_ERROR

@@ -10,7 +10,7 @@
 
 
 /* Nb de caracteres max sur une ligne du fichier LOG. */
-#define MAX_CHAR_PER_LINE 55
+#define MAX_CHAR_PER_LINE 60
 
 /* Quantite de donnees a stocker dans le buffer avant ecriture dans le fichier LOG
  * --> donc nombre de passages d'oiseau
