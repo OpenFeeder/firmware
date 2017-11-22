@@ -1177,7 +1177,7 @@ void APP_Tasks(void)
             /* Next line for debugging sleep/wakeup only */
             /* Should be commented in normal mode */
             /* Modify time value according to wake up values in the CONFIG.INI file */
-            setDateTime(17, 9, 21, 5, 59, 25);
+            setDateTime(17, 9, 21, 5, 59, 50);
 #endif
 
             /* Set alarm for wake up time */
@@ -1193,58 +1193,11 @@ void APP_Tasks(void)
 
 #if defined (ENABLE_DEEP_SLEEP)
 
-            // https://github.com/dsoze1138/Microchip/tree/master/PIC/24F/24FJ128GC010/24FJ128GC010_deepsleep
-            //            RCONbits.RETEN = 1; /* Enable regulator to retain RAM during Deep Sleep */
-            //            RCONbits.DPSLP = 0; /* clear all previous deep sleep wake flags */
-            //            DSWAKE = 0; /* clear all previous deep sleep wake flags */
-            //            /* enter deep sleep code cut and paste from data sheet */
-            //            asm( "disi #5" );
-            //            asm( "bset  DSCON, #15" ); /* the data sheet says we need to set DSCON twice */
-            //            asm( "bset  DSCON, #15" );
-            //            asm( "nop" );
-            //            asm( "nop" );
-            //            asm( "nop" );
-
-            //            DSCONbits.RELEASE = 0;
-            //            DSCONbits.RELEASE = 0;
-            //            DSCONbits.DSEN = 1;
-            //            asm("NOP"); //Writes to the DSEN bit do not need
-            //            asm("NOP"); //to be sequential (back-to-back)
-            //            asm("NOP");
-            //            DSCONbits.DSEN = 1;
-
-            //            DSCONbits.DSEN = 1;
-            //            Nop( );
-            //            Nop( );
-            //            Nop( );
-
-            //            RCONbits.DPSLP = 0;
-            //            asm("nop");
-            //            asm("nop");
-            //            asm("nop");
-
-            //Resetting DeepSleep flags
-            //    RCONbits.DPSLP = 0; /* clear all previous deep sleep wake flags */
-            //    DSWAKE = 0;         /* clear all previous deep sleep wake flags */
-            //            
-            //            asm("bset DSCON, #15");
-            //            asm("nop");
-            //            asm("nop");
-            //            asm("nop");
-            //            asm("bset DSCON, #15");
-
-            asm("MOV #0x8000, W2");
-            asm("MOV W2, DSCON");
-            asm("MOV W2, DSCON");
-            asm("nop");
-            asm("nop");
-            asm("nop");
-            _DSEN = 1;
-
+    DSCONbits.DSEN = 1;
+    DSCONbits.DSEN = 1;
 
 #endif
-            // Sleep( );
-            asm("pwrsav #0"); 
+            Sleep( );
 
             appData.state = APP_STATE_WAKE_UP;
             break;
@@ -1263,7 +1216,7 @@ void APP_Tasks(void)
             /* Next line for debugging sleep/wakeup only */
             /* Should be commented in normal mode */
             /* Modify time value according to sleep values in the CONFIG.INI file */
-            setDateTime(17, 9, 21, 22, 59, 0);
+            setDateTime(17, 9, 21, 22, 59, 50);
 #endif
 
             rtcc_set_alarm(appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_SECOND);

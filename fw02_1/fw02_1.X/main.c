@@ -181,23 +181,28 @@
 int main( void )
 {
 
-#if defined (ENABLE_DEEP_SLEEP)
-    DSCONbits.RELEASE = 0;
+#if defined (ENABLE_DEEP_SLEEP)   
+    bool deepsleep = false;
+    
     if ( RCONbits.DPSLP )
     {
+        DSCONbits.RELEASE = 0;
+        DSCONbits.RELEASE = 0;
         RCONbits.DPSLP = 0;
-        Nop( );
-        Nop( );
-        
-        Nop( );
-        Nop( );
-        printf( "Woke up from Deep Sleep" );
+        deepsleep = true;
     }
 #endif    
-    
+
     /* Initialize the device. */
     SYSTEM_Initialize( );
 
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (ENABLE_DEEP_SLEEP)
+    if ( deepsleep )
+    {
+        printf( "\tWoke up from Deep Sleep" );
+    }
+#endif  
+    
     /* Initialize peripheral driver. */
     RFID_Initialize( );
     SERVO_Initialize( );
