@@ -112,8 +112,8 @@ void APP_SerialDebugTasks( void )
                 printf( " f or F: display configuration parameters (CONFIG.INI)\n" );
                 printf( " g or G: set green color value of RGB attractive LEDs\n" );
                 printf( " h or H: toggle door remain open parameter\n" );
-                printf( " i or I: enable IR power\n" );
-                printf( " j or J: disable IR power\n" );
+                printf( " i or I: toggle IR barriers power\n" );
+                printf( " j or J: NOT AFFECTED\n" );
                 printf( " k or K: display IR1 and IR2 state\n" );
                 printf( " l or L: call i2cScanner( ) to found I2C devices attached.\n" ); //  --> 0x02, 0x06 and 0xE0
                 printf( " m or M: menu to control PCA9622 device\n" );
@@ -127,7 +127,7 @@ void APP_SerialDebugTasks( void )
                 printf( " r or R: set red color value of RGB attractive LEDs\n" );
                 printf( " s or S: set RTCC module date and time value\n" );
                 printf( " t or T: display date and time from RTCC module\n" );
-                printf( " u or U: display USB device status\n" );
+                printf( " u or U: reconfigure the system (USB key read)\n" );
                 printf( " v or V: set status of servomotor power command\n" );
                 printf( " w or W: toggle power command (CMD_ACC_PIR)\n" );
                 printf( " x or X: display external interrupt and timers states\n" );
@@ -226,21 +226,26 @@ void APP_SerialDebugTasks( void )
                 {
                     printf("\tClosing door... ");
                 }
-
-                appDataDoor.reward_door_status = DOOR_MOVING;                
+               
                 appDataServo.ton_goal = appDataServo.ton_min;
                 
                 if ( false == isPowerServoEnable( ) )
                 {                   
                     servomotorPowerEnable( );
                     appDataServo.ton_cmd = getDoorPosition( );
+                    OC5_Start();
+                    appDataDoor.reward_door_status = DOOR_MOVING;
                     while ( DOOR_MOVED != appDataDoor.reward_door_status );
+                    OC5_Stop();
                     servomotorPowerDisable( );
                 }
                 else
                 {
-                    appDataServo.ton_cmd = getDoorPosition( );   
+                    appDataServo.ton_cmd = getDoorPosition( ); 
+                    OC5_Start();
+                    appDataDoor.reward_door_status = DOOR_MOVING;
                     while ( DOOR_MOVED != appDataDoor.reward_door_status );
+                    OC5_Stop();
                 }
                 
                 appDataDoor.reward_door_status = DOOR_CLOSED;
@@ -316,6 +321,10 @@ void APP_SerialDebugTasks( void )
                 {
                     displayRfidFreq( );
                 }
+                else
+                {
+                    printf("\tTimeout reached during RFID mesure.\n");
+                }
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -375,19 +384,29 @@ void APP_SerialDebugTasks( void )
 
             case 'i':
             case 'I':
-                /* Enable IR */
-                IRSensorEnable( );
-                setDelayMs( DELAY_MS_BEFORE_IR_ENABLE ); // TODO: adjust delay according to the datasheet
-                while ( false == isDelayMsEnding( ) );
-                printf( "IR command enable (detecting mode).\n" );
+
+                /* Toggle IR barriers power */
+                if ( CMD_VCC_IR_GetValue( ) == 1 )
+                {
+                    /* Enable IR */
+                    IRSensorEnable( );
+                    setDelayMs( DELAY_MS_BEFORE_IR_ENABLE ); // TODO: adjust delay according to the datasheet
+                    while ( false == isDelayMsEnding( ) );
+                    printf( "IR command enable (detecting mode).\n" );
+                }
+                else
+                {
+                    /* Disable IR  */
+                    IRSensorDisable( );
+                    printf( "IR command disable (low power mode).\n" );
+                }
                 break;
                 /* -------------------------------------------------------------- */
 
             case 'j':
             case 'J':
-                /* Disable IR  */
-                IRSensorDisable( );
-                printf( "IR command disable (low power mode).\n" );
+
+                printf("\t<NOT AFFECTED>\n");
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -513,46 +532,10 @@ void APP_SerialDebugTasks( void )
             }
                 /* -------------------------------------------------------------- */
 
-                // FIXME: case 'N' can be released, see case 'M' option '3'
             case 'n':
             case 'N':
-            {
-                /* Toggle LED D16 on PCA9622 */
-                static bool led_d16_state = false;
-                I2C1_MESSAGE_STATUS i2c_status = I2C1_MESSAGE_COMPLETE; // the status of write data on I2C bus
-                uint8_t writeBuffer[2]; // data to transmit
-
-                /* Write I2C demo */
-                if ( false == led_d16_state )
-                {
-                    /* Set Red LED low on D16 */
-                    writeBuffer[0] = CTRLREG_PWM12;
-                    writeBuffer[1] = 0x00;
-                    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
-                    /* Set Green LED high on D16 */
-                    writeBuffer[0] = CTRLREG_PWM13;
-                    writeBuffer[1] = 0xFF;
-                    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
-
-                    led_d16_state = true;
-                    printf( "LED D16 Green.\n" );
-                }
-                else
-                {
-                    /* Set Red LED high on D16 */
-                    writeBuffer[0] = CTRLREG_PWM12;
-                    writeBuffer[1] = 0xFF;
-                    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
-                    /* Set Green LED low on D16 */
-                    writeBuffer[0] = CTRLREG_PWM13;
-                    writeBuffer[1] = 0x00;
-                    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
-
-                    led_d16_state = false;
-                    printf( "LED D16 Red.\n" );
-                }
+                printf("\t<NOT AFFECTED>\n");
                 break;
-            }
                 /* -------------------------------------------------------------- */
 
             case 'o':
@@ -566,21 +549,26 @@ void APP_SerialDebugTasks( void )
                 }
 
                 printf("\tOpening door... ");
-                
-                appDataDoor.reward_door_status = DOOR_MOVING;  
+
                 appDataServo.ton_goal = appDataServo.ton_max;
                     
                 if (false == isPowerServoEnable())
                 {
                     servomotorPowerEnable();
                     appDataServo.ton_cmd = getDoorPosition( );
+                    OC5_Start(); 
+                    appDataDoor.reward_door_status = DOOR_MOVING;
                     while ( DOOR_MOVED != appDataDoor.reward_door_status );
+                    OC5_Stop();
                     servomotorPowerDisable();
                 }
                 else
                 {
                     appDataServo.ton_cmd = getDoorPosition( );
+                    OC5_Start();
+                    appDataDoor.reward_door_status = DOOR_MOVING;
                     while ( DOOR_MOVED != appDataDoor.reward_door_status );
+                    OC5_Stop();
                 }
                 
                 appDataDoor.reward_door_status = DOOR_OPENED;
@@ -659,20 +647,26 @@ void APP_SerialDebugTasks( void )
                     appDataServo.direction = 1;
                 }
 
-                TMR3_Start( );
-                
-                appDataDoor.reward_door_status = DOOR_MOVING;
+// TODO
+                TMR3_Start( ); // ????????
+
                 printf( "\tMoving door... " );
                     
                 if ( false == isPowerServoEnable( ) )
                 {
                     servomotorPowerEnable( );
+                    OC5_Start();
+                    appDataDoor.reward_door_status = DOOR_MOVING;
                     while ( DOOR_MOVED != appDataDoor.reward_door_status );
+                    OC5_Stop();
                     servomotorPowerDisable( );
                 }
                 else
                 {
-                    while ( DOOR_MOVED != appDataDoor.reward_door_status );                    
+                    OC5_Start();
+                    appDataDoor.reward_door_status = DOOR_MOVING;
+                    while ( DOOR_MOVED != appDataDoor.reward_door_status );  
+                    OC5_Stop();
                 }
                 printf( "Door moved - Servo position: %u\n", getDoorPosition( ) );
                 break;
@@ -775,10 +769,8 @@ void APP_SerialDebugTasks( void )
 
             case 'u':
             case 'U':
-                /* Display USB device status */
-                printf( "USBHostDeviceStatus: " );
-                printUSBHostDeviceStatus( );
-                putchar( '\n' );
+                /* Reconfigure the system by reading the USB key again */
+                appData.need_to_reconfigure = true;
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -824,6 +816,25 @@ void APP_SerialDebugTasks( void )
 
             case 'x':
             case 'X':
+                /* toggle power command "CMD_VDD_APP". */
+                CMD_VDD_APP_V_USB_Toggle( );
+                Nop( );
+                Nop( );
+                Nop( );
+                if ( true == CMD_VDD_APP_V_USB_GetValue( ) )
+                {
+                    printf( "CMD_VDD_APP_V_USB enable.\n" );
+                }
+                else
+                {
+                    printf( "CMD_VDD_APP_V_USB disable.\n" );
+                }
+                break;
+                /* -------------------------------------------------------------- */
+
+            case 'y':
+            case 'Y':
+                
                 /* Display external interrupt and timers states */
                 printf( "External interrupt states\n" );
                 printf( "\tINT0: %d\n", IEC0bits.INT0IE );
@@ -831,32 +842,73 @@ void APP_SerialDebugTasks( void )
                 printf( "\tINT2: %d\n", IEC1bits.INT2IE );
                 printf( "\tINT3: %d\n", IEC3bits.INT3IE );
                 printf( "\tINT4: %d\n", IEC3bits.INT4IE );
-                printf( "Timers\n" );
+                
+                printf( "\nTimers\n" );
                 printf( "\tTimer2: %d\n", T2CONbits.TON );
                 printf( "\tTimer3: %d\n", T3CONbits.TON );
                 printf( "\tTimer4: %d\n", T4CONbits.TON );
-                break;
-                /* -------------------------------------------------------------- */
-
-            case 'y':
-            case 'Y':
+                
                 /* Display all commands values */
+                printf( "\nPower commands\n" );  
+                if ( CMD_VDD_ACC_PIR_SERVO_GetValue() == 1 )
+                {
+                    printf( "\tCMD_VDD_ACC_PIR: on\n" );
+                }
+                else
+                {
+                    printf( "\tCMD_VDD_ACC_PIR: off\n" );
+                }
+                
+                if ( _TRISF1 )
+                {
+                    printf( "\tCMD_VCC_SERVO: off\n" );
+                }
+                else
+                {
+                    printf( "\tCMD_VCC_SERVO: on\n" );
+                }
+                printf( "\t******\n" ); 
                 if ( CMD_VDD_APP_V_USB_GetValue( ) == 0 )
                 {
-                    printf( "VDD RFID/USB: off\n" );
+                    printf( "\tCMD_VDD_APP: off\n" );
                 }
                 else
                 {
-                    printf( "VDD RFID/USB: on\n" );
+                    printf( "\tCMD_VDD_APP: on\n" );
                 }
+                
+                if ( CMD_VDD_USB_GetValue( ) == 1 )
+                {
+                    printf( "\tCMD_VDD_USB: off\n" );
+                }
+                else
+                {
+                    printf( "\tCMD_VDD_USB: on\n" );
+                }
+                printf( "\t******\n" ); 
                 if ( CMD_VCC_IR_GetValue( ) == 1 )
                 {
-                    printf( "VDD IR: off\n" );
+                    printf( "\tCMD_VCC_IR: off\n" );
                 }
                 else
                 {
-                    printf( "VDD IR: on\n" );
+                    printf( "\tCMD_VCC_IR: on\n" );
                 }
+                printf( "\t******\n" ); 
+                if ( CMD_3V3_RF_GetValue( ) == 1 )
+                {
+                    printf( "\tCMD_3V3_RF: on\n" );
+                }
+                else
+                {
+                    printf( "\tCMD_3V3_RF: off\n" );
+                }
+
+                /* Display USB device status */
+                printf( "\nUSBHostDeviceStatus: " );
+                printUSBHostDeviceStatus( );
+                putchar( '\n' );
+                
                 break;
                 /* -------------------------------------------------------------- */
 

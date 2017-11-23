@@ -39,7 +39,7 @@
 
 /* Set-up time after a sleep period - Tset: 35ms */
 /* Tableau page 5 - datasheet EM4095*/
-#define EM4095_TSET_DELAY_MS 40 
+#define EM4095_TSET_DELAY_MS 100//50 
 /**
  * Enable EM4095 device.
  *  When SHD is low the circuit is enabled to emit RF field. 

@@ -174,6 +174,7 @@
 #include "mcc.h"
 #include "app.h"
 
+
 /*
                          Main application
  */
@@ -183,7 +184,8 @@ int main( void )
 
 #if defined (ENABLE_DEEP_SLEEP)   
     bool deepsleep = false;
-    
+    bool button_user_state = false;
+
     if ( RCONbits.DPSLP )
     {
         DSCONbits.RELEASE = 0;
@@ -202,7 +204,7 @@ int main( void )
         printf( "\tWoke up from Deep Sleep" );
     }
 #endif  
-    
+
     /* Initialize peripheral driver. */
     RFID_Initialize( );
     SERVO_Initialize( );
@@ -227,24 +229,52 @@ int main( void )
     /* Initialize the application. */
     APP_Initialize( );
 
-#if defined (USE_UART1_SERIAL_INTERFACE)
-    /* Display information on serial terminal. */
-    displayBootMessage( );
-    
-#if defined (DISPLAY_RESET_REGISTERS)
-    /* Display reset registers. */
-    displayResetRegisters( );
-#endif
-#endif
+    button_user_state = USER_BUTTON_GetValue( );
 
-    /* Main loop. */
-    while ( 1 )
+    if ( button_user_state )
+
     {
-        /* Maintain Device Drivers. */
-        USBTasks( );
 
-        /* Maintain the application's state machine. */
-        APP_Tasks( ); /* application specific tasks */
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        /* Display information on serial terminal. */
+        displayBootMessage( );
+#endif
+
+        /* Main loop. */
+        while ( 1 )
+        {
+            /* Maintain Device Drivers. */
+            USBTasks( );
+
+            /* Maintain the application's state machine. */
+            APP_Tasks( ); /* application specific tasks */
+        }
+
+    }
+
+    else
+    {
+
+#if defined (DISPLAY_RESET_REGISTERS)
+        /* Display reset registers. */
+        displayResetRegisters( );
+#endif
+
+        OC4_Stop( );
+        OC5_Stop( );
+        TMR4_Stop( );
+        TMR2_Stop();
+
+        while ( 1 )
+        {
+            /* Maintain Device Drivers. */
+            //            USBTasks( );
+
+            /* Maintain the application's state machine. */
+            APP_SerialDebugTasks( );
+        }
+
+
     }
 
     /* Execution should not come here during normal operation. */

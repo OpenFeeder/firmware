@@ -114,11 +114,12 @@ APP_DATA_DOOR appDataDoor;
  */
 void APP_Tasks(void)
 {
-    static bool button_user_state;
-    static bool previous_button_user_state = BUTTON_NOT_PRESSED;
+//    static bool button_user_state;
+//    static bool previous_button_user_state = BUTTON_NOT_PRESSED;
     APP_CHECK chk;
     bool flag;
     I2C1_MESSAGE_STATUS i2c_status;
+    int i;
 
     /* Check the Application State. */
     switch (appData.state)
@@ -139,7 +140,7 @@ void APP_Tasks(void)
                 printf("> APP_STATE_INITIALIZE\n");
 #endif
             }
-
+    
             /* Power PIR sensor early in the code because of starting delay before usable */
             powerPIREnable();
 
@@ -169,6 +170,8 @@ void APP_Tasks(void)
 
             }
 
+// TODO add timeout to find USB key
+            
             if (appDataUsb.getValidDeviceAdress)
             {
                 /* Configure the system if a USB key is plugged. */
@@ -233,8 +236,10 @@ void APP_Tasks(void)
                 appDataServo.ton_goal = appDataServo.ton_max;
                 if (appDataServo.ton_cmd != appDataServo.ton_goal)
                 {
+                    OC5_Start();
                     appDataDoor.reward_door_status = DOOR_MOVING;
                     while (DOOR_MOVED != appDataDoor.reward_door_status);
+                    OC5_Stop();
                 }
                 appDataDoor.reward_door_status = DOOR_OPENED;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
@@ -248,8 +253,10 @@ void APP_Tasks(void)
                     appDataServo.ton_goal = appDataServo.ton_min;
                     if (appDataServo.ton_cmd != appDataServo.ton_goal)
                     {
+                        OC5_Start();
                         appDataDoor.reward_door_status = DOOR_MOVING;
                         while (DOOR_MOVED != appDataDoor.reward_door_status);
+                        OC5_Stop();
                     }
                     appDataDoor.reward_door_status = DOOR_CLOSED;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
@@ -262,6 +269,7 @@ void APP_Tasks(void)
 
                 if (true == appData.flags.bit_value.attractive_leds_status)
                 {
+                    TMR2_Start();                   
 
                     /* Reset PCA9622 device */
                     i2c_status = I2C1_PCA9622_SoftwareReset();
@@ -297,10 +305,6 @@ void APP_Tasks(void)
                         setAttractiveLedsOn();
                     }
                 }
-                else
-                {
-                    TMR2_Stop();
-                }
 
                 rtcc_set_alarm(appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_SECOND);
                 appData.state = APP_STATE_IDLE;
@@ -324,13 +328,7 @@ void APP_Tasks(void)
             /* -------------------------------------------------------------- */
 
         case APP_STATE_IDLE:
-            /**
-             * Application idle state.
-             *  - waiting for a event during a timeout period
-             *  - if user detached USB key go to error state
-             *  - event PIR sensor, detecting movement near the system
-             *  - after the timeout period go into sleep mode
-             */
+
             if (appData.state != appData.previous_state)
             {
                 appData.previous_state = appData.state;
@@ -349,6 +347,20 @@ void APP_Tasks(void)
                 EX_INT0_InterruptFlagClear();
                 EX_INT0_InterruptEnable();
 
+                clearPitTagBuffers( );
+                appDataPitTag.number_of_valid_pit_tag = 0;
+                    
+            }
+            
+            if (appData.need_to_reconfigure)
+            {
+                appData.need_to_reconfigure = false;
+                for ( i = 0; i < MAX_PIT_TAGS_LIST_NUMBER; i++ )
+                {
+                    appDataPitTag.isPitTagdeniedOrColorA[i] = false;
+                }
+                appData.state = APP_STATE_CONFIGURE_SYSTEM;
+                break;
             }
 
             /* Green status LED blinks in idle mode. */
@@ -360,6 +372,11 @@ void APP_Tasks(void)
              */
             if (is_bird_sensor_detected())
             {
+                
+                /* Disable PIR sensor interruption for bird detection */
+                EX_INT0_InterruptFlagClear();
+                EX_INT0_InterruptDisable();
+                
                 while (!RTCC_TimeGet(&appDataLog.bird_arrived_time))
                 {
                     Nop();
@@ -454,8 +471,10 @@ void APP_Tasks(void)
 
                     if (appDataServo.ton_cmd != appDataServo.ton_goal)
                     {
+                        OC5_Start();
                         appDataDoor.reward_door_status = DOOR_MOVING;
                         while (DOOR_MOVED != appDataDoor.reward_door_status);
+                        OC5_Stop();
                     }
                     appDataDoor.reward_door_status = DOOR_OPENED;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
@@ -474,8 +493,10 @@ void APP_Tasks(void)
 
                     if (appDataServo.ton_cmd != appDataServo.ton_goal)
                     {
+                        OC5_Start();
                         appDataDoor.reward_door_status = DOOR_MOVING;
                         while (DOOR_MOVED != appDataDoor.reward_door_status);
+                        OC5_Stop();
                     }
                     appDataDoor.reward_door_status = DOOR_CLOSED;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
@@ -529,45 +550,45 @@ void APP_Tasks(void)
             APP_SerialDebugTasks();
 #endif
 
-            /* Check USER BUTTON detected. */
-            button_user_state = USER_BUTTON_GetValue();
-
-            if (button_user_state != previous_button_user_state)
-            {
-                previous_button_user_state = button_user_state;
-                if (BUTTON_PRESSED == button_user_state)
-                {
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO)
-                    printf("User button pressed - ");
-#endif
-                    if (APP_isRemoteControlConnected())
-                    {
-                        appData.flags.bit_value.RemoteControlConnected = true; // FIXME: same of appData.mcp23017.status_bit.found
-                        //appData.mcp23017.status_bit.found = true;
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
-                        printf("Remote control found.\n");
-#endif
-                        appData.rc_previous_state = APP_STATE_IDLE;
-                        appData.state = APP_STATE_REMOTE_CONTROL;
-                        break;
-                    }
-                    else
-                    {
-                        appData.mcp23017.status_bit.found = false;
-                        appData.mcp23017.status_bit.initialized = false;
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
-                        printf("Remote control not found.\n");
-#endif
-                        appData.state = APP_STATE_FLUSH_DATA_TO_USB;
-                    }
-                }
-                else
-                {
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO)
-                    printf("User button released\n");
-#endif
-                }
-            }
+//            /* Check USER BUTTON detected. */
+//            button_user_state = USER_BUTTON_GetValue();
+//
+//            if (button_user_state != previous_button_user_state)
+//            {
+//                previous_button_user_state = button_user_state;
+//                if (BUTTON_PRESSED == button_user_state)
+//                {
+//#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO)
+//                    printf("User button pressed - ");
+//#endif
+//                    if (APP_isRemoteControlConnected())
+//                    {
+//                        appData.flags.bit_value.RemoteControlConnected = true; // FIXME: same of appData.mcp23017.status_bit.found
+//                        //appData.mcp23017.status_bit.found = true;
+//#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
+//                        printf("Remote control found.\n");
+//#endif
+//                        appData.rc_previous_state = APP_STATE_IDLE;
+//                        appData.state = APP_STATE_REMOTE_CONTROL;
+//                        break;
+//                    }
+//                    else
+//                    {
+//                        appData.mcp23017.status_bit.found = false;
+//                        appData.mcp23017.status_bit.initialized = false;
+//#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
+//                        printf("Remote control not found.\n");
+//#endif
+//                        appData.state = APP_STATE_FLUSH_DATA_TO_USB;
+//                    }
+//                }
+//                else
+//                {
+//#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO)
+//                    printf("User button released\n");
+//#endif
+//                }
+//            }
 
             //#if defined (TEST_RTCC_SLEEP_WAKEUP)
             //            /* Next line for debugging sleep/wakeup only */
@@ -594,6 +615,7 @@ void APP_Tasks(void)
                 rtcc_stop_alarm();
 
                 APP_Rfid_Init();
+
             }
 
             APP_Rfid_Task();
@@ -743,8 +765,10 @@ void APP_Tasks(void)
 
             if (appDataServo.ton_cmd != appDataServo.ton_goal)
             {
+                OC5_Start();
                 appDataDoor.reward_door_status = DOOR_MOVING;
                 while (DOOR_MOVED != appDataDoor.reward_door_status);
+                OC5_Stop();
             }
             appDataDoor.reward_door_status = DOOR_OPENED;
 
@@ -860,6 +884,11 @@ void APP_Tasks(void)
                 /* Skip closing door if the "remain open" flag is set */
                 if (1 == appDataDoor.remain_open)
                 {
+                    IRSensorDisable( );
+                    EX_INT1_InterruptDisable( );
+                    EX_INT1_PositiveEdgeSet( );
+                    EX_INT1_InterruptFlagClear( );
+                    clear_ir1_sensor();
                     // appDataUsb.getValidDeviceAdress = false;
                     appData.state = APP_STATE_DATA_LOG;
                     break;
@@ -885,6 +914,7 @@ void APP_Tasks(void)
 
             if (appDataServo.ton_cmd != appDataServo.ton_goal)
             {
+                OC5_Start();
                 appDataDoor.reward_door_status = DOOR_MOVING;
                 while (DOOR_MOVED != appDataDoor.reward_door_status)
                 {
@@ -902,6 +932,7 @@ void APP_Tasks(void)
                 break;
             }
 
+            OC5_Stop();
             appDataDoor.reward_door_status = DOOR_CLOSED;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
             getDoorPosition();
@@ -1103,8 +1134,10 @@ void APP_Tasks(void)
 
                     if (appDataServo.ton_cmd != appDataServo.ton_goal)
                     {
+                        OC5_Start();
                         appDataDoor.reward_door_status = DOOR_MOVING;
                         while (DOOR_MOVED != appDataDoor.reward_door_status);
+                        OC5_Stop();
                     }
 
                     appDataDoor.reward_door_status = DOOR_CLOSED_AT_NIGHT;
@@ -1225,54 +1258,54 @@ void APP_Tasks(void)
             break;
             /* -------------------------------------------------------------- */
 
-        case APP_STATE_REMOTE_CONTROL:
-            /**
-             * Application idle state.
-             *  - 
-             */
-            if (appData.state != appData.previous_state)
-            {
-                appData.previous_state = appData.state;
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
-                printf("> APP_STATE_REMOTE_CONTROL\n");
-#endif
-                APP_remoteControlInitialize();
-            }
-
-            /* Blue status LED blinks when the remote control is plugged. */
-            LedsStatusBlink(LED_BLUE, LEDS_OFF, 500, 500);
-
-            /* Check USER BUTTON detected.
-             *  - if true RemoteControlConnected = false and go to APP_STATE_IDLE
-             */
-            button_user_state = USER_BUTTON_GetValue();
-
-            if (button_user_state != previous_button_user_state)
-            {
-                previous_button_user_state = button_user_state;
-                if (BUTTON_PRESSED == button_user_state)
-                {
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
-                    printf("USER BUTTON PRESSED\n");
-#endif
-                    clearRemoteControlDisplay();
-                    appData.flags.bit_value.RemoteControlConnected = false;
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
-                    printf("Remote control disconnected\n");
-#endif
-                }
-            }
-
-            if (appData.flags.bit_value.RemoteControlConnected)
-            {
-                APP_remoteControlTask();
-            }
-            else
-            {
-                appData.state = appData.rc_previous_state;
-            }
-            break;
-            /* -------------------------------------------------------------- */
+//        case APP_STATE_REMOTE_CONTROL:
+//            /**
+//             * Application idle state.
+//             *  - 
+//             */
+//            if (appData.state != appData.previous_state)
+//            {
+//                appData.previous_state = appData.state;
+//#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
+//                printf("> APP_STATE_REMOTE_CONTROL\n");
+//#endif
+//                APP_remoteControlInitialize();
+//            }
+//
+//            /* Blue status LED blinks when the remote control is plugged. */
+//            LedsStatusBlink(LED_BLUE, LEDS_OFF, 500, 500);
+//
+//            /* Check USER BUTTON detected.
+//             *  - if true RemoteControlConnected = false and go to APP_STATE_IDLE
+//             */
+//            button_user_state = USER_BUTTON_GetValue();
+//
+//            if (button_user_state != previous_button_user_state)
+//            {
+//                previous_button_user_state = button_user_state;
+//                if (BUTTON_PRESSED == button_user_state)
+//                {
+//#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
+//                    printf("USER BUTTON PRESSED\n");
+//#endif
+//                    clearRemoteControlDisplay();
+//                    appData.flags.bit_value.RemoteControlConnected = false;
+//#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
+//                    printf("Remote control disconnected\n");
+//#endif
+//                }
+//            }
+//
+//            if (appData.flags.bit_value.RemoteControlConnected)
+//            {
+//                APP_remoteControlTask();
+//            }
+//            else
+//            {
+//                appData.state = appData.rc_previous_state;
+//            }
+//            break;
+//            /* -------------------------------------------------------------- */
 
         case APP_STATE_ERROR_BATTERY_LEVEL:
             if (appData.state != appData.previous_state)
@@ -1399,8 +1432,10 @@ void APP_Tasks(void)
 
                     if (appDataServo.ton_cmd != appDataServo.ton_goal)
                     {
+                        OC5_Start();
                         appDataDoor.reward_door_status = DOOR_MOVING;
                         while (DOOR_MOVED != appDataDoor.reward_door_status);
+                        OC5_Stop();
                     }
 
                     appDataDoor.reward_door_status = DOOR_CLOSED_AT_NIGHT;
@@ -1495,7 +1530,8 @@ void APP_Initialize(void)
     OC4_Stop();
     OC5_Stop();
     TMR4_Stop();
-
+    TMR2_Stop();
+    
     /* Attractive LEDs initialize */
     setAttractiveLedsOff();
     appDataAttractiveLeds.current_color_index = 0;
@@ -1515,6 +1551,8 @@ void APP_Initialize(void)
     appData.state = APP_STATE_INITIALIZE;
     appData.previous_state = APP_STATE_ERROR;
 
+    appData.need_to_reconfigure = false;
+        
     appData.openfeeder_state = OPENFEEDER_IS_AWAKEN;
     appData.rtcc_alarm_action = RTCC_ALARM_WAKEUP_OPENFEEDER;
 
@@ -1586,7 +1624,7 @@ void APP_Initialize(void)
 
     appDataDoor.reward_door_status = DOOR_CLOSED_AT_NIGHT;
 
-
+    CMD_3V3_RF_SetLow();
 
 }
 

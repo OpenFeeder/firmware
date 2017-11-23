@@ -157,7 +157,7 @@ INI_READ_STATE config_read_ini( void )
 {
 
     int32_t read_parameter;
-    int s;
+    int s, i;
     char str[20];
     
     /* Scenario number */
@@ -358,6 +358,11 @@ INI_READ_STATE config_read_ini( void )
         appDataPitTag.numPitTagAcceptedOrColorB = ( uint16_t ) read_parameter;
     }
 
+    for (i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; i++)
+    {
+        appDataPitTag.isPitTagdeniedOrColorA[i] = true;
+    }
+    
     /* Door/servomotor configuration. */
     read_parameter = ini_getl( "door", "ton_min", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )

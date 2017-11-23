@@ -63,7 +63,9 @@ bool servomotorMoveTheDoor( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
             printf( "\t\tMoving at %u\n", appDataServo.ton_cmd );
 #endif
+//            OC5_Start();
             OC5_PrimaryValueSet( appDataServo.ton_cmd );
+//            OC5_Stop();
             appDataServo.ton_cmd = appDataServo.ton_goal;
             return true;
         }
@@ -73,14 +75,18 @@ bool servomotorMoveTheDoor( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
             printf( "\t\tMoving at %u\n", appDataServo.ton_cmd );
 #endif
+//            OC5_Start();
             OC5_PrimaryValueSet( appDataServo.ton_cmd );
+//            OC5_Stop();
             appDataServo.ton_cmd = appDataServo.ton_goal;
             return true;
         }
 
         /* Set DC of PWM5. */
+//        OC5_Start();
         OC5_PrimaryValueSet( appDataServo.ton_cmd );
-
+//        OC5_Stop();
+        
         return false;
     }
 
@@ -167,7 +173,7 @@ bool servomotorMoveTheDoor( void )
 
 void servomotorPowerEnable( void )
 {
-    OC5_Start();
+//    OC5_Start();
     CMD_VDD_ACC_PIR_SERVO_SetHigh( );
     CMD_VCC_SERVO_SetLow( );
     CMD_VCC_SERVO_SetDigitalOutput( );
@@ -177,7 +183,7 @@ void servomotorPowerEnable( void )
 
 void servomotorPowerDisable( void )
 {
-    OC5_Stop();
+//    OC5_Stop();
     CMD_VCC_SERVO_SetDigitalInput( );
     appDataServo.cmd_vcc_servo_state = false;    
 }

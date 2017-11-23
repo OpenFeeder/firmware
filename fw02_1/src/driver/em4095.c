@@ -119,6 +119,7 @@ void RFID_Enable( void )
     }
 
     TMR4_Start( );
+    EX_INT4_InterruptFlagClear();
     EX_INT4_PositiveEdgeSet( ); /* Set the edge of external interrupt to handle positive edge interrupts. */
     EX_INT4_InterruptEnable( );
     g_rfid_activate = true;
@@ -127,7 +128,8 @@ void RFID_Enable( void )
 void RFID_Disable( void )
 {
     EM4095_SHD_DISABLE( );
-    TMR4_Stop( );    
+    TMR4_Stop( );  
+    EX_INT4_InterruptFlagClear();
     EX_INT4_InterruptDisable( );
     g_rfid_activate = false;
 }
