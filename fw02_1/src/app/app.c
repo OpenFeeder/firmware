@@ -114,8 +114,8 @@ APP_DATA_DOOR appDataDoor;
  */
 void APP_Tasks(void)
 {
-//    static bool button_user_state;
-//    static bool previous_button_user_state = BUTTON_NOT_PRESSED;
+    static bool button_user_state;
+    static bool previous_button_user_state = BUTTON_NOT_PRESSED;
     APP_CHECK chk;
     bool flag;
     I2C1_MESSAGE_STATUS i2c_status;
@@ -550,14 +550,14 @@ void APP_Tasks(void)
             APP_SerialDebugTasks();
 #endif
 
-//            /* Check USER BUTTON detected. */
-//            button_user_state = USER_BUTTON_GetValue();
-//
-//            if (button_user_state != previous_button_user_state)
-//            {
-//                previous_button_user_state = button_user_state;
-//                if (BUTTON_PRESSED == button_user_state)
-//                {
+            /* Check USER BUTTON detected. */
+            button_user_state = USER_BUTTON_GetValue();
+
+            if (button_user_state != previous_button_user_state)
+            {
+                previous_button_user_state = button_user_state;
+                if (BUTTON_PRESSED == button_user_state)
+                {
 //#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO)
 //                    printf("User button pressed - ");
 //#endif
@@ -579,16 +579,16 @@ void APP_Tasks(void)
 //#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
 //                        printf("Remote control not found.\n");
 //#endif
-//                        appData.state = APP_STATE_FLUSH_DATA_TO_USB;
+                        appData.state = APP_STATE_FLUSH_DATA_TO_USB;
 //                    }
-//                }
+                }
 //                else
 //                {
 //#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO)
 //                    printf("User button released\n");
 //#endif
 //                }
-//            }
+            }
 
             //#if defined (TEST_RTCC_SLEEP_WAKEUP)
             //            /* Next line for debugging sleep/wakeup only */

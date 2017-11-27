@@ -533,7 +533,7 @@ void APP_SerialDebugTasks( void )
                 /* -------------------------------------------------------------- */
 
             case 'n':
-            case 'N':
+            case 'N':              
                 printf("\t<NOT AFFECTED>\n");
                 break;
                 /* -------------------------------------------------------------- */
@@ -776,7 +776,6 @@ void APP_SerialDebugTasks( void )
 
             case 'v':
             case 'V':
-                printf( "%d\n", appDataDoor.reward_door_status );
                 /* Set status of servomotor power command. */
                 appDataServo.cmd_vcc_servo_state ^= 1; // Toggle state "CMD_VCC_SERVO"
                 Nop( );

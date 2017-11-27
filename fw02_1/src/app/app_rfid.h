@@ -15,7 +15,7 @@
 // *****************************************************************************
 
 #define MAX_PIT_TAGS_LIST_NUMBER            200
-#define DEFAULT_TIMEOUT_READING_PIT_TAG     30  /* timeout in seconde */
+#define DEFAULT_TIMEOUT_READING_PIT_TAG     30  /* x160ms = timeout */
 
 
 // *****************************************************************************
