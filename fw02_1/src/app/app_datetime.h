@@ -5,8 +5,8 @@
  * @date 
  */
 
-#ifndef APP_DATETIME_H
-#define APP_DATETIME_H
+#ifndef _APP_DATETIME_HEADER_H
+#define _APP_DATETIME_HEADER_H
 
 
 #include <xc.h>
@@ -20,8 +20,7 @@ void setDateTime( int, int, int, int, int, int );
 void printCurrentDate( );
 void getDateTime( struct tm * );
 
-
-#endif /* APP_DATETIME_H */
+#endif /* _APP_DATETIME_HEADER_H */
 
 
 /*******************************************************************************

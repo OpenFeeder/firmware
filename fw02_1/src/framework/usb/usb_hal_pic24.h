@@ -16,11 +16,11 @@ limitations under the License.
 
 To request to license the code under the MLA license (www.microchip.com/mla_license), 
 please contact mla_licensing@microchip.com
-*******************************************************************************/
+ *******************************************************************************/
 //DOM-IGNORE-END
 
-#ifndef USB_HAL_PIC24F_H
-#define USB_HAL_PIC24F_H
+#ifndef _USB_HAL_PIC24F_HEADER_H
+#define _USB_HAL_PIC24F_HEADER_H
 
 /*****************************************************************************/
 /****** include files ********************************************************/
@@ -50,35 +50,35 @@ please contact mla_licensing@microchip.com
 #if defined(__PIC24FJ64GB004__) || defined(__PIC24FJ32GB004__) || defined(__PIC24FJ32GB004__) || defined(__PIC24FJ32GB002__)    \
     || defined(__PIC24FJ256GB110__) || defined(__PIC24FJ192GB110__) || defined(__PIC24FJ128GB110__) || defined(__PIC24FJ64GB110__) || defined(__PIC24FJ256GB108__) || defined(__PIC24FJ192GB108__) || defined(__PIC24FJ128GB108__) || defined(__PIC24FJ64GB108__)  || defined(__PIC24FJ256GB106__) || defined(__PIC24FJ192GB106__) || defined(__PIC24FJ128GB106__) || defined(__PIC24FJ64GB106__) 
 
-    #define DEVICE_SPECIFIC_IEC_REGISTER_COUNT  6   //Number of IECx registers implemented in the microcontroller (varies from device to device, make sure this is set correctly for the intended CPU)
-    #define USB_HAL_VBUSTristate()                  //No GPIO driver on VBUS on these devices.
+#define DEVICE_SPECIFIC_IEC_REGISTER_COUNT  6   //Number of IECx registers implemented in the microcontroller (varies from device to device, make sure this is set correctly for the intended CPU)
+#define USB_HAL_VBUSTristate()                  //No GPIO driver on VBUS on these devices.
 
 #elif defined(__PIC24FJ256GB210__) || defined(__PIC24FJ128GB210__)  || defined(__PIC24FJ256GB206__) || defined(__PIC24FJ128GB206__)
 
-    #define DEVICE_SPECIFIC_IEC_REGISTER_COUNT  6   //Number of IECx registers implemented in the microcontroller (varies from device to device, make sure this is set correctly for the intended CPU)
-    #define USB_HAL_VBUSTristate()    {TRISFbits.TRISF7 = 1;}
+#define DEVICE_SPECIFIC_IEC_REGISTER_COUNT  6   //Number of IECx registers implemented in the microcontroller (varies from device to device, make sure this is set correctly for the intended CPU)
+#define USB_HAL_VBUSTristate()    {TRISFbits.TRISF7 = 1;}
 
 #elif defined(__PIC24FJ256DA210__) || defined(__PIC24FJ128DA210__) || defined(__PIC24FJ256DA206__) || defined(__PIC24FJ128DA206__) || defined(__PIC24FJ256DA110__) || defined(__PIC24FJ128DA110__) || defined(__PIC24FJ256DA106__) || defined(__PIC24FJ128DA106__)
 
-    #define DEVICE_SPECIFIC_IEC_REGISTER_COUNT  7   //Number of IECx registers implemented in the microcontroller (varies from device to device, make sure this is set correctly for the intended CPU)
-    #define USB_HAL_VBUSTristate()    {TRISFbits.TRISF7 = 1;}
+#define DEVICE_SPECIFIC_IEC_REGISTER_COUNT  7   //Number of IECx registers implemented in the microcontroller (varies from device to device, make sure this is set correctly for the intended CPU)
+#define USB_HAL_VBUSTristate()    {TRISFbits.TRISF7 = 1;}
 
 #elif defined(__PIC24FJ128GB204__) || defined(__PIC24FJ64GB204__) || defined(__PIC24FJ128GB202__) || defined(__PIC24FJ64GB202__)
 
-    #define DEVICE_SPECIFIC_IEC_REGISTER_COUNT  8   //Number of IECx registers implemented in the microcontroller (varies from device to device, make sure this is set correctly for the intended CPU)
-    #define USB_HAL_VBUSTristate()    {TRISBbits.TRISB6 = 1;}
+#define DEVICE_SPECIFIC_IEC_REGISTER_COUNT  8   //Number of IECx registers implemented in the microcontroller (varies from device to device, make sure this is set correctly for the intended CPU)
+#define USB_HAL_VBUSTristate()    {TRISBbits.TRISB6 = 1;}
 
 #elif defined(__PIC24FJ128GC010__) || defined(__PIC24FJ64GC010__) || defined(__PIC24FJ128GC006__) || defined(__PIC24FJ64GC006__)    \
     || defined(__PIC24FJ128GB204__) || defined(__PIC24FJ64GB204__) || defined(__PIC24FJ128GB202__) || defined(__PIC24FJ64GB202__) \
     || defined(__PIC24FJ256GB410__) || defined(__PIC24FJ256GB412__) || defined(__PIC24FJ256GB406__) \
     || defined(__PIC24FJ128GB410__) || defined(__PIC24FJ128GB412__) || defined(__PIC24FJ128GB406__) \
     || defined(__PIC24FJ64GB410__) || defined(__PIC24FJ64GB412__) || defined(__PIC24FJ64GB406__)
-    #define DEVICE_SPECIFIC_IEC_REGISTER_COUNT  8   //Number of IECx registers implemented in the microcontroller (varies from device to device, make sure this is set correctly for the intended CPU)
-    #define USB_HAL_VBUSTristate()    {TRISFbits.TRISF7 = 1;}
+#define DEVICE_SPECIFIC_IEC_REGISTER_COUNT  8   //Number of IECx registers implemented in the microcontroller (varies from device to device, make sure this is set correctly for the intended CPU)
+#define USB_HAL_VBUSTristate()    {TRISFbits.TRISF7 = 1;}
 #else
-    #error "Unknown processor type selected.  Refer to device datasheet and update the definition for DEVICE_SPECIFIC_IEC_REGISTER_COUNT."
-    //#define DEVICE_SPECIFIC_IEC_REGISTER_COUNT  8              // <--- Update this number with the real number for your device and uncomment (and delete the above #error).
-    //#define USB_HAL_VBUSTristate()    {TRISxbits.TRISxx = 1;}  // <-- replace the "x" characters with the correct values for the VBUS GPIO pin (if the microcontroller selected has GPIO functionality on VBUS)
+#error "Unknown processor type selected.  Refer to device datasheet and update the definition for DEVICE_SPECIFIC_IEC_REGISTER_COUNT."
+//#define DEVICE_SPECIFIC_IEC_REGISTER_COUNT  8              // <--- Update this number with the real number for your device and uncomment (and delete the above #error).
+//#define USB_HAL_VBUSTristate()    {TRISxbits.TRISxx = 1;}  // <-- replace the "x" characters with the correct values for the VBUS GPIO pin (if the microcontroller selected has GPIO functionality on VBUS)
 
 #endif
 
@@ -86,15 +86,15 @@ please contact mla_licensing@microchip.com
 
 
 #if (USB_PING_PONG_MODE == USB_PING_PONG__NO_PING_PONG)
-    #define BDT_NUM_ENTRIES      ((USB_MAX_EP_NUMBER + 1) * 2)
+#define BDT_NUM_ENTRIES      ((USB_MAX_EP_NUMBER + 1) * 2)
 #elif (USB_PING_PONG_MODE == USB_PING_PONG__EP0_OUT_ONLY)
-    #define BDT_NUM_ENTRIES      (((USB_MAX_EP_NUMBER + 1) * 2)+1)
+#define BDT_NUM_ENTRIES      (((USB_MAX_EP_NUMBER + 1) * 2)+1)
 #elif (USB_PING_PONG_MODE == USB_PING_PONG__FULL_PING_PONG)
-    #define BDT_NUM_ENTRIES      ((USB_MAX_EP_NUMBER + 1) * 4)
+#define BDT_NUM_ENTRIES      ((USB_MAX_EP_NUMBER + 1) * 4)
 #elif (USB_PING_PONG_MODE == USB_PING_PONG__ALL_BUT_EP0)
-    #define BDT_NUM_ENTRIES      (((USB_MAX_EP_NUMBER + 1) * 4)-2)
+#define BDT_NUM_ENTRIES      (((USB_MAX_EP_NUMBER + 1) * 4)-2)
 #else
-    #error "No ping pong mode defined."
+#error "No ping pong mode defined."
 #endif
 
 
@@ -183,14 +183,14 @@ please contact mla_licensing@microchip.com
 
 //----- Event call back definitions --------------------------------------------
 #if defined(USB_DISABLE_SOF_HANDLER)
-    #define USB_SOF_INTERRUPT           0x00
+#define USB_SOF_INTERRUPT           0x00
 #else
-    #define USB_SOF_INTERRUPT           0x04
+#define USB_SOF_INTERRUPT           0x04
 #endif
 #if defined(USB_DISABLE_ERROR_HANDLER)
-    #define USB_ERROR_INTERRUPT         0x02
+#define USB_ERROR_INTERRUPT         0x02
 #else
-    #define USB_ERROR_INTERRUPT         0x02
+#define USB_ERROR_INTERRUPT         0x02
 #endif
 
 //----- USB module control bits -----------------------------------------------
@@ -248,60 +248,74 @@ please contact mla_licensing@microchip.com
 /*****************************************************************************/
 
 // Buffer Descriptor Status Register layout.
+
 typedef union _BD_STAT
 {
-    struct{
-        unsigned            :2;     //Byte count
-        unsigned    BSTALL  :1;     //Buffer Stall Enable
-        unsigned    DTSEN   :1;     //Data Toggle Synch Enable
-        unsigned            :2;     //Reserved - write as 00
-        unsigned    DTS     :1;     //Data Toggle Synch Value
-        unsigned    UOWN    :1;     //USB Ownership
+
+    struct
+    {
+        unsigned : 2; //Byte count
+        unsigned BSTALL : 1; //Buffer Stall Enable
+        unsigned DTSEN : 1; //Data Toggle Synch Enable
+        unsigned : 2; //Reserved - write as 00
+        unsigned DTS : 1; //Data Toggle Synch Value
+        unsigned UOWN : 1; //USB Ownership
     };
-    struct{
-        unsigned            :2;
-        unsigned    PID0    :1;
-        unsigned    PID1    :1;
-        unsigned    PID2    :1;
-        unsigned    PID3    :1;
+
+    struct
+    {
+        unsigned : 2;
+        unsigned PID0 : 1;
+        unsigned PID1 : 1;
+        unsigned PID2 : 1;
+        unsigned PID3 : 1;
     };
-    struct{
-        unsigned            :2;
-        unsigned    PID     :4;     // Packet Identifier
+
+    struct
+    {
+        unsigned : 2;
+        unsigned PID : 4; // Packet Identifier
     };
-    uint8_t            Val;
-} BD_STAT;                      //Buffer Descriptor Status Register
+    uint8_t Val;
+} BD_STAT; //Buffer Descriptor Status Register
 
 // BDT Entry Layout
+
 typedef union __BDT
 {
+
     union
     {
+
         struct
         {
             uint8_t CNT;
-            BD_STAT     STAT __attribute__ ((packed));
+            BD_STAT STAT __attribute__( ( packed ) );
         };
+
         struct
         {
-            uint16_t        count:10;   //test
-            uint8_t        :6;
-            uint16_t        ADR; //Buffer Address
+            uint16_t count : 10; //test
+uint8_t:
+            6;
+            uint16_t ADR; //Buffer Address
         };
     };
-    uint32_t           Val;
-    uint16_t            v[2];
+    uint32_t Val;
+    uint16_t v[2];
 } BDT_ENTRY;
 
 // USTAT Register Layout
+
 typedef union __USTAT
 {
+
     struct
     {
-        unsigned char filler1           :2;
-        unsigned char ping_pong         :1;
-        unsigned char direction         :1;
-        unsigned char endpoint_number   :4;
+        unsigned char filler1 : 2;
+        unsigned char ping_pong : 1;
+        unsigned char direction : 1;
+        unsigned char endpoint_number : 4;
     };
     uint8_t Val;
 } USTAT_FIELDS;
@@ -311,25 +325,25 @@ typedef union __USTAT
 #define USBHALGetLastDirection(stat)    stat.direction
 #define USBHALGetLastPingPong(stat)     stat.ping_pong
 
-
 typedef union _POINTER
 {
+
     struct
     {
         uint8_t bLow;
         uint8_t bHigh;
         //byte bUpper;
     };
-    uint16_t _word;                         // bLow & bHigh
-    
+    uint16_t _word; // bLow & bHigh
+
     //pFunc _pFunc;                       // Usage: ptr.pFunc(); Init: ptr.pFunc = &<Function>;
 
-    uint8_t* bRam;                         // Ram byte pointer: 2 bytes pointer pointing
-                                        // to 1 byte of data
-    uint16_t* wRam;                         // Ram word pointer: 2 bytes pointer pointing
-                                        // to 2 bytes of data
+    uint8_t* bRam; // Ram byte pointer: 2 bytes pointer pointing
+    // to 1 byte of data
+    uint16_t* wRam; // Ram word pointer: 2 bytes pointer pointing
+    // to 2 bytes of data
 
-    const uint8_t* bRom;                     // Size depends on compiler setting
+    const uint8_t* bRom; // Size depends on compiler setting
     const uint16_t* wRom;
     //rom near byte* nbRom;               // Near = 2 bytes pointer
     //rom near word* nwRom;
@@ -345,18 +359,18 @@ typedef union _POINTER
 #define ConvertToVirtualAddress(a)  ((void *)(a))
 #define USBClearUSBInterrupt() IFS5bits.USB1IF = 0;
 #if defined(USB_INTERRUPT)
-    #define USBMaskInterrupts() {IEC5bits.USB1IE = 0;}
-    #define USBUnmaskInterrupts() {IEC5bits.USB1IE = 1;}
+#define USBMaskInterrupts() {IEC5bits.USB1IE = 0;}
+#define USBUnmaskInterrupts() {IEC5bits.USB1IE = 1;}
 #else
-    #define USBMaskInterrupts() 
-    #define USBUnmaskInterrupts() 
+#define USBMaskInterrupts() 
+#define USBUnmaskInterrupts() 
 #endif
 
 //STALLIE, IDLEIE, TRNIE, and URSTIE are all enabled by default and are required
 #if defined(USB_INTERRUPT)
-    #define USBEnableInterrupts() {IEC5bits.USB1IE=1;}
+#define USBEnableInterrupts() {IEC5bits.USB1IE=1;}
 #else
-    #define USBEnableInterrupts()
+#define USBEnableInterrupts()
 #endif
 
 #define USBDisableInterrupts() {IEC5bits.USB1IE=0;}
@@ -365,12 +379,12 @@ typedef union _POINTER
 
 
 #if (USB_PULLUP_OPTION == USB_PULLUP_ENABLE) || !defined(USB_PULLUP_OPTION)
-    #define PullUpConfiguration() U1OTGCONbits.OTGEN = 0;
+#define PullUpConfiguration() U1OTGCONbits.OTGEN = 0;
 #else
-    #define PullUpConfiguration() U1OTGCONbits.OTGEN = 1; U1OTGCON &= 0xFF0F;
+#define PullUpConfiguration() U1OTGCONbits.OTGEN = 1; U1OTGCON &= 0xFF0F;
 #endif
 
-    #define SetConfigurationOptions()   {\
+#define SetConfigurationOptions()   {\
                                             U1CNFG1 = USB_PING_PONG_MODE;\
                                             U1CNFG2 = USB_TRANSCEIVER_OPTION;\
                                             PullUpConfiguration();\
@@ -411,8 +425,8 @@ Remarks:
     no more than 2.5mA from the USB host (unless the host is a USB type-C host and
     is actively advertising higher than standard USB spec current capability).
 
-*******************************************************************/
-bool USBSleepOnSuspend(void);
+ *******************************************************************/
+bool USBSleepOnSuspend( void );
 
 /****************************************************************
     Function:
@@ -432,7 +446,7 @@ bool USBSleepOnSuspend(void);
     Remarks:
         None
         
-  ****************************************************************/
+ ****************************************************************/
 #define USBPowerModule() U1PWRCbits.USBPWR = 1;
 
 /****************************************************************
@@ -455,7 +469,7 @@ bool USBSleepOnSuspend(void);
     Remarks:
         None
         
-  ****************************************************************/
+ ****************************************************************/
 #define USBModuleDisable() {\
     U1CON = 0;\
     U1IE = 0;\
@@ -481,7 +495,7 @@ bool USBSleepOnSuspend(void);
     Remarks:
         None
         
-  ****************************************************************/
+ ****************************************************************/
 #define USBSetBDTAddress(addr)         U1BDTP1 = (((unsigned int)addr)/256);
 
 /****************************************************************
@@ -501,7 +515,7 @@ bool USBSleepOnSuspend(void);
         Note that on these devices to clear an interrupt you must
         write a '1' to the interrupt location.
         
-  ****************************************************************/
+ ****************************************************************/
 #define USBClearInterruptRegister(reg) reg = 0xFFFF;
 
 /********************************************************************
@@ -606,7 +620,7 @@ Remarks:
     device must become fully ready for normal USB communication/request
     processing within 10ms.
  *******************************************************************/
-bool USBRemoteWakeupAssertBlocking(void);
+bool USBRemoteWakeupAssertBlocking( void );
 
 
 /********************************************************************
@@ -665,7 +679,7 @@ Remarks:
     and the USB module wasn't previously turned or or was recently (or is still) suspended.
 
  *******************************************************************/
-int8_t USBVBUSSessionValidStateGet(bool AllowInvasiveReads);
+int8_t USBVBUSSessionValidStateGet( bool AllowInvasiveReads );
 
 
 
@@ -692,8 +706,8 @@ Remarks:
      setting saved by this function).  This function should not be called
      more than once, prior to calling USBRestoreUSBInterrupts(),
      as this will cause the previously saved value to get overwritten.
-  *******************************************************************/
-void USBMaskAllUSBInterrupts(void);
+ *******************************************************************/
+void USBMaskAllUSBInterrupts( void );
 
 
 
@@ -718,10 +732,8 @@ Remarks:
  This function should only be called in an exact 1:1 ratio with the
  USBMaskAllUSBInterrupts() function.  This function should never be
  called without first being preceded by a call to USBMaskAllUSBInterrupts().
-  *******************************************************************/
-void USBRestoreUSBInterrupts(void);
-
-
+ *******************************************************************/
+void USBRestoreUSBInterrupts( void );
 
 
 
@@ -729,7 +741,7 @@ void USBRestoreUSBInterrupts(void);
 /****** Compiler checks ******************************************************/
 /*****************************************************************************/
 #ifndef USB_PING_PONG_MODE
-    #error "No ping pong mode defined."
+#error "No ping pong mode defined."
 #endif
 
 /*****************************************************************************/
@@ -737,14 +749,19 @@ void USBRestoreUSBInterrupts(void);
 /*****************************************************************************/
 
 #if defined(USB_SUPPORT_DEVICE) | defined(USB_SUPPORT_OTG)
-    #if !defined(USBDEVICE_C)
-        //extern USB_VOLATILE USB_DEVICE_STATE USBDeviceState;
-        extern USB_VOLATILE uint8_t USBActiveConfiguration;
-        extern USB_VOLATILE IN_PIPE inPipes[1];
-        extern USB_VOLATILE OUT_PIPE outPipes[1];
-    #endif
-	extern volatile BDT_ENTRY* pBDTEntryOut[USB_MAX_EP_NUMBER+1];
-	extern volatile BDT_ENTRY* pBDTEntryIn[USB_MAX_EP_NUMBER+1];	
+#if !defined(USBDEVICE_C)
+//extern USB_VOLATILE USB_DEVICE_STATE USBDeviceState;
+extern USB_VOLATILE uint8_t USBActiveConfiguration;
+extern USB_VOLATILE IN_PIPE inPipes[1];
+extern USB_VOLATILE OUT_PIPE outPipes[1];
+#endif
+extern volatile BDT_ENTRY* pBDTEntryOut[USB_MAX_EP_NUMBER + 1];
+extern volatile BDT_ENTRY* pBDTEntryIn[USB_MAX_EP_NUMBER + 1];
 #endif
 
-#endif //USB_HAL_PIC24F_H
+#endif	/* _USB_HAL_PIC24F_HEADER_H */
+
+
+/*******************************************************************************
+ End of File
+ */

@@ -1,4 +1,4 @@
-// DOM-IGNORE-BEGIN
+//DOM-IGNORE-BEGIN
 /*******************************************************************************
 Copyright 2015 Microchip Technology Inc. (www.microchip.com)
 
@@ -16,11 +16,11 @@ limitations under the License.
 
 To request to license the code under the MLA license (www.microchip.com/mla_license), 
 please contact mla_licensing@microchip.com
-*******************************************************************************/
+ *******************************************************************************/
 //DOM-IGNORE-END
 
-#ifndef _USBHOSTMSD_H_
-#define _USBHOSTMSD_H_
+#ifndef _USB_HOST_MSD_HEADER_H
+#define _USB_HOST_MSD_HEADER_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -83,7 +83,7 @@ please contact mla_licensing@microchip.com
 
 // If the application has not defined an offset for MSD events, set it to 0.
 #ifndef EVENT_MSD_OFFSET
-    #define EVENT_MSD_OFFSET    0
+#define EVENT_MSD_OFFSET    0
 #endif
 
 #define EVENT_MSD_NONE      EVENT_MSD_BASE + EVENT_MSD_OFFSET + 0   // No event occured (NULL event)
@@ -128,9 +128,9 @@ please contact mla_licensing@microchip.com
 
   Remarks:
     None
-  ***************************************************************************/
+ ***************************************************************************/
 
-uint8_t    USBHostMSDDeviceStatus( uint8_t deviceAddress );
+uint8_t USBHostMSDDeviceStatus( uint8_t deviceAddress );
 
 
 /*******************************************************************************
@@ -162,7 +162,7 @@ uint8_t    USBHostMSDDeviceStatus( uint8_t deviceAddress );
 
   Remarks:
     None
-*******************************************************************************/
+ *******************************************************************************/
 #define USBHostMSDRead( deviceAddress,deviceLUN,commandBlock,commandBlockLength,data,dataLength ) \
         USBHostMSDTransfer( deviceAddress, deviceLUN, 1, commandBlock, commandBlockLength, data, dataLength )
 
@@ -191,9 +191,9 @@ uint8_t    USBHostMSDDeviceStatus( uint8_t deviceAddress );
 
   Remarks:
     None
-  ***************************************************************************/
+ ***************************************************************************/
 
-uint8_t    USBHostMSDResetDevice( uint8_t deviceAddress );
+uint8_t USBHostMSDResetDevice( uint8_t deviceAddress );
 
 
 /****************************************************************************
@@ -222,9 +222,9 @@ uint8_t    USBHostMSDResetDevice( uint8_t deviceAddress );
 
   Remarks:
     None
-  ***************************************************************************/
+ ***************************************************************************/
 
-void    USBHostMSDTasks( void );
+void USBHostMSDTasks( void );
 
 
 /****************************************************************************
@@ -246,9 +246,9 @@ void    USBHostMSDTasks( void );
   Remarks:
     After executing this function, the application may have to reset the
     device in order for the device to continue working properly.
-  ***************************************************************************/
+ ***************************************************************************/
 
-void    USBHostMSDTerminateTransfer( uint8_t deviceAddress );
+void USBHostMSDTerminateTransfer( uint8_t deviceAddress );
 
 
 /****************************************************************************
@@ -286,9 +286,9 @@ void    USBHostMSDTerminateTransfer( uint8_t deviceAddress );
 
   Remarks:
     None
-  ***************************************************************************/
+ ***************************************************************************/
 
-uint8_t    USBHostMSDTransfer( uint8_t deviceAddress, uint8_t deviceLUN, uint8_t direction, uint8_t *commandBlock,
+uint8_t USBHostMSDTransfer( uint8_t deviceAddress, uint8_t deviceLUN, uint8_t direction, uint8_t *commandBlock,
                             uint8_t commandBlockLength, uint8_t *data, uint32_t dataLength );
 
 
@@ -320,9 +320,9 @@ uint8_t    USBHostMSDTransfer( uint8_t deviceAddress, uint8_t deviceLUN, uint8_t
 
   Remarks:
     None
-  ***************************************************************************/
+ ***************************************************************************/
 
-bool    USBHostMSDTransferIsComplete( uint8_t deviceAddress, uint8_t *errorCode, uint32_t *byteCount );
+bool USBHostMSDTransferIsComplete( uint8_t deviceAddress, uint8_t *errorCode, uint32_t *byteCount );
 
 
 /*******************************************************************************
@@ -354,7 +354,7 @@ bool    USBHostMSDTransferIsComplete( uint8_t deviceAddress, uint8_t *errorCode,
 
   Remarks:
     None
-*******************************************************************************/
+ *******************************************************************************/
 
 #define USBHostMSDWrite( deviceAddress,deviceLUN,commandBlock,commandBlockLength,data,dataLength ) \
         USBHostMSDTransfer( deviceAddress, deviceLUN, 0, commandBlock, commandBlockLength, data, dataLength )
@@ -396,7 +396,7 @@ bool    USBHostMSDTransferIsComplete( uint8_t deviceAddress, uint8_t *errorCode,
 
   Remarks:
     None
-  ***************************************************************************/
+ ***************************************************************************/
 
 bool USBHostMSDInitialize( uint8_t address, uint32_t flags, uint8_t clientDriverID );
 
@@ -428,9 +428,13 @@ bool USBHostMSDInitialize( uint8_t address, uint32_t flags, uint8_t clientDriver
 
   Remarks:
     None
-  ***************************************************************************/
+ ***************************************************************************/
 
 bool USBHostMSDEventHandler( uint8_t address, USB_EVENT event, void *data, uint32_t size );
 
+#endif	/* _USB_HOST_MSD_HEADER_H */
 
-#endif
+
+/*******************************************************************************
+ End of File
+ */

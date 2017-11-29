@@ -1,4 +1,4 @@
-// DOM-IGNORE-BEGIN
+//DOM-IGNORE-BEGIN
 /*******************************************************************************
 Copyright 2015 Microchip Technology Inc. (www.microchip.com)
 
@@ -16,11 +16,11 @@ limitations under the License.
 
 To request to license the code under the MLA license (www.microchip.com/mla_license), 
 please contact mla_licensing@microchip.com
-*******************************************************************************/
+ *******************************************************************************/
 //DOM-IGNORE-END
 
-#ifndef __USBHOSTMSDSCSI_H__
-#define __USBHOSTMSDSCSI_H__
+#ifndef _USB_HOST_MSD_SCSI_H
+#define _USB_HOST_MSD_SCSI_H
 
 #include "usb.h"
 #include "fileio.h"
@@ -59,9 +59,9 @@ please contact mla_licensing@microchip.com
   Remarks:
     Since this will often be called in a loop while waiting for a device,
     we need to make sure that USB tasks are executed.
-  ***************************************************************************/
+ ***************************************************************************/
 
-uint8_t    USBHostMSDSCSIMediaDetect( uint8_t * address);
+uint8_t USBHostMSDSCSIMediaDetect( uint8_t * address );
 
 
 /****************************************************************************
@@ -80,16 +80,16 @@ uint8_t    USBHostMSDSCSIMediaDetect( uint8_t * address);
   Returns:
     The function returns a pointer to the MEDIA_INFORMATION structure.  The
     errorCode member may contain the following values:
-        * MEDIA_NO_ERROR - The media initialized successfully, and the 
+ * MEDIA_NO_ERROR - The media initialized successfully, and the 
                 sector size should be valid (confirm using the validityFlags 
                 bit). 
-        * MEDIA_DEVICE_NOT_PRESENT - The requested device is not attached.
-        * MEDIA_CANNOT_INITIALIZE - Cannot initialize the media.
+ * MEDIA_DEVICE_NOT_PRESENT - The requested device is not attached.
+ * MEDIA_CANNOT_INITIALIZE - Cannot initialize the media.
 
   Remarks:
     This function performs the following SCSI commands:
-                        * READ CAPACITY 10
-                        * REQUEST SENSE
+ * READ CAPACITY 10
+ * REQUEST SENSE
 
     The READ CAPACITY 10 command block is as follows:
 
@@ -118,7 +118,7 @@ uint8_t    USBHostMSDSCSIMediaDetect( uint8_t * address);
            4        [                  Allocation Length                    ]
            5        [                    Control                            ]
     </code>
-  ***************************************************************************/
+ ***************************************************************************/
 
 FILEIO_MEDIA_INFORMATION * USBHostMSDSCSIMediaInitialize( uint8_t * address );
 
@@ -144,8 +144,8 @@ FILEIO_MEDIA_INFORMATION * USBHostMSDSCSIMediaInitialize( uint8_t * address );
 
   Remarks:
     None
-  ***************************************************************************/
-bool USBHostMSDSCSIMediaDeinitialize(void *mediaConfig);
+ ***************************************************************************/
+bool USBHostMSDSCSIMediaDeinitialize( void *mediaConfig );
 
 /****************************************************************************
   Function:
@@ -172,9 +172,9 @@ bool USBHostMSDSCSIMediaDeinitialize(void *mediaConfig);
 
   Remarks:
     None
-  ***************************************************************************/
+ ***************************************************************************/
 
-uint8_t    USBHostMSDSCSIMediaReset( uint8_t * address );
+uint8_t USBHostMSDSCSIMediaReset( uint8_t * address );
 
 
 /****************************************************************************
@@ -217,9 +217,9 @@ uint8_t    USBHostMSDSCSIMediaReset( uint8_t * address );
            8                                                          (LSB) ]
            9        [                    Control                            ]
     </code>
-  ***************************************************************************/
+ ***************************************************************************/
 
-uint8_t    USBHostMSDSCSISectorRead( uint8_t * address, uint32_t sectorAddress, uint8_t *dataBuffer );
+uint8_t USBHostMSDSCSISectorRead( uint8_t * address, uint32_t sectorAddress, uint8_t *dataBuffer );
 
 
 /****************************************************************************
@@ -265,9 +265,9 @@ uint8_t    USBHostMSDSCSISectorRead( uint8_t * address, uint32_t sectorAddress, 
            8                                                          (LSB) ]
            9        [                    Control                            ]
     </code>
-  ***************************************************************************/
+ ***************************************************************************/
 
-uint8_t    USBHostMSDSCSISectorWrite( uint8_t * address, uint32_t sectorAddress, uint8_t *dataBuffer, uint8_t allowWriteToZero);
+uint8_t USBHostMSDSCSISectorWrite( uint8_t * address, uint32_t sectorAddress, uint8_t *dataBuffer, uint8_t allowWriteToZero );
 
 
 /****************************************************************************
@@ -289,9 +289,9 @@ uint8_t    USBHostMSDSCSISectorWrite( uint8_t * address, uint32_t sectorAddress,
 
   Remarks:
     None
-  ***************************************************************************/
+ ***************************************************************************/
 
-uint8_t    USBHostMSDSCSIWriteProtectState( uint8_t * address );
+uint8_t USBHostMSDSCSIWriteProtectState( uint8_t * address );
 
 
 // *****************************************************************************
@@ -322,7 +322,7 @@ uint8_t    USBHostMSDSCSIWriteProtectState( uint8_t * address );
 
   Remarks:
     None
-  ***************************************************************************/
+ ***************************************************************************/
 
 bool USBHostMSDSCSIInitialize( uint8_t address, uint32_t flags, uint8_t clientDriverID );
 
@@ -351,9 +351,13 @@ bool USBHostMSDSCSIInitialize( uint8_t address, uint32_t flags, uint8_t clientDr
 
   Remarks:
     None
-  ***************************************************************************/
+ ***************************************************************************/
 
 bool USBHostMSDSCSIEventHandler( uint8_t address, USB_EVENT event, void *data, uint32_t size );
 
+#endif	/* _USB_HOST_MSD_SCSI_H */
 
-#endif
+
+/*******************************************************************************
+ End of File
+ */

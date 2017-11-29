@@ -5,14 +5,13 @@
  * @date 09/09/2016
  */
 
-#ifndef APP_LED_STATUS_H
-#define APP_LED_STATUS_H
-
+#ifndef _LED_STATUS_HEADER_H
+#define _LED_STATUS_HEADER_H
 
 typedef enum
 {
     LEDS_OFF,
-    LEDS_ON,  
+    LEDS_ON,
     LED_RED,
     LED_GREEN,
     LED_BLUE,
@@ -39,7 +38,9 @@ void LedsStatusBlink( LED_STATUS, LED_STATUS, uint16_t, uint16_t );
 
 void checkLedsStatus( void );
 
-#endif /* APP_LED_STATUS_H */
+#endif /* _LED_STATUS_HEADER_H */
+
+
 /*******************************************************************************
  End of File
  */

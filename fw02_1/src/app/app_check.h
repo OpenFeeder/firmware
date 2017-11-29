@@ -5,12 +5,11 @@
  * @date
  */
 
-#ifndef APP_CHECK_H
-#define APP_CHECK_H
+#ifndef _APP_CHECK_HEADER_H
+#define _APP_CHECK_HEADER_H
 
 #define MAX_MEASURE_ATTEMPTS 3
 #define MIN_RDYCLK_FREQ 12500 // (x10Hz)
-
 
 typedef enum
 {
@@ -29,7 +28,7 @@ bool isPowerVbatGood( void );
 bool isEnoughFood( void );
 bool isRfidFreqGood( void );
 
-#endif /* APP_CHECK_H */
+#endif /* _APP_CHECK_HEADER_H */
 
 
 /*******************************************************************************

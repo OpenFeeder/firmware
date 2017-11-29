@@ -5,15 +5,14 @@
  * @date
  */
 
-#ifndef APP_CONFIG_H
-#define APP_CONFIG_H
+#ifndef _APP_CONFIG_HEADER_H
+#define _APP_CONFIG_HEADER_H
 
 #include "min_ini.h"
 
 #define sizearray(a)  (sizeof(a) / sizeof((a)[0]))
 
 #define DEFAULT_LOG_SEPARATOR ","
-
 
 typedef enum
 {
@@ -53,7 +52,7 @@ typedef enum
     INI_PB_DOOR_CLOSE_DELAY, // 22
 
     INI_PB_DOOR_REMAIN_OPEN, // 23
-        
+
     INI_PB_DOOR_REWARD_PROBABILITY, // 24
 
     INI_PB_DOOR_OPEN_HOUR, // 25
@@ -80,7 +79,7 @@ void config_print( void );
 void getIniPbChar( INI_READ_STATE, char * );
 FILEIO_RESULT read_PIT_tags( void );
 
-#endif /* APP_CONFIG_H */
+#endif /* _APP_CONFIG_HEADER_H */
 
 
 /*******************************************************************************

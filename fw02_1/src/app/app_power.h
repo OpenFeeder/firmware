@@ -5,8 +5,8 @@
  * @date
  */
 
-#ifndef APP_POWER_H
-#define	APP_POWER_H
+#ifndef _APP_POWER_HEADER_H
+#define	_APP_POWER_HEADER_H
 
 /* Mesure
  * from 0 to 4095 (ADC 12 bits --> 4096)
@@ -41,7 +41,7 @@ void printVBatLevel( void );
 void getBatteryLevel( void );
 void printBatteryLevel( void );
 
-#endif	/* APP_POWER_H */
+#endif	/* _APP_POWER_HEADER_H */
 
 
 /*******************************************************************************

@@ -12,8 +12,8 @@
 
 // PCA9622_OE, active LOW Output Enable "OE_PCA" with RE1
 
-#ifndef XC_HEADER_PCA9622_H
-#define	XC_HEADER_PCA9622_H
+#ifndef _PCA9622_HEADER_H
+#define	_PCA9622_HEADER_H
 
 /* PCA9622 7-bits slave address, A0 to A6 */
 #define PCA9622_ADDRESS     0x01    // => A0 = 1; 0x02 is the 8-bits slave address
@@ -70,7 +70,8 @@ I2C1_MESSAGE_STATUS I2C1_MasterWritePCA9622( const uint16_t addr7bits,
 I2C1_MESSAGE_STATUS I2C1_PCA9622_SoftwareReset( void );
 
 
-#endif	/* XC_HEADER_PCA9622_H */
+#endif	/* _PCA9622_HEADER_H */
+
 
 /*******************************************************************************
  End of File

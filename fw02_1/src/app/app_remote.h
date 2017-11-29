@@ -5,11 +5,10 @@
  * @date 
  */
 
-#ifndef APP_REMOTE_H
-#define APP_REMOTE_H
+#ifndef _APP_REMOTE_HEADER_H
+#define _APP_REMOTE_HEADER_H
 
 #define START_MENU_DELAY 2000
-
 
 typedef enum
 {
@@ -26,7 +25,6 @@ typedef enum
     APP_STATE_RC_MANIPULATE_DIGIT
 
 } APP_STATES_RC;
-
 
 typedef enum
 {
@@ -69,7 +67,6 @@ typedef enum
 
 } MENUS_LEVELS;
 
-
 typedef enum
 {
     NONE = 0,
@@ -78,7 +75,6 @@ typedef enum
     READ_WRITE
 
 } MENUS_MODES;
-
 
 typedef enum
 {
@@ -89,7 +85,6 @@ typedef enum
     RGB
 
 } MENUS_VALUE_TYPES;
-
 
 typedef struct
 {
@@ -104,7 +99,6 @@ typedef struct
     MENUS_VALUE_TYPES valueType;
 
 } MENU;
-
 
 typedef struct
 {
@@ -132,8 +126,7 @@ void clearRemoteControlDisplay( void );
 void APP_remoteControlInitialize( void );
 void APP_remoteControlTask( void );
 
-
-#endif /* APP_REMOTE_H */
+#endif /* _APP_REMOTE_HEADER_H */
 
 
 /*******************************************************************************

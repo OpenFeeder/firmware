@@ -26,8 +26,8 @@
  * Revision history: 1
  */
 
-#ifndef APP_USB_H
-#define	APP_USB_H
+#ifndef _APP_USB_HEADER_H
+#define	_APP_USB_HEADER_H
 
 #include "usb.h"
 #include "usb_common.h"
@@ -36,7 +36,6 @@
 
 #define USB_DRIVE_NOT_MOUNTED false
 #define USB_DRIVE_MOUNTED true
-
 
 /* Application Data
 
@@ -95,8 +94,9 @@ bool USB_ApplicationEventHandler( uint8_t address, USB_EVENT event, void *data, 
  */
 void APP_MountDrive( uint8_t address );
 
+#endif	/* _APP_USB_HEADER_H */
 
-#endif	/* APP_USB_H */
+
 /*******************************************************************************
  End of File
  */

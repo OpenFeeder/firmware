@@ -1,4 +1,4 @@
-// DOM-IGNORE-BEGIN
+//DOM-IGNORE-BEGIN
 /*******************************************************************************
 Copyright 2015 Microchip Technology Inc. (www.microchip.com)
 
@@ -19,8 +19,9 @@ please contact mla_licensing@microchip.com
  *******************************************************************************/
 //DOM-IGNORE-END
 
-#ifndef __USBHOST_H__
-#define __USBHOST_H__
+//DOM-IGNORE-BEGIN
+#ifndef _USBHOST_HEADER_H
+#define _USBHOST_HEADER_H
 //DOM-IGNORE-END
 
 #include <limits.h>
@@ -1538,9 +1539,9 @@ uint8_t USBHostWrite( uint8_t deviceAddress, uint8_t endpoint, uint8_t *data, ui
  ***************************************************************************/
 void USB_HostInterruptHandler( void );
 
-#endif
-
-// *****************************************************************************
-// EOF
+#endif	/* _USBHOST_HEADER_H */
 
 
+/*******************************************************************************
+ End of File
+ */

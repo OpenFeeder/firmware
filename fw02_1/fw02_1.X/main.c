@@ -174,17 +174,17 @@
 #include "mcc.h"
 #include "app.h"
 
-
 /*
                          Main application
  */
 
 int main( void )
 {
+    I2C1_MESSAGE_STATUS i2c_status;
 
 #if defined (ENABLE_DEEP_SLEEP)   
     bool deepsleep = false;
-    bool button_user_state = false;
+    //    bool button_user_state = false;
 
     if ( RCONbits.DPSLP )
     {
@@ -229,17 +229,14 @@ int main( void )
     /* Initialize the application. */
     APP_Initialize( );
 
-    button_user_state = USER_BUTTON_GetValue( );
-
-    if ( button_user_state )
-
+    //    button_user_state = USER_BUTTON_GetValue( );
+    //    if ( BUTTON_NOT_PRESSED == button_user_state )
+    if ( BUTTON_NOT_PRESSED == USER_BUTTON_GetValue( ) )
     {
-
 #if defined (USE_UART1_SERIAL_INTERFACE)
         /* Display information on serial terminal. */
         displayBootMessage( );
 #endif
-
         /* Main loop. */
         while ( 1 )
         {
@@ -249,32 +246,41 @@ int main( void )
             /* Maintain the application's state machine. */
             APP_Tasks( ); /* application specific tasks */
         }
-
     }
-
     else
     {
-
+        printf( "\n\nEnter in serial debug mode...\n" );
 #if defined (DISPLAY_RESET_REGISTERS)
         /* Display reset registers. */
         displayResetRegisters( );
 #endif
-
         OC4_Stop( );
         OC5_Stop( );
         TMR4_Stop( );
-        TMR2_Stop();
+        TMR2_Stop( );
+
+        i2c_status = initAttractiveLeds( );
+
+        if ( i2c_status )
+        {
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+            printf( "\tAttractive LEDs: ok\n" );
+#endif
+        }
+        else
+        {
+            sprintf( appError.message, "Unable to initialize attractive LEDS via I2C" );
+            appError.currentLineNumber = __LINE__;
+            sprintf( appError.currentFileName, "%s", __FILE__ );
+            appError.number = ERROR_ATTRACTIVE_LED_INIT;
+            appData.state = APP_STATE_ERROR;
+        }
 
         while ( 1 )
         {
-            /* Maintain Device Drivers. */
-            //            USBTasks( );
-
-            /* Maintain the application's state machine. */
+            /* Maintain the Serial Debug Tasks state machine. */
             APP_SerialDebugTasks( );
         }
-
-
     }
 
     /* Execution should not come here during normal operation. */

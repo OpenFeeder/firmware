@@ -61,8 +61,8 @@
  ******************************************************************************/
 
 
-#ifndef BUTTONS_H
-#define BUTTONS_H
+#ifndef _BUTTONS_HEADER_H
+#define _BUTTONS_HEADER_H
 
 //#include <stdbool.h>
 
@@ -73,8 +73,8 @@
 //
 //#define S3_TRIS  TRISAbits.TRISA7
 
-#define BUTTON_PRESSED      0   /* active state */
-#define BUTTON_NOT_PRESSED  1   /* released state */
+#define BUTTON_PRESSED       0   /* active state */
+#define BUTTON_NOT_PRESSED   1   /* released state */
 #define BUTTON_LONG_PRESSED  2   /* active state during more than 2 sec */
 
 //#define PIN_INPUT           1
@@ -93,22 +93,27 @@ typedef enum
 
 
 /*******************************************************************************
-* Function: bool BUTTON_IsPressed(BUTTON button);
-*
-* Overview: Returns the current state of the requested button
-*
-* PreCondition: button configured via BUTTON_SetConfiguration()
-*
-* Input: BUTTON button - enumeration of the buttons available in
-*        this demo.  They should be meaningful names and not the names 
-*        of the buttons on the silkscreen on the board (as the demo 
-*        code may be ported to other boards).
-*         i.e. - ButtonIsPressed(BUTTON_SEND_MESSAGE);
-*
-* Output: TRUE if pressed; FALSE if not pressed.
-*
-*******************************************************************************/
+ * Function: bool BUTTON_IsPressed(BUTTON button);
+ *
+ * Overview: Returns the current state of the requested button
+ *
+ * PreCondition: button configured via BUTTON_SetConfiguration()
+ *
+ * Input: BUTTON button - enumeration of the buttons available in
+ *        this demo.  They should be meaningful names and not the names 
+ *        of the buttons on the silkscreen on the board (as the demo 
+ *        code may be ported to other boards).
+ *         i.e. - ButtonIsPressed(BUTTON_SEND_MESSAGE);
+ *
+ * Output: TRUE if pressed; FALSE if not pressed.
+ *
+ *******************************************************************************/
 //bool isPressed(BUTTON button);
 
+#endif /* _BUTTONS_HEADER_H */
 
-#endif // BUTTONS_H
+
+/*******************************************************************************
+ End of File
+ */
+

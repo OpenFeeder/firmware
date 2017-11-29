@@ -5,8 +5,8 @@
  * @date 
  */
 
-#ifndef APP_RFID_H
-#define APP_RFID_H
+#ifndef _APP_RFID_HEADER_H
+#define _APP_RFID_HEADER_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -85,8 +85,8 @@ void clearPitTagBuffers( void );
 bool measureRfidFreq( void );
 void displayRfidFreq( void );
 
+#endif /* _APP_RFID_HEADER_H */
 
-#endif /* APP_RFID_H */
 
 /*******************************************************************************
  End of File

@@ -5,8 +5,8 @@
  * @date
  */
 
-#ifndef APP_TIMERS_CALLBACK_H
-#define APP_TIMERS_CALLBACK_H
+#ifndef _APP_TIMERS_CALLBACK_HEADER_H
+#define _APP_TIMERS_CALLBACK_HEADER_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -52,8 +52,8 @@ void TMR2_CallBack( void );
 void TMR3_CallBack( void );
 void TMR4_CallBack( void );
 
+#endif /* _APP_TIMERS_CALLBACK_HEADER_H */
 
-#endif /* APP_TIMERS_CALLBACK_H */
 
 /*******************************************************************************
  End of File

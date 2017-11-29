@@ -11,8 +11,10 @@
  */
 
 
-#ifndef XC_HEADER_MCP23017_H
-#define	XC_HEADER_MCP23017_H
+#ifndef _MCP23017_HEADER_H
+#define	_MCP23017_HEADER_H
+
+#include "i2c1.h"
 
 // MCP23017 7-bits slave address
 #define MCP23017_ADDRESS    0x20  // and 0x40 is the 8-bits slave addresss
@@ -104,7 +106,8 @@ I2C1_MESSAGE_STATUS I2C1_MasterReadMCP23017( const uint16_t addr7bits,
 void i2cScanner( void );
 
 
-#endif	/* XC_HEADER_MCP23017_H */
+#endif	/* _MCP23017_HEADER_H */
+
 
 /*******************************************************************************
  End of File

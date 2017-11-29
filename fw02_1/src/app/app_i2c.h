@@ -5,8 +5,12 @@
  * @date 06/11/2015
  */
 
-#ifndef APP_I2C_H
-#define	APP_I2C_H
+#ifndef _APP_I2C_HEADER_H
+#define	_APP_I2C_HEADER_H
+
+#include "mcp23017.h" // remote control
+#include "pca9622.h"  // led driver
+#include "ds3231.h"   // external real-time clock (RTC)
 
 
 #define MAX_OF_UNKNOWN_I2C_8_BIT_SLAVE_ADD 255
@@ -44,8 +48,10 @@ I2C1_MESSAGE_STATUS APP_MultiplexingLEDsTasks( void );
  */
 I2C1_MESSAGE_STATUS APP_ScanningPushButtonTasks( void );
 
+bool APP_I2CRTC_DateTime_get( void );
+bool APP_I2CRTC_DateTime_set( uint8_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second );
 
-#endif	/* APP_I2C_H */
+#endif	/* _APP_I2C_HEADER_H */
 
 
 /*******************************************************************************

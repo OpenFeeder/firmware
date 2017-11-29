@@ -15,8 +15,8 @@
     are defined here for convenience.
  ******************************************************************************/
 
-#ifndef _APP_H
-#define _APP_H
+#ifndef _APP_HEADER_H
+#define _APP_HEADER_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -372,8 +372,8 @@ void APP_Initialize( void );
 // (fr) Machine à états de l'application.
 void APP_Tasks( void );
 
+#endif /* _APP_HEADER_H */
 
-#endif /* _APP_H */
 
 /*******************************************************************************
  End of File

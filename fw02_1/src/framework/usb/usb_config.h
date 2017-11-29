@@ -15,12 +15,12 @@ limitations under the License.
                                                                                 
 To request to license the code under the MLA license (www.microchip.com/mla_license), 
 please contact mla_licensing@microchip.com
-*******************************************************************************/
-                                                                                
+ *******************************************************************************/
+
 // Created by the Microchip USBConfig Utility, Version 2.0.0.0, 11/18/2008, 8:08:56
 
-#ifndef _usb_config_h_
-#define _usb_config_h_
+#ifndef _USB_CONFIG_HEADER_H
+#define _USB_CONFIG_HEADER_H
 
 #include <xc.h>
 
@@ -70,6 +70,9 @@ please contact mla_licensing@microchip.com
         USBHostInit(x);             \
     }
 
+#endif	/* _USB_CONFIG_HEADER_H */
 
-#endif
 
+/*******************************************************************************
+ End of File
+ */

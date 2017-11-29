@@ -5,8 +5,8 @@
  * @date 06/07/2016
  */
 
-#ifndef APP_DEBUG_H
-#define APP_DEBUG_H
+#ifndef _APP_DEBUG_HEADER_H
+#define _APP_DEBUG_HEADER_H
 
 /**
  * Section: Global Variable Definitions
@@ -42,7 +42,7 @@ typedef union
         unsigned : 1; /* Unimplemented: */
         unsigned IOPUWR : 1; /* */
         unsigned TRAPR : 1; /* */
-        
+
 
     } status_bit;
 } RESET_SYSTEM_CONTROL_REGISTER_1_t;
@@ -63,7 +63,7 @@ typedef union
     } status_bit;
 } RESET_SYSTEM_CONTROL_REGISTER_2_t;
 
-#endif /* APP_DEBUG_H */
+#endif /* _APP_DEBUG_HEADER_H */
 
 
 /*******************************************************************************

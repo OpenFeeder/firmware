@@ -16,7 +16,7 @@ limitations under the License.
 
 To request to license the code under the MLA license (www.microchip.com/mla_license), 
 please contact mla_licensing@microchip.com
-*******************************************************************************/
+ *******************************************************************************/
 //DOM-IGNORE-END
 
 
@@ -37,10 +37,10 @@ please contact mla_licensing@microchip.com
     This header file exposes the core library APIs and definitions for the USB
     library.  The user is responsible for also including the header file for
     the specific driver they will be using.
-*******************************************************************************/
+ *******************************************************************************/
 
-#ifndef _USB_H_
-#define _USB_H_
+#ifndef _USB_HEADER_H
+#define _USB_HEADER_H
 
 //#include "system.h"
 #include "usb_config.h"
@@ -49,11 +49,11 @@ please contact mla_licensing@microchip.com
 #include "usb_ch9.h"            // USB device framework definitions
 
 #if defined( USB_SUPPORT_DEVICE )
-    #include "usb_device.h"     // USB Device abstraction layer interface
+#include "usb_device.h"     // USB Device abstraction layer interface
 #endif
 
 #if defined( USB_SUPPORT_HOST )
-    #include "usb_host.h"       // USB Host abstraction layer interface
+#include "usb_host.h"       // USB Host abstraction layer interface
 #endif
 
 #include "usb_hal.h"            // Hardware Abstraction Layer interface
@@ -65,7 +65,9 @@ please contact mla_licensing@microchip.com
 #define USB_MINOR_VER   13       // Firmware version, minor release number.
 #define USB_DOT_VER     0        // Firmware version, dot release number.
 
-#endif // _USB_H_
+#endif /* _USB_HEADER_H */
 
 
-
+/*******************************************************************************
+ End of File
+ */

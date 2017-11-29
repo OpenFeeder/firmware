@@ -32,6 +32,7 @@
         <itemPath>../src/driver/mcp23017.h</itemPath>
         <itemPath>../src/driver/servomotor.h</itemPath>
         <itemPath>../src/driver/pca9622.h</itemPath>
+        <itemPath>../src/driver/ds3231.h</itemPath>
       </logicalFolder>
       <logicalFolder name="framework" displayName="framework" projectFiles="true">
         <logicalFolder name="fileio" displayName="fileio" projectFiles="true">
@@ -112,6 +113,7 @@
         <itemPath>../src/driver/mcp23017.c</itemPath>
         <itemPath>../src/driver/servomotor.c</itemPath>
         <itemPath>../src/driver/pca9622.c</itemPath>
+        <itemPath>../src/driver/ds3231.c</itemPath>
       </logicalFolder>
       <logicalFolder name="framework" displayName="framework" projectFiles="true">
         <logicalFolder name="fileio" displayName="fileio" projectFiles="true">

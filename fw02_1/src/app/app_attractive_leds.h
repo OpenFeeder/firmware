@@ -5,8 +5,8 @@
  * @date 07/03/2017
  */
 
-#ifndef APP_ATTRACT_LEDS_H
-#define APP_ATTRACT_LEDS_H
+#ifndef _APP_ATTRACTIVE_LEDS_HEADER_H
+#define _APP_ATTRACTIVE_LEDS_HEADER_H
 
 #define ATTRACTIVE_LEDS_ON 1
 #define ATTRACTIVE_LEDS_OFF 0
@@ -38,8 +38,8 @@ void setAttractiveRedLedsColor( uint8_t );
 void setAttractiveGreenLedsColor( uint8_t );
 void setAttractiveBlueLedsColor( uint8_t );
 
+#endif /* _APP_ATTRACTIVE_LEDS_HEADER_H */
 
-#endif /* APP_ATTRACT_LEDS_H */
 
 /*******************************************************************************
  End of File

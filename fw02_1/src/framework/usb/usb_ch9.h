@@ -16,7 +16,7 @@ limitations under the License.
 
 To request to license the code under the MLA license (www.microchip.com/mla_license), 
 please contact mla_licensing@microchip.com
-*******************************************************************************/
+ *******************************************************************************/
 //DOM-IGNORE-END
 
 
@@ -34,15 +34,15 @@ please contact mla_licensing@microchip.com
 
   Description:
     Defines types associated with chapter 9 of the USB specification.
-*******************************************************************************/
+ *******************************************************************************/
 
-#ifndef _USB_CH9_H_
-#define _USB_CH9_H_
+#ifndef _USB_CH9_HEADER_H
+#define _USB_CH9_HEADER_H
 
 #include <stdint.h>
 
 #if defined(__XC8)
-    #define __attribute__(a)
+#define __attribute__(a)
 #endif
 
 // *****************************************************************************
@@ -62,45 +62,49 @@ please contact mla_licensing@microchip.com
 #define USB_DESCRIPTOR_OTG              0x09    // bDescriptorType for an OTG Descriptor.
 
 // *****************************************************************************
+
 /* USB Device Descriptor Structure
 
 This struct defines the structure of a USB Device Descriptor.
-*/
-typedef struct __attribute__ ((packed)) _USB_DEVICE_DESCRIPTOR
+ */
+typedef struct __attribute__( ( packed ) ) _USB_DEVICE_DESCRIPTOR
 {
-    uint8_t bLength;               // Length of this descriptor.
-    uint8_t bDescriptorType;       // DEVICE descriptor type (USB_DESCRIPTOR_DEVICE).
-    uint16_t bcdUSB;                // USB Spec Release Number (BCD).
-    uint8_t bDeviceClass;          // Class code (assigned by the USB-IF). 0xFF-Vendor specific.
-    uint8_t bDeviceSubClass;       // Subclass code (assigned by the USB-IF).
-    uint8_t bDeviceProtocol;       // Protocol code (assigned by the USB-IF). 0xFF-Vendor specific.
-    uint8_t bMaxPacketSize0;       // Maximum packet size for endpoint 0.
-    uint16_t idVendor;              // Vendor ID (assigned by the USB-IF).
-    uint16_t idProduct;             // Product ID (assigned by the manufacturer).
-    uint16_t bcdDevice;             // Device release number (BCD).
-    uint8_t iManufacturer;         // Index of String Descriptor describing the manufacturer.
-    uint8_t iProduct;              // Index of String Descriptor describing the product.
-    uint8_t iSerialNumber;         // Index of String Descriptor with the device's serial number.
-    uint8_t bNumConfigurations;    // Number of possible configurations.
-} USB_DEVICE_DESCRIPTOR;
+    uint8_t bLength; // Length of this descriptor.
+    uint8_t bDescriptorType; // DEVICE descriptor type (USB_DESCRIPTOR_DEVICE).
+    uint16_t bcdUSB; // USB Spec Release Number (BCD).
+    uint8_t bDeviceClass; // Class code (assigned by the USB-IF). 0xFF-Vendor specific.
+    uint8_t bDeviceSubClass; // Subclass code (assigned by the USB-IF).
+    uint8_t bDeviceProtocol; // Protocol code (assigned by the USB-IF). 0xFF-Vendor specific.
+    uint8_t bMaxPacketSize0; // Maximum packet size for endpoint 0.
+    uint16_t idVendor; // Vendor ID (assigned by the USB-IF).
+    uint16_t idProduct; // Product ID (assigned by the manufacturer).
+    uint16_t bcdDevice; // Device release number (BCD).
+    uint8_t iManufacturer; // Index of String Descriptor describing the manufacturer.
+    uint8_t iProduct; // Index of String Descriptor describing the product.
+    uint8_t iSerialNumber; // Index of String Descriptor with the device's serial number.
+    uint8_t bNumConfigurations; // Number of possible configurations.
+}
+USB_DEVICE_DESCRIPTOR;
 
 
 // *****************************************************************************
+
 /* USB Configuration Descriptor Structure
 
 This struct defines the structure of a USB Configuration Descriptor.
-*/
-typedef struct __attribute__ ((packed)) _USB_CONFIGURATION_DESCRIPTOR
+ */
+typedef struct __attribute__( ( packed ) ) _USB_CONFIGURATION_DESCRIPTOR
 {
-    uint8_t bLength;               // Length of this descriptor.
-    uint8_t bDescriptorType;       // CONFIGURATION descriptor type (USB_DESCRIPTOR_CONFIGURATION).
-    uint16_t wTotalLength;          // Total length of all descriptors for this configuration.
-    uint8_t bNumInterfaces;        // Number of interfaces in this configuration.
-    uint8_t bConfigurationValue;   // Value of this configuration (1 based).
-    uint8_t iConfiguration;        // Index of String Descriptor describing the configuration.
-    uint8_t bmAttributes;          // Configuration characteristics.
-    uint8_t bMaxPower;             // Maximum power consumed by this configuration.
-} USB_CONFIGURATION_DESCRIPTOR;
+    uint8_t bLength; // Length of this descriptor.
+    uint8_t bDescriptorType; // CONFIGURATION descriptor type (USB_DESCRIPTOR_CONFIGURATION).
+    uint16_t wTotalLength; // Total length of all descriptors for this configuration.
+    uint8_t bNumInterfaces; // Number of interfaces in this configuration.
+    uint8_t bConfigurationValue; // Value of this configuration (1 based).
+    uint8_t iConfiguration; // Index of String Descriptor describing the configuration.
+    uint8_t bmAttributes; // Configuration characteristics.
+    uint8_t bMaxPower; // Maximum power consumed by this configuration.
+}
+USB_CONFIGURATION_DESCRIPTOR;
 
 // Attributes bits
 #define USB_CFG_DSC_REQUIRED     0x80                       // Required attribute
@@ -109,38 +113,42 @@ typedef struct __attribute__ ((packed)) _USB_CONFIGURATION_DESCRIPTOR
 
 
 // *****************************************************************************
+
 /* USB Interface Descriptor Structure
 
 This struct defines the structure of a USB Interface Descriptor.
-*/
-typedef struct __attribute__ ((packed)) _USB_INTERFACE_DESCRIPTOR
+ */
+typedef struct __attribute__( ( packed ) ) _USB_INTERFACE_DESCRIPTOR
 {
-    uint8_t bLength;               // Length of this descriptor.
-    uint8_t bDescriptorType;       // INTERFACE descriptor type (USB_DESCRIPTOR_INTERFACE).
-    uint8_t bInterfaceNumber;      // Number of this interface (0 based).
-    uint8_t bAlternateSetting;     // Value of this alternate interface setting.
-    uint8_t bNumEndpoints;         // Number of endpoints in this interface.
-    uint8_t bInterfaceClass;       // Class code (assigned by the USB-IF).  0xFF-Vendor specific.
-    uint8_t bInterfaceSubClass;    // Subclass code (assigned by the USB-IF).
-    uint8_t bInterfaceProtocol;    // Protocol code (assigned by the USB-IF).  0xFF-Vendor specific.
-    uint8_t iInterface;            // Index of String Descriptor describing the interface.
-} USB_INTERFACE_DESCRIPTOR;
+    uint8_t bLength; // Length of this descriptor.
+    uint8_t bDescriptorType; // INTERFACE descriptor type (USB_DESCRIPTOR_INTERFACE).
+    uint8_t bInterfaceNumber; // Number of this interface (0 based).
+    uint8_t bAlternateSetting; // Value of this alternate interface setting.
+    uint8_t bNumEndpoints; // Number of endpoints in this interface.
+    uint8_t bInterfaceClass; // Class code (assigned by the USB-IF).  0xFF-Vendor specific.
+    uint8_t bInterfaceSubClass; // Subclass code (assigned by the USB-IF).
+    uint8_t bInterfaceProtocol; // Protocol code (assigned by the USB-IF).  0xFF-Vendor specific.
+    uint8_t iInterface; // Index of String Descriptor describing the interface.
+}
+USB_INTERFACE_DESCRIPTOR;
 
 
 // *****************************************************************************
+
 /* USB Endpoint Descriptor Structure
 
 This struct defines the structure of a USB Endpoint Descriptor.
-*/
-typedef struct __attribute__ ((packed)) _USB_ENDPOINT_DESCRIPTOR
+ */
+typedef struct __attribute__( ( packed ) ) _USB_ENDPOINT_DESCRIPTOR
 {
-    uint8_t bLength;               // Length of this descriptor.
-    uint8_t bDescriptorType;       // ENDPOINT descriptor type (USB_DESCRIPTOR_ENDPOINT).
-    uint8_t bEndpointAddress;      // Endpoint address. Bit 7 indicates direction (0=OUT, 1=IN).
-    uint8_t bmAttributes;          // Endpoint transfer type.
-    uint16_t wMaxPacketSize;        // Maximum packet size.
-    uint8_t bInterval;             // Polling interval in frames.
-} USB_ENDPOINT_DESCRIPTOR;
+    uint8_t bLength; // Length of this descriptor.
+    uint8_t bDescriptorType; // ENDPOINT descriptor type (USB_DESCRIPTOR_ENDPOINT).
+    uint8_t bEndpointAddress; // Endpoint address. Bit 7 indicates direction (0=OUT, 1=IN).
+    uint8_t bmAttributes; // Endpoint transfer type.
+    uint16_t wMaxPacketSize; // Maximum packet size.
+    uint8_t bInterval; // Polling interval in frames.
+}
+USB_ENDPOINT_DESCRIPTOR;
 
 
 // Endpoint Direction
@@ -181,28 +189,30 @@ typedef struct __attribute__ ((packed)) _USB_ENDPOINT_DESCRIPTOR
 /* Descriptor IDs
 The descriptor ID type defines the information required by the HOST during a 
 GET_DESCRIPTOR request
-*/
+ */
 typedef struct
 {
-    uint8_t    index;
-    uint8_t    type;
-    uint16_t  language_id;
+    uint8_t index;
+    uint8_t type;
+    uint16_t language_id;
 
 } DESCRIPTOR_ID;
 
 // *****************************************************************************
+
 /* USB OTG Descriptor Structure
 
 This struct defines the structure of a USB OTG Descriptor.  Note that this
 structure may need to be packed, or even accessed as uint8_ts, to properly access
 the correct fields when used on some device architectures.
-*/
-typedef struct __attribute__ ((packed)) _USB_OTG_DESCRIPTOR
+ */
+typedef struct __attribute__( ( packed ) ) _USB_OTG_DESCRIPTOR
 {
-    uint8_t bLength;               // Length of this descriptor.
-    uint8_t bDescriptorType;       // OTG descriptor type (USB_DESCRIPTOR_OTG).
-    uint8_t bmAttributes;          // OTG attributes.
-} USB_OTG_DESCRIPTOR;
+    uint8_t bLength; // Length of this descriptor.
+    uint8_t bDescriptorType; // OTG descriptor type (USB_DESCRIPTOR_OTG).
+    uint8_t bmAttributes; // OTG attributes.
+}
+USB_OTG_DESCRIPTOR;
 
 
 // ******************************************************************
@@ -221,12 +231,13 @@ typedef struct __attribute__ ((packed)) _USB_OTG_DESCRIPTOR
 // array of unicode characters making up the string, must be allocated
 // immediately following this header with no padding between them.
 
-typedef struct __attribute__ ((packed)) _USB_STRING_DSC
+typedef struct __attribute__( ( packed ) ) _USB_STRING_DSC
 {
-    uint8_t   bLength;             // Size of this descriptor
-    uint8_t   bDescriptorType;     // Type, USB_DSC_STRING
+    uint8_t bLength; // Size of this descriptor
+    uint8_t bDescriptorType; // Type, USB_DSC_STRING
 
-} USB_STRING_DESCRIPTOR;
+}
+USB_STRING_DESCRIPTOR;
 
 
 // ******************************************************************
@@ -240,19 +251,20 @@ typedef struct __attribute__ ((packed)) _USB_STRING_DSC
 // If so, it may need to implement the the device qualifier and other
 // speed descriptors.
 
-typedef struct __attribute__ ((packed)) _USB_DEVICE_QUALIFIER_DESCRIPTOR
+typedef struct __attribute__( ( packed ) ) _USB_DEVICE_QUALIFIER_DESCRIPTOR
 {
-    uint8_t bLength;               // Size of this descriptor
-    uint8_t bType;                 // Type, always USB_DESCRIPTOR_DEVICE_QUALIFIER
-    uint16_t bcdUSB;                // USB spec version, in BCD
-    uint8_t bDeviceClass;          // Device class code
-    uint8_t bDeviceSubClass;       // Device sub-class code
-    uint8_t bDeviceProtocol;       // Device protocol
-    uint8_t bMaxPacketSize0;       // EP0, max packet size
-    uint8_t bNumConfigurations;    // Number of "other-speed" configurations
-    uint8_t bReserved;             // Always zero (0)
+    uint8_t bLength; // Size of this descriptor
+    uint8_t bType; // Type, always USB_DESCRIPTOR_DEVICE_QUALIFIER
+    uint16_t bcdUSB; // USB spec version, in BCD
+    uint8_t bDeviceClass; // Device class code
+    uint8_t bDeviceSubClass; // Device sub-class code
+    uint8_t bDeviceProtocol; // Device protocol
+    uint8_t bMaxPacketSize0; // EP0, max packet size
+    uint8_t bNumConfigurations; // Number of "other-speed" configurations
+    uint8_t bReserved; // Always zero (0)
 
-} USB_DEVICE_QUALIFIER_DESCRIPTOR;
+}
+USB_DEVICE_QUALIFIER_DESCRIPTOR;
 
 // ******************************************************************
 // Section: USB Setup Packet Structure
@@ -263,10 +275,12 @@ typedef struct __attribute__ ((packed)) _USB_DEVICE_QUALIFIER_DESCRIPTOR
 //
 // Note: Refer to the USB 2.0 specification for additional details on the
 // usage of the setup packet and standard device requests.
-typedef union __attribute__ ((packed))
+
+typedef union __attribute__( ( packed ) )
 {
+
     /** Standard Device Requests ***********************************/
-    struct __attribute__ ((packed))
+    struct __attribute__( ( packed ) )
     {
         uint8_t bmRequestType; //from table 9-2 of USB2.0 spec
         uint8_t bRequest; //from table 9-2 of USB2.0 spec
@@ -274,14 +288,17 @@ typedef union __attribute__ ((packed))
         uint16_t wIndex; //from table 9-2 of USB2.0 spec
         uint16_t wLength; //from table 9-2 of USB2.0 spec
     };
-    struct __attribute__ ((packed))
+
+    struct __attribute__( ( packed ) )
     {
-        unsigned :8;
-        unsigned :8;
+        unsigned : 8;
+        unsigned : 8;
+
         union
         {
             uint16_t Val;
             uint8_t v[2];
+
             struct
             {
                 uint8_t LB;
@@ -293,6 +310,7 @@ typedef union __attribute__ ((packed))
         {
             uint16_t Val;
             uint8_t v[2];
+
             struct
             {
                 uint8_t LB;
@@ -304,6 +322,7 @@ typedef union __attribute__ ((packed))
         {
             uint16_t Val;
             uint8_t v[2];
+
             struct
             {
                 uint8_t LB;
@@ -311,103 +330,114 @@ typedef union __attribute__ ((packed))
             } byte;
         } W_Length;
     };
-    struct __attribute__ ((packed))
+
+    struct __attribute__( ( packed ) )
     {
-        unsigned Recipient:5;   //Device,Interface,Endpoint,Other
-        unsigned RequestType:2; //Standard,Class,Vendor,Reserved
-        unsigned DataDir:1;     //Host-to-device,Device-to-host
-        unsigned :8;
-        uint8_t bFeature;          //DEVICE_REMOTE_WAKEUP,ENDPOINT_HALT
-        unsigned :8;
-        unsigned :8;
-        unsigned :8;
-        unsigned :8;
-        unsigned :8;
+        unsigned Recipient : 5; //Device,Interface,Endpoint,Other
+        unsigned RequestType : 2; //Standard,Class,Vendor,Reserved
+        unsigned DataDir : 1; //Host-to-device,Device-to-host
+        unsigned : 8;
+        uint8_t bFeature; //DEVICE_REMOTE_WAKEUP,ENDPOINT_HALT
+        unsigned : 8;
+        unsigned : 8;
+        unsigned : 8;
+        unsigned : 8;
+        unsigned : 8;
     };
-    struct __attribute__ ((packed))
+
+    struct __attribute__( ( packed ) )
     {
-        union                           // offset   description
-        {                               // ------   ------------------------
-            uint8_t bmRequestType;         //   0      Bit-map of request type
+
+        union // offset   description
+        { // ------   ------------------------
+            uint8_t bmRequestType; //   0      Bit-map of request type
+
             struct
             {
-                uint8_t    recipient:  5;  //          Recipient of the request
-                uint8_t    type:       2;  //          Type of request
-                uint8_t    direction:  1;  //          Direction of data X-fer
+                uint8_t recipient : 5; //          Recipient of the request
+                uint8_t type : 2; //          Type of request
+                uint8_t direction : 1; //          Direction of data X-fer
             };
-        }requestInfo;
+        } requestInfo;
     };
-    struct __attribute__ ((packed))
+
+    struct __attribute__( ( packed ) )
     {
-        unsigned :8;
-        unsigned :8;
-        uint8_t bDscIndex;         //For Configuration and String DSC Only
-        uint8_t bDescriptorType;          //Device,Configuration,String
-        uint16_t wLangID;           //Language ID
-        unsigned :8;
-        unsigned :8;
+        unsigned : 8;
+        unsigned : 8;
+        uint8_t bDscIndex; //For Configuration and String DSC Only
+        uint8_t bDescriptorType; //Device,Configuration,String
+        uint16_t wLangID; //Language ID
+        unsigned : 8;
+        unsigned : 8;
     };
-    struct __attribute__ ((packed))
+
+    struct __attribute__( ( packed ) )
     {
-        unsigned :8;
-        unsigned :8;
-        uint8_t bDevADR;       //Device Address 0-127
-        uint8_t bDevADRH;          //Must equal zero
-        unsigned :8;
-        unsigned :8;
-        unsigned :8;
-        unsigned :8;
+        unsigned : 8;
+        unsigned : 8;
+        uint8_t bDevADR; //Device Address 0-127
+        uint8_t bDevADRH; //Must equal zero
+        unsigned : 8;
+        unsigned : 8;
+        unsigned : 8;
+        unsigned : 8;
     };
-    struct __attribute__ ((packed))
+
+    struct __attribute__( ( packed ) )
     {
-        unsigned :8;
-        unsigned :8;
-        uint8_t bConfigurationValue;         //Configuration Value 0-255
-        uint8_t bCfgRSD;           //Must equal zero (Reserved)
-        unsigned :8;
-        unsigned :8;
-        unsigned :8;
-        unsigned :8;
+        unsigned : 8;
+        unsigned : 8;
+        uint8_t bConfigurationValue; //Configuration Value 0-255
+        uint8_t bCfgRSD; //Must equal zero (Reserved)
+        unsigned : 8;
+        unsigned : 8;
+        unsigned : 8;
+        unsigned : 8;
     };
-    struct __attribute__ ((packed))
+
+    struct __attribute__( ( packed ) )
     {
-        unsigned :8;
-        unsigned :8;
-        uint8_t bAltID;            //Alternate Setting Value 0-255
-        uint8_t bAltID_H;          //Must equal zero
-        uint8_t bIntfID;           //Interface Number Value 0-255
-        uint8_t bIntfID_H;         //Must equal zero
-        unsigned :8;
-        unsigned :8;
+        unsigned : 8;
+        unsigned : 8;
+        uint8_t bAltID; //Alternate Setting Value 0-255
+        uint8_t bAltID_H; //Must equal zero
+        uint8_t bIntfID; //Interface Number Value 0-255
+        uint8_t bIntfID_H; //Must equal zero
+        unsigned : 8;
+        unsigned : 8;
     };
-    struct __attribute__ ((packed))
+
+    struct __attribute__( ( packed ) )
     {
-        unsigned :8;
-        unsigned :8;
-        unsigned :8;
-        unsigned :8;
-        uint8_t bEPID;             //Endpoint ID (Number & Direction)
-        uint8_t bEPID_H;           //Must equal zero
-        unsigned :8;
-        unsigned :8;
+        unsigned : 8;
+        unsigned : 8;
+        unsigned : 8;
+        unsigned : 8;
+        uint8_t bEPID; //Endpoint ID (Number & Direction)
+        uint8_t bEPID_H; //Must equal zero
+        unsigned : 8;
+        unsigned : 8;
     };
-    struct __attribute__ ((packed))
+
+    struct __attribute__( ( packed ) )
     {
-        unsigned :8;
-        unsigned :8;
-        unsigned :8;
-        unsigned :8;
-        unsigned EPNum:4;       //Endpoint Number 0-15
-        unsigned :3;
-        unsigned EPDir:1;       //Endpoint Direction: 0-OUT, 1-IN
-        unsigned :8;
-        unsigned :8;
-        unsigned :8;
+        unsigned : 8;
+        unsigned : 8;
+        unsigned : 8;
+        unsigned : 8;
+        unsigned EPNum : 4; //Endpoint Number 0-15
+        unsigned : 3;
+        unsigned EPDir : 1; //Endpoint Direction: 0-OUT, 1-IN
+        unsigned : 8;
+        unsigned : 8;
+        unsigned : 8;
     };
 
     /** End: Standard Device Requests ******************************/
 
-} CTRL_TRF_SETUP, SETUP_PKT, *PSETUP_PKT;
+}
+CTRL_TRF_SETUP, SETUP_PKT, *PSETUP_PKT;
 
 
 // ******************************************************************
@@ -522,7 +552,7 @@ typedef union __attribute__ ((packed))
 USB Endpoint Definitions
 USB Standard EP Address Format: DIR:X:X:X:EP3:EP2:EP1:EP0
 This is used in the descriptors. 
-********************************************************************/
+ ********************************************************************/
 #define _EP_IN      0x80
 #define _EP_OUT     0x00
 #define _EP01_OUT   0x01
@@ -568,9 +598,9 @@ This is used in the descriptors.
 #define _ISO        0x01            //Isochronous Transfer
 #define _BULK       0x02            //Bulk Transfer
 
-#define _INTERRUPT        0x03            //Interrupt Transfer
+#define _INTERRUPT  0x03            //Interrupt Transfer
 #if defined(__18CXX) || defined(__C30__) || defined __XC16__ || defined(__XC8)
-    #define _INT        0x03            //Interrupt Transfer
+#define _INT        0x03            //Interrupt Transfer
 #endif
 
 /* Isochronous Endpoint Synchronization Type */
@@ -589,8 +619,9 @@ This is used in the descriptors.
 #define OUT_FROM_HOST 0
 #define IN_TO_HOST 1
 
-#endif  // _USB_CH9_H_
-/*************************************************************************
- * EOF
- */
+#endif /* _USB_CH9_HEADER_H */
 
+
+/*******************************************************************************
+ End of File
+ */

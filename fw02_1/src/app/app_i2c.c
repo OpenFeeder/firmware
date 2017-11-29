@@ -6,6 +6,7 @@
  */
 
 #include "app.h"
+#include <string.h>
 #include "app_i2c.h"
 
 extern const char bin2ascii_tab[];
@@ -346,6 +347,57 @@ I2C1_MESSAGE_STATUS APP_ScanningPushButtonTasks( void )
 
     return status;
 } /* End of APP_ScanningPushButtonTasks() */
+
+
+#define BUFF_MAX 128
+char recv[BUFF_MAX];
+
+bool APP_I2CRTC_DateTime_get( void )
+{
+    I2C1_MESSAGE_STATUS status;
+    char buff[BUFF_MAX];
+    struct ts t;
+
+    status = I2C1_MasterReadDS3231_get( &t );
+
+    if ( status == I2C1_MESSAGE_COMPLETE )
+    {
+        snprintf( buff, BUFF_MAX, "%02u/%02u/%u %02u:%02u:%02u",
+                  t.mday, t.mon, t.year, t.hour, t.min, t.sec );
+        printf( "EXT: %s\n", buff ); // I2C RTC
+        return true;
+    }
+
+    printf( "EXT: DD/MM/YYYY hh.mm.ss\n" ); // default I2C RTC
+    return false;
+}
+
+/* Dynamic configuration date, example 22/08/2016 and time to 15:59:30 */
+// setDateTime( 16, 8, 22, 15, 59, 30 ); /* Set date and time. */
+
+bool APP_I2CRTC_DateTime_set( uint8_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second ) /* Set date and time. */
+{
+    I2C1_MESSAGE_STATUS status;
+    struct ts t;
+
+    t.year = year;
+    t.mon = month;
+    t.mday = day;
+    t.hour = hour;
+    t.min = minute;
+    t.sec = second;
+
+    status = I2C1_MasterReadDS3231_set( &t );
+
+    if ( status == I2C1_MESSAGE_COMPLETE )
+    {
+        printf( "\nEXT RTC done.\n" );
+        return true;
+    }
+
+    printf( "\nEXT RTC not found!\n" );
+    return false;
+}
 
 
 /*******************************************************************************

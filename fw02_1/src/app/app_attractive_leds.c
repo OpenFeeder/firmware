@@ -24,7 +24,7 @@ bool initAttractiveLeds( void )
     //    writeBuffer[1] = 0b10101010; // CTRLREG PWM on all output for LEDOUT0
     //    writeBuffer[2] = 0b10101010; // CTRLREG PWM on all output for LEDOUT1
     //    writeBuffer[3] = 0b10101010; // CTRLREG PWM on all output for LEDOUT2
-    //    writeBuffer[4] = 0b00101010; // CTRLREG PWM on all output for LEDOUT3, except LDR15 off
+    //    writeBuffer[4] = 0b10101010; // CTRLREG PWM on all output for LEDOUT3
     //    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 5 );
 
     writeBuffer[0] = CTRLREG_LEDOUT0;
@@ -52,7 +52,7 @@ bool initAttractiveLeds( void )
     }
 
     writeBuffer[0] = CTRLREG_LEDOUT3;
-    writeBuffer[4] = 0b00101010; // CTRLREG PWM on all output for LEDOUT3, except LDR15 off
+    writeBuffer[4] = 0b10101010; // CTRLREG PWM on all output for LEDOUT3
     i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
     if ( I2C1_MESSAGE_COMPLETE != i2c_status )
     {
@@ -60,7 +60,6 @@ bool initAttractiveLeds( void )
     }
 
     return true;
-
 }
 
 void setAttractiveLedsOff( void )

@@ -30,10 +30,10 @@
  * IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL OR
  * CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.
  *
-*****************************************************************************/
+ *****************************************************************************/
 
-#ifndef _FS_DEF_
-#define _FS_DEF_
+#ifndef _FILEIO_CONFIG_HEADER_H
+#define _FILEIO_CONFIG_HEADER_H
 
 // Macro indicating how many drives can be mounted simultaneously.
 #define FILEIO_CONFIG_MAX_DRIVES        1
@@ -52,7 +52,7 @@
 /**********************************************************************
   Define FILEIO_CONFIG_FUNCTION_SEARCH to disable the functions used to
   search for files.                                                    
-  **********************************************************************/
+ **********************************************************************/
 //#define FILEIO_CONFIG_SEARCH_DISABLE
 
 // Define FILEIO_CONFIG_FUNCTION_WRITE to disable the functions that write to a drive.  Disabling this feature will
@@ -76,4 +76,9 @@
 #define FILEIO_CONFIG_MULTIPLE_BUFFER_MODE_DISABLE
 
 
-#endif
+#endif	/* _FILEIO_CONFIG_HEADER_H */
+
+
+/*******************************************************************************
+ End of File
+ */

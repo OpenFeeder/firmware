@@ -5,8 +5,8 @@
  * @date
  */
 
-#ifndef APP_EVENT_H
-#define APP_EVENT_H
+#ifndef _APP_EVENT_HEADER_H
+#define _APP_EVENT_HEADER_H
 
 typedef struct
 {
@@ -14,7 +14,7 @@ typedef struct
 
 } APP_DATA_EVENT;
 
-#endif /* APP_EVENT_H */
+#endif /* _APP_EVENT_HEADER_H */
 
 
 /*******************************************************************************

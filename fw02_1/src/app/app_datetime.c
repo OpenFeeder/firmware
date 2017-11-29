@@ -46,7 +46,7 @@ void printCurrentDate( void )
         Nop( );
     }
 
-    printf( "%02u/%02u/%02u %02u:%02u:%02u",
+    printf( "%02u/%02u/20%02u %02u:%02u:%02u",
             current_time.tm_mday,
             current_time.tm_mon,
             current_time.tm_year,

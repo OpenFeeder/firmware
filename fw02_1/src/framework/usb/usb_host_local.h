@@ -1,4 +1,4 @@
-// DOM-IGNORE-BEGIN
+//DOM-IGNORE-BEGIN
 /*******************************************************************************
 Copyright 2015 Microchip Technology Inc. (www.microchip.com)
 
@@ -19,8 +19,8 @@ please contact mla_licensing@microchip.com
  *******************************************************************************/
 //DOM-IGNORE-END
 
-#ifndef _USB_HOST_LOCAL_
-#define _USB_HOST_LOCAL_
+#ifndef _USB_HOST_LOCAL_HEADER_H
+#define _USB_HOST_LOCAL_HEADER_H
 
 #include "usb_hal_local.h"
 
@@ -662,7 +662,9 @@ void _USB_SendToken( uint8_t endpoint, uint8_t tokenType );
 void _USB_SetBDT( uint8_t direction );
 bool _USB_TransferInProgress( void );
 
+#endif	/* _USB_HOST_LOCAL_HEADER_H */
 
-#endif // _USB_HOST_LOCAL_
 
-
+/*******************************************************************************
+ End of File
+ */

@@ -7,10 +7,9 @@
  * @dependency tmr3 --> ISR every 20 ms
  */
 
-#ifndef DELAY_H
-#define	DELAY_H
+#ifndef _DELAY_HEADER_H
+#define	_DELAY_HEADER_H
 
-//#include "mcc_generated_files/mcc.h"
 #include "mcc.h"
 
 void setDelayMs( uint16_t );
@@ -22,7 +21,7 @@ bool isDelayMsEndingEM4095( void );
 void setDelayMsLEDsStatus( uint16_t );
 bool isDelayMsEndingLEDsStatus( void );
 
-#endif	/* DELAY_H */
+#endif	/* _DELAY_HEADER_H */
 
 
 /*******************************************************************************

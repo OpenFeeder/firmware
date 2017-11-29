@@ -5,8 +5,8 @@
  * @date 
  */
 
-#ifndef APP_ALARM_H
-#define APP_ALARM_H
+#ifndef _APP_ALARM_HEADER_H
+#define _APP_ALARM_HEADER_H
 
 #include <xc.h>
 #include <time.h>
@@ -24,7 +24,6 @@
 #define EVERY_10_SECONDS 0b0010
 #define EVERY_SECOND     0b0001
 
-
 typedef enum
 {
     RTCC_ALARM_IDLE, /* Not in use. */
@@ -38,9 +37,8 @@ typedef enum
     RTCC_BATTERY_LEVEL_CHECK,
     RTCC_FOOD_LEVEL_CHECK,
     RTCC_RFID_FREQ_CHECK
-        
-} RTCC_ALARM_ACTION;
 
+} RTCC_ALARM_ACTION;
 
 typedef struct
 {
@@ -53,8 +51,7 @@ void rtcc_set_alarm( int, int, int, int );
 void rtcc_start_alarm( void );
 void rtcc_stop_alarm( void );
 
-
-#endif /* APP_ALARM_H */
+#endif /* _APP_ALARM_HEADER_H */
 
 
 /*******************************************************************************

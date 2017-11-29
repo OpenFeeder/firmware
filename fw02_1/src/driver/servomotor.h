@@ -6,8 +6,8 @@
  * @revision history 1
  */
 
-#ifndef SERVOMOTOR_H
-#define	SERVOMOTOR_H
+#ifndef _SERVOMOTOR_HEADER_H
+#define	_SERVOMOTOR_HEADER_H
 
 /* Change servomotor position, Ton time (in us) corresponds to an angular angle.
  * Absolute range: 500 us < servo_position < 2500 us
@@ -99,7 +99,7 @@ void servomotorPowerDisable( void );
 
 uint16_t getDoorPosition( void );
 
-#endif	/* SERVOMOTOR_H */
+#endif	/* _SERVOMOTOR_HEADER_H */
 
 
 /*******************************************************************************

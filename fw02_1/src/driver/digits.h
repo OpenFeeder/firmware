@@ -23,6 +23,9 @@
  *
  */
 
+#ifndef _DIGITS_HEADER_H
+#define _DIGITS_HEADER_H
+
 // Uncomment between the two types of LED 7-segment displays :
 //#define DIGIT7SEG_CC    // Common Cathode(CC)
 #define DIGIT7SEG_CA    // Common Anode(CA)
@@ -162,3 +165,10 @@ unsigned char Extraction_Nbr( unsigned char NbrToConvert, unsigned char Indice )
 
 void displayDigitBlink( uint8_t whichDigit );
 void displayDigitFixe( void );
+
+#endif /* _DIGITS_HEADER_H */
+
+
+/*******************************************************************************
+ End of File
+ */

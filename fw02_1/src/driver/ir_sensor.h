@@ -5,8 +5,8 @@
  * @date 09/09/2016
  */
 
-#ifndef IR_SENSOR_H
-#define	IR_SENSOR_H
+#ifndef _IR_SENSOR_HEADER_H
+#define	_IR_SENSOR_HEADER_H
 
 #include "pin_manager.h"
 #include "ext_int.h"
@@ -31,7 +31,7 @@ void IRSensorEnable( void );
 void IRSensorDisable( void );
 
 
-#endif	/* IR_SENSOR_H */
+#endif	/* _IR_SENSOR_HEADER_H */
 
 
 /*******************************************************************************

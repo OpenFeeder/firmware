@@ -9,11 +9,13 @@
  *  Technology Incorporated, and licensed at its own terms.)
  */
 
-#define INI_BUFFERSIZE  30       /* maximum line length, maximum path length */
+#ifndef _MIN_GLUE_HEADER_H
+#define	_MIN_GLUE_HEADER_H
 
 #include <string.h>
 #include "fileio.h"
 
+#define INI_BUFFERSIZE  30       /* maximum line length, maximum path length */
 #define INI_FILETYPE                   FILEIO_OBJECT
 #define ini_openread(filename,file)    ((FILEIO_Open((file), (filename),FILEIO_OPEN_READ)) != FILEIO_RESULT_FAILURE)
 #define ini_openwrite(filename,file)   ((FILEIO_Open((file), (filename),FILEIO_OPEN_WRITE)) != FILEIO_RESULT_FAILURE)
@@ -49,3 +51,10 @@ static int ini_rename( const char *source, const char *dest )
     return FILEIO_Rename( ( source ), ( dest ) ) == FILEIO_RESULT_SUCCESS;
 }
 #endif
+
+#endif	/* _MIN_GLUE_HEADER_H */
+
+
+/*******************************************************************************
+ End of File
+ */

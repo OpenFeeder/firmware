@@ -31,8 +31,8 @@
  * Revision history: 0.0.2
  */
 
-#ifndef XC_HEADER_EM4095_H
-#define	XC_HEADER_EM4095_H
+#ifndef _EM4095_HEADER_H
+#define	_EM4095_HEADER_H
 
 #define DATASTREAM_BUFFER_SIZE 55 /* number of bit after header data in RFID raw frame */
 #define SynchroWithTimerDelayCount() {g_counter_delay_read_bit = 0;} /* timer synchronization */
@@ -201,4 +201,10 @@ void EM4095_PrintDataTab(uint8_t * p_datastream, uint8_t data_len);
 
 //void DecodingRfidInitializeStateMachine( void );
 
-#endif	/* XC_HEADER_EM4095_H */
+#endif	/* _EM4095_HEADER_H */
+
+
+/*******************************************************************************
+ End of File
+ */
+

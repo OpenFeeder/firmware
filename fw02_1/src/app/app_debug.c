@@ -6,16 +6,18 @@
  * @revision history 3
  */
 
+#include <ctype.h>
 #include "app.h"
 #include "app_debug.h"
-#include <ctype.h>
+#include "app_i2c.h"
+#include "app_datetime.h"
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
 
 /* Current date to a C string (page 244)) */
 const uint8_t BUILD_DATE[] = { __DATE__ };
 const uint8_t BUILD_TIME[] = { __TIME__ };
-
+const uint8_t REV[] = { "01" }; // TODO: Increment REV number each time the code was modified!
 
 /* Display information on serial terminal. */
 void displayBuildDateTime( void )
@@ -24,11 +26,11 @@ void displayBuildDateTime( void )
     printf( "Build on %s, %s\n", BUILD_DATE, BUILD_TIME );
 }
 
-
 void displayBootMessage( void )
 {
     printf( "\n\n================ OpenFeeder ================\n" );
-    printf( "      Board: v3.0 - Firmware: fw02_1\n" );
+    printf( "      Firmware: fw02_1, Rev: %s\n", REV );
+    printf( "      On Select Design board: v3.0\n");
     printf( "      Build on %s, %s\n", BUILD_DATE, BUILD_TIME );
     printf( "============================================\n" );
     printf( "   Web page: https://github.com/OpenFeeder\n" );
@@ -36,7 +38,6 @@ void displayBootMessage( void )
     printf( "============================================\n" );
     printf( "Type [?] key to display the Key mapping interface.\n\n" );
 }
-
 
 void displayResetRegisters( void )
 {
@@ -85,7 +86,6 @@ void displayResetRegisters( void )
     printf( "\t-----------------------\n\n" );
 }
 
-
 void APP_SerialDebugTasks( void )
 {
     uint16_t dc_pwm;
@@ -120,7 +120,7 @@ void APP_SerialDebugTasks( void )
                 printf( "\t> 1: initialize the PCA9622 device\n" );
                 printf( "\t> 2: Toggle Output Enable (OE) pin\n" );
                 printf( "\t> 3: Toggle LED D16 color green or red\n" );
-                printf( " n or N: NOT AFFECTED\n" );
+                printf( " n or N: Test display battery level\n"); // NOT AFFECTED
                 printf( " o or O: open door\n" );
                 printf( " p or P: change servomotor position\n" );
                 printf( " q or Q: check status LEDs\n" );
@@ -146,32 +146,32 @@ void APP_SerialDebugTasks( void )
                 uint16_t analog_measure;
 
                 /* Position of the servomotor. */
-                
-                if (false == isPowerServoEnable())
+
+                if ( false == isPowerServoEnable( ) )
                 {
-                    servomotorPowerEnable();
-                    analog_measure = getDoorPosition();
-                    servomotorPowerDisable();
+                    servomotorPowerEnable( );
+                    analog_measure = getDoorPosition( );
+                    servomotorPowerDisable( );
                 }
                 else
                 {
-                    analog_measure = getDoorPosition();
+                    analog_measure = getDoorPosition( );
                 }
-                printf("Servo position: %u\n", analog_measure);
+                printf( "Servo position: %u\n", analog_measure );
 
                 /* Battery level */
-                appData.battery_level = getADC1value(ADC1_CHANNEL_MA_12V);
-                printBatteryLevel();
+                appData.battery_level = getADC1value( ADC1_CHANNEL_MA_12V );
+                printBatteryLevel( );
 
                 /* VBat level */
-                
-                
-//                printf("%u\n", AD1CON3bits.ADRC);
-                
-//                appData.vbat_level = getADC1value( ADC1_CHANNEL_AVSS );
-//                Nop( );
-//                Nop( );
-//                Nop( );
+
+
+                //                printf("%u\n", AD1CON3bits.ADRC);
+
+                //                appData.vbat_level = getADC1value( ADC1_CHANNEL_AVSS );
+                //                Nop( );
+                //                Nop( );
+                //                Nop( );
                 appData.vbat_level = getADC1value( ADC1_CHANNEL_VBAT_2 );
                 printVBatLevel( );
                 /* Light level --> not in v3_0 board */
@@ -217,41 +217,41 @@ void APP_SerialDebugTasks( void )
                     break;
                 }
 
-                if (1 == appDataDoor.remain_open)
+                if ( 1 == appDataDoor.remain_open )
                 {
                     appDataDoor.remain_open = 0;
-                    printf("\tClosing door (remain door open set to off)... ");
+                    printf( "\tClosing door (remain door open set to off)... " );
                 }
                 else
                 {
-                    printf("\tClosing door... ");
+                    printf( "\tClosing door... " );
                 }
-               
+
                 appDataServo.ton_goal = appDataServo.ton_min;
-                
+
                 if ( false == isPowerServoEnable( ) )
-                {                   
+                {
                     servomotorPowerEnable( );
                     appDataServo.ton_cmd = getDoorPosition( );
-                    OC5_Start();
+                    OC5_Start( );
                     appDataDoor.reward_door_status = DOOR_MOVING;
                     while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                    OC5_Stop();
+                    OC5_Stop( );
                     servomotorPowerDisable( );
                 }
                 else
                 {
-                    appDataServo.ton_cmd = getDoorPosition( ); 
-                    OC5_Start();
+                    appDataServo.ton_cmd = getDoorPosition( );
+                    OC5_Start( );
                     appDataDoor.reward_door_status = DOOR_MOVING;
                     while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                    OC5_Stop();
+                    OC5_Stop( );
                 }
-                
+
                 appDataDoor.reward_door_status = DOOR_CLOSED;
-                
+
                 printf( "Door closed - Servo position: %u\n", getDoorPosition( ) );
-                
+
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -271,7 +271,7 @@ void APP_SerialDebugTasks( void )
                 printf( "\nBattery level buffer:\n" );
                 for ( i = 0; i < 24; i++ )
                 {
-                    if ( 0 == appDataLog.battery_level[i][0] && 0 == appDataLog.battery_level[i][1])
+                    if ( 0 == appDataLog.battery_level[i][0] && 0 == appDataLog.battery_level[i][1] )
                     {
                         if ( 0 == i )
                         {
@@ -299,10 +299,10 @@ void APP_SerialDebugTasks( void )
 
                     for ( j = 0; j < 4; j++ )
                     {
-                        if (0 == appDataLog.rfid_freq[i * 4 + j][0] && 0 == appDataLog.rfid_freq[i * 4 + j][1] && 0 == appDataLog.rfid_freq[i * 4 + j][2])
+                        if ( 0 == appDataLog.rfid_freq[i * 4 + j][0] && 0 == appDataLog.rfid_freq[i * 4 + j][1] && 0 == appDataLog.rfid_freq[i * 4 + j][2] )
                         {
                             break;
-                        }                        
+                        }
                         printf( "\t%02d - %02d - %06ld\n",
                                 appDataLog.rfid_freq[i * 4 + j][0],
                                 appDataLog.rfid_freq[i * 4 + j][1],
@@ -317,13 +317,13 @@ void APP_SerialDebugTasks( void )
             case 'E':
                 /* Mesuring RDY/CLK period of EM4095 */
                 flag = measureRfidFreq( );
-                if (flag)
+                if ( flag )
                 {
                     displayRfidFreq( );
                 }
                 else
                 {
-                    printf("\tTimeout reached during RFID mesure.\n");
+                    printf( "\tTimeout reached during RFID mesure.\n" );
                 }
                 break;
                 /* -------------------------------------------------------------- */
@@ -406,7 +406,7 @@ void APP_SerialDebugTasks( void )
             case 'j':
             case 'J':
 
-                printf("\t<NOT AFFECTED>\n");
+                printf( "\t<NOT AFFECTED>\n" );
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -533,47 +533,82 @@ void APP_SerialDebugTasks( void )
                 /* -------------------------------------------------------------- */
 
             case 'n':
-            case 'N':              
-                printf("\t<NOT AFFECTED>\n");
+            case 'N':
+            {
+                /* Toggle LED D16 on PCA9622 */
+                static bool led_d16_state = false;
+                I2C1_MESSAGE_STATUS i2c_status = I2C1_MESSAGE_COMPLETE; // the status of write data on I2C bus
+                uint8_t writeBuffer[2]; // data to transmit
+
+                /* Write I2C demo */
+                if ( false == led_d16_state )
+                {
+                    /* Set Red LED low on D16 */
+                    writeBuffer[0] = CTRLREG_PWM12;
+                    writeBuffer[1] = 0x00;
+                    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+                    /* Set Green LED high on D16 */
+                    writeBuffer[0] = CTRLREG_PWM13;
+                    writeBuffer[1] = 0xFF;
+                    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+
+                    led_d16_state = true;
+                    printf( "LED D16 Green.\n" );
+                }
+                else
+                {
+                    /* Set Red LED high on D16 */
+                    writeBuffer[0] = CTRLREG_PWM12;
+                    writeBuffer[1] = 0xFF;
+                    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+                    /* Set Green LED low on D16 */
+                    writeBuffer[0] = CTRLREG_PWM13;
+                    writeBuffer[1] = 0x00;
+                    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+
+                    led_d16_state = false;
+                    printf( "LED D16 Red.\n" );
+                }
                 break;
+            }
                 /* -------------------------------------------------------------- */
 
             case 'o':
             case 'O':
                 /* Open reward door */
 
-                if (DOOR_OPENED == appDataDoor.reward_door_status)
+                if ( DOOR_OPENED == appDataDoor.reward_door_status )
                 {
-                    printf("\tDoor already opened.\n");
+                    printf( "\tDoor already opened.\n" );
                     break;
                 }
 
-                printf("\tOpening door... ");
+                printf( "\tOpening door... " );
 
                 appDataServo.ton_goal = appDataServo.ton_max;
-                    
-                if (false == isPowerServoEnable())
+
+                if ( false == isPowerServoEnable( ) )
                 {
-                    servomotorPowerEnable();
+                    servomotorPowerEnable( );
                     appDataServo.ton_cmd = getDoorPosition( );
-                    OC5_Start(); 
+                    OC5_Start( );
                     appDataDoor.reward_door_status = DOOR_MOVING;
                     while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                    OC5_Stop();
-                    servomotorPowerDisable();
+                    OC5_Stop( );
+                    servomotorPowerDisable( );
                 }
                 else
                 {
                     appDataServo.ton_cmd = getDoorPosition( );
-                    OC5_Start();
+                    OC5_Start( );
                     appDataDoor.reward_door_status = DOOR_MOVING;
                     while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                    OC5_Stop();
+                    OC5_Stop( );
                 }
-                
+
                 appDataDoor.reward_door_status = DOOR_OPENED;
-                
-                printf("Door opened - Servo position: %u\n", getDoorPosition());
+
+                printf( "Door opened - Servo position: %u\n", getDoorPosition( ) );
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -598,20 +633,20 @@ void APP_SerialDebugTasks( void )
                 }
 
                 printf( "\tSet servomotor position\n\t                 C    O\n\t\tRange MAX: [%4u %4u]\n\t\tRange INI: [%4u %4u]\n", SERVO_POSITION_MIN_DEFAULT, SERVO_POSITION_MAX_DEFAULT, appDataServo.ton_min_night, appDataServo.ton_max );
-                if (DOOR_HABITUATION == appData.scenario_number)
+                if ( DOOR_HABITUATION == appData.scenario_number )
                 {
-                   printf( "\t\tRange HAB: [%4u %4u] (%u%%)\n", appDataServo.ton_min, appDataServo.ton_max, appDataDoor.habituation_percent);                   
-                }                
-                printf("\t\tCurrent position: %u\n", appDataServo.ton_cmd );
-                
+                    printf( "\t\tRange HAB: [%4u %4u] (%u%%)\n", appDataServo.ton_min, appDataServo.ton_max, appDataDoor.habituation_percent );
+                }
+                printf( "\t\tCurrent position: %u\n", appDataServo.ton_cmd );
+
                 /* Read uint16_t from terminal. */
                 appDataServo.ton_goal = readIntFromUart1( );
-                
-                if (0 == appDataServo.ton_goal )
+
+                if ( 0 == appDataServo.ton_goal )
                 {
-                    printf("\tWrong value\n");
+                    printf( "\tWrong value\n" );
                     break;
-                }  
+                }
 
                 if ( appDataServo.ton_goal > SERVO_POSITION_MAX_DEFAULT )
                 {
@@ -647,26 +682,26 @@ void APP_SerialDebugTasks( void )
                     appDataServo.direction = 1;
                 }
 
-// TODO
+                // TODO
                 TMR3_Start( ); // ????????
 
                 printf( "\tMoving door... " );
-                    
+
                 if ( false == isPowerServoEnable( ) )
                 {
                     servomotorPowerEnable( );
-                    OC5_Start();
+                    OC5_Start( );
                     appDataDoor.reward_door_status = DOOR_MOVING;
                     while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                    OC5_Stop();
+                    OC5_Stop( );
                     servomotorPowerDisable( );
                 }
                 else
                 {
-                    OC5_Start();
+                    OC5_Start( );
                     appDataDoor.reward_door_status = DOOR_MOVING;
-                    while ( DOOR_MOVED != appDataDoor.reward_door_status );  
-                    OC5_Stop();
+                    while ( DOOR_MOVED != appDataDoor.reward_door_status );
+                    OC5_Stop( );
                 }
                 printf( "Door moved - Servo position: %u\n", getDoorPosition( ) );
                 break;
@@ -699,7 +734,6 @@ void APP_SerialDebugTasks( void )
                 setAttractiveLedsOn( );
 
                 setLedsStatusColor( LEDS_OFF );
-
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -755,6 +789,8 @@ void APP_SerialDebugTasks( void )
                 /* Dynamic configuration date, example 22/08/2016 and time to 15:59:30 */
                 // setDateTime( 16, 8, 22, 15, 59, 30 ); /* Set date and time. */
                 setDateTime( year, mon, mday, hour, min, sec ); /* Set date and time. */
+                APP_I2CRTC_DateTime_set( year, mon, mday, hour, min, sec );
+                printf( "\nSet done.\n" );
                 break;
             }
                 /* -------------------------------------------------------------- */
@@ -762,8 +798,10 @@ void APP_SerialDebugTasks( void )
             case 't':
             case 'T':
                 /* Display date and time from RTCC module. */
+                printf( "PIC: " );
                 printCurrentDate( );
                 putchar( '\n' );
+                APP_I2CRTC_DateTime_get( );
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -833,7 +871,7 @@ void APP_SerialDebugTasks( void )
 
             case 'y':
             case 'Y':
-                
+
                 /* Display external interrupt and timers states */
                 printf( "External interrupt states\n" );
                 printf( "\tINT0: %d\n", IEC0bits.INT0IE );
@@ -841,15 +879,15 @@ void APP_SerialDebugTasks( void )
                 printf( "\tINT2: %d\n", IEC1bits.INT2IE );
                 printf( "\tINT3: %d\n", IEC3bits.INT3IE );
                 printf( "\tINT4: %d\n", IEC3bits.INT4IE );
-                
+
                 printf( "\nTimers\n" );
                 printf( "\tTimer2: %d\n", T2CONbits.TON );
                 printf( "\tTimer3: %d\n", T3CONbits.TON );
                 printf( "\tTimer4: %d\n", T4CONbits.TON );
-                
+
                 /* Display all commands values */
-                printf( "\nPower commands\n" );  
-                if ( CMD_VDD_ACC_PIR_SERVO_GetValue() == 1 )
+                printf( "\nPower commands\n" );
+                if ( CMD_VDD_ACC_PIR_SERVO_GetValue( ) == 1 )
                 {
                     printf( "\tCMD_VDD_ACC_PIR: on\n" );
                 }
@@ -857,7 +895,7 @@ void APP_SerialDebugTasks( void )
                 {
                     printf( "\tCMD_VDD_ACC_PIR: off\n" );
                 }
-                
+
                 if ( _TRISF1 )
                 {
                     printf( "\tCMD_VCC_SERVO: off\n" );
@@ -866,7 +904,7 @@ void APP_SerialDebugTasks( void )
                 {
                     printf( "\tCMD_VCC_SERVO: on\n" );
                 }
-                printf( "\t******\n" ); 
+                printf( "\t******\n" );
                 if ( CMD_VDD_APP_V_USB_GetValue( ) == 0 )
                 {
                     printf( "\tCMD_VDD_APP: off\n" );
@@ -875,7 +913,7 @@ void APP_SerialDebugTasks( void )
                 {
                     printf( "\tCMD_VDD_APP: on\n" );
                 }
-                
+
                 if ( CMD_VDD_USB_GetValue( ) == 1 )
                 {
                     printf( "\tCMD_VDD_USB: off\n" );
@@ -884,7 +922,7 @@ void APP_SerialDebugTasks( void )
                 {
                     printf( "\tCMD_VDD_USB: on\n" );
                 }
-                printf( "\t******\n" ); 
+                printf( "\t******\n" );
                 if ( CMD_VCC_IR_GetValue( ) == 1 )
                 {
                     printf( "\tCMD_VCC_IR: off\n" );
@@ -893,7 +931,7 @@ void APP_SerialDebugTasks( void )
                 {
                     printf( "\tCMD_VCC_IR: on\n" );
                 }
-                printf( "\t******\n" ); 
+                printf( "\t******\n" );
                 if ( CMD_3V3_RF_GetValue( ) == 1 )
                 {
                     printf( "\tCMD_3V3_RF: on\n" );
@@ -907,7 +945,7 @@ void APP_SerialDebugTasks( void )
                 printf( "\nUSBHostDeviceStatus: " );
                 printUSBHostDeviceStatus( );
                 putchar( '\n' );
-                
+
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -956,7 +994,6 @@ void APP_SerialDebugTasks( void )
     } /* end of if ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) */
 }
 
-
 uint16_t readIntFromUart1( void )
 {
     char rx_data_buffer[UART1_BUFFER_SIZE];
@@ -990,7 +1027,6 @@ uint16_t readIntFromUart1( void )
 
     return ( int ) strtol( rx_data_buffer, NULL, 10 );
 } /* End of readIntFromUart1( ) */
-
 
 /**
  * Print the status of USBHostDeviceStatus()

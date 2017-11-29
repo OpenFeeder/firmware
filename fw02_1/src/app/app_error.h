@@ -5,8 +5,8 @@
  * @date
  */
 
-#ifndef APP_ERROR_H
-#define APP_ERROR_H
+#ifndef _APP_ERROR_HEADER_H
+#define _APP_ERROR_HEADER_H
 
 
 #define ERROR_HIGH_PRIORITY 0
@@ -18,7 +18,6 @@
 // *****************************************************************************
 // *****************************************************************************
 
-
 typedef enum
 {
     ERROR_NONE,
@@ -27,7 +26,7 @@ typedef enum
     ERROR_LOW_FOOD,
     ERROR_LOW_VBAT,
     ERROR_DOOR_CANT_CLOSE,
-    ERROR_CRITICAL,        
+    ERROR_CRITICAL,
     /* Non critical errors: the system resets if errors below occurred */
     ERROR_USB,
     ERROR_INI_FILE_READ,
@@ -52,9 +51,8 @@ typedef enum
     ERROR_RFID_FILE_WRITE,
     ERROR_RFID_FILE_CLOSE,
     ERROR_ATTRACTIVE_LED_INIT
-            
-} ERROR_NUMBER;
 
+} ERROR_NUMBER;
 
 typedef struct
 {
@@ -75,8 +73,7 @@ typedef struct
 void printError( void );
 void clearError( void );
 
-
-#endif /* APP_ERROR_H */
+#endif /* _APP_ERROR_HEADER_H */
 
 
 /*******************************************************************************

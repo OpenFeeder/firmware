@@ -5,8 +5,8 @@
  * @date 08/09/2016
  */
 
-#ifndef APP_DATA_LOGGER_H
-#define APP_DATA_LOGGER_H
+#ifndef _APP_DATA_LOGGER_HEADER_H
+#define _APP_DATA_LOGGER_HEADER_H
 
 
 /* Nb de caracteres max sur une ligne du fichier LOG. */
@@ -48,10 +48,10 @@ typedef struct
 
     int16_t battery_level[24][2];
     uint8_t numBatteryLevelStored;
-     
+
     int16_t rfid_freq[96][3];
     uint8_t numRfidFreqStored;
-    
+
 } APP_DATA_LOG;
 
 bool dataLog( bool );
@@ -62,7 +62,7 @@ void clearLogBuffer( void );
 FILEIO_RESULT logBatteryLevel( void );
 FILEIO_RESULT logRfidFreq( void );
 
-#endif /* APP_DATA_LOGGER_H */
+#endif /* _APP_DATA_LOGGER_HEADER_H */
 
 
 /*******************************************************************************
