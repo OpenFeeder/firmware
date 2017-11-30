@@ -18,8 +18,6 @@ unsigned char ConvertHexToBCD_A( unsigned char hexvalue )
 
 void rtcc_set_alarm( int hour, int minute, int second, int alarmMask )
 {
-    // Clear WRLOCK to modify RTCC
-    __builtin_write_RTCC_WRLOCK( ); 
 
     // Disable RTCC alarm
     RTCCON1Hbits.ALRMEN = 0;
@@ -31,34 +29,25 @@ void rtcc_set_alarm( int hour, int minute, int second, int alarmMask )
     ALMTIMEL = ( ConvertHexToBCD_A( second ) << 8 ); // SECOND
 
     RTCCON1Hbits.AMASK = alarmMask;
+    
+    /* Indefinite repetition of the alarm  */       
     RTCCON1Hbits.CHIME = 1;
     
     // Enable RTCC alarm
     RTCCON1Hbits.ALRMEN = 1;
 
-    // Lock the RTCC registers
-    RTCCON1Lbits.WRLOCK = 1; 
-
 }
 
 void rtcc_start_alarm( void )
 {
-    // Clear WRLOCK to modify RTCC
-    __builtin_write_RTCC_WRLOCK( );
     // Enable RTCC alarm
     RTCCON1Hbits.ALRMEN = 1;
-    // Lock the RTCC registers
-    RTCCON1Lbits.WRLOCK = 1; 
 }
 
 void rtcc_stop_alarm( void )
 {
-    // Clear WRLOCK to modify RTCC
-    __builtin_write_RTCC_WRLOCK( );
     // Disable RTCC alarm
     RTCCON1Hbits.ALRMEN = 0;
-    // Lock the RTCC registers
-    RTCCON1Lbits.WRLOCK = 1; 
 }
 
 

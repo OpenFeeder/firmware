@@ -131,9 +131,6 @@ bool RTCC_TimeGet(struct tm *currentTime)
         return false;
     }
 
- 
-    __builtin_write_RTCC_WRLOCK();
-
     register_value = DATEH;
     currentTime->tm_year = ConvertBCDToHex((register_value & 0xFF00) >> 8);
     currentTime->tm_mon = ConvertBCDToHex(register_value & 0x00FF);
@@ -148,8 +145,6 @@ bool RTCC_TimeGet(struct tm *currentTime)
 
     register_value = TIMEL;
     currentTime->tm_sec = ConvertBCDToHex((register_value & 0xFF00) >> 8);
-
-    RTCC_Lock();
 
     return true;
 }
@@ -193,9 +188,6 @@ bool RTCC_BCDTimeGet(bcdTime_t *currentTime)
         return false;
     }
 
-
-    __builtin_write_RTCC_WRLOCK();
-
     register_value = DATEH;
     currentTime->tm_year = (register_value & 0xFF00) >> 8;
     currentTime->tm_mon = register_value & 0x00FF;
@@ -210,8 +202,6 @@ bool RTCC_BCDTimeGet(bcdTime_t *currentTime)
 
     register_value = TIMEL;
     currentTime->tm_sec = (register_value & 0xFF00) >> 8;
-
-    RTCC_Lock();
 
     return true;
 }
