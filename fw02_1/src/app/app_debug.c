@@ -798,10 +798,15 @@ void APP_SerialDebugTasks( void )
             case 't':
             case 'T':
                 /* Display date and time from RTCC module. */
+                getCurrentDate( );
+                APP_I2CRTC_DateTime_get( );
+                
                 printf( "PIC: " );
                 printCurrentDate( );
                 putchar( '\n' );
-                APP_I2CRTC_DateTime_get( );
+                printf( "EXT: ");                 
+                APP_I2CRTC_DateTime_print( );
+                putchar( '\n' );
                 break;
                 /* -------------------------------------------------------------- */
 

@@ -140,6 +140,23 @@ void APP_Tasks( void )
 #endif
             }
 
+            if ( APP_I2CRTC_DateTime_get( ) )
+            {
+                
+                getCurrentDate( );
+                
+                if ( appData.current_time.tm_mday != appData.i2c_current_time.mday ||
+                    appData.current_time.tm_mon != appData.i2c_current_time.mon ||
+                    appData.current_time.tm_year != appData.i2c_current_time.year_s ||
+                    appData.current_time.tm_hour != appData.i2c_current_time.hour ||
+                    appData.current_time.tm_min != appData.i2c_current_time.min ||
+                    appData.current_time.tm_sec  != appData.i2c_current_time.sec )
+                {
+                    calibrateCurrentDate( );
+                }
+ 
+            }
+            
             /* Power PIR sensor early in the code because of starting delay before usable */
             powerPIREnable( );
 
@@ -425,7 +442,12 @@ void APP_Tasks( void )
                     appData.state = APP_STATE_WAKE_UP;
                     break;
                 }
-
+                
+                if ( RTCC_RTC_CALIBRATION == appData.rtcc_alarm_action )
+                {
+                    calibrateCurrentDate( );
+                }
+                
                 if ( RTCC_ALARM_SET_ATTRACTIVE_LEDS_OFF == appData.rtcc_alarm_action )
                 {
                     if ( ATTRACTIVE_LEDS_ON == appDataAttractiveLeds.status )
@@ -448,11 +470,11 @@ void APP_Tasks( void )
 
                     if ( ( t / RAND_MAX ) > 0.5 )
                     {
-                        appDataAttractiveLeds.current_color_index = 0;
+                        appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_A;
                     }
                     else
                     {
-                        appDataAttractiveLeds.current_color_index = 1;
+                        appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_B;
                     }
                     setAttractiveLedsColor( );
                 }
@@ -637,14 +659,15 @@ void APP_Tasks( void )
                         break;
 
                     case COLOR_ASSOCIATIVE_LEARNING:
-                        appDataLog.is_pit_tag_denied = true;
-                        if ( ( appDataPitTag.pitTagIndexInList <= ( appDataPitTag.numPitTagAcceptedOrColorB + appDataPitTag.numPitTagDeniedOrColorA + 1 ) / 2 ) && ( appDataLog.attractive_leds_current_color_index == 0 ) )
+                        appDataLog.is_pit_tag_denied = false;
+                        /* Check if PIT tag is denied */
+                        if ( ( appDataPitTag.pitTagIndexInList >= appDataPitTag.numPitTagDeniedOrColorA ) && ( appDataLog.attractive_leds_current_color_index == ATTRACTIVE_LEDS_COLOR_A ) )
                         {
-                            appDataLog.is_pit_tag_denied = false;
+                            appDataLog.is_pit_tag_denied = true;
                         }
-                        if ( ( appDataPitTag.pitTagIndexInList > ( appDataPitTag.numPitTagAcceptedOrColorB + appDataPitTag.numPitTagDeniedOrColorA + 1 ) / 2 ) && ( appDataLog.attractive_leds_current_color_index == 1 ) )
+                        if ( ( appDataPitTag.pitTagIndexInList < appDataPitTag.numPitTagDeniedOrColorA )  && ( appDataLog.attractive_leds_current_color_index == ATTRACTIVE_LEDS_COLOR_B ) )
                         {
-                            appDataLog.is_pit_tag_denied = false;
+                            appDataLog.is_pit_tag_denied = true;
                         }
                         break;
 
@@ -1386,6 +1409,7 @@ void APP_Tasks( void )
                 }
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
+                getCurrentDate( );
                 printCurrentDate( );
                 printf( " " );
                 printError( );

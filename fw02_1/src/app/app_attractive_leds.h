@@ -11,6 +11,9 @@
 #define ATTRACTIVE_LEDS_ON 1
 #define ATTRACTIVE_LEDS_OFF 0
 
+#define ATTRACTIVE_LEDS_COLOR_A 0
+#define ATTRACTIVE_LEDS_COLOR_B 1
+
 typedef struct
 {
     uint16_t red[2];

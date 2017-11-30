@@ -195,6 +195,7 @@ typedef struct
 
     /* DateTime structure */
     struct tm current_time;
+    struct ts i2c_current_time;
 
     /* Declaration of FLAGS type. */
     union

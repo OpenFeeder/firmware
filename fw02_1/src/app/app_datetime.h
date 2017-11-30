@@ -12,13 +12,14 @@
 #include <xc.h>
 #include <time.h>
 #include <stdio.h>
-//#include "mcc_generated_files/rtcc.h"
 #include "rtcc.h"
 
 
 void setDateTime( int, int, int, int, int, int );
 void printCurrentDate( );
 void getDateTime( struct tm * );
+void getCurrentDate( void );
+void calibrateCurrentDate( void );
 
 #endif /* _APP_DATETIME_HEADER_H */
 

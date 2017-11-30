@@ -355,21 +355,43 @@ char recv[BUFF_MAX];
 bool APP_I2CRTC_DateTime_get( void )
 {
     I2C1_MESSAGE_STATUS status;
-    char buff[BUFF_MAX];
-    struct ts t;
+//    char buff[BUFF_MAX];
+//    struct ts t;
 
-    status = I2C1_MasterReadDS3231_get( &t );
+//    status = I2C1_MasterReadDS3231_get( &t );
+    status = I2C1_MasterReadDS3231_get( &appData.i2c_current_time );
 
     if ( status == I2C1_MESSAGE_COMPLETE )
     {
-        snprintf( buff, BUFF_MAX, "%02u/%02u/%u %02u:%02u:%02u",
-                  t.mday, t.mon, t.year, t.hour, t.min, t.sec );
-        printf( "EXT: %s\n", buff ); // I2C RTC
+//        snprintf( buff, BUFF_MAX, "%02u/%02u/%u %02u:%02u:%02u",
+//                  t.mday, t.mon, t.year, t.hour, t.min, t.sec );
+//        printf( "EXT: %s\n", buff ); // I2C RTC
         return true;
     }
 
-    printf( "EXT: DD/MM/YYYY hh.mm.ss\n" ); // default I2C RTC
+//    printf( "EXT: DD/MM/YYYY hh.mm.ss\n" ); // default I2C RTC
     return false;
+}
+
+void APP_I2CRTC_DateTime_print( void )
+{
+    
+       printf( "%02u/%02u/20%02u %02u:%02u:%02u", 
+           appData.i2c_current_time.mday, 
+           appData.i2c_current_time.mon, 
+           appData.i2c_current_time.year_s, 
+           appData.i2c_current_time.hour, 
+           appData.i2c_current_time.min, 
+           appData.i2c_current_time.sec ); // I2C RTC
+        
+//    printf( "EXT: %02u/%02u/%u %02u:%02u:%02u\n", 
+//           appData.i2c_current_time.mday, 
+//           appData.i2c_current_time.mon, 
+//           appData.i2c_current_time.year, 
+//           appData.i2c_current_time.hour, 
+//           appData.i2c_current_time.min, 
+//           appData.i2c_current_time.sec ); // I2C RTC
+    
 }
 
 /* Dynamic configuration date, example 22/08/2016 and time to 15:59:30 */
@@ -391,6 +413,7 @@ bool APP_I2CRTC_DateTime_set( uint8_t year, uint8_t month, uint8_t day, uint8_t 
 
     if ( status == I2C1_MESSAGE_COMPLETE )
     {
+        APP_I2CRTC_DateTime_get( );
         printf( "\nEXT RTC done.\n" );
         return true;
     }

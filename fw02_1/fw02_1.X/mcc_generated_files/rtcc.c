@@ -422,10 +422,7 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
         }
         else
         {
-            while ( !RTCC_TimeGet( &appData.current_time ) )
-            {
-                Nop( );
-            }
+            getCurrentDate( );
 
             if ( appData.current_time.tm_hour >= appDataAlarmSleep.time.tm_hour &&
                  appData.current_time.tm_min >= appDataAlarmSleep.time.tm_min )
@@ -438,6 +435,72 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
             else
             {
 
+                /* Battery level */
+                if ( appData.current_time.tm_min == 0 && appData.current_time.tm_sec == 30 )
+                {
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
+                    printf( "- Battery check\n" );
+#endif 
+                    appData.rtcc_alarm_action = RTCC_BATTERY_LEVEL_CHECK;
+                    IFS3bits.RTCIF = false;
+                    return;
+                }
+                
+                /* Food level */
+                if ( appData.current_time.tm_min == 5 && appData.current_time.tm_sec == 30 )
+                {
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
+                    printf( "- Food check\n" );
+#endif 
+                    appData.rtcc_alarm_action = RTCC_FOOD_LEVEL_CHECK;
+                    IFS3bits.RTCIF = false;
+                    return;
+                }
+                
+                /* RFID frequency */
+                if (( appData.current_time.tm_min == 0 || 
+                     appData.current_time.tm_min == 15 || 
+                     appData.current_time.tm_min == 30 || 
+                     appData.current_time.tm_min == 45) && appData.current_time.tm_sec == 45 )
+                {
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
+                    printf( "- RFID check\n" );
+#endif 
+                    appData.rtcc_alarm_action = RTCC_RFID_FREQ_CHECK;
+                    IFS3bits.RTCIF = false;
+                    return;
+                }
+                
+                /* RTC calibration */
+                if (( appData.current_time.tm_min == 2 || 
+                     appData.current_time.tm_min == 17 || 
+                     appData.current_time.tm_min == 32 || 
+                     appData.current_time.tm_min == 47) && appData.current_time.tm_sec == 15 )
+                {
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
+                    printf( "- RTC calibration\n" );
+#endif 
+                    appData.rtcc_alarm_action = RTCC_RTC_CALIBRATION;
+                    IFS3bits.RTCIF = false;
+                    return;
+                }
+                
+                /* Alternate LEDs color */
+                if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number && ATTRACTIVE_LEDS_ON == appDataAttractiveLeds.status )
+                {
+                    if ( appDataAttractiveLeds.alt_sec_elapsed == appDataAttractiveLeds.alt_delay - 1 )
+                    {
+                        appData.rtcc_alarm_action = RTCC_ALARM_ALT_ATTRACTIVE_LEDS;
+                        appDataAttractiveLeds.alt_sec_elapsed = 0;
+                        IFS3bits.RTCIF = false;
+                        return;
+                    }
+                    else
+                    {
+                        ++appDataAttractiveLeds.alt_sec_elapsed;
+                    }
+                }
+                
                 /* Attractive LEDs on/off */
                 if (true == appData.flags.bit_value.attractive_leds_status)
                 {
@@ -449,6 +512,8 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
                         printf( "- LEDs on\n" );
     #endif 
                         appData.rtcc_alarm_action = RTCC_ALARM_SET_ATTRACTIVE_LEDS_ON;
+                        IFS3bits.RTCIF = false;
+                        return;
                     }
                     else
                     {
@@ -456,6 +521,8 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
                         printf( "- LEDs off\n" );
     #endif 
                         appData.rtcc_alarm_action = RTCC_ALARM_SET_ATTRACTIVE_LEDS_OFF;
+                        IFS3bits.RTCIF = false;
+                        return;
                     }
                 }
 
@@ -471,6 +538,8 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
                         printf( "- Door open\n" );
 #endif 
                         appData.rtcc_alarm_action = RTCC_ALARM_OPEN_DOOR;
+                        IFS3bits.RTCIF = false;
+                        return;
                     }
                     else
                     {
@@ -478,53 +547,10 @@ void __attribute__( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
                         printf( "- Door close\n" );
 #endif 
                         appData.rtcc_alarm_action = RTCC_ALARM_CLOSE_DOOR;
+                        IFS3bits.RTCIF = false;
+                        return;
                     }
                 }
-
-                /* Alternate LEDs color */
-                if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number && ATTRACTIVE_LEDS_ON == appDataAttractiveLeds.status )
-                {
-                    if ( appDataAttractiveLeds.alt_sec_elapsed == appDataAttractiveLeds.alt_delay - 1 )
-                    {
-                        appData.rtcc_alarm_action = RTCC_ALARM_ALT_ATTRACTIVE_LEDS;
-                        appDataAttractiveLeds.alt_sec_elapsed = 0;
-                    }
-                    else
-                    {
-                        ++appDataAttractiveLeds.alt_sec_elapsed;
-                    }
-                }
-
-                /* Battery level */
-                if ( appData.current_time.tm_min == 0 && appData.current_time.tm_sec == 30 )
-                {
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
-                    printf( "- Battery check\n" );
-#endif 
-                    appData.rtcc_alarm_action = RTCC_BATTERY_LEVEL_CHECK;
-                }
-                
-                /* Food level */
-                if ( appData.current_time.tm_min == 5 && appData.current_time.tm_sec == 30 )
-                {
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
-                    printf( "- Food check\n" );
-#endif 
-                    appData.rtcc_alarm_action = RTCC_FOOD_LEVEL_CHECK;
-                }
-                
-                /* RFID frequency */
-                if (( appData.current_time.tm_min == 0 || 
-                     appData.current_time.tm_min == 15 || 
-                     appData.current_time.tm_min == 30 || 
-                     appData.current_time.tm_min == 45) && appData.current_time.tm_sec == 45 )
-                {
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
-                    printf( "- RFID check\n" );
-#endif 
-                    appData.rtcc_alarm_action = RTCC_RFID_FREQ_CHECK;
-                }
-
             }
         }
     }
