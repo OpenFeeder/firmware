@@ -151,7 +151,6 @@ bool APP_Rfid_Task( void )
             return true;
         }
         if ( OPEN_BAR != appData.scenario_number && DOOR_HABITUATION != appData.scenario_number )
-            //        if ( 1 < appData.scenario_number )
         {
             findPitTagInList( );
             if ( false == appDataPitTag.didPitTagMatched )

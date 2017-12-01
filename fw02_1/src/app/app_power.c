@@ -19,22 +19,32 @@ bool isPowerServoEnable( void )
 
 void powerPIREnable( void )
 {
-    CMD_VDD_ACC_PIR_SERVO_SetHigh( ); // CMD_ACC_PIR = EN pin of U7 (5V regulator for PIR sensor and accesoir "VDD_ACC": servomotor with "VDD_SERVO", )
+    if ( false == appData.servo_powered && false == appData.pir_sensor_powered )
+    {
+        // Power on the voltage regulator U7 (MIC39101 - 5.0YM)
+        CMD_VDD_ACC_PIR_SERVO_SetHigh( );
+    }
+    appData.pir_sensor_powered = true;
 }
 
 
 void powerPIRDisable( void )
 {
-    CMD_VDD_ACC_PIR_SERVO_SetLow( );
+    if ( false == appData.servo_powered )
+    {
+        // Power off the voltage regulator U7 (MIC39101 - 5.0YM)
+        CMD_VDD_ACC_PIR_SERVO_SetLow( );
+    }
+    appData.pir_sensor_powered = false;
 }
 
 
 /* VDD_APP Enable function */
 void powerUsbRfidEnable( void )
 {
-    CMD_VDD_APP_V_USB_SetHigh( ); // Power ON the U5 => MIC39101 - 5.0YM
+    // Power on the voltage regulator U5 (MIC39101 - 5.0YM)
+    CMD_VDD_APP_V_USB_SetHigh( ); 
 
-    //!\ FIXME: We must put "CMD_VDD_USB" (RF0) Low to powered the USB 
     CMD_VDD_USB_SetLow( ); // powered the USB connector
     CMD_VDD_USB_SetDigitalOutput( );
 }
@@ -44,11 +54,10 @@ void powerUsbRfidEnable( void )
 void powerUsbRfidDisable( void )
 {
     CMD_VDD_USB_SetDigitalInput( ); // USB power down, VDD_USB = OFF
-
-    // TODO: complete powerUsbRfidDisable( )
-    CMD_VDD_APP_V_USB_SetLow( ); // FIXME: CMD_VDD_APP_V_USB_SetLow( ) disable for USB continue mode
+    
+    // Power off the voltage regulator U5 (MIC39101 - 5.0YM)
+    CMD_VDD_APP_V_USB_SetLow( );
 }
-
 
 uint16_t getADC1value( ADC1_CHANNEL channel )
 {

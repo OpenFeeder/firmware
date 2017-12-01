@@ -245,37 +245,33 @@ void APP_Tasks( void )
                 /* Servomotor power command enable. */
                 servomotorPowerEnable( );
 
-                appDataServo.ton_cmd = getDoorPosition( );
+                appDataServo.ton_cmd = servomotorGetDoorPosition( );
 
                 /* Open the door */
                 appDataServo.ton_goal = appDataServo.ton_max;
                 if ( appDataServo.ton_cmd != appDataServo.ton_goal )
                 {
-                    OC5_Start( );
                     appDataDoor.reward_door_status = DOOR_MOVING;
                     while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                    OC5_Stop( );
                 }
                 appDataDoor.reward_door_status = DOOR_OPENED;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
-                getDoorPosition( );
+                servomotorGetDoorPosition( );
 #endif  
                 if ( 0 == appDataDoor.remain_open )
                 {
                     /* Close the door */
-                    appDataServo.ton_cmd = getDoorPosition( );
+                    appDataServo.ton_cmd = servomotorGetDoorPosition( );
                     /* Close the door */
                     appDataServo.ton_goal = appDataServo.ton_min;
                     if ( appDataServo.ton_cmd != appDataServo.ton_goal )
                     {
-                        OC5_Start( );
                         appDataDoor.reward_door_status = DOOR_MOVING;
                         while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                        OC5_Stop( );
                     }
                     appDataDoor.reward_door_status = DOOR_CLOSED;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
-                    getDoorPosition( );
+                    servomotorGetDoorPosition( );
 #endif  
                 }
 
@@ -284,8 +280,6 @@ void APP_Tasks( void )
 
                 if ( true == appData.flags.bit_value.attractive_leds_status )
                 {
-                    TMR2_Start( );
-
                     /* Reset PCA9622 device */
                     i2c_status = I2C1_PCA9622_SoftwareReset( );
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
@@ -484,19 +478,17 @@ void APP_Tasks( void )
                     /* Open reward door */
                     servomotorPowerEnable( );
 
-                    appDataServo.ton_cmd = getDoorPosition( );
+                    appDataServo.ton_cmd = servomotorGetDoorPosition( );
                     appDataServo.ton_goal = appDataServo.ton_max;
 
                     if ( appDataServo.ton_cmd != appDataServo.ton_goal )
                     {
-                        OC5_Start( );
                         appDataDoor.reward_door_status = DOOR_MOVING;
                         while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                        OC5_Stop( );
                     }
                     appDataDoor.reward_door_status = DOOR_OPENED;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
-                    getDoorPosition( );
+                    servomotorGetDoorPosition( );
 #endif  
                     servomotorPowerDisable( );
                 }
@@ -506,19 +498,17 @@ void APP_Tasks( void )
                     /* Close reward door */
                     servomotorPowerEnable( );
 
-                    appDataServo.ton_cmd = getDoorPosition( );
+                    appDataServo.ton_cmd = servomotorGetDoorPosition( );
                     appDataServo.ton_goal = appDataServo.ton_min;
 
                     if ( appDataServo.ton_cmd != appDataServo.ton_goal )
                     {
-                        OC5_Start( );
                         appDataDoor.reward_door_status = DOOR_MOVING;
                         while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                        OC5_Stop( );
                     }
                     appDataDoor.reward_door_status = DOOR_CLOSED;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
-                    getDoorPosition( );
+                    servomotorGetDoorPosition( );
 #endif  
                     servomotorPowerDisable( );
                 }
@@ -645,7 +635,12 @@ void APP_Tasks( void )
                         /* No PIT tag denied */
                         appDataLog.is_pit_tag_denied = false;
                         break;
-
+                        
+                    case DOOR_HABITUATION:
+                        /* No PIT tag denied */
+                        appDataLog.is_pit_tag_denied = false;
+                        break;
+                        
                     case LONG_TERM_SPATIAL_MEMORY:
                         /* Check if PIT tag is denied */
                         appDataLog.is_pit_tag_denied = isPitTagDenied( );
@@ -670,11 +665,7 @@ void APP_Tasks( void )
                             appDataLog.is_pit_tag_denied = true;
                         }
                         break;
-
-                    case DOOR_HABITUATION:
-                        /* No PIT tag denied */
-                        appDataLog.is_pit_tag_denied = false;
-                        break;
+                        
                 }
 
                 RFID_Disable( );
@@ -774,26 +765,24 @@ void APP_Tasks( void )
             /* Servomotor power command enable. */
             servomotorPowerEnable( );
 
-            appDataServo.ton_cmd = getDoorPosition( );
+            appDataServo.ton_cmd = servomotorGetDoorPosition( );
             appDataServo.ton_goal = appDataServo.ton_max;
 
             if ( appDataServo.ton_cmd != appDataServo.ton_goal )
             {
-                OC5_Start( );
                 appDataDoor.reward_door_status = DOOR_MOVING;
                 while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                OC5_Stop( );
             }
             appDataDoor.reward_door_status = DOOR_OPENED;
 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
-            getDoorPosition( );
+            servomotorGetDoorPosition( );
 #endif  
             /* Servomotor power command disable. */
             servomotorPowerDisable( );
 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
-            printf( "\tDoor opened - Servo position: %u\n", getDoorPosition( ) );
+            printf( "\tDoor opened - Servo position: %u\n", servomotorGetDoorPosition( ) );
 #endif
             appData.state = APP_STATE_WAITING_CATCH_REWARD;
             break;
@@ -916,12 +905,11 @@ void APP_Tasks( void )
             /* Servomotor power command enable. */
             servomotorPowerEnable( );
 
-            appDataServo.ton_cmd = getDoorPosition( );
+            appDataServo.ton_cmd = servomotorGetDoorPosition( );
             appDataServo.ton_goal = appDataServo.ton_min;
 
             if ( appDataServo.ton_cmd != appDataServo.ton_goal )
             {
-                OC5_Start( );
                 appDataDoor.reward_door_status = DOOR_MOVING;
                 while ( DOOR_MOVED != appDataDoor.reward_door_status )
                 {
@@ -939,16 +927,15 @@ void APP_Tasks( void )
                 break;
             }
 
-            OC5_Stop( );
             appDataDoor.reward_door_status = DOOR_CLOSED;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
-            getDoorPosition( );
+            servomotorGetDoorPosition( );
 #endif  
             /* Servomotor power command disable. */
             servomotorPowerDisable( );
 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
-            printf( "\tDoor closed - Servo position: %u\n", getDoorPosition( ) );
+            printf( "\tDoor closed - Servo position: %u\n", servomotorGetDoorPosition( ) );
 #endif
             IRSensorDisable( );
             EX_INT1_InterruptDisable( );
@@ -971,7 +958,7 @@ void APP_Tasks( void )
 #endif           
                 //                appDataDoor.reward_door_status = DOOR_OPENING;
 
-                appDataServo.ton_cmd = getDoorPosition( );
+                appDataServo.ton_cmd = servomotorGetDoorPosition( );
                 appDataServo.ton_goal = appDataServo.ton_max;
                 appDataDoor.reward_door_status = DOOR_MOVING;
 
@@ -1129,15 +1116,13 @@ void APP_Tasks( void )
                     /* Servomotor power command enable. */
                     servomotorPowerEnable( );
 
-                    appDataServo.ton_cmd = getDoorPosition( );
+                    appDataServo.ton_cmd = servomotorGetDoorPosition( );
                     appDataServo.ton_goal = appDataServo.ton_min_night;
 
                     if ( appDataServo.ton_cmd != appDataServo.ton_goal )
                     {
-                        OC5_Start( );
                         appDataDoor.reward_door_status = DOOR_MOVING;
                         while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                        OC5_Stop( );
                     }
 
                     appDataDoor.reward_door_status = DOOR_CLOSED_AT_NIGHT;
@@ -1422,15 +1407,13 @@ void APP_Tasks( void )
                     /* Servomotor power command enable. */
                     servomotorPowerEnable( );
 
-                    appDataServo.ton_cmd = getDoorPosition( );
+                    appDataServo.ton_cmd = servomotorGetDoorPosition( );
                     appDataServo.ton_goal = appDataServo.ton_min_night;
 
                     if ( appDataServo.ton_cmd != appDataServo.ton_goal )
                     {
-                        OC5_Start( );
                         appDataDoor.reward_door_status = DOOR_MOVING;
                         while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                        OC5_Stop( );
                     }
 
                     appDataDoor.reward_door_status = DOOR_CLOSED_AT_NIGHT;
@@ -1617,6 +1600,10 @@ void APP_Initialize( void )
     appDataDoor.reward_door_status = DOOR_CLOSED_AT_NIGHT;
 
     CMD_3V3_RF_SetLow( );
+    
+    appData.servo_powered = false;
+    appData.pir_sensor_powered = false;
+    
 }
 
 

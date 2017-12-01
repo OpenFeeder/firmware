@@ -150,12 +150,12 @@ void APP_SerialDebugTasks( void )
                 if ( false == isPowerServoEnable( ) )
                 {
                     servomotorPowerEnable( );
-                    analog_measure = getDoorPosition( );
+                    analog_measure = servomotorGetDoorPosition( );
                     servomotorPowerDisable( );
                 }
                 else
                 {
-                    analog_measure = getDoorPosition( );
+                    analog_measure = servomotorGetDoorPosition( );
                 }
                 printf( "Servo position: %u\n", analog_measure );
 
@@ -232,25 +232,21 @@ void APP_SerialDebugTasks( void )
                 if ( false == isPowerServoEnable( ) )
                 {
                     servomotorPowerEnable( );
-                    appDataServo.ton_cmd = getDoorPosition( );
-                    OC5_Start( );
+                    appDataServo.ton_cmd = servomotorGetDoorPosition( );
                     appDataDoor.reward_door_status = DOOR_MOVING;
                     while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                    OC5_Stop( );
                     servomotorPowerDisable( );
                 }
                 else
                 {
-                    appDataServo.ton_cmd = getDoorPosition( );
-                    OC5_Start( );
+                    appDataServo.ton_cmd = servomotorGetDoorPosition( );
                     appDataDoor.reward_door_status = DOOR_MOVING;
                     while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                    OC5_Stop( );
                 }
 
                 appDataDoor.reward_door_status = DOOR_CLOSED;
 
-                printf( "Door closed - Servo position: %u\n", getDoorPosition( ) );
+                printf( "Door closed\n");
 
                 break;
                 /* -------------------------------------------------------------- */
@@ -308,14 +304,13 @@ void APP_SerialDebugTasks( void )
                                 appDataLog.rfid_freq[i * 4 + j][1],
                                 ( long ) appDataLog.rfid_freq[i * 4 + j][2]*10 );
                     }
-                    printf( "\n" );
                 }
                 break;
                 /* -------------------------------------------------------------- */
 
             case 'e':
             case 'E':
-                /* Mesuring RDY/CLK period of EM4095 */
+                /* Measuring RDY/CLK period of EM4095 */
                 flag = measureRfidFreq( );
                 if ( flag )
                 {
@@ -590,25 +585,21 @@ void APP_SerialDebugTasks( void )
                 if ( false == isPowerServoEnable( ) )
                 {
                     servomotorPowerEnable( );
-                    appDataServo.ton_cmd = getDoorPosition( );
-                    OC5_Start( );
+                    appDataServo.ton_cmd = servomotorGetDoorPosition( );
                     appDataDoor.reward_door_status = DOOR_MOVING;
                     while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                    OC5_Stop( );
                     servomotorPowerDisable( );
                 }
                 else
                 {
-                    appDataServo.ton_cmd = getDoorPosition( );
-                    OC5_Start( );
+                    appDataServo.ton_cmd = servomotorGetDoorPosition( );
                     appDataDoor.reward_door_status = DOOR_MOVING;
                     while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                    OC5_Stop( );
                 }
 
                 appDataDoor.reward_door_status = DOOR_OPENED;
 
-                printf( "Door opened - Servo position: %u\n", getDoorPosition( ) );
+                printf( "Door opened\n");
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -618,18 +609,18 @@ void APP_SerialDebugTasks( void )
                  * Servomotor:
                  * HS-322HD: 600 us < servo_position < 2400 us, flexible nylon noise --> Ok
                  * PARRALAX: 600 us < servo_position < 2400 us (Product ID: 900-00005), sound gear 
-                 */
-
+                 */              
+                
                 /* Get current position. */
                 if ( false == isPowerServoEnable( ) )
                 {
                     servomotorPowerEnable( );
-                    appDataServo.ton_cmd = getDoorPosition( );
+                    appDataServo.ton_cmd = servomotorGetDoorPosition( );
                     servomotorPowerDisable( );
                 }
                 else
                 {
-                    appDataServo.ton_cmd = getDoorPosition( );
+                    appDataServo.ton_cmd = servomotorGetDoorPosition( );
                 }
 
                 printf( "\tSet servomotor position\n\t                 C    O\n\t\tRange MAX: [%4u %4u]\n\t\tRange INI: [%4u %4u]\n", SERVO_POSITION_MIN_DEFAULT, SERVO_POSITION_MAX_DEFAULT, appDataServo.ton_min_night, appDataServo.ton_max );
@@ -682,28 +673,22 @@ void APP_SerialDebugTasks( void )
                     appDataServo.direction = 1;
                 }
 
-                // TODO
-                TMR3_Start( ); // ????????
-
                 printf( "\tMoving door... " );
 
                 if ( false == isPowerServoEnable( ) )
                 {
                     servomotorPowerEnable( );
-                    OC5_Start( );
                     appDataDoor.reward_door_status = DOOR_MOVING;
                     while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                    OC5_Stop( );
                     servomotorPowerDisable( );
                 }
                 else
                 {
-                    OC5_Start( );
                     appDataDoor.reward_door_status = DOOR_MOVING;
                     while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                    OC5_Stop( );
                 }
-                printf( "Door moved - Servo position: %u\n", getDoorPosition( ) );
+                
+                printf( "Door moved\n");
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -848,10 +833,12 @@ void APP_SerialDebugTasks( void )
                 if ( true == CMD_VDD_ACC_PIR_SERVO_GetValue( ) )
                 {
                     printf( "CMD_ACC_PIR enable.\n" );
+                    appData.pir_sensor_powered = true;
                 }
                 else
                 {
                     printf( "CMD_ACC_PIR disable.\n" );
+                    appData.pir_sensor_powered = false;
                 }
                 break;
                 /* -------------------------------------------------------------- */

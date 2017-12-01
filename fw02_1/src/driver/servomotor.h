@@ -29,9 +29,6 @@ typedef enum
     DOOR_CLOSED,
     DOOR_CLOSED_AT_NIGHT,
     DOOR_MOVED,
-//    DOOR_OPENING, /* Opening in action. */
-//    DOOR_CLOSING, /* Closing in action. */
-//    DOOR_CLOSING_AT_NIGHT,
     DOOR_MOVING
 
 } DOOR_STATUS;
@@ -77,27 +74,10 @@ typedef struct
 // *****************************************************************************
 
 void SERVO_Initialize( void );
-
-/**
- * servomotorOpenTheDoor()
- * The servomotor open the door.
- * @return true if the door is open
- */
-//bool servomotorOpenTheDoor( void );
-
-/**
- * servomotorCloseTheDoor()
- * The servomotor close the door.
- * @return true if the door is closed
- */
-//bool servomotorCloseTheDoor( void );
-//bool servomotorCloseTheDoorAtNight( void );
 bool servomotorMoveTheDoor(void);
-
 void servomotorPowerEnable( void );
 void servomotorPowerDisable( void );
-
-uint16_t getDoorPosition( void );
+uint16_t servomotorGetDoorPosition( void );
 
 #endif	/* _SERVOMOTOR_HEADER_H */
 

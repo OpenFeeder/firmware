@@ -163,10 +163,18 @@ typedef enum
 {
     NO_SCENARIO,
     OPEN_BAR,
+    DOOR_HABITUATION,
     LONG_TERM_SPATIAL_MEMORY,
     WORKING_SPATIAL_MEMORY,
-    COLOR_ASSOCIATIVE_LEARNING,
-    DOOR_HABITUATION
+    COLOR_ASSOCIATIVE_LEARNING
+    
+        
+//    NO_SCENARIO,
+//    OPEN_BAR,
+//    LONG_TERM_SPATIAL_MEMORY,
+//    WORKING_SPATIAL_MEMORY,
+//    COLOR_ASSOCIATIVE_LEARNING,
+//    DOOR_HABITUATION
 
 } SCENARIO;
 
@@ -259,6 +267,9 @@ typedef struct
     uint16_t punishment_delay;
     
     bool need_to_reconfigure;
+    
+    bool pir_sensor_powered;
+    bool servo_powered;
 
 } APP_DATA;
 

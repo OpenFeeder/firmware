@@ -182,14 +182,26 @@ int main( void )
 {
     I2C1_MESSAGE_STATUS i2c_status;
 
+    bool mclr = false;
+    
+    if ( RCONbits.EXTR )
+    {
+        mclr = true;        
+    }
+    
 #if defined (ENABLE_DEEP_SLEEP)   
     bool deepsleep = false;
-    //    bool button_user_state = false;
 
     if ( RCONbits.DPSLP )
     {
+        /* This means that keeping the SOSC running after waking up requires 
+         * the SOSCEN bit to be set before clearing RELEASE. 
+         PIC24FJ256GB406 datasheet page 202 */
+        OSCCONbits.SOSCEN = 1;
+
         DSCONbits.RELEASE = 0;
         DSCONbits.RELEASE = 0;
+
         RCONbits.DPSLP = 0;
         deepsleep = true;
     }
@@ -197,7 +209,7 @@ int main( void )
 
     /* Initialize the device. */
     SYSTEM_Initialize( );
-
+   
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (ENABLE_DEEP_SLEEP)
     if ( deepsleep )
     {
@@ -221,16 +233,10 @@ int main( void )
 #endif
         LedsStatusBlink( LEDS_ERROR, LEDS_OFF, 83, 250 );
     }
-    else
-    {
-        LedsStatusBlink( LEDS_ERROR, LEDS_OFF, 83, 250 );
-    }
 
     /* Initialize the application. */
     APP_Initialize( );
 
-    //    button_user_state = USER_BUTTON_GetValue( );
-    //    if ( BUTTON_NOT_PRESSED == button_user_state )
     if ( BUTTON_NOT_PRESSED == USER_BUTTON_GetValue( ) )
     {
 #if defined (USE_UART1_SERIAL_INTERFACE)
@@ -254,6 +260,12 @@ int main( void )
         /* Display reset registers. */
         displayResetRegisters( );
 #endif
+        
+        if ( true == mclr)
+        {
+            printf( "\tMCLR\n" );
+        }
+        
         OC4_Stop( );
         OC5_Stop( );
         TMR4_Stop( );
@@ -278,6 +290,9 @@ int main( void )
 
         while ( 1 )
         {
+            /* Maintain Device Drivers. */
+            USBTasks( );
+            
             /* Maintain the Serial Debug Tasks state machine. */
             APP_SerialDebugTasks( );
         }

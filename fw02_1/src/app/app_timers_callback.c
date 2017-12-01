@@ -61,7 +61,7 @@ void TMR2_CallBack( void )
 void TMR3_CallBack( void )
 {
     static volatile uint8_t counter_100ms = 0; // variable for capture the number of positive edge counter in 10 ms
-    static volatile uint8_t count_call_scanning_push_button = 0; // variable for ScanningPushButton
+//    static volatile uint8_t count_call_scanning_push_button = 0; // variable for ScanningPushButton
     static volatile uint16_t capture_positive_edge_counter_in_10ms = 0; // variable for capture the number of positive edge counter in 10 ms
     static volatile uint16_t previous_positive_edge_counter_in_10ms = 0; // and this to check if there is a new value
 
@@ -81,31 +81,7 @@ void TMR3_CallBack( void )
     }
 
     switch ( appDataDoor.reward_door_status )
-    {
-//        case DOOR_OPENING:
-//            /* Opening in action. */
-//            if ( servomotorOpenTheDoor( ) )
-//            {
-//                appDataDoor.reward_door_status = DOOR_OPENED;
-//            }
-//            break;
-//
-//        case DOOR_CLOSING:
-//            /* Closing in action. */
-//            if ( servomotorCloseTheDoor( ) )
-//            {
-//                appDataDoor.reward_door_status = DOOR_CLOSED;
-//            }
-//            break;
-//            
-//        case DOOR_CLOSING_AT_NIGHT:
-//            /* Closing in action. */
-//            if ( servomotorCloseTheDoorAtNight( ) )
-//            {
-//                appDataDoor.reward_door_status = DOOR_CLOSED_AT_NIGHT;
-//            }
-//            break;
-            
+    {            
         case DOOR_MOVING:
             /* Moving in action. */
             if ( servomotorMoveTheDoor( ) )
@@ -154,17 +130,17 @@ void TMR3_CallBack( void )
     }
 
     /* 200 ms here */
-    if ( ++count_call_scanning_push_button == 10 )
-    {
-        /* Call Scanning Push Button, either every 200 ms. */
-        count_call_scanning_push_button = 0; /* reset ticker counter */
-
-        if ( appData.flags.bit_value.RemoteControlConnected )
-        {
-            APP_ScanningPushButtonTasks( ); /* calling task for reading button */
-            blinkDigitState = !blinkDigitState; /* change display state for blinking digit */
-        }
-    }
+//    if ( ++count_call_scanning_push_button == 10 )
+//    {
+//        /* Call Scanning Push Button, either every 200 ms. */
+//        count_call_scanning_push_button = 0; /* reset ticker counter */
+//
+//        if ( appData.flags.bit_value.RemoteControlConnected )
+//        {
+//            APP_ScanningPushButtonTasks( ); /* calling task for reading button */
+//            blinkDigitState = !blinkDigitState; /* change display state for blinking digit */
+//        }
+//    }
 
 }
 
