@@ -349,28 +349,30 @@ I2C1_MESSAGE_STATUS APP_ScanningPushButtonTasks( void )
 } /* End of APP_ScanningPushButtonTasks() */
 
 
-#define BUFF_MAX 128
-char recv[BUFF_MAX];
+//#define BUFF_MAX 128
+//char recv[BUFF_MAX];
 
 bool APP_I2CRTC_DateTime_get( void )
 {
     I2C1_MESSAGE_STATUS status;
-//    char buff[BUFF_MAX];
-//    struct ts t;
-
-//    status = I2C1_MasterReadDS3231_get( &t );
     status = I2C1_MasterReadDS3231_get( &appData.i2c_current_time );
 
     if ( status == I2C1_MESSAGE_COMPLETE )
     {
-//        snprintf( buff, BUFF_MAX, "%02u/%02u/%u %02u:%02u:%02u",
-//                  t.mday, t.mon, t.year, t.hour, t.min, t.sec );
-//        printf( "EXT: %s\n", buff ); // I2C RTC
         return true;
     }
+    else
+    {
+        appData.i2c_current_time.year = 0;
+        appData.i2c_current_time.year_s = 0;
+        appData.i2c_current_time.mon = 0;
+        appData.i2c_current_time.mday = 0;
+        appData.i2c_current_time.hour = 0;
+        appData.i2c_current_time.min = 0;
+        appData.i2c_current_time.sec = 0;
 
-//    printf( "EXT: DD/MM/YYYY hh.mm.ss\n" ); // default I2C RTC
-    return false;
+        return false;
+    }
 }
 
 void APP_I2CRTC_DateTime_print( void )
@@ -383,15 +385,7 @@ void APP_I2CRTC_DateTime_print( void )
            appData.i2c_current_time.hour, 
            appData.i2c_current_time.min, 
            appData.i2c_current_time.sec ); // I2C RTC
-        
-//    printf( "EXT: %02u/%02u/%u %02u:%02u:%02u\n", 
-//           appData.i2c_current_time.mday, 
-//           appData.i2c_current_time.mon, 
-//           appData.i2c_current_time.year, 
-//           appData.i2c_current_time.hour, 
-//           appData.i2c_current_time.min, 
-//           appData.i2c_current_time.sec ); // I2C RTC
-    
+
 }
 
 /* Dynamic configuration date, example 22/08/2016 and time to 15:59:30 */
