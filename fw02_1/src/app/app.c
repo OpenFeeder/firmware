@@ -125,8 +125,6 @@ void APP_Tasks( void )
     {
         case APP_STATE_INITIALIZE:
         {
-            //            I2C1_MESSAGE_STATUS i2c_status;
-
             /**
              * Initializing the application.
              * (en) Application initialization when starting the main power.
@@ -586,7 +584,19 @@ void APP_Tasks( void )
                     //#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
                     //                        printf("Remote control not found.\n");
                     //#endif
-                    appData.state = APP_STATE_FLUSH_DATA_TO_USB;
+                    
+                    if ( appDataLog.numDataStored > 0 || appDataLog.numBatteryLevelStored > 0 || appDataLog.numRfidFreqStored > 0 )
+                    {
+                        appData.state = APP_STATE_FLUSH_DATA_TO_USB;
+                    }
+                    else
+                    {
+#if defined (USE_UART1_SERIAL_INTERFACE)  
+                        printf("\t No data stored.\n");
+#endif
+                    }
+                    
+                    
                     //                    }
                 }
                 //                else
@@ -1042,6 +1052,7 @@ void APP_Tasks( void )
                     appDataLog.numDataStored = MAX_NUM_DATA_TO_STORE;
                     if ( false == dataLog( false ) )
                     {
+                        appDataUsb.key_is_nedded = false;
                         appData.state = APP_STATE_ERROR;
                         break;
                     }
@@ -1052,6 +1063,7 @@ void APP_Tasks( void )
                     setLedsStatusColor( LED_BLUE );
                     if ( FILEIO_RESULT_FAILURE == logBatteryLevel( ) )
                     {
+                        appDataUsb.key_is_nedded = false;
                         appData.state = APP_STATE_ERROR;
                         break;
                     }
@@ -1062,6 +1074,7 @@ void APP_Tasks( void )
                     setLedsStatusColor( LED_BLUE );
                     if ( FILEIO_RESULT_FAILURE == logRfidFreq( ) )
                     {
+                        appDataUsb.key_is_nedded = false;
                         appData.state = APP_STATE_ERROR;
                         break;
                     }
@@ -1072,6 +1085,8 @@ void APP_Tasks( void )
                 break;
             }
 
+            setLedsStatusColor( LEDS_OFF );
+            appDataUsb.key_is_nedded = false;
             appData.state = APP_STATE_IDLE;
             break;
             /* -------------------------------------------------------------- */
@@ -1154,6 +1169,7 @@ void APP_Tasks( void )
                         appDataLog.numDataStored = MAX_NUM_DATA_TO_STORE;
                         if ( false == dataLog( false ) )
                         {
+                            appDataUsb.key_is_nedded = false;
                             appData.state = APP_STATE_ERROR;
                             break;
                         }
@@ -1164,6 +1180,7 @@ void APP_Tasks( void )
                         setLedsStatusColor( LED_BLUE );
                         if ( FILEIO_RESULT_FAILURE == logBatteryLevel( ) )
                         {
+                            appDataUsb.key_is_nedded = false;
                             appData.state = APP_STATE_ERROR;
                             break;
                         }
@@ -1174,11 +1191,13 @@ void APP_Tasks( void )
                         setLedsStatusColor( LED_BLUE );
                         if ( FILEIO_RESULT_FAILURE == logRfidFreq( ) )
                         {
+                            appDataUsb.key_is_nedded = false;
                             appData.state = APP_STATE_ERROR;
                             break;
                         }
                     }
 
+                    USBHostShutdown( );
                     powerUsbRfidDisable( );
                 }
                 else
@@ -1498,8 +1517,9 @@ void APP_Tasks( void )
 
 void APP_Initialize( void )
 {
-    int i, j;
-
+//    int i, j;
+    int i;
+    
     OC4_Stop( );
     OC5_Stop( );
     TMR4_Stop( );
@@ -1570,23 +1590,23 @@ void APP_Initialize( void )
         appDataPitTag.isPitTagdeniedOrColorA[i] = false;
     }
 
-    for ( i = 0; i < 24; ++i )
-    {
-        for ( j = 0; j < 2; ++j )
-        {
-            appDataLog.battery_level[i][j] = 0;
-        }
-    }
+//    for ( i = 0; i < 24; ++i )
+//    {
+//        for ( j = 0; j < 2; ++j )
+//        {
+//            appDataLog.battery_level[i][j] = 0;
+//        }
+//    }
 
     appDataLog.numBatteryLevelStored = 0;
 
-    for ( i = 0; i < 96; ++i )
-    {
-        for ( j = 0; j < 3; ++j )
-        {
-            appDataLog.rfid_freq[i][j] = 0;
-        }
-    }
+//    for ( i = 0; i < 96; ++i )
+//    {
+//        for ( j = 0; j < 3; ++j )
+//        {
+//            appDataLog.rfid_freq[i][j] = 0;
+//        }
+//    }
 
     appDataLog.numRfidFreqStored = 0;
 
@@ -1603,6 +1623,8 @@ void APP_Initialize( void )
     
     appData.servo_powered = false;
     appData.pir_sensor_powered = false;
+    
+    appDataServo.num_empty_step = 5;
     
 }
 

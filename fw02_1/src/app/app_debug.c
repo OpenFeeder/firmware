@@ -89,7 +89,9 @@ void displayResetRegisters( void )
 void APP_SerialDebugTasks( void )
 {
     uint16_t dc_pwm;
-    int i, j;
+//    uint16_t v;
+//    int i, j;
+    int i;
     bool flag;
 
     if ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) )
@@ -229,6 +231,14 @@ void APP_SerialDebugTasks( void )
 
                 appDataServo.ton_goal = appDataServo.ton_min;
 
+//                appDataServo.i_buffer = 0;
+//                for(i=0;i<255;i++)
+//                {
+//                    appDataServo.position_buffer[i] = 0;
+//                }
+//                    
+                appDataServo.num_step = appDataServo.num_empty_step;
+//                
                 if ( false == isPowerServoEnable( ) )
                 {
                     servomotorPowerEnable( );
@@ -246,8 +256,17 @@ void APP_SerialDebugTasks( void )
 
                 appDataDoor.reward_door_status = DOOR_CLOSED;
 
-                printf( "Door closed\n");
+                printf( "Door closed\n" );
 
+//                for ( i = 0; i < 255; i++ )
+//                {
+//                    if ( 0 == appDataServo.position_buffer[i] )
+//                    {
+//                        break;
+//                    }
+//                    printf( "%u\n", appDataServo.position_buffer[i] );
+//                }
+                
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -265,46 +284,91 @@ void APP_SerialDebugTasks( void )
                 }
                 /* Display battery level buffer  */
                 printf( "\nBattery level buffer:\n" );
-                for ( i = 0; i < 24; i++ )
+                
+                if ( appDataLog.numBatteryLevelStored == 0)
                 {
-                    if ( 0 == appDataLog.battery_level[i][0] && 0 == appDataLog.battery_level[i][1] )
+                    printf( "<empty buffer>\n" );
+                }
+                else
+                {     
+                    for ( i = 0; i < appDataLog.numBatteryLevelStored; i++ )
                     {
-                        if ( 0 == i )
-                        {
-                            printf( "<empty buffer>\n" );
-                        }
-                        break;
-                    }
-                    printf( "\t%02d - %04d - %2.3f\n",
+                        printf( "\t%02d - %04d - %2.3f\n",
                             appDataLog.battery_level[i][0],
                             appDataLog.battery_level[i][1],
                             appDataLog.battery_level[i][1] * BATTERY_VOLTAGE_FACTOR );
+                    }
                 }
+        
+//                for ( i = 0; i < 24; i++ )
+//                {
+//                    if ( 0 == appDataLog.battery_level[i][0] && 0 == appDataLog.battery_level[i][1] )
+//                    {
+//                        if ( 0 == i )
+//                        {
+//                            printf( "<empty buffer>\n" );
+//                        }
+//                        break;
+//                    }
+//                    printf( "\t%02d - %04d - %2.3f\n",
+//                            appDataLog.battery_level[i][0],
+//                            appDataLog.battery_level[i][1],
+//                            appDataLog.battery_level[i][1] * BATTERY_VOLTAGE_FACTOR );
+//                }
                 /* Display RFID frequency buffer  */
                 printf( "\nRFID frequency buffer:\n" );
-                for ( i = 0; i < 24; i++ )
+                
+                if ( appDataLog.numRfidFreqStored == 0)
                 {
-                    if ( 0 == appDataLog.rfid_freq[i * 4][0] && 0 == appDataLog.rfid_freq[i * 4][1] && 0 == appDataLog.rfid_freq[i * 4][2] )
-                    {
-                        if ( 0 == i )
-                        {
-                            printf( "<empty buffer>\n" );
-                        }
-                        break;
-                    }
-
-                    for ( j = 0; j < 4; j++ )
-                    {
-                        if ( 0 == appDataLog.rfid_freq[i * 4 + j][0] && 0 == appDataLog.rfid_freq[i * 4 + j][1] && 0 == appDataLog.rfid_freq[i * 4 + j][2] )
-                        {
-                            break;
-                        }
-                        printf( "\t%02d - %02d - %06ld\n",
-                                appDataLog.rfid_freq[i * 4 + j][0],
-                                appDataLog.rfid_freq[i * 4 + j][1],
-                                ( long ) appDataLog.rfid_freq[i * 4 + j][2]*10 );
-                    }
+                    printf( "<empty buffer>\n" );
                 }
+                else
+                {
+                     for ( i = 0; i < appDataLog.numRfidFreqStored; i++ )
+                    {
+                         
+                        printf( "\t%02d - %02d - %06ld\n",
+                                    appDataLog.rfid_freq[i][0],
+                                    appDataLog.rfid_freq[i][1],
+                                    ( long ) appDataLog.rfid_freq[i][2]*10 );
+                                                     
+//                        for ( j = 0; j < 4; j++ )
+//                        {
+//                            if ( 0 == appDataLog.rfid_freq[i * 4 + j][0] && 0 == appDataLog.rfid_freq[i * 4 + j][1] && 0 == appDataLog.rfid_freq[i * 4 + j][2] )
+//                            {
+//                                break;
+//                            }
+//                            printf( "\t%02d - %02d - %06ld\n",
+//                                    appDataLog.rfid_freq[i * 4 + j][0],
+//                                    appDataLog.rfid_freq[i * 4 + j][1],
+//                                    ( long ) appDataLog.rfid_freq[i * 4 + j][2]*10 );
+//                        }
+                    }               
+                }
+                    
+//                for ( i = 0; i < 24; i++ )
+//                {
+//                    if ( 0 == appDataLog.rfid_freq[i * 4][0] && 0 == appDataLog.rfid_freq[i * 4][1] && 0 == appDataLog.rfid_freq[i * 4][2] )
+//                    {
+//                        if ( 0 == i )
+//                        {
+//                            printf( "<empty buffer>\n" );
+//                        }
+//                        break;
+//                    }
+//
+//                    for ( j = 0; j < 4; j++ )
+//                    {
+//                        if ( 0 == appDataLog.rfid_freq[i * 4 + j][0] && 0 == appDataLog.rfid_freq[i * 4 + j][1] && 0 == appDataLog.rfid_freq[i * 4 + j][2] )
+//                        {
+//                            break;
+//                        }
+//                        printf( "\t%02d - %02d - %06ld\n",
+//                                appDataLog.rfid_freq[i * 4 + j][0],
+//                                appDataLog.rfid_freq[i * 4 + j][1],
+//                                ( long ) appDataLog.rfid_freq[i * 4 + j][2]*10 );
+//                    }
+//                }
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -400,7 +464,31 @@ void APP_SerialDebugTasks( void )
 
             case 'j':
             case 'J':
-
+   
+//                /* Read uint16_t from terminal. */
+//                v = readIntFromUart1( );
+//                
+//                if ( v<0 )
+//                {
+//                appDataServo.speed = 5;
+//                break;
+//                }
+//                if ( v>100 )
+//                {
+//                appDataServo.speed = 100;
+//                break;
+//                }
+//                
+//                appDataServo.speed = (uint8_t) v;
+//                
+//                v = readIntFromUart1( );
+//                
+//                if ( v<0 )
+//                {
+//                    v = 0;
+//                }                
+//                appDataServo.num_empty_step = (uint8_t) v;
+                
                 printf( "\t<NOT AFFECTED>\n" );
                 break;
                 /* -------------------------------------------------------------- */
@@ -582,6 +670,17 @@ void APP_SerialDebugTasks( void )
 
                 appDataServo.ton_goal = appDataServo.ton_max;
 
+//                appDataServo.i_buffer = 0;
+//                for(i=0;i<255;i++)
+//                {
+//                    appDataServo.position_buffer[i] = 0;
+//                }
+//                
+//                appDataServo.num_step = 0;
+//                   
+                
+                appDataServo.num_step = appDataServo.num_empty_step;
+                
                 if ( false == isPowerServoEnable( ) )
                 {
                     servomotorPowerEnable( );
@@ -600,6 +699,16 @@ void APP_SerialDebugTasks( void )
                 appDataDoor.reward_door_status = DOOR_OPENED;
 
                 printf( "Door opened\n");
+//
+//                for ( i = 0; i < 255; i++ )
+//                {
+//                    if ( 0 == appDataServo.position_buffer[i] )
+//                    {
+//                        break;
+//                    }
+//                    printf( "%u\n", appDataServo.position_buffer[i] );
+//                }
+//                
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -675,20 +784,67 @@ void APP_SerialDebugTasks( void )
 
                 printf( "\tMoving door... " );
 
+//                appDataServo.i_buffer = 0;
+//                for(i=0;i<255;i++)
+//                {
+//                    appDataServo.position_buffer[i] = 0;
+//                }
+//                
+//                appDataServo.num_step = 0;
+//                
+                appDataServo.num_step = appDataServo.num_empty_step;
+                
                 if ( false == isPowerServoEnable( ) )
                 {
                     servomotorPowerEnable( );
                     appDataDoor.reward_door_status = DOOR_MOVING;
                     while ( DOOR_MOVED != appDataDoor.reward_door_status );
+//
+//                    setDelayMs( 20 * appDataServo.num_empty_step );
+//                    while ( false == isDelayMsEnding( ) )
+//                    {
+//                        Nop( );
+//                    }
                     servomotorPowerDisable( );
                 }
                 else
                 {
                     appDataDoor.reward_door_status = DOOR_MOVING;
                     while ( DOOR_MOVED != appDataDoor.reward_door_status );
+//                    setDelayMs( 20 * appDataServo.num_empty_step );
+//                    while ( false == isDelayMsEnding( ) )
+//                    {
+//                        Nop( );
+//                    }
                 }
-                
+  
                 printf( "Door moved\n");
+//                
+//                /* Get current position. */
+//                if ( false == isPowerServoEnable( ) )
+//                {
+//                    servomotorPowerEnable( );
+//                    appDataServo.ton_cmd = servomotorGetDoorPosition( );
+//                    servomotorPowerDisable( );
+//                }
+//                else
+//                {
+//                    appDataServo.ton_cmd = servomotorGetDoorPosition( );
+//                }
+                
+//                printf("(");
+//                for(i=0;i<255;i++)
+//                {
+//                    if ( 0 == appDataServo.position_buffer[i] )
+//                    {
+//                        break;
+//                    }
+//                    printf("%u ", appDataServo.position_buffer[i]);
+//                }
+//                
+//                printf(")\n");
+                    
+                
                 break;
                 /* -------------------------------------------------------------- */
 

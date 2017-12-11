@@ -183,6 +183,7 @@ int main( void )
     I2C1_MESSAGE_STATUS i2c_status;
 
     bool mclr = false;
+    int i;
     
     if ( RCONbits.EXTR )
     {
@@ -256,6 +257,20 @@ int main( void )
     else
     {
         printf( "\n\nEnter in serial debug mode...\n" );
+
+        /* Status LED blinks */
+        TMR3_Start( );                
+        for (i=0;i<3;i++)
+        {
+            setLedsStatusColor( LEDS_ON );
+            setDelayMs( 500 );
+            while ( 0 == isDelayMsEnding( ) ); 
+            setLedsStatusColor( LEDS_OFF );
+            setDelayMs( 500 );
+            while ( 0 == isDelayMsEnding( ) ); 
+        }
+        TMR3_Stop( );
+                
 #if defined (DISPLAY_RESET_REGISTERS)
         /* Display reset registers. */
         displayResetRegisters( );

@@ -57,7 +57,10 @@ typedef struct
 bool dataLog( bool );
 bool setLogFileName( void );
 void GetTimestamp( FILEIO_TIMESTAMP * );
+
 void clearLogBuffer( void );
+void clearRfidFreqBuffer( void );
+void clearBatteryBuffer( void );
 
 FILEIO_RESULT logBatteryLevel( void );
 FILEIO_RESULT logRfidFreq( void );

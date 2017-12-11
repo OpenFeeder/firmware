@@ -348,10 +348,6 @@ I2C1_MESSAGE_STATUS APP_ScanningPushButtonTasks( void )
     return status;
 } /* End of APP_ScanningPushButtonTasks() */
 
-
-//#define BUFF_MAX 128
-//char recv[BUFF_MAX];
-
 bool APP_I2CRTC_DateTime_get( void )
 {
     I2C1_MESSAGE_STATUS status;
@@ -378,13 +374,20 @@ bool APP_I2CRTC_DateTime_get( void )
 void APP_I2CRTC_DateTime_print( void )
 {
     
-       printf( "%02u/%02u/20%02u %02u:%02u:%02u", 
+    if (0 == appData.i2c_current_time.mday && 0 == appData.i2c_current_time.mon && 0 == appData.i2c_current_time.year_s)
+    {
+        printf( "--/--/---- --:--:--" );
+    }
+    else
+    {
+        printf( "%02u/%02u/20%02u %02u:%02u:%02u", 
            appData.i2c_current_time.mday, 
            appData.i2c_current_time.mon, 
            appData.i2c_current_time.year_s, 
            appData.i2c_current_time.hour, 
            appData.i2c_current_time.min, 
            appData.i2c_current_time.sec ); // I2C RTC
+    }
 
 }
 

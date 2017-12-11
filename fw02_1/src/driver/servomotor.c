@@ -28,7 +28,7 @@ void SERVO_Initialize( void )
 uint16_t servomotorGetDoorPosition( void )
 {
     int i;
-    int n = 6;
+    int n = 3;
     uint16_t pos_buffer[n];
     uint16_t position;
 
@@ -58,6 +58,20 @@ uint16_t servomotorGetDoorPosition( void )
 bool servomotorMoveTheDoor( void )
 {
     bool last_step = false;
+    
+//    if ( 0 < appDataServo.num_step  && appDataServo.num_empty_step > appDataServo.num_step )
+//    {
+//        ++appDataServo.num_step;
+//        return false;
+//    }
+//    
+//    if (appDataServo.num_empty_step <= appDataServo.num_step )
+//    {
+//        appDataServo.num_step = 0;
+//        return false;
+//    } 
+//    
+//    ++appDataServo.num_step;
     
     if ( appDataServo.ton_cmd != appDataServo.ton_goal )
     {
@@ -91,8 +105,20 @@ bool servomotorMoveTheDoor( void )
         printf( "\t\tMoving at %u\n", appDataServo.ton_cmd );
 #endif 
 
+//        appDataServo.position_buffer[appDataServo.i_buffer++] = appDataServo.ton_cmd;
+        
         /* Set DC of PWM5. */
         OC5_PrimaryValueSet( appDataServo.ton_cmd );
+        
+//        if (last_step)
+//        {
+////            if ( --appDataServo.num_step == 0)
+////            {
+//                return true;
+////            }
+//        }
+            
+//        return false;
         
         return last_step;
     }
@@ -131,6 +157,12 @@ void servomotorPowerEnable( void )
 void servomotorPowerDisable( void )
 {
 
+//    setDelayMs( 250 );
+//    while ( false == isDelayMsEnding( ) )
+//    {
+//        Nop( );
+//    }
+        
     if (false == appData.pir_sensor_powered)
     {
         CMD_VDD_ACC_PIR_SERVO_SetLow( );

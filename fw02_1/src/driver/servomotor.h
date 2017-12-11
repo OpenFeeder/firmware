@@ -65,6 +65,13 @@ typedef struct
     uint8_t speed; /* servomotor speed increment to move from position A to B(ex: every 20 ms) */
     uint16_t measure_position; /* measured servomotor position */
     int8_t direction;
+//    
+//    uint16_t position_buffer[255];
+//    uint8_t i_buffer;
+    
+    uint8_t num_step;
+    uint8_t num_empty_step;
+        
 } APP_DATA_SERVO;
 
 // *****************************************************************************
