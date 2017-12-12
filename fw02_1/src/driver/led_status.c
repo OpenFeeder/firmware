@@ -60,13 +60,14 @@ void setLedsStatusColor( LED_STATUS status )
             LED_STATUS_Y_SetHigh( );
             break;
 
+        case LED_BAD_PITTAG:
         case LED_ORANGE:
             LED_STATUS_R_SetHigh( );
             LED_STATUS_G_SetLow( );
             LED_STATUS_B_SetLow( );
             LED_STATUS_Y_SetHigh( );
             break;
-
+            
         case LED_RED:
         case LEDS_ERROR:
             LED_STATUS_R_SetHigh( );
@@ -96,6 +97,7 @@ void setLedsStatusColor( LED_STATUS status )
             LED_STATUS_Y_SetHigh( );
             break;
 
+        case LED_GOOD_PITTAG:
         case LEDS_ERROR_CRITICAL_DOOR:
             LED_STATUS_R_SetLow( );
             LED_STATUS_G_SetHigh( );

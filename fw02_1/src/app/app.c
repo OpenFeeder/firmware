@@ -585,17 +585,32 @@ void APP_Tasks( void )
                     //                        printf("Remote control not found.\n");
                     //#endif
                     
-                    if ( appDataLog.numDataStored > 0 || appDataLog.numBatteryLevelStored > 0 || appDataLog.numRfidFreqStored > 0 )
+                    
+                    setLedsStatusColor( LEDS_ON );
+                    setDelayMs( 2000 );
+                    while ( 0 == isDelayMsEnding( ) );
+
+                    button_user_state = USER_BUTTON_GetValue( );
+                    
+                    setLedsStatusColor( LEDS_OFF );
+                    
+                    if ( BUTTON_PRESSED == button_user_state )
                     {
-                        appData.state = APP_STATE_FLUSH_DATA_TO_USB;
+                        appData.state = APP_STATE_TEST_RFID;
                     }
                     else
                     {
-#if defined (USE_UART1_SERIAL_INTERFACE)  
-                        printf("\t No data stored.\n");
-#endif
+                        if ( appDataLog.numDataStored > 0 || appDataLog.numBatteryLevelStored > 0 || appDataLog.numRfidFreqStored > 0 )
+                        {
+                            appData.state = APP_STATE_FLUSH_DATA_TO_USB;
+                        }
+                        else
+                        {
+    #if defined (USE_UART1_SERIAL_INTERFACE)  
+                            printf("\t No data stored.\n");
+    #endif
+                        }
                     }
-                    
                     
                     //                    }
                 }
@@ -636,6 +651,24 @@ void APP_Tasks( void )
 
             APP_Rfid_Task( );
 
+//            if ( appData.rfid_signal_detected  )
+//            {
+//                if ( appData.flags.bit_value.NewValidPitTag )
+//                {
+//                    setLedsStatusColor( LED_GOOD_PITTAG );
+//                    setDelayMs( 50 );
+//                    while ( 0 == isDelayMsEnding( ) ); 
+//                    setLedsStatusColor( LEDS_OFF );
+//                }
+//                else
+//                {
+//                    setLedsStatusColor( LED_BAD_PITTAG );
+//                    setDelayMs( 50 );
+//                    while ( 0 == isDelayMsEnding( ) ); 
+//                    setLedsStatusColor( LEDS_OFF );
+//                }
+//            }
+            
             if ( appData.flags.bit_value.NewValidPitTag )
             {
                 switch ( appData.scenario_number )
@@ -654,6 +687,12 @@ void APP_Tasks( void )
                     case LONG_TERM_SPATIAL_MEMORY:
                         /* Check if PIT tag is denied */
                         appDataLog.is_pit_tag_denied = isPitTagDenied( );
+                        
+                        setLedsStatusColor( LED_GOOD_PITTAG );
+                        setDelayMs( 50 );
+                        while ( 0 == isDelayMsEnding( ) ); 
+                        setLedsStatusColor( LEDS_OFF );
+                        
                         break;
 
                     case WORKING_SPATIAL_MEMORY:
@@ -1091,6 +1130,86 @@ void APP_Tasks( void )
             break;
             /* -------------------------------------------------------------- */
 
+        case APP_STATE_TEST_RFID:
+
+            if ( appData.state != appData.previous_state )
+            {
+                appData.previous_state = appData.state;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
+                printf( "> APP_STATE_TEST_RFID\n" );
+#endif
+#if defined (USE_UART1_SERIAL_INTERFACE) 
+                printf( "\tDebug not available\n\tPress the user button to stop RFID\n" );
+#endif
+                
+                setDelayMsStandBy(60000);
+                
+                /* Debounce à la noix */
+                setDelayMs(1000);
+                while (false == isDelayMsEnding());
+                
+                button_user_state = BUTTON_NOT_PRESSED;
+
+                for (i=0;i<3;i++)
+                {
+                    setLedsStatusColor( LEDS_ON );
+                    setDelayMs( 500 );
+                    while ( 0 == isDelayMsEnding( ) ); 
+                    setLedsStatusColor( LEDS_OFF );
+                    setDelayMs( 500 );
+                    while ( 0 == isDelayMsEnding( ) ); 
+                }
+                
+                APP_Rfid_Init();
+
+            }
+
+            APP_Rfid_Task( );
+
+            if ( appData.rfid_signal_detected  )
+            {
+                if ( appData.flags.bit_value.NewValidPitTag )
+                {
+                    setLedsStatusColor( LED_GOOD_PITTAG );
+                }
+                else
+                {
+                    setLedsStatusColor( LED_BAD_PITTAG );
+                }
+                
+                setDelayMs( 20 );
+                while ( 0 == isDelayMsEnding( ) ); 
+                setLedsStatusColor( LEDS_OFF );
+                
+                appData.rfid_signal_detected = false;
+                
+            }
+            else
+            {
+               setLedsStatusColor( LEDS_OFF ); 
+            }
+            
+            button_user_state = USER_BUTTON_GetValue( );
+
+            if ( BUTTON_PRESSED == button_user_state || true == isDelayMsEndingStandBy() )
+            {
+                RFID_Disable( );
+                
+                for (i=0;i<3;i++)
+                {
+                    setLedsStatusColor( LEDS_ON );
+                    setDelayMs( 500 );
+                    while ( 0 == isDelayMsEnding( ) ); 
+                    setLedsStatusColor( LEDS_OFF );
+                    setDelayMs( 500 );
+                    while ( 0 == isDelayMsEnding( ) ); 
+                }              
+                appData.state = APP_STATE_IDLE;
+            }
+
+            break;
+            /* -------------------------------------------------------------- */
+            
         case APP_STATE_STANDBY:
             if ( appData.state != appData.previous_state )
             {

@@ -154,6 +154,8 @@ typedef enum
     APP_STATE_ERROR_RFID_FREQUENCY,
     APP_STATE_ERROR_DOOR_DONT_CLOSE,
 
+    APP_STATE_TEST_RFID,
+        
     /* Application error state */
     APP_STATE_ERROR
 
