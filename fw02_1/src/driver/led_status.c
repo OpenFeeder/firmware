@@ -118,6 +118,13 @@ void setLedsStatusColor( LED_STATUS status )
             LED_STATUS_B_SetHigh( );
             LED_STATUS_Y_SetLow( );
             break;
+            
+        case LEDS_TOO_MANY_SOFTWARE_RESET:
+            LED_STATUS_R_SetLow( );
+            LED_STATUS_G_SetHigh( );
+            LED_STATUS_B_SetHigh( );
+            LED_STATUS_Y_SetHigh( );
+            break;   
 
     }
 #endif

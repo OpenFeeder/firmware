@@ -189,35 +189,13 @@ void clearLogBuffer(void)
 }
 
 void clearRfidFreqBuffer(void)
-{
-//    int i, j;
-//    
-//    for (i=0;i<96;i++)
-//    {
-//        for (j=0;j<3;j++)
-//        {
-//           appDataLog.rfid_freq[i][j] = 0;
-//        }
-//    }
-    
+{   
     appDataLog.numRfidFreqStored = 0;
-
 }
 
 void clearBatteryBuffer(void)
 {
-//    int i, j;
-//    
-//    for (i=0;i<24;i++)
-//    {
-//        for (j=0;j<2;j++)
-//        {
-//           appDataLog.battery_level[i][j] = 0;
-//        }
-//    }
-    
     appDataLog.numBatteryLevelStored = 0;
-
 }
 
 bool dataLog(bool newData)
@@ -352,15 +330,8 @@ FILEIO_RESULT logBatteryLevel(void)
 
     memset(buf, '\0', sizeof ( buf));
 
-//    for (i = 0; i < 24; i++)
     for (i = 0; i < appDataLog.numBatteryLevelStored; i++)
     {
-
-//        if (0 == appDataLog.battery_level[i][0] && 0 == appDataLog.battery_level[i][1])
-//        {
-//            break;
-//        }
-
         flag = sprintf(buf, "%c%c,OF%c%c,%u,%02d/%02d/%02d,%02d:00,%2.3f\n",
                        appData.siteid[0],
                        appData.siteid[1],
@@ -456,17 +427,9 @@ FILEIO_RESULT logRfidFreq(void)
     }
 
     memset(buf, '\0', sizeof ( buf));
-
-//    for (i = 0; i < 96; i++)
         
     for (i = 0; i < appDataLog.numRfidFreqStored; i++)
     {
-
-//        if (0 == appDataLog.rfid_freq[i][0] && 0 == appDataLog.rfid_freq[i][1] && 0 == appDataLog.rfid_freq[i][2])
-//        {
-//            break;
-//        }
-                
         flag = sprintf(buf, "%c%c,OF%c%c,%u,%02d/%02d/%02d,%02d:%02d,%ld\n",
                        appData.siteid[0],
                        appData.siteid[1],

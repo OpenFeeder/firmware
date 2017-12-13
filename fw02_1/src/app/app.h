@@ -52,7 +52,7 @@
 
 //#define DISPLAY_SERVO_POSITION
 
-//#define TEST_RTCC_SLEEP_WAKEUP
+#define TEST_RTCC_SLEEP_WAKEUP
 
 #define ENABLE_ERROR_LEDS
 
@@ -102,6 +102,7 @@
 // *****************************************************************************
 // *****************************************************************************
 
+#define MAX_NUM_RESET 5
 #define OPENFEEDER_IS_AWAKEN    1
 #define OPENFEEDER_IS_SLEEPING  0
 
@@ -207,6 +208,27 @@ typedef struct
     struct tm current_time;
     struct ts i2c_current_time;
 
+    union
+    {
+        uint16_t reg;
+
+        struct
+        {
+            unsigned num_software_reset : 3;
+            unsigned : 13;
+        } bit_value;
+    } dsgpr0;
+    
+    union
+    {
+        uint16_t reg;
+
+        struct
+        {
+            unsigned : 16;
+        } bit_value;
+    } dsgpr1;
+    
     /* Declaration of FLAGS type. */
     union
     {

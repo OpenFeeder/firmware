@@ -223,14 +223,19 @@ void APP_Tasks( void )
                         appData.state = APP_STATE_ERROR_BATTERY_LEVEL;
                         break;
                     case APP_CHECK_VBAT_PB:
-                        appData.state = APP_STATE_ERROR_VBAT;
-                        break;
                     case APP_CHECK_FOOD_LEVEL_PB:
-                        appData.state = APP_STATE_ERROR_FOOD_LEVEL;
-                        break;
                     case APP_CHECK_RFID_FREQ_PB:
-                        appData.state = APP_STATE_ERROR_RFID_FREQUENCY;
+                        appData.state = APP_STATE_ERROR;
                         break;
+//                    case APP_CHECK_VBAT_PB:
+//                        appData.state = APP_STATE_ERROR_VBAT;
+//                        break;
+//                    case APP_CHECK_FOOD_LEVEL_PB:
+//                        appData.state = APP_STATE_ERROR_FOOD_LEVEL;
+//                        break;
+//                    case APP_CHECK_RFID_FREQ_PB:
+//                        appData.state = APP_STATE_ERROR_RFID_FREQUENCY;
+//                        break;
                 }
 
                 if ( appData.state != APP_STATE_CONFIGURE_SYSTEM )
@@ -1345,6 +1350,18 @@ void APP_Tasks( void )
                 Nop( );
             }
 
+            appData.dsgpr0.bit_value.num_software_reset += 1;
+            
+            /* The repeat sequence (repeating
+            the instruction twice) is required to write to
+            any of the Deep Sleep registers (DSCON,
+            DSWAKE, DSGPR0, DSGPR1).
+            PIC24FJ256GB406 datasheet page 200 */            
+            DSGPR0 = appData.dsgpr0.reg;
+            DSGPR0 = appData.dsgpr0.reg;
+            DSGPR1 = appData.dsgpr1.reg;
+            DSGPR1 = appData.dsgpr1.reg;
+                
 #if defined (ENABLE_DEEP_SLEEP)
             DSCONbits.DSEN = 1;
             DSCONbits.DSEN = 1;
@@ -1473,62 +1490,39 @@ void APP_Tasks( void )
             break;
             /* -------------------------------------------------------------- */
 
-        case APP_STATE_ERROR_VBAT:
-        case APP_STATE_ERROR_FOOD_LEVEL:
-        case APP_STATE_ERROR_RFID_FREQUENCY:
-        case APP_STATE_ERROR_DOOR_DONT_CLOSE:
         case APP_STATE_ERROR:
             if ( appData.state != appData.previous_state )
             {
                 appData.previous_state = appData.state;
-
-                if ( appData.state == APP_STATE_ERROR )
+     
+                switch ( appError.number )
                 {
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
-                    printf( "> APP_STATE_ERROR\n" );
-#endif
-                    appError.ledColor_2 = LEDS_OFF;
-                }
-
-                if ( appData.state == APP_STATE_ERROR_DOOR_DONT_CLOSE )
-                {
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
-                    printf( "> APP_STATE_ERROR_DOOR_DONT_CLOSE\n" );
-#endif
-                    appError.ledColor_2 = LEDS_ERROR_CRITICAL_DOOR;
-                }
-
-                if ( appData.state == APP_STATE_ERROR_VBAT )
-                {
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
-                    printf( "> APP_STATE_ERROR_VBAT\n" );
-#endif
-                    appError.ledColor_2 = LEDS_ERROR_CRITICAL_VBAT;
-                }
-
-                if ( appData.state == APP_STATE_ERROR_FOOD_LEVEL )
-                {
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
-                    printf( "> APP_STATE_ERROR_FOOD_LEVEL\n" );
-#endif
-                    appError.ledColor_2 = LEDS_ERROR_CRITICAL_FOOD;
-                }
-                if ( appData.state == APP_STATE_ERROR_RFID_FREQUENCY )
-                {
-                    if ( ERROR_LOW_RFID_FREQUENCY == appError.number )
-                    {
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
-                        printf( "> APP_STATE_ERROR_RFID_FREQUENCY\n" );
-#endif
+                    case ERROR_LOW_BATTERY:
+                        appError.ledColor_2 = LEDS_ERROR_CRITICAL_BATTERY;
+                        break;
+                    case ERROR_LOW_FOOD:
+                        appError.ledColor_2 = LEDS_ERROR_CRITICAL_FOOD;
+                        break;
+                    case ERROR_LOW_VBAT:
+                        appError.ledColor_2 = LEDS_ERROR_CRITICAL_VBAT;
+                        break;
+                    case ERROR_DOOR_CANT_CLOSE:
+                        appError.ledColor_2 = LEDS_ERROR_CRITICAL_DOOR;
+                        break;
+                    case ERROR_LOW_RFID_FREQUENCY:
                         appError.ledColor_2 = LEDS_ERROR_RFID_FREQ;
-                    }
-                    else
-                    {
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
-                        printf( "> APP_STATE_ERROR_RFID_TIMEOUT\n" );
-#endif
+                        break;
+                    case ERROR_TIMEOUT_RFID_FREQUENCY:
                         appError.ledColor_2 = LEDS_ERROR_RFID_TIMEOUT;
-                    }
+                        break;
+                    default:
+                        appError.ledColor_2 = LEDS_OFF;
+                        break;
+                }
+                
+                if ( appError.number > ERROR_TOO_MANY_SOFTWARE_RESET )
+                {
+                    appError.ledColor_2 = LEDS_TOO_MANY_SOFTWARE_RESET;
                 }
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
@@ -1570,8 +1564,18 @@ void APP_Tasks( void )
                 powerUsbRfidDisable( );
 
                 /* Reset the system after DELAY_BEFORE_RESET milli-seconds if non critical error occurred */
-                if ( appError.number > ERROR_CRITICAL )
+                if ( appError.number > ERROR_CRITICAL && appError.number < ERROR_TOO_MANY_SOFTWARE_RESET)
                 {
+                    if ( MAX_NUM_RESET <= appData.dsgpr0.bit_value.num_software_reset )
+                    {
+#if defined (USE_UART1_SERIAL_INTERFACE) 
+                        printf( "\t/!\\ The system reset %u times => Critical error\n", MAX_NUM_RESET );   
+ #endif                       
+                        appError.number = appError.number + ERROR_TOO_MANY_SOFTWARE_RESET;
+                        appData.previous_state = APP_STATE_IDLE;
+                        break;
+                    }
+                    
                     TMR3_Start( );
                     setDelayMs( DELAY_BEFORE_RESET );
 #if defined (USE_UART1_SERIAL_INTERFACE) 
@@ -1585,7 +1589,7 @@ void APP_Tasks( void )
 #endif
             }
 
-            if ( appError.number > ERROR_CRITICAL )
+            if ( appError.number > ERROR_CRITICAL && appError.number < ERROR_TOO_MANY_SOFTWARE_RESET)
             {
                 /* A non critical error occurred                      */
                 /* Wait DELAY_BEFORE_RESET milli-seconds and reset    */
@@ -1594,6 +1598,11 @@ void APP_Tasks( void )
 #endif
                 if ( isDelayMsEnding( ) )
                 {
+                    
+                    appData.dsgpr0.bit_value.num_software_reset += 1; 
+                    DSGPR0 = appData.dsgpr0.reg;
+                    DSGPR0 = appData.dsgpr0.reg;
+            
                     TMR3_Stop( );
 #if defined (USE_UART1_SERIAL_INTERFACE)               
                     printf( "\tSystem reset\n" );
@@ -1636,7 +1645,6 @@ void APP_Tasks( void )
 
 void APP_Initialize( void )
 {
-//    int i, j;
     int i;
     
     OC4_Stop( );
@@ -1709,24 +1717,7 @@ void APP_Initialize( void )
         appDataPitTag.isPitTagdeniedOrColorA[i] = false;
     }
 
-//    for ( i = 0; i < 24; ++i )
-//    {
-//        for ( j = 0; j < 2; ++j )
-//        {
-//            appDataLog.battery_level[i][j] = 0;
-//        }
-//    }
-
     appDataLog.numBatteryLevelStored = 0;
-
-//    for ( i = 0; i < 96; ++i )
-//    {
-//        for ( j = 0; j < 3; ++j )
-//        {
-//            appDataLog.rfid_freq[i][j] = 0;
-//        }
-//    }
-
     appDataLog.numRfidFreqStored = 0;
 
     appError.ledColor_1 = LEDS_ERROR;

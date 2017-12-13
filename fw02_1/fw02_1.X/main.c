@@ -183,16 +183,20 @@ int main( void )
     I2C1_MESSAGE_STATUS i2c_status;
 
     bool mclr = false;
+    bool sfwr = false;
+    
     int i;
     
     if ( RCONbits.EXTR )
     {
         mclr = true;        
     }
-    
-#if defined (ENABLE_DEEP_SLEEP)   
-    bool deepsleep = false;
+    if ( RCONbits.SWR )
+    {
+        sfwr = true;        
+    }
 
+#if defined (ENABLE_DEEP_SLEEP)   
     if ( RCONbits.DPSLP )
     {
         /* This means that keeping the SOSC running after waking up requires 
@@ -200,24 +204,35 @@ int main( void )
          PIC24FJ256GB406 datasheet page 202 */
         OSCCONbits.SOSCEN = 1;
 
+        appData.dsgpr0.reg = DSGPR0;
+        appData.dsgpr1.reg = DSGPR1;
+        
         DSCONbits.RELEASE = 0;
         DSCONbits.RELEASE = 0;
 
         RCONbits.DPSLP = 0;
-        deepsleep = true;
+
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (ENABLE_DEEP_SLEEP)
+        printf( "\tWoke up from Deep Sleep 0x%04X 0x%04X", appData.dsgpr0.reg, appData.dsgpr1.reg);
+#endif  
+        
     }
 #endif    
 
+    appData.dsgpr0.reg = 0;
+    appData.dsgpr1.reg = 0;
+        
     /* Initialize the device. */
     SYSTEM_Initialize( );
-   
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (ENABLE_DEEP_SLEEP)
-    if ( deepsleep )
+
+#if defined (USE_UART1_SERIAL_INTERFACE)
+    if ( sfwr )
     {
-        printf( "\tWoke up from Deep Sleep" );
+        appData.dsgpr0.reg = DSGPR0;
+        printf( "\tWoke up software reset %u", appData.dsgpr0.bit_value.num_software_reset);
     }
 #endif  
-
+    
     /* Initialize peripheral driver. */
     RFID_Initialize( );
     SERVO_Initialize( );
