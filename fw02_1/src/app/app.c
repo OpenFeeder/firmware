@@ -119,6 +119,7 @@ void APP_Tasks( void )
     bool flag;
     I2C1_MESSAGE_STATUS i2c_status;
     int i;
+    bool enter_default_state = false;
 
     /* Check the Application State. */
     switch ( appData.state )
@@ -534,7 +535,8 @@ void APP_Tasks( void )
                     flag = isEnoughFood( );
                     if ( false == flag )
                     {
-                        appData.state = APP_STATE_ERROR_FOOD_LEVEL;
+//                        appData.state = APP_STATE_ERROR_FOOD_LEVEL;
+                        appData.state = APP_STATE_ERROR;
                         break;
                     }
                 }
@@ -548,7 +550,8 @@ void APP_Tasks( void )
 
                     if ( false == flag )
                     {
-                        appData.state = APP_STATE_ERROR_RFID_FREQUENCY;
+//                        appData.state = APP_STATE_ERROR_RFID_FREQUENCY;
+                        appData.state = APP_STATE_ERROR;
                         break;
                     }
                 }
@@ -1040,7 +1043,8 @@ void APP_Tasks( void )
                     appError.currentLineNumber = __LINE__;
                     sprintf( appError.currentFileName, "%s", __FILE__ );
                     appError.number = ERROR_DOOR_CANT_CLOSE;
-                    appData.state = APP_STATE_ERROR_DOOR_DONT_CLOSE;
+//                    appData.state = APP_STATE_ERROR_DOOR_DONT_CLOSE;
+                    appData.state = APP_STATE_ERROR;
                 }
                 else
                 {
@@ -1224,7 +1228,7 @@ void APP_Tasks( void )
 #endif
             }
 
-            Sleep( );
+//            Sleep( );
 
             appData.state = APP_STATE_IDLE;
             break;
@@ -1494,7 +1498,9 @@ void APP_Tasks( void )
             if ( appData.state != appData.previous_state )
             {
                 appData.previous_state = appData.state;
-     
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
+                printf( "> APP_STATE_ERROR\n" );
+#endif
                 switch ( appError.number )
                 {
                     case ERROR_LOW_BATTERY:
@@ -1635,9 +1641,20 @@ void APP_Tasks( void )
             /* -------------------------------------------------------------- */
 
         default:
+            if ( false == enter_default_state )
+            {
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
-            printf( "> APP_STATE_DEFAULT\n" );
+                printf( "> DEFAULT_STATE\n" );
 #endif
+#if defined (USE_UART1_SERIAL_INTERFACE) 
+                getCurrentDate( );
+                printCurrentDate( ); 
+#endif
+
+                enter_default_state = true;
+                    
+            }
+            
             setLedsStatusColor( LED_RED );
             break;
     }
