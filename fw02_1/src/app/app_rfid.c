@@ -71,6 +71,12 @@ bool APP_Rfid_Task( void )
                 printf( "\t> RFID_IDLE\n" );
 #endif
             }
+            
+            if ( appData.test_rfid )
+            {
+                setLedsStatusColor(LEDS_OFF);
+            }
+            
             // waiting for signal from DEMOD_OUT pin of EM4095...
             // --> process decoding call in _INT4Interrupt() ISR routine
             break;
@@ -92,6 +98,11 @@ bool APP_Rfid_Task( void )
             displayPitTag( );
             printf( " - bad checksum\n" );
 #endif
+            if ( appData.test_rfid )
+            {
+                setLedsStatusColor(LED_RED);
+            }
+            
             appData.rfid_signal_detected = true;
             break;
         }
@@ -112,6 +123,11 @@ bool APP_Rfid_Task( void )
             displayPitTag( );
             printf( " - good checksum\n" );
 #endif
+            if ( appData.test_rfid )
+            {
+                setLedsStatusColor(LED_BLUE);
+            }
+            
             appData.rfid_signal_detected = true;
             break;
         }

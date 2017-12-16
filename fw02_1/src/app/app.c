@@ -360,6 +360,8 @@ void APP_Tasks( void )
 
                 clearPitTagBuffers( );
                 appDataPitTag.number_of_valid_pit_tag = 0;
+                
+                appData.test_rfid = false;
 
             }
 
@@ -1169,34 +1171,13 @@ void APP_Tasks( void )
                     while ( 0 == isDelayMsEnding( ) ); 
                 }
                 
+                appData.test_rfid = true;
+                
                 APP_Rfid_Init();
 
             }
 
             APP_Rfid_Task( );
-
-            if ( appData.rfid_signal_detected  )
-            {
-                if ( appData.flags.bit_value.NewValidPitTag )
-                {
-                    setLedsStatusColor( LED_GOOD_PITTAG );
-                }
-                else
-                {
-                    setLedsStatusColor( LED_BAD_PITTAG );
-                }
-                
-                setDelayMs( 20 );
-                while ( 0 == isDelayMsEnding( ) ); 
-                setLedsStatusColor( LEDS_OFF );
-                
-                appData.rfid_signal_detected = false;
-                
-            }
-            else
-            {
-               setLedsStatusColor( LEDS_OFF ); 
-            }
             
             button_user_state = USER_BUTTON_GetValue( );
 
@@ -1204,6 +1185,8 @@ void APP_Tasks( void )
             {
                 RFID_Disable( );
                 
+                appData.test_rfid = false;
+                    
                 for (i=0;i<3;i++)
                 {
                     setLedsStatusColor( LEDS_ON );
@@ -1752,6 +1735,8 @@ void APP_Initialize( void )
     appData.pir_sensor_powered = false;
     
     appDataServo.num_empty_step = 5;
+    
+    appData.test_rfid = false;
     
 }
 

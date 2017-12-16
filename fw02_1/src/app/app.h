@@ -286,6 +286,8 @@ typedef struct
     
     bool pir_sensor_powered;
     bool servo_powered;
+    
+    bool test_rfid;
 
 } APP_DATA;
 
