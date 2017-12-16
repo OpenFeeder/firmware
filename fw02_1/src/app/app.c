@@ -1231,6 +1231,10 @@ void APP_Tasks( void )
                         setLedsStatusColor( LED_PITTAG_ACCEPTED );
                     }
                 }
+                else
+                {
+                    setLedsStatusColor(LED_BLUE);
+                }
 
                 appData.rfid_signal_detected = false;
                 
