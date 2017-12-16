@@ -60,7 +60,6 @@ void setLedsStatusColor( LED_STATUS status )
             LED_STATUS_Y_SetHigh( );
             break;
 
-        case LED_BAD_PITTAG:
         case LED_ORANGE:
             LED_STATUS_R_SetHigh( );
             LED_STATUS_G_SetLow( );
@@ -90,6 +89,7 @@ void setLedsStatusColor( LED_STATUS status )
             LED_STATUS_Y_SetLow( );
             break;
 
+        case LED_PITTAG_DENIED:
         case LEDS_ERROR_CRITICAL_VBAT:
             LED_STATUS_R_SetLow( );
             LED_STATUS_G_SetLow( );
@@ -97,7 +97,6 @@ void setLedsStatusColor( LED_STATUS status )
             LED_STATUS_Y_SetHigh( );
             break;
 
-        case LED_GOOD_PITTAG:
         case LEDS_ERROR_CRITICAL_DOOR:
             LED_STATUS_R_SetLow( );
             LED_STATUS_G_SetHigh( );
@@ -112,6 +111,7 @@ void setLedsStatusColor( LED_STATUS status )
             LED_STATUS_Y_SetLow( );
             break;
         
+        case LED_PITTAG_ACCEPTED:
         case LEDS_ERROR_RFID_TIMEOUT:
             LED_STATUS_R_SetLow( );
             LED_STATUS_G_SetHigh( );

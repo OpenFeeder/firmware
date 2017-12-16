@@ -698,10 +698,10 @@ void APP_Tasks( void )
                         /* Check if PIT tag is denied */
                         appDataLog.is_pit_tag_denied = isPitTagDenied( );
                         
-                        setLedsStatusColor( LED_GOOD_PITTAG );
-                        setDelayMs( 50 );
-                        while ( 0 == isDelayMsEnding( ) ); 
-                        setLedsStatusColor( LEDS_OFF );
+//                        setLedsStatusColor( LED__PITTAG_ACCEPTED );
+//                        setDelayMs( 50 );
+//                        while ( 0 == isDelayMsEnding( ) ); 
+//                        setLedsStatusColor( LEDS_OFF );
                         
                         break;
 
@@ -1178,6 +1178,67 @@ void APP_Tasks( void )
             }
 
             APP_Rfid_Task( );
+
+            if ( appData.rfid_signal_detected  )
+            {
+                if ( appData.flags.bit_value.NewValidPitTag )
+                {
+                    switch ( appData.scenario_number )
+                    {
+                        case NO_SCENARIO:
+                        case OPEN_BAR:
+                            /* No PIT tag denied */
+                            appDataLog.is_pit_tag_denied = false;
+                            break;
+
+                        case DOOR_HABITUATION:
+                            /* No PIT tag denied */
+                            appDataLog.is_pit_tag_denied = false;
+                            break;
+
+                        case LONG_TERM_SPATIAL_MEMORY:
+                            /* Check if PIT tag is denied */
+                            appDataLog.is_pit_tag_denied = isPitTagDenied( );
+                            break;
+
+                        case WORKING_SPATIAL_MEMORY:
+                            /* Check if PIT tag is denied */
+                            appDataLog.is_pit_tag_denied = isPitTagDenied( );
+                            /* Bird is allowed only one time */
+                            appDataPitTag.isPitTagdeniedOrColorA[appDataPitTag.pitTagIndexInList] = true;
+                            break;
+
+                        case COLOR_ASSOCIATIVE_LEARNING:
+                            appDataLog.is_pit_tag_denied = false;
+                            /* Check if PIT tag is denied */
+                            if ( ( appDataPitTag.pitTagIndexInList >= appDataPitTag.numPitTagDeniedOrColorA ) && ( appDataLog.attractive_leds_current_color_index == ATTRACTIVE_LEDS_COLOR_A ) )
+                            {
+                                appDataLog.is_pit_tag_denied = true;
+                            }
+                            if ( ( appDataPitTag.pitTagIndexInList < appDataPitTag.numPitTagDeniedOrColorA )  && ( appDataLog.attractive_leds_current_color_index == ATTRACTIVE_LEDS_COLOR_B ) )
+                            {
+                                appDataLog.is_pit_tag_denied = true;
+                            }
+                            break;
+                    }
+                    
+                    if (true == appDataLog.is_pit_tag_denied)
+                    {
+                        setLedsStatusColor( LED_PITTAG_DENIED );
+                    }
+                    else
+                    {
+                        setLedsStatusColor( LED_PITTAG_ACCEPTED );
+                    }
+                }
+
+                appData.rfid_signal_detected = false;
+                
+            }
+            else
+            {
+               setLedsStatusColor( LEDS_OFF ); 
+            }
             
             button_user_state = USER_BUTTON_GetValue( );
 
