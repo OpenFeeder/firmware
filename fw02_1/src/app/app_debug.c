@@ -36,16 +36,17 @@ void displayBootMessage( void )
     printf( "   Web page: https://github.com/OpenFeeder\n" );
     printf( "   Mail: contact.openfeeder@gmail.com\n" );
     printf( "============================================\n" );
-    printf( "Type [?] key to display the Key mapping interface.\n\n" );
+    printf( "  Type [?] key to display debug options.\n" );
+    printf( "============================================\n\n" );
 }
 
 void displayResetRegisters( void )
 {
-    RESET_SYSTEM_CONTROL_REGISTER_1_t rst_sys_ctrl1_value; // variable for reading RCON1 register
-    RESET_SYSTEM_CONTROL_REGISTER_2_t rst_sys_ctrl2_value; // variable for reading RCON2 register
-
-    rst_sys_ctrl1_value.status_reg = RCON; // save register
-    RCON = 0; // clear register
+//    RESET_SYSTEM_CONTROL_REGISTER_1_t rst_sys_ctrl1_value; // variable for reading RCON1 register
+//    RESET_SYSTEM_CONTROL_REGISTER_2_t rst_sys_ctrl2_value; // variable for reading RCON2 register
+//
+//    rst_sys_ctrl1_value.status_reg = RCON; // save register
+//    RCON = 0; // clear register
 
     /* RESET AND SYSTEM CONTROL REGISTER 2 */
     // bit 3 VDDBOR : VDD Brown - out Reset Flag bit( 1 )
@@ -61,29 +62,49 @@ void displayResetRegisters( void )
     // bit 0 VBAT : VBAT Flag bit( 1 )
     //    1 = A POR exit has occurred while power was applied to VBAT pin( set by hardware )
     //    0 = A POR exit from VBAT has not occurred
-    rst_sys_ctrl2_value.status_reg = RCON2; // save register
-    RCON2 = 0; // clear register
+//    rst_sys_ctrl2_value.status_reg = RCON2; // save register
+//    RCON2 = 0; // clear register
 
     //    printf( "\nReset flag bits\n" );
+//    printf( "\t-----------------------\n" );
+//    printf( "\t|   RCON1  |   RCON2  |\n" );
+//    printf( "\t| POR    %u | VBAT   %u |\n", rst_sys_ctrl1_value.status_bit.POR, rst_sys_ctrl2_value.status_bit.VBAT );
+//    printf( "\t| BOR    %u | VBPOR  %u |\n", rst_sys_ctrl1_value.status_bit.BOR, rst_sys_ctrl2_value.status_bit.VBPOR );
+//    printf( "\t| IDLE   %u | VDDPOR %u |\n", rst_sys_ctrl1_value.status_bit.IDLE, rst_sys_ctrl2_value.status_bit.VDDPOR );
+//    printf( "\t| SLEEP  %u | VDDBOR %u |\n", rst_sys_ctrl1_value.status_bit.SLEEP, rst_sys_ctrl2_value.status_bit.VDDBOR );
+//    printf( "\t| WDTO   %u |     -    |\n", rst_sys_ctrl1_value.status_bit.WDTO );
+//    printf( "\t| SWDTEN %u |     -    |\n", rst_sys_ctrl1_value.status_bit.SWDTEN );
+//    printf( "\t| SWR    %u |     -    |\n", rst_sys_ctrl1_value.status_bit.SWR );
+//    printf( "\t| EXTR   %u |     -    |\n", rst_sys_ctrl1_value.status_bit.EXTR );
+//    printf( "\t| PMSLP  %u |     -    |\n", rst_sys_ctrl1_value.status_bit.PMSLP );
+//    printf( "\t| CM     %u |     -    |\n", rst_sys_ctrl1_value.status_bit.CM );
+//    printf( "\t| DPSLP  %u |     -    |\n", rst_sys_ctrl1_value.status_bit.DPSLP );
+//    printf( "\t|     -    |     -    |\n" );
+//    printf( "\t| RETEN  %u |     -    |\n", rst_sys_ctrl1_value.status_bit.RETEN );
+//    printf( "\t|     -    |     -    |\n" );
+//    printf( "\t| IOPUWR %u |     -    |\n", rst_sys_ctrl1_value.status_bit.IOPUWR );
+//    printf( "\t| TRAPR  %u |     -    |\n", rst_sys_ctrl1_value.status_bit.TRAPR );
+//    printf( "\t-----------------------\n\n" );
     printf( "\t-----------------------\n" );
     printf( "\t|   RCON1  |   RCON2  |\n" );
-    printf( "\t| POR    %u | VBAT   %u |\n", rst_sys_ctrl1_value.status_bit.POR, rst_sys_ctrl2_value.status_bit.VBAT );
-    printf( "\t| BOR    %u | VBPOR  %u |\n", rst_sys_ctrl1_value.status_bit.BOR, rst_sys_ctrl2_value.status_bit.VBPOR );
-    printf( "\t| IDLE   %u | VDDPOR %u |\n", rst_sys_ctrl1_value.status_bit.IDLE, rst_sys_ctrl2_value.status_bit.VDDPOR );
-    printf( "\t| SLEEP  %u | VDDBOR %u |\n", rst_sys_ctrl1_value.status_bit.SLEEP, rst_sys_ctrl2_value.status_bit.VDDBOR );
-    printf( "\t| WDTO   %u |     -    |\n", rst_sys_ctrl1_value.status_bit.WDTO );
-    printf( "\t| SWDTEN %u |     -    |\n", rst_sys_ctrl1_value.status_bit.SWDTEN );
-    printf( "\t| SWR    %u |     -    |\n", rst_sys_ctrl1_value.status_bit.SWR );
-    printf( "\t| EXTR   %u |     -    |\n", rst_sys_ctrl1_value.status_bit.EXTR );
-    printf( "\t| PMSLP  %u |     -    |\n", rst_sys_ctrl1_value.status_bit.PMSLP );
-    printf( "\t| CM     %u |     -    |\n", rst_sys_ctrl1_value.status_bit.CM );
-    printf( "\t| DPSLP  %u |     -    |\n", rst_sys_ctrl1_value.status_bit.DPSLP );
+    printf( "\t| POR    %u | VBAT   %u |\n", appData.reset_1.bit_value.por, appData.reset_2.bit_value.vbat );
+    printf( "\t| BOR    %u | VBPOR  %u |\n", appData.reset_1.bit_value.bor, appData.reset_2.bit_value.vbpor );
+    printf( "\t| IDLE   %u | VDDPOR %u |\n", appData.reset_1.bit_value.idle, appData.reset_2.bit_value.vddpor );
+    printf( "\t| SLEEP  %u | VDDBOR %u |\n", appData.reset_1.bit_value.sleep, appData.reset_2.bit_value.vddbor );
+    printf( "\t| WDTO   %u |     -    |\n", appData.reset_1.bit_value.wdto );
+    printf( "\t| SWDTEN %u |     -    |\n", appData.reset_1.bit_value.swdten );
+    printf( "\t| SWR    %u |     -    |\n", appData.reset_1.bit_value.swr );
+    printf( "\t| EXTR   %u |     -    |\n", appData.reset_1.bit_value.extr );
+    printf( "\t| PMSLP  %u |     -    |\n", appData.reset_1.bit_value.pmslp );
+    printf( "\t| CM     %u |     -    |\n", appData.reset_1.bit_value.cm );
+    printf( "\t| DPSLP  %u |     -    |\n", appData.reset_1.bit_value.dpslp );
     printf( "\t|     -    |     -    |\n" );
-    printf( "\t| RETEN  %u |     -    |\n", rst_sys_ctrl1_value.status_bit.RETEN );
+    printf( "\t| RETEN  %u |     -    |\n", appData.reset_1.bit_value.reten );
     printf( "\t|     -    |     -    |\n" );
-    printf( "\t| IOPUWR %u |     -    |\n", rst_sys_ctrl1_value.status_bit.IOPUWR );
-    printf( "\t| TRAPR  %u |     -    |\n", rst_sys_ctrl1_value.status_bit.TRAPR );
+    printf( "\t| IOPUWR %u |     -    |\n", appData.reset_1.bit_value.iopuwr );
+    printf( "\t| TRAPR  %u |     -    |\n", appData.reset_1.bit_value.trapr );
     printf( "\t-----------------------\n\n" );
+    
 }
 
 void APP_SerialDebugTasks( void )
@@ -1090,7 +1111,7 @@ void APP_SerialDebugTasks( void )
                 }
 
                 /* Display USB device status */
-                printf( "\nUSBHostDeviceStatus: " );
+                printf( "\nUSB device status: " );
                 printUSBHostDeviceStatus( );
                 putchar( '\n' );
 

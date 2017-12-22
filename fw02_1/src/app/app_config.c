@@ -29,7 +29,8 @@ bool config_set( void )
 
     if ( INI_READ_OK != read_ini_status )
     {
-        getIniPbChar( read_ini_status, buf );
+        
+        getIniPbChar( read_ini_status, buf, sizearray( buf ));
 
         sprintf( appError.message, "Wrong parameters in CONFIG.INI: %s (%d)", buf, read_ini_status );
         appError.currentLineNumber = __LINE__;
@@ -434,7 +435,7 @@ INI_READ_STATE config_read_ini( void )
         read_parameter = ini_getl( "door", "habituation", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
         {
-            return INI_PB_DOOR_CLOSE_DELAY;
+            return INI_PB_DOOR_HABITUATION;
         }
         else
         {
@@ -679,107 +680,110 @@ void config_print( void )
 }
 
 
-void getIniPbChar( INI_READ_STATE state, char buf[] )
+void getIniPbChar( INI_READ_STATE state, char *buf, uint8_t n )
 {
 
     switch ( state )
     {
 
         case INI_PB_SCENARIO_NUM:
-            snprintf( buf, sizearray( buf ), "Scenario: number" );
+            snprintf( buf, n, "Scenario: number" );
             break;
         case INI_PB_SITEID_ZONE:
-            snprintf( buf, sizearray( buf ), "Site ID: zone" );
+            snprintf( buf, n, "Site ID: zone" );
             break;
         case INI_PB_TIME_WAKEUP_HOUR:
-            snprintf( buf, sizearray( buf ), "Wake-up: hour" );
+            snprintf( buf, n, "Wake-up: hour" );
             break;
         case INI_PB_TIME_WAKEUP_MINUTE:
-            snprintf( buf, sizearray( buf ), "Wake-up: minute" );
+            snprintf( buf, n, "Wake-up: minute" );
             break;
         case INI_PB_TIME_SLEEP_HOUR:
-            snprintf( buf, sizearray( buf ), "Sleep: hour" );
+            snprintf( buf, n, "Sleep: hour" );
             break;
         case INI_PB_TIME_SLEEP_MINUTE:
-            snprintf( buf, sizearray( buf ), "Sleep: minute" );
+            snprintf( buf, n, "Sleep: minute" );
             break;
         case INI_PB_ATTRACTIVE_LEDS_RED_A:
-            snprintf( buf, sizearray( buf ), "Attractive LEDs: red A" );
+            snprintf( buf, n, "Attractive LEDs: red A" );
             break;
         case INI_PB_ATTRACTIVE_LEDS_GREEN_A:
-            snprintf( buf, sizearray( buf ), "Attractive LEDs: green A" );
+            snprintf( buf, n, "Attractive LEDs: green A" );
             break;
         case INI_PB_ATTRACTIVE_LEDS_BLUE_A:
-            snprintf( buf, sizearray( buf ), "Attractive LEDs: blue A" );
+            snprintf( buf, n, "Attractive LEDs: blue A" );
             break;
         case INI_PB_ATTRACTIVE_LEDS_RED_B:
-            snprintf( buf, sizearray( buf ), "Attractive LEDs: red B" );
+            snprintf( buf, n, "Attractive LEDs: red B" );
             break;
         case INI_PB_ATTRACTIVE_LEDS_GREEN_B:
-            snprintf( buf, sizearray( buf ), "Attractive LEDs: green B" );
+            snprintf( buf, n, "Attractive LEDs: green B" );
             break;
         case INI_PB_ATTRACTIVE_LEDS_BLUE_B:
-            snprintf( buf, sizearray( buf ), "Attractive LEDs: blue B" );
+            snprintf( buf, n, "Attractive LEDs: blue B" );
             break;
         case INI_PB_ATTRACTIVE_LEDS_ALT_DELAY:
-            snprintf( buf, sizearray( buf ), "Attractive LEDs: alternate delay" );
+            snprintf( buf, n, "Attractive LEDs: alternate delay" );
             break;
         case INI_PB_ATTRACTIVE_LEDS_ON_HOUR:
-            snprintf( buf, sizearray( buf ), "Attractive LEDs: off minute" );
+            snprintf( buf, n, "Attractive LEDs: off minute" );
             break;
         case INI_PB_ATTRACTIVE_LEDS_ON_MINUTE:
-            snprintf( buf, sizearray( buf ), "Attractive LEDs: on minute" );
+            snprintf( buf, n, "Attractive LEDs: on minute" );
             break;
         case INI_PB_ATTRACTIVE_LEDS_OFF_HOUR:
-            snprintf( buf, sizearray( buf ), "Attractive LEDs: off hour" );
+            snprintf( buf, n, "Attractive LEDs: off hour" );
             break;
         case INI_PB_ATTRACTIVE_LEDS_OFF_MINUTE:
-            snprintf( buf, sizearray( buf ), "Attractive LEDs: off minute" );
+            snprintf( buf, n, "Attractive LEDs: off minute" );
             break;
         case INI_PB_DOOR_TON_MIN:
-            snprintf( buf, sizearray( buf ), "Door: position min" );
+            snprintf( buf, n, "Door: position min" );
             break;
         case INI_PB_DOOR_TON_MAX:
-            snprintf( buf, sizearray( buf ), "Door: position max" );
+            snprintf( buf, n, "Door: position max" );
             break;
         case INI_PB_DOOR_SPEED:
-            snprintf( buf, sizearray( buf ), "Door: speed" );
+            snprintf( buf, n, "Door: speed" );
             break;
         case INI_PB_DOOR_OPEN_DELAY:
-            snprintf( buf, sizearray( buf ), "Door: open delay" );
+            snprintf( buf, n, "Door: open delay" );
             break;
         case INI_PB_DOOR_CLOSE_DELAY:
-            snprintf( buf, sizearray( buf ), "Door: close delay" );
+            snprintf( buf, n, "Door: close delay" );
             break;
         case INI_PB_DOOR_REMAIN_OPEN:
-            snprintf( buf, sizearray( buf ), "Door: remain open" );
+            snprintf( buf, n, "Door: remain open" );
             break;
         case INI_PB_DOOR_OPEN_HOUR:
-            snprintf( buf, sizearray( buf ), "Door: open hour" );
+            snprintf( buf, n, "Door: open hour" );
             break;
         case INI_PB_DOOR_OPEN_MINUTE:
-            snprintf( buf, sizearray( buf ), "Door: open minute" );
+            snprintf( buf, n, "Door: open minute" );
             break;
         case INI_PB_DOOR_CLOSE_HOUR:
-            snprintf( buf, sizearray( buf ), "Door: close hour" );
+            snprintf( buf, n, "Door: close hour" );
             break;
         case INI_PB_DOOR_CLOSE_MINUTE:
-            snprintf( buf, sizearray( buf ), "Door: close minute" );
+            snprintf( buf, n, "Door: close minute" );
             break;
         case INI_PB_TIMEOUTS_SLEEP:
-            snprintf( buf, sizearray( buf ), "Timeouts: sleep" );
+            snprintf( buf, n, "Timeouts: sleep" );
             break;
         case INI_PB_TIMEOUTS_PIR:
-            snprintf( buf, sizearray( buf ), "Timeouts: pir" );
+            snprintf( buf, n, "Timeouts: pir" );
             break;
         case INI_PB_TIMEOUTS_REWARD:
-            snprintf( buf, sizearray( buf ), "Timeouts: reward" );
+            snprintf( buf, n, "Timeouts: reward" );
             break;
         case INI_PB_PUNISHMENT_DELAY:
-            snprintf( buf, sizearray( buf ), "New bird: delay" );
+            snprintf( buf, n, "New bird: delay" );
+            break;
+        case INI_PB_DOOR_HABITUATION:
+            snprintf( buf, n, "Door: habituation" );
             break;
         default:
-            snprintf( buf, sizearray( buf ), "Error not listed" );
+            snprintf( buf, n, "Error not listed" );
             break;
     }
 

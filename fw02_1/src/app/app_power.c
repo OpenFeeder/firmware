@@ -132,6 +132,74 @@ void printBatteryLevel( void )
 
 }
 
+void manageResetSituation( void )
+{
+    switch ( appData.reset_status_num)
+    {
+        case 1024: // Software reset
+            appData.dsgpr0.reg = DSGPR0;
+            break;
+            
+//        case 2101:
+//        case 2107:
+//            break;
+    }
+    
+}
+
+void printResetSituation( void )
+{
+    
+//       printf("\n%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u\n", 
+//           appData.reset_1.bit_value.trapr,
+//           appData.reset_1.bit_value.iopuwr,
+//           appData.reset_1.bit_value.dpslp,
+//           appData.reset_1.bit_value.extr,
+//           appData.reset_1.bit_value.swr,
+//           appData.reset_1.bit_value.wdto,
+//           appData.reset_1.bit_value.sleep,
+//           appData.reset_1.bit_value.idle,
+//           appData.reset_1.bit_value.cm, 
+//           appData.reset_1.bit_value.bor,
+//           appData.reset_1.bit_value.por,
+//           appData.reset_2.bit_value.vbat,
+//           appData.reset_2.bit_value.vbpor,
+//           appData.reset_2.bit_value.vddpor,
+//           appData.reset_2.bit_value.vddbor);
+       
+//    printf("\nreset_status_num: %u\n", appData.reset_status_num);
+    
+    switch ( appData.reset_status_num)
+    {
+        case 1024:
+            printf( "\tSWR reset\n");
+            break;
+            
+        case 2048:
+            printf( "\tMCLR during Run Mode\n");
+            break;
+            
+        case 2101:
+            printf( "\tPOR reset\n");
+            break;
+            
+        case 2107:
+            printf( "\tVBAT reset\n");
+            break;
+            
+        case 2176:
+            printf( "\tMCLR during Idle Mode\n");
+            break;
+            
+        case 2304:
+            printf( "\tMCLR during Sleep Mode\n");
+            break;
+            
+        default:
+            printf("\tReset code not listed: %u\n", appData.reset_status_num);
+    }
+    
+}
 /*******************************************************************************
 End of File
  */

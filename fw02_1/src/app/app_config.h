@@ -68,15 +68,17 @@ typedef enum
     INI_PB_PIT_TAG_DENIED, // 32
     INI_PB_PIT_TAG_ACCEPTED, // 33
 
-    INI_PB_PUNISHMENT_DELAY // 34
+    INI_PB_PUNISHMENT_DELAY, // 34
 
+    INI_PB_DOOR_HABITUATION // 35
+        
 } INI_READ_STATE;
 
 bool config_set( void );
 FILEIO_RESULT config_find_ini( void );
 INI_READ_STATE config_read_ini( void );
 void config_print( void );
-void getIniPbChar( INI_READ_STATE, char * );
+void getIniPbChar( INI_READ_STATE, char *, uint8_t );
 FILEIO_RESULT read_PIT_tags( void );
 
 #endif /* _APP_CONFIG_HEADER_H */

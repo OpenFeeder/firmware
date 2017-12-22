@@ -182,20 +182,11 @@ int main( void )
 {
     I2C1_MESSAGE_STATUS i2c_status;
 
-    bool mclr = false;
-    bool sfwr = false;
-    
     int i;
     
-    if ( RCONbits.EXTR )
-    {
-        mclr = true;        
-    }
-    if ( RCONbits.SWR )
-    {
-        sfwr = true;        
-    }
-
+    appData.reset_1.reg = RCON;
+    appData.reset_2.reg = RCON2;
+ 
 #if defined (ENABLE_DEEP_SLEEP)   
     if ( RCONbits.DPSLP )
     {
@@ -211,27 +202,39 @@ int main( void )
         DSCONbits.RELEASE = 0;
 
         RCONbits.DPSLP = 0;
-
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (ENABLE_DEEP_SLEEP)
-        printf( "\tWoke up from Deep Sleep 0x%04X 0x%04X", appData.dsgpr0.reg, appData.dsgpr1.reg);
-#endif  
-        
+ 
     }
 #endif    
 
+    /*Clear the RESET CONTROL registers */
+    RCON = 0;
+    RCON2 = 0;
+    
     appData.dsgpr0.reg = 0;
     appData.dsgpr1.reg = 0;
         
     /* Initialize the device. */
     SYSTEM_Initialize( );
+ 
+    /* "dsPIC33/PIC24 Family Reference Manual", "Reset" (DS39712)
+     * 7.13 REGISTERS AND STATUS BIT VALUES, page 13 */
+    appData.reset_status_num = appData.reset_2.bit_value.vddbor +
+        (appData.reset_2.bit_value.vddpor<<1) +
+        (appData.reset_2.bit_value.vbpor<<2) +
+        (appData.reset_2.bit_value.vbat<<3) +
+        (appData.reset_1.bit_value.por<<4) +
+        (appData.reset_1.bit_value.bor<<5) +
+        (appData.reset_1.bit_value.cm<<6) +        
+        (appData.reset_1.bit_value.idle<<7) +
+        (appData.reset_1.bit_value.sleep<<8) +
+        (appData.reset_1.bit_value.wdto<<9) +
+        (appData.reset_1.bit_value.swr<<10) +
+        (appData.reset_1.bit_value.extr<<11) +
+        (appData.reset_1.bit_value.dpslp<<12) +
+        (appData.reset_1.bit_value.iopuwr<<13) +
+        (appData.reset_1.bit_value.trapr<<14);
 
-#if defined (USE_UART1_SERIAL_INTERFACE)
-    if ( sfwr )
-    {
-        appData.dsgpr0.reg = DSGPR0;
-        printf( "\tWoke up software reset %u", appData.dsgpr0.bit_value.num_software_reset);
-    }
-#endif  
+    manageResetSituation( );
     
     /* Initialize peripheral driver. */
     RFID_Initialize( );
@@ -259,6 +262,15 @@ int main( void )
         /* Display information on serial terminal. */
         displayBootMessage( );
 #endif
+
+        if ( 2101 == appData.reset_status_num || 2107 == appData.reset_status_num )
+        {          
+            setLedsStatusColor( LEDS_ON );
+            setDelayMs( 5000 );
+            while ( 0 == isDelayMsEnding( ) ); 
+            setLedsStatusColor( LEDS_OFF );
+        }
+
         /* Main loop. */
         while ( 1 )
         {
@@ -290,12 +302,7 @@ int main( void )
         /* Display reset registers. */
         displayResetRegisters( );
 #endif
-        
-        if ( true == mclr)
-        {
-            printf( "\tMCLR\n" );
-        }
-        
+
         OC4_Stop( );
         OC5_Stop( );
         TMR4_Stop( );

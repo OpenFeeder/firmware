@@ -200,7 +200,7 @@ void APP_Tasks( void )
             else
             {
                 /* Blue and yellow status LEDs blink as long USB key is accessed. */
-                LedsStatusBlink( LED_BLUE, LED_YELLOW, 500, 500 );
+                LedsStatusBlink( LED_USB_ACCESS, LED_YELLOW, 500, 500 );
                 break;
             }
 
@@ -221,22 +221,11 @@ void APP_Tasks( void )
                         appData.state = APP_STATE_CONFIGURE_SYSTEM;
                         break;
                     case APP_CHECK_BATTERY_PB:
-                        appData.state = APP_STATE_ERROR_BATTERY_LEVEL;
-                        break;
                     case APP_CHECK_VBAT_PB:
                     case APP_CHECK_FOOD_LEVEL_PB:
                     case APP_CHECK_RFID_FREQ_PB:
-                        appData.state = APP_STATE_ERROR;
+                        appData.state = APP_STATE_FLUSH_DATA_BEFORE_ERROR;
                         break;
-//                    case APP_CHECK_VBAT_PB:
-//                        appData.state = APP_STATE_ERROR_VBAT;
-//                        break;
-//                    case APP_CHECK_FOOD_LEVEL_PB:
-//                        appData.state = APP_STATE_ERROR_FOOD_LEVEL;
-//                        break;
-//                    case APP_CHECK_RFID_FREQ_PB:
-//                        appData.state = APP_STATE_ERROR_RFID_FREQUENCY;
-//                        break;
                 }
 
                 if ( appData.state != APP_STATE_CONFIGURE_SYSTEM )
@@ -362,6 +351,7 @@ void APP_Tasks( void )
                 appDataPitTag.number_of_valid_pit_tag = 0;
                 
                 appData.test_rfid = false;
+                clear_bird_sensor_detected( );
 
             }
 
@@ -528,7 +518,7 @@ void APP_Tasks( void )
 
                     if ( false == flag )
                     {
-                        appData.state = APP_STATE_ERROR_BATTERY_LEVEL;
+                        appData.state = APP_STATE_FLUSH_DATA_BEFORE_ERROR;
                         break;
                     }
                 }
@@ -537,8 +527,7 @@ void APP_Tasks( void )
                     flag = isEnoughFood( );
                     if ( false == flag )
                     {
-//                        appData.state = APP_STATE_ERROR_FOOD_LEVEL;
-                        appData.state = APP_STATE_ERROR;
+                        appData.state = APP_STATE_FLUSH_DATA_BEFORE_ERROR;
                         break;
                     }
                 }
@@ -552,8 +541,7 @@ void APP_Tasks( void )
 
                     if ( false == flag )
                     {
-//                        appData.state = APP_STATE_ERROR_RFID_FREQUENCY;
-                        appData.state = APP_STATE_ERROR;
+                        appData.state = APP_STATE_FLUSH_DATA_BEFORE_ERROR;
                         break;
                     }
                 }
@@ -573,29 +561,6 @@ void APP_Tasks( void )
                 previous_button_user_state = button_user_state;
                 if ( BUTTON_PRESSED == button_user_state )
                 {
-                    //#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO)
-                    //                    printf("User button pressed - ");
-                    //#endif
-                    //                    if (APP_isRemoteControlConnected())
-                    //                    {
-                    //                        appData.flags.bit_value.RemoteControlConnected = true; // FIXME: same of appData.mcp23017.status_bit.found
-                    //                        //appData.mcp23017.status_bit.found = true;
-                    //#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
-                    //                        printf("Remote control found.\n");
-                    //#endif
-                    //                        appData.rc_previous_state = APP_STATE_IDLE;
-                    //                        appData.state = APP_STATE_REMOTE_CONTROL;
-                    //                        break;
-                    //                    }
-                    //                    else
-                    //                    {
-                    //                        appData.mcp23017.status_bit.found = false;
-                    //                        appData.mcp23017.status_bit.initialized = false;
-                    //#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
-                    //                        printf("Remote control not found.\n");
-                    //#endif
-                    
-                    
                     setLedsStatusColor( LEDS_ON );
                     setDelayMs( 2000 );
                     while ( 0 == isDelayMsEnding( ) );
@@ -610,26 +575,9 @@ void APP_Tasks( void )
                     }
                     else
                     {
-                        if ( appDataLog.numDataStored > 0 || appDataLog.numBatteryLevelStored > 0 || appDataLog.numRfidFreqStored > 0 )
-                        {
-                            appData.state = APP_STATE_FLUSH_DATA_TO_USB;
-                        }
-                        else
-                        {
-    #if defined (USE_UART1_SERIAL_INTERFACE)  
-                            printf("\t No data stored.\n");
-    #endif
-                        }
+                        appData.state = APP_STATE_FLUSH_DATA_TO_USB;
                     }
-                    
-                    //                    }
                 }
-                //                else
-                //                {
-                //#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO)
-                //                    printf("User button released\n");
-                //#endif
-                //                }
             }
 
             //#if defined (TEST_RTCC_SLEEP_WAKEUP)
@@ -661,24 +609,6 @@ void APP_Tasks( void )
 
             APP_Rfid_Task( );
 
-//            if ( appData.rfid_signal_detected  )
-//            {
-//                if ( appData.flags.bit_value.NewValidPitTag )
-//                {
-//                    setLedsStatusColor( LED_GOOD_PITTAG );
-//                    setDelayMs( 50 );
-//                    while ( 0 == isDelayMsEnding( ) ); 
-//                    setLedsStatusColor( LEDS_OFF );
-//                }
-//                else
-//                {
-//                    setLedsStatusColor( LED_BAD_PITTAG );
-//                    setDelayMs( 50 );
-//                    while ( 0 == isDelayMsEnding( ) ); 
-//                    setLedsStatusColor( LEDS_OFF );
-//                }
-//            }
-            
             if ( appData.flags.bit_value.NewValidPitTag )
             {
                 switch ( appData.scenario_number )
@@ -697,12 +627,6 @@ void APP_Tasks( void )
                     case LONG_TERM_SPATIAL_MEMORY:
                         /* Check if PIT tag is denied */
                         appDataLog.is_pit_tag_denied = isPitTagDenied( );
-                        
-//                        setLedsStatusColor( LED__PITTAG_ACCEPTED );
-//                        setDelayMs( 50 );
-//                        while ( 0 == isDelayMsEnding( ) ); 
-//                        setLedsStatusColor( LEDS_OFF );
-                        
                         break;
 
                     case WORKING_SPATIAL_MEMORY:
@@ -1015,7 +939,6 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_REOPEN_DOOR\n" );
 #endif           
-                //                appDataDoor.reward_door_status = DOOR_OPENING;
 
                 appDataServo.ton_cmd = servomotorGetDoorPosition( );
                 appDataServo.ton_goal = appDataServo.ton_max;
@@ -1045,7 +968,6 @@ void APP_Tasks( void )
                     appError.currentLineNumber = __LINE__;
                     sprintf( appError.currentFileName, "%s", __FILE__ );
                     appError.number = ERROR_DOOR_CANT_CLOSE;
-//                    appData.state = APP_STATE_ERROR_DOOR_DONT_CLOSE;
                     appData.state = APP_STATE_ERROR;
                 }
                 else
@@ -1079,6 +1001,41 @@ void APP_Tasks( void )
             break;
             /* -------------------------------------------------------------- */
 
+        case APP_STATE_REMOVE_USB_DEVICE:
+            if ( appData.state != appData.previous_state )
+            {
+                appData.previous_state = appData.state;
+
+                USBHostShutdown( );
+                
+                setDelayMs( 2000 );
+                while ( 0 == isDelayMsEnding( ) ); 
+        
+                powerUsbRfidDisable( );
+                
+                setLedsStatusColor( LED_GREEN);
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
+                printf( "> APP_STATE_REMOVE_USB_DEVICE\n" );
+#endif
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                printf( "\tUSB device can be removed\n");
+#endif
+                
+                setDelayMsStandBy(60000);
+                
+            }
+
+            if ( true == isDelayMsEndingStandBy( ) )
+            {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                printf( "\tSystem will automatically restart\n");
+#endif
+                __asm__ volatile ( "reset" );
+            }
+                
+            break;
+            /* -------------------------------------------------------------- */
+            
         case APP_STATE_FLUSH_DATA_TO_USB:
             if ( appData.state != appData.previous_state )
             {
@@ -1086,18 +1043,35 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_FLUSH_DATA_TO_USB\n" );
 #endif
-                /* Log data on USB device */
-                appDataUsb.key_is_nedded = true;
-                powerUsbRfidEnable( );
+                
+                setLedsStatusColor( LED_USB_ACCESS );
+                
+                if ( appDataLog.numDataStored > 0 || appDataLog.numBatteryLevelStored > 0 || appDataLog.numRfidFreqStored > 0 )
+                {
+                    /* Log data on USB device */
+                    appDataUsb.key_is_nedded = true;
+                    powerUsbRfidEnable( );
+                }
+                else
+                {
+#if defined (USE_UART1_SERIAL_INTERFACE)  
+                    printf("\tNo data stored.\n");
+                    appData.state = APP_STATE_REMOVE_USB_DEVICE;
+                    break;
+#endif
+                }
             }
 
-            LedsStatusBlink( LED_BLUE, LEDS_OFF, 50, 250 );
+            LedsStatusBlink( LED_USB_ACCESS, LEDS_OFF, 50, 50 );
 
             if ( appDataUsb.getValidDeviceAdress )
             {
+                
+                setLedsStatusColor( LED_USB_ACCESS );
+                
                 if ( appDataLog.numDataStored > 0 )
                 {
-                    setLedsStatusColor( LED_BLUE );
+                    
                     /* Force data to be written on the USB device */
                     appDataLog.numDataStored = MAX_NUM_DATA_TO_STORE;
                     if ( false == dataLog( false ) )
@@ -1107,10 +1081,11 @@ void APP_Tasks( void )
                         break;
                     }
                 }
+                
+                setLedsStatusColor( LED_USB_ACCESS );
 
                 if ( appDataLog.numBatteryLevelStored > 0 )
                 {
-                    setLedsStatusColor( LED_BLUE );
                     if ( FILEIO_RESULT_FAILURE == logBatteryLevel( ) )
                     {
                         appDataUsb.key_is_nedded = false;
@@ -1119,9 +1094,10 @@ void APP_Tasks( void )
                     }
                 }
 
+                setLedsStatusColor( LED_USB_ACCESS );
+                
                 if ( appDataLog.numRfidFreqStored > 0 )
                 {
-                    setLedsStatusColor( LED_BLUE );
                     if ( FILEIO_RESULT_FAILURE == logRfidFreq( ) )
                     {
                         appDataUsb.key_is_nedded = false;
@@ -1135,9 +1111,8 @@ void APP_Tasks( void )
                 break;
             }
 
-            setLedsStatusColor( LEDS_OFF );
             appDataUsb.key_is_nedded = false;
-            appData.state = APP_STATE_IDLE;
+            appData.state = APP_STATE_REMOVE_USB_DEVICE;
             break;
             /* -------------------------------------------------------------- */
 
@@ -1340,7 +1315,7 @@ void APP_Tasks( void )
                 {
                     if ( appDataLog.numDataStored > 0 )
                     {
-                        setLedsStatusColor( LED_BLUE );
+                        setLedsStatusColor( LED_USB_ACCESS );
                         /* Force data to be written on the USB device */
                         appDataLog.numDataStored = MAX_NUM_DATA_TO_STORE;
                         if ( false == dataLog( false ) )
@@ -1353,7 +1328,7 @@ void APP_Tasks( void )
 
                     if ( appDataLog.numBatteryLevelStored > 0 )
                     {
-                        setLedsStatusColor( LED_BLUE );
+                        setLedsStatusColor( LED_USB_ACCESS );
                         if ( FILEIO_RESULT_FAILURE == logBatteryLevel( ) )
                         {
                             appDataUsb.key_is_nedded = false;
@@ -1364,7 +1339,7 @@ void APP_Tasks( void )
 
                     if ( appDataLog.numRfidFreqStored > 0 )
                     {
-                        setLedsStatusColor( LED_BLUE );
+                        setLedsStatusColor( LED_USB_ACCESS );
                         if ( FILEIO_RESULT_FAILURE == logRfidFreq( ) )
                         {
                             appDataUsb.key_is_nedded = false;
@@ -1446,98 +1421,73 @@ void APP_Tasks( void )
             break;
             /* -------------------------------------------------------------- */
 
-            //        case APP_STATE_REMOTE_CONTROL:
-            //            /**
-            //             * Application idle state.
-            //             *  - 
-            //             */
-            //            if (appData.state != appData.previous_state)
-            //            {
-            //                appData.previous_state = appData.state;
-            //#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
-            //                printf("> APP_STATE_REMOTE_CONTROL\n");
-            //#endif
-            //                APP_remoteControlInitialize();
-            //            }
-            //
-            //            /* Blue status LED blinks when the remote control is plugged. */
-            //            LedsStatusBlink(LED_BLUE, LEDS_OFF, 500, 500);
-            //
-            //            /* Check USER BUTTON detected.
-            //             *  - if true RemoteControlConnected = false and go to APP_STATE_IDLE
-            //             */
-            //            button_user_state = USER_BUTTON_GetValue();
-            //
-            //            if (button_user_state != previous_button_user_state)
-            //            {
-            //                previous_button_user_state = button_user_state;
-            //                if (BUTTON_PRESSED == button_user_state)
-            //                {
-            //#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
-            //                    printf("USER BUTTON PRESSED\n");
-            //#endif
-            //                    clearRemoteControlDisplay();
-            //                    appData.flags.bit_value.RemoteControlConnected = false;
-            //#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_REMOTE_CONTROL_INFO )
-            //                    printf("Remote control disconnected\n");
-            //#endif
-            //                }
-            //            }
-            //
-            //            if (appData.flags.bit_value.RemoteControlConnected)
-            //            {
-            //                APP_remoteControlTask();
-            //            }
-            //            else
-            //            {
-            //                appData.state = appData.rc_previous_state;
-            //            }
-            //            break;
-            //            /* -------------------------------------------------------------- */
-
-        case APP_STATE_ERROR_BATTERY_LEVEL:
+        case APP_STATE_FLUSH_DATA_BEFORE_ERROR:
             if ( appData.state != appData.previous_state )
             {
                 appData.previous_state = appData.state;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
-                printf( "> APP_STATE_ERROR_BATTERY_LEVEL\n" );
+//                printf( "> APP_STATE_ERROR_BATTERY_LEVEL\n" );
+                printf( "> APP_STATE_FLUSH_DATA_BEFORE_ERROR\n" );
 #endif
-                appDataUsb.key_is_nedded = false;
-                /* Log data on USB device */
-                powerUsbRfidEnable( );
-                appDataUsb.key_is_nedded = true;
-            }
-
-            if ( true == appDataUsb.key_is_nedded )
-            {
-                if ( appDataUsb.getValidDeviceAdress )
+                if ( appDataLog.numDataStored == 0 && appDataLog.numBatteryLevelStored == 0 && appDataLog.numRfidFreqStored == 0 )
                 {
-                    if ( appDataLog.numDataStored > 0 )
-                    {
-                        /* Force data to be written on the USB device */
-                        appDataLog.numDataStored = MAX_NUM_DATA_TO_STORE;
-                        if ( false == dataLog( true ) )
-                        {
-                            appData.state = APP_STATE_ERROR;
-                            break;
-                        }
-                    }
-
-                    if ( appDataLog.numBatteryLevelStored > 0 )
-                    {
-                        if ( FILEIO_RESULT_FAILURE == logBatteryLevel( ) )
-                        {
-                            appData.state = APP_STATE_ERROR;
-                            break;
-                        }
-                    }
-                }
-                else
-                {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                    printf("\t No data stored.\n");
+#endif
+                    appData.state = APP_STATE_ERROR;
                     break;
                 }
+
+                appDataUsb.key_is_nedded = true;
+                /* Log data on USB device */
+                powerUsbRfidEnable( );                
             }
 
+            LedsStatusBlink( LED_USB_ACCESS, LEDS_OFF, 50, 250 );
+
+            if ( appDataUsb.getValidDeviceAdress )
+            {
+                if ( appDataLog.numDataStored > 0 )
+                {
+                    setLedsStatusColor( LED_USB_ACCESS );
+                    /* Force data to be written on the USB device */
+                    appDataLog.numDataStored = MAX_NUM_DATA_TO_STORE;
+                    if ( false == dataLog( false ) )
+                    {
+                        appDataUsb.key_is_nedded = false;
+                        appData.state = APP_STATE_ERROR;
+                        break;
+                    }
+                }
+
+                if ( appDataLog.numBatteryLevelStored > 0 )
+                {
+                    setLedsStatusColor( LED_USB_ACCESS );
+                    if ( FILEIO_RESULT_FAILURE == logBatteryLevel( ) )
+                    {
+                        appDataUsb.key_is_nedded = false;
+                        appData.state = APP_STATE_ERROR;
+                        break;
+                    }
+                }
+                
+                if ( appDataLog.numRfidFreqStored > 0 )
+                {
+                    setLedsStatusColor( LED_USB_ACCESS );
+                    if ( FILEIO_RESULT_FAILURE == logRfidFreq( ) )
+                    {
+                        appDataUsb.key_is_nedded = false;
+                        appData.state = APP_STATE_ERROR;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                break;
+            }
+
+            setLedsStatusColor( LEDS_OFF );
             appData.state = APP_STATE_ERROR;
             break;
             /* -------------------------------------------------------------- */
@@ -1802,6 +1752,8 @@ void APP_Initialize( void )
     appDataServo.num_empty_step = 5;
     
     appData.test_rfid = false;
+    
+    clear_bird_sensor_detected( );
     
 }
 

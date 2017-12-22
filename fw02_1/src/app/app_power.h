@@ -41,6 +41,9 @@ void printVBatLevel( void );
 void getBatteryLevel( void );
 void printBatteryLevel( void );
 
+void manageResetSituation( void );
+void printResetSituation( void );
+
 #endif	/* _APP_POWER_HEADER_H */
 
 

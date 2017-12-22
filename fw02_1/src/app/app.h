@@ -149,7 +149,10 @@ typedef enum
 
 //    APP_STATE_REMOTE_CONTROL,
     APP_STATE_FLUSH_DATA_TO_USB,
-    APP_STATE_ERROR_BATTERY_LEVEL,
+    APP_STATE_REMOVE_USB_DEVICE,
+        
+//    APP_STATE_ERROR_BATTERY_LEVEL,
+    APP_STATE_FLUSH_DATA_BEFORE_ERROR,
 //    APP_STATE_ERROR_VBAT,
 //    APP_STATE_ERROR_FOOD_LEVEL,
 //    APP_STATE_ERROR_RFID_FREQUENCY,
@@ -220,6 +223,47 @@ typedef struct
             unsigned : 16;
         } bit_value;
     } dsgpr1;
+    
+    union
+    {
+        uint16_t reg;
+
+        struct
+        {
+            unsigned por : 1;
+            unsigned bor : 1;
+            unsigned idle : 1;
+            unsigned sleep : 1;
+            unsigned wdto : 1;
+            unsigned swdten : 1;
+            unsigned swr : 1;
+            unsigned extr : 1;
+            unsigned pmslp : 1;
+            unsigned cm : 1;
+            unsigned dpslp : 1;
+            unsigned : 1;
+            unsigned reten : 1;
+            unsigned : 1;
+            unsigned iopuwr : 1;
+            unsigned trapr : 1;
+        } bit_value;
+    } reset_1;
+    
+    union
+    {
+        uint16_t reg;
+
+        struct
+        {
+            unsigned vbat : 1;
+            unsigned vbpor : 1;
+            unsigned vddpor : 1;
+            unsigned vddbor : 1;
+            unsigned : 12;
+        } bit_value;
+    } reset_2;
+    
+    uint16_t reset_status_num;
     
     /* Declaration of FLAGS type. */
     union

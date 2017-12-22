@@ -22,10 +22,6 @@ static int populateLogBuffer(void)
 
     unsigned long delayS;
 
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-    printf(" - Populate buffer\n");
-#endif
-
     if (0 == strcmp(appDataLog.bird_pit_tag_str, "XXXXXXXXXX"))
     {
         appDataLog.is_reward_taken = false;
@@ -122,16 +118,9 @@ static int writeLogFile(void)
     FILEIO_ERROR_TYPE errF;
     size_t numDataWritten;
 
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-    printf("Write data to file - ");
-#endif 
-
     if (FILEIO_RESULT_FAILURE == FILEIO_Open(&file, appDataLog.filename, FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND))
     {
         errF = FILEIO_ErrorGet('A');
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-        printf("unable to open log file (%u)", errF);
-#endif 
         sprintf(appError.message, "Unable to open log file (%u)", errF);
         appError.currentLineNumber = __LINE__;
         sprintf(appError.currentFileName, "%s", __FILE__);
@@ -145,9 +134,6 @@ static int writeLogFile(void)
     if (numDataWritten < appDataLog.nCharBuffer)
     {
         errF = FILEIO_ErrorGet('A');
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-        printf("unable to write data in log file (%u)", errF);
-#endif 
         sprintf(appError.message, "Unable to write data in log file (%u)", errF);
         appError.currentLineNumber = __LINE__;
         sprintf(appError.currentFileName, "%s", __FILE__);
@@ -159,9 +145,6 @@ static int writeLogFile(void)
     if (FILEIO_RESULT_FAILURE == FILEIO_Close(&file))
     {
         errF = FILEIO_ErrorGet('A');
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-        printf("unable to close log file (%u)", errF);
-#endif 
         sprintf(appError.message, "Unable to close log file (%u)", errF);
         appError.currentLineNumber = __LINE__;
         sprintf(appError.currentFileName, "%s", __FILE__);
@@ -173,38 +156,15 @@ static int writeLogFile(void)
     clearLogBuffer();
 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-    printf("data to log file success\n");
+    printf("\tWrite data to log file success\n");
 #endif 
 
     return FILEIO_RESULT_SUCCESS;
 }
 
-
-void clearLogBuffer(void)
-{
-    /* Vidage du buffer. */
-    memset(appDataLog.buffer, '\0', sizeof ( appDataLog.buffer));
-    appDataLog.nCharBuffer = 0;
-
-}
-
-void clearRfidFreqBuffer(void)
-{   
-    appDataLog.numRfidFreqStored = 0;
-}
-
-void clearBatteryBuffer(void)
-{
-    appDataLog.numBatteryLevelStored = 0;
-}
-
 bool dataLog(bool newData)
 {
     unsigned int nChar = 0;
-
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-    printf("Data logging - ");
-#endif 
 
     /* Check if new data need to be added to the log buffer */
     if (true == newData)
@@ -214,9 +174,6 @@ bool dataLog(bool newData)
 
         if (nChar < 0)
         {
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-            printf("unable to populate log buffer\n");
-#endif 
             sprintf(appError.message, "Unable to populate log buffer");
             appError.currentLineNumber = __LINE__;
             sprintf(appError.currentFileName, "%s", __FILE__);
@@ -228,7 +185,7 @@ bool dataLog(bool newData)
             appDataLog.nCharBuffer += nChar;
             appDataLog.numDataStored += 1;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO )
-            printf("data to buffer (%u/%u)\n", appDataLog.numDataStored, MAX_NUM_DATA_TO_STORE);
+            printf("\tPopulate data to buffer (%u/%u)\n", appDataLog.numDataStored, MAX_NUM_DATA_TO_STORE);
 #endif 
         }
 
@@ -237,7 +194,7 @@ bool dataLog(bool newData)
     /* If buffer is full then write log file on the USB device */
     if (appDataLog.numDataStored == MAX_NUM_DATA_TO_STORE)
     {
-        setLedsStatusColor(LED_BLUE);
+        setLedsStatusColor(LED_USB_ACCESS);
 
         if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
         {
@@ -260,6 +217,23 @@ bool dataLog(bool newData)
     return true;
 }
 
+void clearLogBuffer(void)
+{
+    /* Vidage du buffer. */
+    memset(appDataLog.buffer, '\0', sizeof ( appDataLog.buffer));
+    appDataLog.nCharBuffer = 0;
+
+}
+
+void clearRfidFreqBuffer(void)
+{   
+    appDataLog.numRfidFreqStored = 0;
+}
+
+void clearBatteryBuffer(void)
+{
+    appDataLog.numBatteryLevelStored = 0;
+}
 
 bool setLogFileName(void)
 {
@@ -303,10 +277,6 @@ FILEIO_RESULT logBatteryLevel(void)
     int flag, i;
     size_t numDataWritten;
 
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-    printf("Write battery level to file - ");
-#endif
-
     getDateTime(&currentTime);
 
     if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
@@ -317,9 +287,6 @@ FILEIO_RESULT logBatteryLevel(void)
     if (FILEIO_RESULT_FAILURE == FILEIO_Open(&file, "BATTERY.CSV", FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND))
     {
         errF = FILEIO_ErrorGet('A');
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-        printf("unable to open battery log file (%u)", errF);
-#endif 
         sprintf(appError.message, "Unable to open battery log file (%u)", errF);
         appError.currentLineNumber = __LINE__;
         sprintf(appError.currentFileName, "%s", __FILE__);
@@ -352,9 +319,6 @@ FILEIO_RESULT logBatteryLevel(void)
         if (numDataWritten < flag)
         {
             errF = FILEIO_ErrorGet('A');
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-            printf("unable to write battery level in log file (%u)", errF);
-#endif 
             sprintf(appError.message, "Unable to write battery level in log file (%u)", errF);
             appError.currentLineNumber = __LINE__;
             sprintf(appError.currentFileName, "%s", __FILE__);
@@ -367,9 +331,6 @@ FILEIO_RESULT logBatteryLevel(void)
     if (FILEIO_RESULT_FAILURE == FILEIO_Close(&file))
     {
         errF = FILEIO_ErrorGet('A');
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-        printf("unable to close battery log file (%u)", errF);
-#endif 
         sprintf(appError.message, "Unable to close battery log file (%u)", errF);
         appError.currentLineNumber = __LINE__;
         sprintf(appError.currentFileName, "%s", __FILE__);
@@ -384,7 +345,7 @@ FILEIO_RESULT logBatteryLevel(void)
     }
 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-    printf("success\n");
+    printf("\tWrite battery level to file success\n");
 #endif 
 
     clearBatteryBuffer( );
@@ -401,10 +362,6 @@ FILEIO_RESULT logRfidFreq(void)
     int flag, i;
     size_t numDataWritten;
 
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-    printf("Write RFID frequency to file - ");
-#endif
-
     getDateTime(&currentTime);
 
     if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
@@ -415,9 +372,6 @@ FILEIO_RESULT logRfidFreq(void)
     if (FILEIO_RESULT_FAILURE == FILEIO_Open(&file, "RFIDFREQ.CSV", FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND))
     {
         errF = FILEIO_ErrorGet('A');
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-        printf("unable to open RFID log file (%u)", errF);
-#endif 
         sprintf(appError.message, "Unable to open RFID log file (%u)", errF);
         appError.currentLineNumber = __LINE__;
         sprintf(appError.currentFileName, "%s", __FILE__);
@@ -451,9 +405,6 @@ FILEIO_RESULT logRfidFreq(void)
         if (numDataWritten < flag)
         {
             errF = FILEIO_ErrorGet('A');
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-            printf("unable to write battery level in log file (%u)", errF);
-#endif 
             sprintf(appError.message, "Unable to write RFID frequency in log file (%u)", errF);
             appError.currentLineNumber = __LINE__;
             sprintf(appError.currentFileName, "%s", __FILE__);
@@ -466,9 +417,6 @@ FILEIO_RESULT logRfidFreq(void)
     if (FILEIO_RESULT_FAILURE == FILEIO_Close(&file))
     {
         errF = FILEIO_ErrorGet('A');
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-        printf("unable to close battery log file (%u)", errF);
-#endif 
         sprintf(appError.message, "Unable to close RFID log file (%u)", errF);
         appError.currentLineNumber = __LINE__;
         sprintf(appError.currentFileName, "%s", __FILE__);
@@ -483,7 +431,7 @@ FILEIO_RESULT logRfidFreq(void)
     }
 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-    printf("success\n");
+    printf("\tWrite RFID frequency to file success\n");
 #endif 
 
     clearRfidFreqBuffer( );

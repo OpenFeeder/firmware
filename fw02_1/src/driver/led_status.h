@@ -15,6 +15,7 @@ typedef enum
     LED_RED,
     LED_GREEN,
     LED_BLUE,
+    LED_USB_ACCESS,
     LED_PITTAG_ACCEPTED,
     LED_PURPLE,
     LED_YELLOW,

@@ -40,6 +40,7 @@ void setLedsStatusColor( LED_STATUS status )
 
         case LED_BLUE:
         case LEDS_WAIT_USB_KEY:
+        case LED_USB_ACCESS:
             LED_STATUS_R_SetLow( );
             LED_STATUS_G_SetLow( );
             LED_STATUS_B_SetHigh( );
