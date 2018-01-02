@@ -6,7 +6,7 @@
 
 # Macros
 TOP=`pwd`
-CND_CONF=openfeeder_board_v3_0
+CND_CONF=OF_fw_2_1_brd_3_0_ver_jerome
 CND_DISTDIR=dist
 TMPDIR=build/${CND_CONF}/${IMAGE_TYPE}/tmp-packaging
 TMPDIRNAME=tmp-packaging

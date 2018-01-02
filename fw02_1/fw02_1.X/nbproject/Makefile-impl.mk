@@ -27,11 +27,11 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 PROJECTNAME=fw02_1.X
 
 # Active Configuration
-DEFAULTCONF=openfeeder_board_v3_0
+DEFAULTCONF=OF_fw_2_1_brd_3_0_ver_jerome
 CONF=${DEFAULTCONF}
 
 # All Configurations
-ALLCONFS=openfeeder_board_v3_0 
+ALLCONFS=OF_fw_2_1_brd_3_0_no_ver OF_fw_2_1_brd_3_0_ver_jerome OF_fw_2_1_brd_3_0_ver_arnauld 
 
 
 # build
@@ -45,13 +45,17 @@ ALLCONFS=openfeeder_board_v3_0
 
 # clobber
 .clobber-impl: .clobber-pre .depcheck-impl
-	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=openfeeder_board_v3_0 clean
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=OF_fw_2_1_brd_3_0_no_ver clean
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=OF_fw_2_1_brd_3_0_ver_jerome clean
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=OF_fw_2_1_brd_3_0_ver_arnauld clean
 
 
 
 # all
 .all-impl: .all-pre .depcheck-impl
-	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=openfeeder_board_v3_0 build
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=OF_fw_2_1_brd_3_0_no_ver build
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=OF_fw_2_1_brd_3_0_ver_jerome build
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=OF_fw_2_1_brd_3_0_ver_arnauld build
 
 
 
