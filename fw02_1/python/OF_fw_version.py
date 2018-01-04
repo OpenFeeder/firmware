@@ -75,15 +75,15 @@ class ver(Frame):
         if idx == 0:
             self.new_fw['version_major'] = self.current_fw['version_major'] + 1
         elif idx == 1:
-            self.new_fw['version_major'] = self.current_fw['version_major'] - 1
+            self.new_fw['version_major'] = self.current_fw['version_major']
         elif idx == 2:
             self.new_fw['version_minor'] = self.current_fw['version_minor'] + 1
         elif idx == 3:
-            self.new_fw['version_minor'] = self.current_fw['version_minor'] - 1
+            self.new_fw['version_minor'] = self.current_fw['version_minor']
         elif idx == 4:
             self.new_fw['version_patch'] = self.current_fw['version_patch'] + 1
         else:
-            self.new_fw['version_patch'] = self.current_fw['version_patch'] - 1
+            self.new_fw['version_patch'] = self.current_fw['version_patch']
 
         if idx & (1 << 0) == 1:
             for i in range(0, 6, 2):
@@ -176,8 +176,8 @@ def main():
 
     print('Updating app_version.h')
 
-    file = sys.argv[1] + r'\..\src\app\app_version.h'
-#    file = r'D:\github\openfeeder\firmwares\fw02_1\src\app\app_version.h'
+#    file = sys.argv[1] + r'\..\src\app\app_version.h'
+    file = r'D:\github\openfeeder\firmwares\fw02_1\src\app\app_version.h'
 
     fw = readVersion(file)
 
