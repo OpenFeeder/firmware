@@ -15,7 +15,7 @@
 #include <string.h>
 #include "fileio.h"
 
-#define INI_BUFFERSIZE  30       /* maximum line length, maximum path length */
+#define INI_BUFFERSIZE  50       /* maximum line length, maximum path length */
 #define INI_FILETYPE                   FILEIO_OBJECT
 #define ini_openread(filename,file)    ((FILEIO_Open((file), (filename),FILEIO_OPEN_READ)) != FILEIO_RESULT_FAILURE)
 #define ini_openwrite(filename,file)   ((FILEIO_Open((file), (filename),FILEIO_OPEN_WRITE)) != FILEIO_RESULT_FAILURE)

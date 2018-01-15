@@ -42,49 +42,7 @@ void displayBootMessage( void )
 
 void displayResetRegisters( void )
 {
-//    RESET_SYSTEM_CONTROL_REGISTER_1_t rst_sys_ctrl1_value; // variable for reading RCON1 register
-//    RESET_SYSTEM_CONTROL_REGISTER_2_t rst_sys_ctrl2_value; // variable for reading RCON2 register
-//
-//    rst_sys_ctrl1_value.status_reg = RCON; // save register
-//    RCON = 0; // clear register
-
-    /* RESET AND SYSTEM CONTROL REGISTER 2 */
-    // bit 3 VDDBOR : VDD Brown - out Reset Flag bit( 1 )
-    //    1 = A VDD Brown - out Reset has occurred( set by hardware )
-    //    0 = A VDD Brown - out Reset has not occurred
-    // bit 2 VDDPOR : VDD Power - on Reset Flag bit( 1, 2 )
-    //    1 = A VDD Power - on Reset has occurred( set by hardware )
-    //    0 = A VDD Power - on Reset has not occurred
-    // bit 1 VBPOR : VBPOR Flag bit( 1, 3 )
-    //    1 = A VBAT POR has occurred( no battery connected to VBAT pin or VBAT power below Deep Sleep
-    //                                 Semaphore register retention level is set by hardware )
-    //    0 = A VBAT POR has not occurred
-    // bit 0 VBAT : VBAT Flag bit( 1 )
-    //    1 = A POR exit has occurred while power was applied to VBAT pin( set by hardware )
-    //    0 = A POR exit from VBAT has not occurred
-//    rst_sys_ctrl2_value.status_reg = RCON2; // save register
-//    RCON2 = 0; // clear register
-
-    //    printf( "\nReset flag bits\n" );
-//    printf( "\t-----------------------\n" );
-//    printf( "\t|   RCON1  |   RCON2  |\n" );
-//    printf( "\t| POR    %u | VBAT   %u |\n", rst_sys_ctrl1_value.status_bit.POR, rst_sys_ctrl2_value.status_bit.VBAT );
-//    printf( "\t| BOR    %u | VBPOR  %u |\n", rst_sys_ctrl1_value.status_bit.BOR, rst_sys_ctrl2_value.status_bit.VBPOR );
-//    printf( "\t| IDLE   %u | VDDPOR %u |\n", rst_sys_ctrl1_value.status_bit.IDLE, rst_sys_ctrl2_value.status_bit.VDDPOR );
-//    printf( "\t| SLEEP  %u | VDDBOR %u |\n", rst_sys_ctrl1_value.status_bit.SLEEP, rst_sys_ctrl2_value.status_bit.VDDBOR );
-//    printf( "\t| WDTO   %u |     -    |\n", rst_sys_ctrl1_value.status_bit.WDTO );
-//    printf( "\t| SWDTEN %u |     -    |\n", rst_sys_ctrl1_value.status_bit.SWDTEN );
-//    printf( "\t| SWR    %u |     -    |\n", rst_sys_ctrl1_value.status_bit.SWR );
-//    printf( "\t| EXTR   %u |     -    |\n", rst_sys_ctrl1_value.status_bit.EXTR );
-//    printf( "\t| PMSLP  %u |     -    |\n", rst_sys_ctrl1_value.status_bit.PMSLP );
-//    printf( "\t| CM     %u |     -    |\n", rst_sys_ctrl1_value.status_bit.CM );
-//    printf( "\t| DPSLP  %u |     -    |\n", rst_sys_ctrl1_value.status_bit.DPSLP );
-//    printf( "\t|     -    |     -    |\n" );
-//    printf( "\t| RETEN  %u |     -    |\n", rst_sys_ctrl1_value.status_bit.RETEN );
-//    printf( "\t|     -    |     -    |\n" );
-//    printf( "\t| IOPUWR %u |     -    |\n", rst_sys_ctrl1_value.status_bit.IOPUWR );
-//    printf( "\t| TRAPR  %u |     -    |\n", rst_sys_ctrl1_value.status_bit.TRAPR );
-//    printf( "\t-----------------------\n\n" );
+    
     printf( "\t-----------------------\n" );
     printf( "\t|   RCON1  |   RCON2  |\n" );
     printf( "\t| POR    %u | VBAT   %u |\n", appData.reset_1.bit_value.por, appData.reset_2.bit_value.vbat );
@@ -110,8 +68,6 @@ void displayResetRegisters( void )
 void APP_SerialDebugTasks( void )
 {
     uint16_t dc_pwm;
-//    uint16_t v;
-//    int i, j;
     int i;
     bool flag;
 
@@ -187,19 +143,8 @@ void APP_SerialDebugTasks( void )
                 printBatteryLevel( );
 
                 /* VBat level */
-
-
-                //                printf("%u\n", AD1CON3bits.ADRC);
-
-                //                appData.vbat_level = getADC1value( ADC1_CHANNEL_AVSS );
-                //                Nop( );
-                //                Nop( );
-                //                Nop( );
                 appData.vbat_level = getADC1value( ADC1_CHANNEL_VBAT_2 );
                 printVBatLevel( );
-                /* Light level --> not in v3_0 board */
-                //                appData.light_level = getADC1value( ADC1_CHANNEL_MA_LIGHT );
-                //                printf( "Light level: (%u)\n", appData.light_level );
 
                 /* CTMU */
                 analog_measure = getADC1value( ADC1_CHANNEL_CTMU_TEMPERATURE_SENSOR_INPUT );

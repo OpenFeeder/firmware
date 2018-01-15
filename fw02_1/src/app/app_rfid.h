@@ -17,6 +17,7 @@
 #define MAX_PIT_TAGS_LIST_NUMBER            200
 #define DEFAULT_TIMEOUT_READING_PIT_TAG     30  /* x160ms = timeout */
 
+#define NUM_CONSECUTIVE_VALID_PIT_TAG 3
 
 // *****************************************************************************
 // *****************************************************************************

@@ -83,11 +83,28 @@ LDLIBSOPTIONS=
 # fixDeps replaces a bunch of sed/cat/printf statements that slow down the build
 FIXDEPS=fixDeps
 
+# The following macros may be used in the pre and post step lines
+Device=PIC24FJ256GB406
+ProjectDir="D:\github\openfeeder\firmwares\fw02_1\fw02_1.X"
+ConfName=OF_fw_2_1_brd_3_0_no_ver
+ImagePath="dist\OF_fw_2_1_brd_3_0_no_ver\${IMAGE_TYPE}\fw02_1.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}"
+ImageDir="dist\OF_fw_2_1_brd_3_0_no_ver\${IMAGE_TYPE}"
+ImageName="fw02_1.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}"
+ifeq ($(TYPE_IMAGE), DEBUG_RUN)
+IsDebug="true"
+else
+IsDebug="false"
+endif
+
 .build-conf:  ${BUILD_SUBPROJECTS}
 ifneq ($(INFORMATION_MESSAGE), )
 	@echo $(INFORMATION_MESSAGE)
 endif
 	${MAKE}  -f nbproject/Makefile-OF_fw_2_1_brd_3_0_no_ver.mk dist/${CND_CONF}/${IMAGE_TYPE}/fw02_1.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+	@echo "--------------------------------------"
+	@echo "User defined post-build step: [copy /Y /B ${ProjectDir}\${ImagePath} /B ${ProjectDir}\..\hex\fw02_1.hex]"
+	@copy /Y /B ${ProjectDir}\${ImagePath} /B ${ProjectDir}\..\hex\fw02_1.hex
+	@echo "--------------------------------------"
 
 MP_PROCESSOR_OPTION=24FJ256GB406
 MP_LINKER_FILE_OPTION=,--script=p24FJ256GB406.gld

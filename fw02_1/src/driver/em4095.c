@@ -29,7 +29,7 @@ volatile uint8_t g_previous_pit_tag_tab[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 volatile uint8_t g_pit_tag_tab[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 volatile uint8_t g_bit_counter_line = 0;
 volatile uint8_t g_bit_counter_column_tab[] = { 0, 0, 0, 0 };
-volatile bool g_check = 1;
+volatile bool g_check = true;
 
 #if defined (USE_UART1_SERIAL_INTERFACE)
 
@@ -304,7 +304,7 @@ void __attribute__( ( weak ) ) RFID_DecodingTasks( void )
                 //UART1_Write( '\n' );
 
                 /* Initialized tab */
-                g_check = 1;
+                g_check = true;
                 /* RAZ data into data stream buffer. */
                 for ( i = 0; i < 10; ++i )
                 {
@@ -331,7 +331,7 @@ void __attribute__( ( weak ) ) RFID_DecodingTasks( void )
                         /* Column bits parity. */
                         g_check = ( ( bit_counter_column[0] & 1 ) == g_rfid_datastream_acquire_tab[50] ) && ( ( bit_counter_column[1] & 1 ) == g_rfid_datastream_acquire_tab[51] ) && ( ( bit_counter_column[2] & 1 ) == g_rfid_datastream_acquire_tab[52] ) && ( ( bit_counter_column[3] & 1 ) == g_rfid_datastream_acquire_tab[53] );
 
-                        if ( g_check == 0 )
+                        if ( false == g_check )
                         {
                             //#if defined (USE_UART1_SERIAL_INTERFACE)
                             //                            printf( "\nColumn Parity error" );

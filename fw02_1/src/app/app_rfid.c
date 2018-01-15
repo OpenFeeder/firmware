@@ -71,12 +71,12 @@ bool APP_Rfid_Task( void )
                 printf( "\t> RFID_IDLE\n" );
 #endif
             }
-            
+
             if ( appData.test_rfid )
             {
-                setLedsStatusColor(LEDS_OFF);
+                setLedsStatusColor( LEDS_OFF );
             }
-            
+
             // waiting for signal from DEMOD_OUT pin of EM4095...
             // --> process decoding call in _INT4Interrupt() ISR routine
             break;
@@ -100,15 +100,18 @@ bool APP_Rfid_Task( void )
 #endif
             if ( appData.test_rfid )
             {
-                setLedsStatusColor(LED_RED);
+                setLedsStatusColor( LED_RED );
             }
-            
+
             appData.rfid_signal_detected = true;
             break;
         }
 
         case RFID_DETECT_COMPLET_DATASTREAM:
         {
+            /* Disable interruption to avoid writting in g_pit_tag_tab */
+            EX_INT4_InterruptDisable();
+            
             if ( g_rfid_reading_status != g_rfid_reading_status_previous )
             {
                 g_rfid_reading_status_previous = g_rfid_reading_status;
@@ -125,9 +128,9 @@ bool APP_Rfid_Task( void )
 #endif
             if ( appData.test_rfid )
             {
-                setLedsStatusColor(LED_BLUE);
+                setLedsStatusColor( LED_BLUE );
             }
-            
+
             appData.rfid_signal_detected = true;
             break;
         }
@@ -183,20 +186,30 @@ bool APP_Rfid_Task( void )
 
         if ( appDataPitTag.number_of_valid_pit_tag == 1 )
         {
+            
+#if defined( USE_UART1_SERIAL_INTERFACE ) && defined (DISPLAY_PIT_TAG_INFO)
+                printf( "\t\tOne valid PIT tags read: %s\n", appDataLog.bird_pit_tag_str );
+#endif
             /* Save the current PIT Tag in local tab. */
             for ( i = 0; i < 10; ++i )
             {
                 g_previous_pit_tag_tab[i] = g_pit_tag_tab[i];
+#if defined( USE_UART1_SERIAL_INTERFACE ) && defined (DISPLAY_PIT_TAG_INFO)
+                printf("\t\tCopy: %c %c\n", bin2ascii_tab[g_previous_pit_tag_tab[i]], bin2ascii_tab[g_pit_tag_tab[i]]);
+#endif  
             }
 
         }
-        else // number_of_valid_pit_tag == 2
+        else // number_of_valid_pit_tag == 2 ou 3
         {
             /* Compare previous and current detected PIT tags. */
             //            if ( 0 == strcmp( ( const char * ) &g_pit_tag_tab, ( const char * ) &g_previous_pit_tag_tab ) )
             bool flag = true;
             for ( i = 0; i < 10; i++ )
             {
+#if defined( USE_UART1_SERIAL_INTERFACE ) && defined (DISPLAY_PIT_TAG_INFO)
+                printf("\t\tCheck: %c %c\n", bin2ascii_tab[g_previous_pit_tag_tab[i]], bin2ascii_tab[g_pit_tag_tab[i]]);
+#endif                    
                 if ( g_pit_tag_tab[i] != g_previous_pit_tag_tab[i] )
                 {
                     flag = false;
@@ -205,20 +218,23 @@ bool APP_Rfid_Task( void )
             }
 
             //            if ( 0 == strcmp( g_pit_tag_tab, g_previous_pit_tag_tab ) )
+            //            if ((true == flag) && (appDataPitTag.number_of_valid_pit_tag == 3))
             if ( true == flag )
             {
-                appData.flags.bit_value.NewValidPitTag = true;
-                for ( i = 0; i < 10; ++i )
-                {
-                    appDataLog.bird_pit_tag_str[i] = bin2ascii_tab[g_pit_tag_tab[i]];
-                }
-                clearPitTagBuffers( );
-                appDataLog.bird_pit_tag_str[10] = '\0';
-                appDataPitTag.number_of_valid_pit_tag = 0;
-
 #if defined( USE_UART1_SERIAL_INTERFACE ) && defined (DISPLAY_PIT_TAG_INFO)
-                printf( "\tTwo valid PIT tags read: %s\n", appDataLog.bird_pit_tag_str );
+                printf( "\t\t%d consecutive valid PIT tags read: %s\n", appDataPitTag.number_of_valid_pit_tag, appDataLog.bird_pit_tag_str );
 #endif
+                if ( appDataPitTag.number_of_valid_pit_tag == NUM_CONSECUTIVE_VALID_PIT_TAG )
+                {
+                    appData.flags.bit_value.NewValidPitTag = true;
+                    for ( i = 0; i < 10; ++i )
+                    {
+                        appDataLog.bird_pit_tag_str[i] = bin2ascii_tab[g_pit_tag_tab[i]];
+                    }
+                    clearPitTagBuffers( );
+                    appDataLog.bird_pit_tag_str[10] = '\0';
+                    appDataPitTag.number_of_valid_pit_tag = 0;
+                }
             }
             else
             {
@@ -229,9 +245,12 @@ bool APP_Rfid_Task( void )
                     g_previous_pit_tag_tab[i] = g_pit_tag_tab[i];
                     g_pit_tag_tab[i] = 0;
                 }
-                --appDataPitTag.number_of_valid_pit_tag;
+                
+//                --appDataPitTag.number_of_valid_pit_tag;                
+                appDataPitTag.number_of_valid_pit_tag = 0;
+                
 #if defined( USE_UART1_SERIAL_INTERFACE ) && defined (DISPLAY_PIT_TAG_INFO)
-                printf( " - invalid (different from previous detected).\n" );
+                printf( "\t\tPIT tag different from previous detected: invalid.\n" );
 #endif
             }
         }

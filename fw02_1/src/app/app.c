@@ -270,18 +270,19 @@ void APP_Tasks( void )
 
                 /* Servomotor power command disable. */
                 servomotorPowerDisable( );
-
-                if ( true == appData.flags.bit_value.attractive_leds_status )
-                {
-                    /* Reset PCA9622 device */
-                    i2c_status = I2C1_PCA9622_SoftwareReset( );
+         
+                /* Initialize I2C device */
+                /* Reset PCA9622 device */
+                i2c_status = I2C1_PCA9622_SoftwareReset( );
+                
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
                     print_I2C_message_status( i2c_status ); // I2C1_MESSAGE_STATUS
                     printf( "\n" );
 #endif
-                    i2c_status = initAttractiveLeds( );
-
-                    if ( i2c_status )
+                    
+                if ( true == appData.flags.bit_value.attractive_leds_status )
+                {
+                    if ( initAttractiveLeds( ) )
                     {
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
                         printf( "\tAttractive LEDs: ok\n" );
@@ -609,6 +610,10 @@ void APP_Tasks( void )
 
             APP_Rfid_Task( );
 
+            /* Enable interruption see case RFID_DETECT_COMPLET_DATASTREAM
+             * in APP_Rfid_Task */
+            EX_INT4_InterruptEnable();
+            
             if ( appData.flags.bit_value.NewValidPitTag )
             {
                 switch ( appData.scenario_number )
@@ -1154,6 +1159,10 @@ void APP_Tasks( void )
 
             APP_Rfid_Task( );
 
+            /* Enable interruption see case RFID_DETECT_COMPLET_DATASTREAM
+             * in APP_Rfid_Task */
+            EX_INT4_InterruptEnable();
+            
             if ( appData.rfid_signal_detected  )
             {
                 if ( appData.flags.bit_value.NewValidPitTag )
