@@ -17,7 +17,107 @@
 /* Current date to a C string (page 244)) */
 const uint8_t BUILD_DATE[] = { __DATE__ };
 const uint8_t BUILD_TIME[] = { __TIME__ };
-const uint8_t REV[] = { "01" }; // TODO: Increment REV number each time the code was modified!
+//const uint8_t REV[] = { "01" }; // TODO: Increment REV number each time the code was modified!
+
+void getDeviceId( void )
+{
+    int tblpageReg, addrOffset, readDataL;
+//    int readDataH;
+    
+    // Read 24 bits of data memory from address 0x012340
+    // Create 24 bit EA for read by loading TBLPAG
+    tblpageReg = TBLPAG;
+    TBLPAG = 0x00FF;   // Load TBLPAG register with read address <23:16>
+    
+    addrOffset = 0x0000;                       // Load offset with read address <15:0>
+    // Read data from program memory
+    readDataL = __builtin_tblrdl(addrOffset);   // readDataL contains lower word data
+//    readDataH = __builtin_tblrdh(addrOffset);   // readDataH contains high byte data
+
+    appData.id.family = readDataL>>8;
+    appData.id.device =  readDataL & 0xFF;
+
+    addrOffset = 0x0002;
+    readDataL = __builtin_tblrdl(addrOffset);   // readDataL contains lower word data
+//    readDataH = __builtin_tblrdh(addrOffset);   // readDataH contains high byte data
+    
+    appData.id.revision = readDataL;
+    
+    TBLPAG = tblpageReg;
+    
+}
+
+void displayDeviceId( void )
+{
+    printf("*** Individual Device Identifier ***\n");
+    printf("* Family ID: %u\n", appData.id.family);
+    printf("* Individual ID: %u\n" , appData.id.device);
+    printf("* Revision: %u\n", appData.id.revision);
+    printf("***************************************************\n"); 
+}
+
+void getUniqueDeviceId( void )
+{
+    int tblpageReg, addrOffset;
+    
+    uint32_t readDataL, readDataH;
+    
+    tblpageReg = TBLPAG;
+    
+    TBLPAG = tblpageReg;
+    
+    TBLPAG = 0x0080;
+        
+//    addrOffset = 0x1300; 
+    addrOffset = 0x1308; 
+    readDataL = __builtin_tblrdl(addrOffset);
+    readDataH = __builtin_tblrdh(addrOffset);
+
+    appData.udid.words[0] = (readDataH<<16)+readDataL;
+
+//    addrOffset = 0x1302; 
+    addrOffset = 0x130A; 
+    readDataL = __builtin_tblrdl(addrOffset);
+    readDataH = __builtin_tblrdh(addrOffset);
+    
+    appData.udid.words[1] = (readDataH<<16)+readDataL;
+
+//    addrOffset = 0x1304; 
+    addrOffset = 0x130C; 
+    readDataL = __builtin_tblrdl(addrOffset);
+    readDataH = __builtin_tblrdh(addrOffset);
+    
+    appData.udid.words[2] = (readDataH<<16)+readDataL;
+
+//    addrOffset = 0x1306; 
+    addrOffset = 0x130E; 
+    readDataL = __builtin_tblrdl(addrOffset);
+    readDataH = __builtin_tblrdh(addrOffset);
+    
+    appData.udid.words[3] = (readDataH<<16)+readDataL;
+    
+//    printf(" %u %u\n", readDataL, readDataH);
+    
+//    addrOffset = 0x1308; 
+    addrOffset = 0x1310; 
+    readDataL = __builtin_tblrdl(addrOffset);
+    readDataH = __builtin_tblrdh(addrOffset);
+    
+    appData.udid.words[4] = (readDataH<<16)+readDataL;
+    
+    TBLPAG = tblpageReg;
+}
+
+void displayUniqueDeviceId( void )
+{
+    
+    printf("\t%06lX %06lX %06lX %06lX %06lX\n", appData.udid.words[0],
+                                        appData.udid.words[1],
+                                        appData.udid.words[2],
+                                        appData.udid.words[3],
+                                        appData.udid.words[4]);
+    
+}
 
 /* Display information on serial terminal. */
 void displayBuildDateTime( void )
@@ -29,9 +129,15 @@ void displayBuildDateTime( void )
 void displayBootMessage( void )
 {
     printf( "\n\n================ OpenFeeder ================\n" );
-    printf( "      Firmware: fw02_1, Rev: %s\n", REV );
-    printf( "      On Select Design board: v3.0\n");
-    printf( "      Build on %s, %s\n", BUILD_DATE, BUILD_TIME );
+    printf( "      Firmware: %s, %d.%d.%d\n", FW_NAME, FW_VERSION_MAJOR, FW_VERSION_MINOR, FW_VERSION_PATCH);
+    printf( "      Built on %s, %s\n", BUILD_DATE, BUILD_TIME );
+    printf( "      For board v3.0\n");
+    printf( "============================================\n" );
+    printf( "  UDID: %06lX %06lX %06lX %06lX %06lX\n", appData.udid.words[0],
+                                        appData.udid.words[1],
+                                        appData.udid.words[2],
+                                        appData.udid.words[3],
+                                        appData.udid.words[4]);
     printf( "============================================\n" );
     printf( "   Web page: https://github.com/OpenFeeder\n" );
     printf( "   Mail: contact.openfeeder@gmail.com\n" );

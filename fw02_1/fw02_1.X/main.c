@@ -216,6 +216,9 @@ int main( void )
     /* Initialize the device. */
     SYSTEM_Initialize( );
 
+    getDeviceId();
+    getUniqueDeviceId();
+
     /* "dsPIC33/PIC24 Family Reference Manual", "Reset" (DS39712)
      * 7.13 REGISTERS AND STATUS BIT VALUES, page 13 */
     appData.reset_status_num = appData.reset_2.bit_value.vddbor +

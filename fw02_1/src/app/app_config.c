@@ -160,6 +160,7 @@ INI_READ_STATE config_read_ini( void )
     int32_t read_parameter;
     int s, i;
     char str[20];
+    bool flag = false;
     
     /* Scenario number */
     read_parameter = ini_getl( "scenario", "num", -1, "CONFIG.INI" );
@@ -504,6 +505,36 @@ INI_READ_STATE config_read_ini( void )
     /* Data separator in the log file. */
     ini_gets( "logfile", "separator", DEFAULT_LOG_SEPARATOR, appDataLog.separator, sizearray( appDataLog.separator ), "CONFIG.INI" );
 
+    /* Reward. */
+    /* Check if "reward" is present in the INI file */ 
+    flag = false;
+    for (s = 0; ini_getsection(s, str, 20, "CONFIG.INI") > 0; s++)
+    {
+        if ( 0 == strcmp( str, "reward" ) )
+        {
+            flag = true;
+        }
+    }
+    
+    if (flag)
+    {
+       /* Reward enable */
+        read_parameter = ini_getl( "reward", "enable", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_REWARD_ENABLE;
+        }
+        else
+        {
+            appData.reward_enable = ( uint8_t ) read_parameter;
+        } 
+    }
+    else
+    {
+        appData.reward_enable = 1;
+    }
+        
+    
     /* Timeout before standby. */
     read_parameter = ini_getl( "timeouts", "sleep", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
@@ -637,10 +668,20 @@ void config_print( void )
             appDataDoor.close_time.tm_hour,
             appDataDoor.close_time.tm_min );
 
+    printf( "\tReward\n" );
+    if ( 0 == appData.reward_enable )
+    {
+        printf( "\t\tEnable: no\n" );
+    }
+    else
+    {
+        printf( "\t\tEnable: yes\n" );
+    }
+    printf( "\t\tTimeout: %us\n", appData.timeout_taking_reward / 1000 );
+    
     printf( "\tTimeouts\n" );
     printf( "\t\tSleep: %us\n", appData.timeout_standby / 1000 );
-    printf( "\t\tPIR: %us\n", appData.timeout_pir / 1000 );
-    printf( "\t\tTaking reward: %us\n", appData.timeout_taking_reward / 1000 );
+    printf( "\t\tPIR: %us\n", appData.timeout_pir / 1000 );    
     
     if (true == appData.flags.bit_value.attractive_leds_status)
     {
@@ -769,6 +810,9 @@ void getIniPbChar( INI_READ_STATE state, char *buf, uint8_t n )
             break;
         case INI_PB_TIMEOUTS_SLEEP:
             snprintf( buf, n, "Timeouts: sleep" );
+            break;
+        case INI_PB_REWARD_ENABLE:
+            snprintf( buf, n, "Reward: enable" );
             break;
         case INI_PB_TIMEOUTS_PIR:
             snprintf( buf, n, "Timeouts: pir" );

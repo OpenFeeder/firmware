@@ -314,17 +314,17 @@ FILEIO_RESULT logBatteryLevel(void)
         if (flag > 0)
         {
             numDataWritten = FILEIO_Write(buf, 1, flag, &file);
-        }
 
-        if (numDataWritten < flag)
-        {
-            errF = FILEIO_ErrorGet('A');
-            sprintf(appError.message, "Unable to write battery level in log file (%u)", errF);
-            appError.currentLineNumber = __LINE__;
-            sprintf(appError.currentFileName, "%s", __FILE__);
-            FILEIO_ErrorClear('A');
-            appError.number = ERROR_BATTERY_FILE_WRITE;
-            return FILEIO_RESULT_FAILURE;
+            if (numDataWritten < flag)
+            {
+                errF = FILEIO_ErrorGet('A');
+                sprintf(appError.message, "Unable to write battery level in log file (%u)", errF);
+                appError.currentLineNumber = __LINE__;
+                sprintf(appError.currentFileName, "%s", __FILE__);
+                FILEIO_ErrorClear('A');
+                appError.number = ERROR_BATTERY_FILE_WRITE;
+                return FILEIO_RESULT_FAILURE;
+            }
         }
     }
 
@@ -351,6 +351,73 @@ FILEIO_RESULT logBatteryLevel(void)
     clearBatteryBuffer( );
         
     return FILEIO_RESULT_SUCCESS;
+}
+
+FILEIO_RESULT logUDID(void)
+{
+    FILEIO_OBJECT file;
+    FILEIO_ERROR_TYPE errF;
+    char buf[35];
+    size_t numDataWritten;
+    int flag;
+    
+    if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
+    {
+        return FILEIO_RESULT_FAILURE;
+    }
+    
+    if (FILEIO_RESULT_FAILURE == FILEIO_Open(&file, "UDID.CSV", FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND))
+    {
+        errF = FILEIO_ErrorGet('A');
+        sprintf(appError.message, "Unable to open UDID log file (%u)", errF);
+        appError.currentLineNumber = __LINE__;
+        sprintf(appError.currentFileName, "%s", __FILE__);
+        FILEIO_ErrorClear('A');
+        appError.number = ERROR_UDID_FILE_OPEN;
+        return FILEIO_RESULT_FAILURE;
+    }
+    
+    flag = sprintf(buf, "%06lX %06lX %06lX %06lX %06lX\n",
+                        appData.udid.words[0],
+                        appData.udid.words[1],
+                        appData.udid.words[2],
+                        appData.udid.words[3],
+                        appData.udid.words[4]);
+
+    if (flag > 0)
+    {
+        numDataWritten = FILEIO_Write(buf, 1, flag, &file);
+        
+        if (numDataWritten < flag)
+        {
+            errF = FILEIO_ErrorGet('A');
+            sprintf(appError.message, "Unable to write UDID frequency in log file (%u)", errF);
+            appError.currentLineNumber = __LINE__;
+            sprintf(appError.currentFileName, "%s", __FILE__);
+            FILEIO_ErrorClear('A');
+            appError.number = ERROR_UDID_FILE_WRITE;
+            return FILEIO_RESULT_FAILURE;
+        }
+    }
+    
+    if (FILEIO_RESULT_FAILURE == FILEIO_Close(&file))
+    {
+        errF = FILEIO_ErrorGet('A');
+        sprintf(appError.message, "Unable to close UDID log file (%u)", errF);
+        appError.currentLineNumber = __LINE__;
+        sprintf(appError.currentFileName, "%s", __FILE__);
+        FILEIO_ErrorClear('A');
+        appError.number = ERROR_UDID_FILE_CLOSE;
+        return FILEIO_RESULT_FAILURE;
+    }
+    
+    if (USB_DRIVE_MOUNTED == usbUnmountDrive())
+    {
+        return FILEIO_RESULT_FAILURE;
+    }
+    
+    return FILEIO_RESULT_SUCCESS;
+    
 }
 
 FILEIO_RESULT logRfidFreq(void)
@@ -400,17 +467,17 @@ FILEIO_RESULT logRfidFreq(void)
         if (flag > 0)
         {
             numDataWritten = FILEIO_Write(buf, 1, flag, &file);
-        }
 
-        if (numDataWritten < flag)
-        {
-            errF = FILEIO_ErrorGet('A');
-            sprintf(appError.message, "Unable to write RFID frequency in log file (%u)", errF);
-            appError.currentLineNumber = __LINE__;
-            sprintf(appError.currentFileName, "%s", __FILE__);
-            FILEIO_ErrorClear('A');
-            appError.number = ERROR_RFID_FILE_WRITE;
-            return FILEIO_RESULT_FAILURE;
+            if (numDataWritten < flag)
+            {
+                errF = FILEIO_ErrorGet('A');
+                sprintf(appError.message, "Unable to write RFID frequency in log file (%u)", errF);
+                appError.currentLineNumber = __LINE__;
+                sprintf(appError.currentFileName, "%s", __FILE__);
+                FILEIO_ErrorClear('A');
+                appError.number = ERROR_RFID_FILE_WRITE;
+                return FILEIO_RESULT_FAILURE;
+            }
         }
     }
 

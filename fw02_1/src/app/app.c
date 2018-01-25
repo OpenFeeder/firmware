@@ -121,6 +121,8 @@ void APP_Tasks( void )
     int i;
     bool enter_default_state = false;
 
+    static int num_timeout_reward;
+    
     /* Check the Application State. */
     switch ( appData.state )
     {
@@ -172,8 +174,6 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_CONFIGURE_SYSTEM\n" );
 #endif
-                powerUsbRfidEnable( );
-                appDataUsb.key_is_nedded = true;
 
                 /* Set log file name => 20yymmdd.CSV (one log file per day). */
                 if ( false == setLogFileName( ) )
@@ -183,6 +183,9 @@ void APP_Tasks( void )
                     break;
                 }
 
+                powerUsbRfidEnable( );
+                appDataUsb.key_is_nedded = true;
+                
             }
 
             // TODO add timeout to find USB key
@@ -324,6 +327,8 @@ void APP_Tasks( void )
                 appData.state = APP_STATE_ERROR;
             }
 
+            logUDID();
+            
             appDataUsb.key_is_nedded = false;
 
             break;
@@ -336,11 +341,11 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_IDLE\n" );
 #endif              
-                if ( appData.timeout_standby > 0 )
-                {
-                    /* Timeout before going to standby mode */
-                    setDelayMsStandBy( appData.timeout_standby );
-                }
+//                if ( appData.timeout_standby > 0 )
+//                {
+//                    /* Timeout before going to standby mode */
+//                    setDelayMsStandBy( appData.timeout_standby );
+//                }
 
                 rtcc_start_alarm( );
 
@@ -388,7 +393,7 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE)
                 printf( "\tBird detected\n" );
 #endif
-                /* Inizialised global variable datalogging. */
+                /* Initialised global variable datalogging. */
                 clear_bird_sensor_detected( );
                 appDataLog.is_reward_taken = false;
 
@@ -411,14 +416,14 @@ void APP_Tasks( void )
             /* Check TIMEOUT IDLE MODE ending.
              *  - if false go to APP_STATE_STANDBY
              */
-            if ( false == appData.flags.bit_value.attractive_leds_status )
-            {
-                if ( appData.timeout_standby > 0 && isDelayMsEndingStandBy( ) )
-                {
-                    appData.state = APP_STATE_STANDBY;
-                    break;
-                }
-            }
+//            if ( false == appData.flags.bit_value.attractive_leds_status )
+//            {
+//                if ( appData.timeout_standby > 0 && isDelayMsEndingStandBy( ) )
+//                {
+//                    appData.state = APP_STATE_STANDBY;
+//                    break;
+//                }
+//            }
 
             if ( RTCC_ALARM_IDLE != appData.rtcc_alarm_action )
             {
@@ -785,6 +790,8 @@ void APP_Tasks( void )
                 printf( "> APP_STATE_WAITING_CATCH_REWARD\n" );
 #endif           
 
+                num_timeout_reward = 0;
+                    
                 /* Timeout before door closing if reward is not taken */
                 if ( appData.timeout_taking_reward > 0 )
                 {
@@ -794,9 +801,22 @@ void APP_Tasks( void )
                 appData.bird_is_taking_reward = false;
 
                 clear_ir1_sensor( );
+                
+                if ( 0 == appData.reward_enable )
+                {
+                    printf("\tReward disabled, waiting reward timemout to end.\n");
+                    while (false == isDelayMsEnding( ));
+                    EX_INT1_InterruptDisable( );
+                    EX_INT1_PositiveEdgeSet( );
+                    EX_INT1_InterruptFlagClear( );
+                    clear_ir1_sensor( );
+
+                    appData.state = APP_STATE_CLOSING_DOOR;
+                    break;
+                }
+                
             }
 
-#if !defined (PATH_HARDWARE_IR_SENSOR_DISABLE)
             if ( ( true == g_flag_ir1_sensor ) && ( false == appData.bird_is_taking_reward ) )
             {
                 EX_INT1_InterruptDisable( );
@@ -829,26 +849,43 @@ void APP_Tasks( void )
                 appData.state = APP_STATE_CLOSING_DOOR;
                 break;
             }
-#endif
 
             /* Timeout elapsed and reward is not taken */
-#if defined (PATH_HARDWARE_IR_SENSOR_DISABLE)
-#warning "PATH_HARDWARE_IR_SENSOR_DISABLE is defined! See in fw02\src\app\app.h file for normal use of OpenFeeder"
-            if ( true == isDelayMsEnding( ) )
-#else
-            //            if ( true == isDelayMsEnding( ) && 0 == BAR_IR1_OUT_GetValue( ) )
-            if ( true == isDelayMsEnding( ) && false == appData.bird_is_taking_reward )
-#endif
+            if ( true == isDelayMsEnding( ) )  
             {
+            
+                if ( false == appData.bird_is_taking_reward )
+                {
 #if defined (USE_UART1_SERIAL_INTERFACE)
-                printf( "\tReward timeout.\n" );
+                    printf( "\tReward timeout.\n" );
 #endif
-                EX_INT1_InterruptDisable( );
-                EX_INT1_PositiveEdgeSet( );
-                EX_INT1_InterruptFlagClear( );
-                clear_ir1_sensor( );
+                    EX_INT1_InterruptDisable( );
+                    EX_INT1_PositiveEdgeSet( );
+                    EX_INT1_InterruptFlagClear( );
+                    clear_ir1_sensor( );
 
-                appData.state = APP_STATE_CLOSING_DOOR;
+                    appData.state = APP_STATE_CLOSING_DOOR;
+                }
+                else
+                {
+                    ++num_timeout_reward;
+                    
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                    printf( "\tReward timeout but something wrong (%d/%d).\n", num_timeout_reward, MAX_NUM_REWARD_TIMEOUT );
+#endif  
+                    if ( num_timeout_reward >= MAX_NUM_REWARD_TIMEOUT )
+                    {
+                        appData.state = APP_STATE_CLOSING_DOOR;
+                        EX_INT1_InterruptDisable( );
+                        EX_INT1_PositiveEdgeSet( );
+                        EX_INT1_InterruptFlagClear( );
+                        clear_ir1_sensor( );
+                    }
+                    else
+                    {
+                        setDelayMs( appData.timeout_taking_reward );
+                    }
+                }
             }
             break;
             /* -------------------------------------------------------------- */
@@ -1011,6 +1048,12 @@ void APP_Tasks( void )
             {
                 appData.previous_state = appData.state;
 
+                /* Unmount drive on USB device before power it off. */
+                if ( USB_DRIVE_MOUNTED == appDataUsb.usbDriveStatus )
+                {
+                    usbUnmountDrive();
+                }
+                
                 USBHostShutdown( );
                 
                 setDelayMs( 2000 );
@@ -1251,19 +1294,19 @@ void APP_Tasks( void )
             break;
             /* -------------------------------------------------------------- */
             
-        case APP_STATE_STANDBY:
-            if ( appData.state != appData.previous_state )
-            {
-                appData.previous_state = appData.state;
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
-                printf( "> APP_STATE_STANDBY\n" );
-#endif
-            }
-
-//            Sleep( );
-
-            appData.state = APP_STATE_IDLE;
-            break;
+//        case APP_STATE_STANDBY:
+//            if ( appData.state != appData.previous_state )
+//            {
+//                appData.previous_state = appData.state;
+//#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
+//                printf( "> APP_STATE_STANDBY\n" );
+//#endif
+//            }
+//
+////            Sleep( );
+//
+//            appData.state = APP_STATE_IDLE;
+//            break;
             /* -------------------------------------------------------------- */
 
         case APP_STATE_SLEEP:
@@ -1357,6 +1400,12 @@ void APP_Tasks( void )
                         }
                     }
 
+                    /* Unmount drive on USB device before power it off. */
+                    if ( USB_DRIVE_MOUNTED == appDataUsb.usbDriveStatus )
+                    {
+                        usbUnmountDrive();
+                    }
+                    
                     USBHostShutdown( );
                     powerUsbRfidDisable( );
                 }
@@ -1571,9 +1620,15 @@ void APP_Tasks( void )
                 setAttractiveLedsOff( );
                 powerPIRDisable( );
                 EX_INT0_InterruptDisable( );
-                RFID_Disable( );
-                USBHostShutdown( );
+                RFID_Disable( );                
                 IRSensorDisable( );
+                
+                /* Unmount drive on USB device before power it off. */
+                if ( USB_DRIVE_MOUNTED == appDataUsb.usbDriveStatus )
+                {
+                    usbUnmountDrive();
+                }
+                USBHostShutdown( );                
                 powerUsbRfidDisable( );
 
                 /* Reset the system after DELAY_BEFORE_RESET milli-seconds if non critical error occurred */

@@ -95,6 +95,7 @@
 #include "app_timers_callback.h"
 #include "app_usb.h"
 
+#include "app_version.h"
 
 // *****************************************************************************
 // *****************************************************************************
@@ -105,7 +106,7 @@
 #define MAX_NUM_RESET 5
 #define OPENFEEDER_IS_AWAKEN    1
 #define OPENFEEDER_IS_SLEEPING  0
-
+#define MAX_NUM_REWARD_TIMEOUT 5
 // *****************************************************************************
 // *****************************************************************************
 // Section: Type Definitions
@@ -309,6 +310,8 @@ typedef struct
     uint16_t timeout_taking_reward;
 
     bool bird_is_taking_reward;
+    
+    uint8_t reward_enable;
 
     bool openfeeder_state;
     RTCC_ALARM_ACTION rtcc_alarm_action;
@@ -332,7 +335,19 @@ typedef struct
     bool servo_powered;
     
     bool test_rfid;
+    
+    struct
+    {
+        uint8_t family;
+        uint8_t device;
+        uint8_t revision;
+    } id ;
 
+    struct
+    {
+        uint32_t words[5];
+    } udid ;
+    
 } APP_DATA;
 
 // *****************************************************************************

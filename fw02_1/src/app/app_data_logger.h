@@ -64,6 +64,7 @@ void clearBatteryBuffer( void );
 
 FILEIO_RESULT logBatteryLevel( void );
 FILEIO_RESULT logRfidFreq( void );
+FILEIO_RESULT logUDID(void);
 
 #endif /* _APP_DATA_LOGGER_HEADER_H */
 

@@ -68,8 +68,14 @@ bool usbMountDrive( void )
             appDataUsb.usbDriveStatus = USB_DRIVE_NOT_MOUNTED;            
             return appDataUsb.usbDriveStatus;
         }
+        else
+        {
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
+            printf( "\tUSB device resumed\n" );
+#endif 
+        }
     }
-
+    
     /* Attempt to mount the drive described by gUSBDrive as drive 'A'
      * The deviceAddress parameter describes the USB address of the device;
      * it is initialized by the application in the USB_ApplicationEventHandler
@@ -150,7 +156,7 @@ bool usbUnmountDrive( void )
     else
     {
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
-        printf( "\tUSB drive suspended\n" );
+        printf( "\tUSB device suspended\n" );
 #endif 
     }
 
@@ -165,6 +171,29 @@ bool USB_ApplicationEventHandler( uint8_t address, USB_EVENT event, void *data, 
     switch ( ( int ) event )
     {
 
+        case EVENT_DETACH:
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
+            printf( "\tUSB: EVENT_DETACH\n" );
+#endif
+            return true;
+            break;
+            /* -------------------------------------------------------------- */
+
+        case EVENT_RESUME:
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
+            printf( "\tUSB: EVENT_RESUME\n" );
+#endif
+            return true;
+            break;
+            /* -------------------------------------------------------------- */
+        case EVENT_SUSPEND:
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
+            printf( "\tUSB: EVENT_SUSPEND\n" );
+#endif
+            return true;
+            break;
+            /* -------------------------------------------------------------- */
+            
         case EVENT_HUB_ATTACH:
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
             printf( "\tUSB: EVENT_HUB_ATTACH\n" );
