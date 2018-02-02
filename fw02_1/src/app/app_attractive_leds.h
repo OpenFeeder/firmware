@@ -41,6 +41,8 @@ void setAttractiveRedLedsColor( uint8_t );
 void setAttractiveGreenLedsColor( uint8_t );
 void setAttractiveBlueLedsColor( uint8_t );
 
+void testAttractiveLeds( void );
+
 #endif /* _APP_ATTRACTIVE_LEDS_HEADER_H */
 
 

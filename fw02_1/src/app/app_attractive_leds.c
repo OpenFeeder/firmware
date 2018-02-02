@@ -194,7 +194,69 @@ void setAttractiveBlueLedsColor( uint8_t dc_pwm )
     appDataAttractiveLeds.status = ATTRACTIVE_LEDS_ON;
 }
 
+void testAttractiveLeds( void )
+{
+    I2C1_MESSAGE_STATUS i2c_status = I2C1_MESSAGE_COMPLETE; // the status of write data on I2C bus
+    uint8_t writeBuffer[2]; // data to transmit
+    uint16_t delay = 500;
 
+    writeBuffer[0] = CTRLREG_PWM0;
+    writeBuffer[1] = 55; // PWM0 Individual Duty Cycle for LED_RGB1_R
+    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+                
+    writeBuffer[0] = CTRLREG_PWM3;
+    writeBuffer[1] = 0; // PWM3 Individual Duty Cycle for LED_RGB2_R
+    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+
+    writeBuffer[0] = CTRLREG_PWM6;
+    writeBuffer[1] = 0; // PWM6 Individual Duty Cycle for LED_RGB3_R
+    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+
+    writeBuffer[0] = CTRLREG_PWM9;
+    writeBuffer[1] = 0; // PWM9 Individual Duty Cycle for LED_RGB4_R
+    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+
+    appDataAttractiveLeds.status = ATTRACTIVE_LEDS_ON;
+    
+    setDelayMs( delay );
+    while ( 0 == isDelayMsEnding( ) );
+    
+    writeBuffer[0] = CTRLREG_PWM0;
+    writeBuffer[1] = 0; // PWM0 Individual Duty Cycle for LED_RGB1_R
+    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+    
+    writeBuffer[0] = CTRLREG_PWM3;
+    writeBuffer[1] = 55; // PWM0 Individual Duty Cycle for LED_RGB1_R
+    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+    
+    setDelayMs( delay );
+    while ( 0 == isDelayMsEnding( ) );
+    
+    writeBuffer[0] = CTRLREG_PWM3;
+    writeBuffer[1] = 0; // PWM0 Individual Duty Cycle for LED_RGB1_R
+    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+    
+    writeBuffer[0] = CTRLREG_PWM6;
+    writeBuffer[1] = 55; // PWM0 Individual Duty Cycle for LED_RGB1_R
+    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+    
+    setDelayMs( delay );
+    while ( 0 == isDelayMsEnding( ) );
+    
+    writeBuffer[0] = CTRLREG_PWM6;
+    writeBuffer[1] = 0; // PWM0 Individual Duty Cycle for LED_RGB1_R
+    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+    
+    writeBuffer[0] = CTRLREG_PWM9;
+    writeBuffer[1] = 55; // PWM0 Individual Duty Cycle for LED_RGB1_R
+    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+    
+    setDelayMs( delay );
+    while ( 0 == isDelayMsEnding( ) );
+    
+    appDataAttractiveLeds.status = ATTRACTIVE_LEDS_OFF;
+    
+}
 /*******************************************************************************
  End of File
  */

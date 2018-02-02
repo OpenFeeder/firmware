@@ -85,7 +85,7 @@ FIXDEPS=fixDeps
 
 # The following macros may be used in the pre and post step lines
 Device=PIC24FJ256GB406
-ProjectDir="D:\github\openfeeder\firmwares\fw02_1\fw02_1.X"
+ProjectDir="C:\Users\JeromeBriot\Documents\github\openfeeder\firmwares\fw02_1\fw02_1.X"
 ConfName=OF_fw_2_1_brd_3_0_no_ver
 ImagePath="dist\OF_fw_2_1_brd_3_0_no_ver\${IMAGE_TYPE}\fw02_1.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}"
 ImageDir="dist\OF_fw_2_1_brd_3_0_no_ver\${IMAGE_TYPE}"
@@ -115,336 +115,336 @@ ${OBJECTDIR}/_ext/659850791/app.o: ../src/app/app.c  nbproject/Makefile-${CND_CO
 	@${MKDIR} "${OBJECTDIR}/_ext/659850791" 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app.o.d 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app.c  -o ${OBJECTDIR}/_ext/659850791/app.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app.c  -o ${OBJECTDIR}/_ext/659850791/app.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/659850791/app.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/659850791/app_alarm.o: ../src/app/app_alarm.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/659850791" 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_alarm.o.d 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_alarm.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_alarm.c  -o ${OBJECTDIR}/_ext/659850791/app_alarm.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_alarm.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_alarm.c  -o ${OBJECTDIR}/_ext/659850791/app_alarm.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_alarm.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/659850791/app_alarm.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/659850791/app_attractive_leds.o: ../src/app/app_attractive_leds.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/659850791" 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_attractive_leds.o.d 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_attractive_leds.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_attractive_leds.c  -o ${OBJECTDIR}/_ext/659850791/app_attractive_leds.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_attractive_leds.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_attractive_leds.c  -o ${OBJECTDIR}/_ext/659850791/app_attractive_leds.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_attractive_leds.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/659850791/app_attractive_leds.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/659850791/app_check.o: ../src/app/app_check.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/659850791" 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_check.o.d 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_check.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_check.c  -o ${OBJECTDIR}/_ext/659850791/app_check.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_check.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_check.c  -o ${OBJECTDIR}/_ext/659850791/app_check.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_check.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/659850791/app_check.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/659850791/app_config.o: ../src/app/app_config.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/659850791" 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_config.o.d 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_config.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_config.c  -o ${OBJECTDIR}/_ext/659850791/app_config.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_config.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_config.c  -o ${OBJECTDIR}/_ext/659850791/app_config.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_config.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/659850791/app_config.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/659850791/app_data_logger.o: ../src/app/app_data_logger.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/659850791" 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_data_logger.o.d 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_data_logger.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_data_logger.c  -o ${OBJECTDIR}/_ext/659850791/app_data_logger.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_data_logger.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_data_logger.c  -o ${OBJECTDIR}/_ext/659850791/app_data_logger.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_data_logger.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/659850791/app_data_logger.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/659850791/app_datetime.o: ../src/app/app_datetime.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/659850791" 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_datetime.o.d 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_datetime.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_datetime.c  -o ${OBJECTDIR}/_ext/659850791/app_datetime.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_datetime.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_datetime.c  -o ${OBJECTDIR}/_ext/659850791/app_datetime.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_datetime.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/659850791/app_datetime.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/659850791/app_debug.o: ../src/app/app_debug.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/659850791" 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_debug.o.d 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_debug.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_debug.c  -o ${OBJECTDIR}/_ext/659850791/app_debug.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_debug.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_debug.c  -o ${OBJECTDIR}/_ext/659850791/app_debug.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_debug.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/659850791/app_debug.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/659850791/app_error.o: ../src/app/app_error.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/659850791" 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_error.o.d 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_error.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_error.c  -o ${OBJECTDIR}/_ext/659850791/app_error.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_error.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_error.c  -o ${OBJECTDIR}/_ext/659850791/app_error.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_error.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/659850791/app_error.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/659850791/app_event.o: ../src/app/app_event.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/659850791" 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_event.o.d 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_event.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_event.c  -o ${OBJECTDIR}/_ext/659850791/app_event.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_event.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_event.c  -o ${OBJECTDIR}/_ext/659850791/app_event.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_event.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/659850791/app_event.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/659850791/app_i2c.o: ../src/app/app_i2c.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/659850791" 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_i2c.o.d 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_i2c.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_i2c.c  -o ${OBJECTDIR}/_ext/659850791/app_i2c.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_i2c.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_i2c.c  -o ${OBJECTDIR}/_ext/659850791/app_i2c.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_i2c.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/659850791/app_i2c.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/659850791/app_power.o: ../src/app/app_power.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/659850791" 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_power.o.d 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_power.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_power.c  -o ${OBJECTDIR}/_ext/659850791/app_power.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_power.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_power.c  -o ${OBJECTDIR}/_ext/659850791/app_power.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_power.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/659850791/app_power.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/659850791/app_remote.o: ../src/app/app_remote.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/659850791" 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_remote.o.d 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_remote.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_remote.c  -o ${OBJECTDIR}/_ext/659850791/app_remote.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_remote.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_remote.c  -o ${OBJECTDIR}/_ext/659850791/app_remote.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_remote.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/659850791/app_remote.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/659850791/app_rfid.o: ../src/app/app_rfid.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/659850791" 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_rfid.o.d 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_rfid.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_rfid.c  -o ${OBJECTDIR}/_ext/659850791/app_rfid.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_rfid.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_rfid.c  -o ${OBJECTDIR}/_ext/659850791/app_rfid.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_rfid.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/659850791/app_rfid.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/659850791/app_timers_callback.o: ../src/app/app_timers_callback.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/659850791" 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_timers_callback.o.d 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_timers_callback.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_timers_callback.c  -o ${OBJECTDIR}/_ext/659850791/app_timers_callback.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_timers_callback.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_timers_callback.c  -o ${OBJECTDIR}/_ext/659850791/app_timers_callback.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_timers_callback.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/659850791/app_timers_callback.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/659850791/app_usb.o: ../src/app/app_usb.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/659850791" 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_usb.o.d 
 	@${RM} ${OBJECTDIR}/_ext/659850791/app_usb.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_usb.c  -o ${OBJECTDIR}/_ext/659850791/app_usb.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_usb.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/app/app_usb.c  -o ${OBJECTDIR}/_ext/659850791/app_usb.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/659850791/app_usb.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/659850791/app_usb.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/362756510/delay.o: ../src/driver/delay.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/362756510" 
 	@${RM} ${OBJECTDIR}/_ext/362756510/delay.o.d 
 	@${RM} ${OBJECTDIR}/_ext/362756510/delay.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/driver/delay.c  -o ${OBJECTDIR}/_ext/362756510/delay.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/362756510/delay.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/driver/delay.c  -o ${OBJECTDIR}/_ext/362756510/delay.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/362756510/delay.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/362756510/delay.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/362756510/digits.o: ../src/driver/digits.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/362756510" 
 	@${RM} ${OBJECTDIR}/_ext/362756510/digits.o.d 
 	@${RM} ${OBJECTDIR}/_ext/362756510/digits.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/driver/digits.c  -o ${OBJECTDIR}/_ext/362756510/digits.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/362756510/digits.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/driver/digits.c  -o ${OBJECTDIR}/_ext/362756510/digits.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/362756510/digits.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/362756510/digits.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/362756510/em4095.o: ../src/driver/em4095.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/362756510" 
 	@${RM} ${OBJECTDIR}/_ext/362756510/em4095.o.d 
 	@${RM} ${OBJECTDIR}/_ext/362756510/em4095.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/driver/em4095.c  -o ${OBJECTDIR}/_ext/362756510/em4095.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/362756510/em4095.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/driver/em4095.c  -o ${OBJECTDIR}/_ext/362756510/em4095.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/362756510/em4095.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/362756510/em4095.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/362756510/ir_sensor.o: ../src/driver/ir_sensor.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/362756510" 
 	@${RM} ${OBJECTDIR}/_ext/362756510/ir_sensor.o.d 
 	@${RM} ${OBJECTDIR}/_ext/362756510/ir_sensor.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/driver/ir_sensor.c  -o ${OBJECTDIR}/_ext/362756510/ir_sensor.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/362756510/ir_sensor.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/driver/ir_sensor.c  -o ${OBJECTDIR}/_ext/362756510/ir_sensor.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/362756510/ir_sensor.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/362756510/ir_sensor.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/362756510/led_status.o: ../src/driver/led_status.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/362756510" 
 	@${RM} ${OBJECTDIR}/_ext/362756510/led_status.o.d 
 	@${RM} ${OBJECTDIR}/_ext/362756510/led_status.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/driver/led_status.c  -o ${OBJECTDIR}/_ext/362756510/led_status.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/362756510/led_status.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/driver/led_status.c  -o ${OBJECTDIR}/_ext/362756510/led_status.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/362756510/led_status.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/362756510/led_status.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/362756510/mcp23017.o: ../src/driver/mcp23017.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/362756510" 
 	@${RM} ${OBJECTDIR}/_ext/362756510/mcp23017.o.d 
 	@${RM} ${OBJECTDIR}/_ext/362756510/mcp23017.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/driver/mcp23017.c  -o ${OBJECTDIR}/_ext/362756510/mcp23017.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/362756510/mcp23017.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/driver/mcp23017.c  -o ${OBJECTDIR}/_ext/362756510/mcp23017.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/362756510/mcp23017.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/362756510/mcp23017.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/362756510/servomotor.o: ../src/driver/servomotor.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/362756510" 
 	@${RM} ${OBJECTDIR}/_ext/362756510/servomotor.o.d 
 	@${RM} ${OBJECTDIR}/_ext/362756510/servomotor.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/driver/servomotor.c  -o ${OBJECTDIR}/_ext/362756510/servomotor.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/362756510/servomotor.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/driver/servomotor.c  -o ${OBJECTDIR}/_ext/362756510/servomotor.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/362756510/servomotor.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/362756510/servomotor.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/362756510/pca9622.o: ../src/driver/pca9622.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/362756510" 
 	@${RM} ${OBJECTDIR}/_ext/362756510/pca9622.o.d 
 	@${RM} ${OBJECTDIR}/_ext/362756510/pca9622.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/driver/pca9622.c  -o ${OBJECTDIR}/_ext/362756510/pca9622.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/362756510/pca9622.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/driver/pca9622.c  -o ${OBJECTDIR}/_ext/362756510/pca9622.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/362756510/pca9622.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/362756510/pca9622.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/362756510/ds3231.o: ../src/driver/ds3231.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/362756510" 
 	@${RM} ${OBJECTDIR}/_ext/362756510/ds3231.o.d 
 	@${RM} ${OBJECTDIR}/_ext/362756510/ds3231.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/driver/ds3231.c  -o ${OBJECTDIR}/_ext/362756510/ds3231.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/362756510/ds3231.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/driver/ds3231.c  -o ${OBJECTDIR}/_ext/362756510/ds3231.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/362756510/ds3231.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/362756510/ds3231.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/1442584205/fileio.o: ../src/framework/fileio/fileio.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1442584205" 
 	@${RM} ${OBJECTDIR}/_ext/1442584205/fileio.o.d 
 	@${RM} ${OBJECTDIR}/_ext/1442584205/fileio.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/framework/fileio/fileio.c  -o ${OBJECTDIR}/_ext/1442584205/fileio.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1442584205/fileio.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/framework/fileio/fileio.c  -o ${OBJECTDIR}/_ext/1442584205/fileio.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1442584205/fileio.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1442584205/fileio.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/1643051837/min_glue.o: ../src/framework/minini/min_glue.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1643051837" 
 	@${RM} ${OBJECTDIR}/_ext/1643051837/min_glue.o.d 
 	@${RM} ${OBJECTDIR}/_ext/1643051837/min_glue.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/framework/minini/min_glue.c  -o ${OBJECTDIR}/_ext/1643051837/min_glue.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1643051837/min_glue.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/framework/minini/min_glue.c  -o ${OBJECTDIR}/_ext/1643051837/min_glue.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1643051837/min_glue.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1643051837/min_glue.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/1643051837/min_ini.o: ../src/framework/minini/min_ini.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1643051837" 
 	@${RM} ${OBJECTDIR}/_ext/1643051837/min_ini.o.d 
 	@${RM} ${OBJECTDIR}/_ext/1643051837/min_ini.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/framework/minini/min_ini.c  -o ${OBJECTDIR}/_ext/1643051837/min_ini.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1643051837/min_ini.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/framework/minini/min_ini.c  -o ${OBJECTDIR}/_ext/1643051837/min_ini.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1643051837/min_ini.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1643051837/min_ini.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/175103367/usb_config.o: ../src/framework/usb/usb_config.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/175103367" 
 	@${RM} ${OBJECTDIR}/_ext/175103367/usb_config.o.d 
 	@${RM} ${OBJECTDIR}/_ext/175103367/usb_config.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/framework/usb/usb_config.c  -o ${OBJECTDIR}/_ext/175103367/usb_config.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/175103367/usb_config.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/framework/usb/usb_config.c  -o ${OBJECTDIR}/_ext/175103367/usb_config.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/175103367/usb_config.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/175103367/usb_config.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/175103367/usb_hal_pic24.o: ../src/framework/usb/usb_hal_pic24.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/175103367" 
 	@${RM} ${OBJECTDIR}/_ext/175103367/usb_hal_pic24.o.d 
 	@${RM} ${OBJECTDIR}/_ext/175103367/usb_hal_pic24.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/framework/usb/usb_hal_pic24.c  -o ${OBJECTDIR}/_ext/175103367/usb_hal_pic24.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/175103367/usb_hal_pic24.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/framework/usb/usb_hal_pic24.c  -o ${OBJECTDIR}/_ext/175103367/usb_hal_pic24.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/175103367/usb_hal_pic24.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/175103367/usb_hal_pic24.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/175103367/usb_host.o: ../src/framework/usb/usb_host.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/175103367" 
 	@${RM} ${OBJECTDIR}/_ext/175103367/usb_host.o.d 
 	@${RM} ${OBJECTDIR}/_ext/175103367/usb_host.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/framework/usb/usb_host.c  -o ${OBJECTDIR}/_ext/175103367/usb_host.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/175103367/usb_host.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/framework/usb/usb_host.c  -o ${OBJECTDIR}/_ext/175103367/usb_host.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/175103367/usb_host.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/175103367/usb_host.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/175103367/usb_host_msd.o: ../src/framework/usb/usb_host_msd.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/175103367" 
 	@${RM} ${OBJECTDIR}/_ext/175103367/usb_host_msd.o.d 
 	@${RM} ${OBJECTDIR}/_ext/175103367/usb_host_msd.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/framework/usb/usb_host_msd.c  -o ${OBJECTDIR}/_ext/175103367/usb_host_msd.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/175103367/usb_host_msd.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/framework/usb/usb_host_msd.c  -o ${OBJECTDIR}/_ext/175103367/usb_host_msd.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/175103367/usb_host_msd.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/175103367/usb_host_msd.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/_ext/175103367/usb_host_msd_scsi.o: ../src/framework/usb/usb_host_msd_scsi.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/175103367" 
 	@${RM} ${OBJECTDIR}/_ext/175103367/usb_host_msd_scsi.o.d 
 	@${RM} ${OBJECTDIR}/_ext/175103367/usb_host_msd_scsi.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/framework/usb/usb_host_msd_scsi.c  -o ${OBJECTDIR}/_ext/175103367/usb_host_msd_scsi.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/175103367/usb_host_msd_scsi.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../src/framework/usb/usb_host_msd_scsi.c  -o ${OBJECTDIR}/_ext/175103367/usb_host_msd_scsi.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/175103367/usb_host_msd_scsi.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/_ext/175103367/usb_host_msd_scsi.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/mcc_generated_files/traps.o: mcc_generated_files/traps.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/mcc_generated_files" 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/traps.o.d 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/traps.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/traps.c  -o ${OBJECTDIR}/mcc_generated_files/traps.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/traps.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/traps.c  -o ${OBJECTDIR}/mcc_generated_files/traps.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/traps.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/mcc_generated_files/traps.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/mcc_generated_files/tmr2.o: mcc_generated_files/tmr2.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/mcc_generated_files" 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/tmr2.o.d 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/tmr2.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/tmr2.c  -o ${OBJECTDIR}/mcc_generated_files/tmr2.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/tmr2.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/tmr2.c  -o ${OBJECTDIR}/mcc_generated_files/tmr2.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/tmr2.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/mcc_generated_files/tmr2.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/mcc_generated_files/mcc.o: mcc_generated_files/mcc.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/mcc_generated_files" 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/mcc.o.d 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/mcc.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/mcc.c  -o ${OBJECTDIR}/mcc_generated_files/mcc.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/mcc.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/mcc.c  -o ${OBJECTDIR}/mcc_generated_files/mcc.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/mcc.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/mcc_generated_files/mcc.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/mcc_generated_files/interrupt_manager.o: mcc_generated_files/interrupt_manager.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/mcc_generated_files" 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/interrupt_manager.o.d 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/interrupt_manager.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/interrupt_manager.c  -o ${OBJECTDIR}/mcc_generated_files/interrupt_manager.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/interrupt_manager.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/interrupt_manager.c  -o ${OBJECTDIR}/mcc_generated_files/interrupt_manager.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/interrupt_manager.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/mcc_generated_files/interrupt_manager.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/mcc_generated_files/pin_manager.o: mcc_generated_files/pin_manager.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/mcc_generated_files" 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/pin_manager.o.d 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/pin_manager.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/pin_manager.c  -o ${OBJECTDIR}/mcc_generated_files/pin_manager.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/pin_manager.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/pin_manager.c  -o ${OBJECTDIR}/mcc_generated_files/pin_manager.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/pin_manager.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/mcc_generated_files/pin_manager.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/mcc_generated_files/uart1.o: mcc_generated_files/uart1.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/mcc_generated_files" 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/uart1.o.d 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/uart1.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/uart1.c  -o ${OBJECTDIR}/mcc_generated_files/uart1.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/uart1.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/uart1.c  -o ${OBJECTDIR}/mcc_generated_files/uart1.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/uart1.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/mcc_generated_files/uart1.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/mcc_generated_files/ext_int.o: mcc_generated_files/ext_int.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/mcc_generated_files" 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/ext_int.o.d 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/ext_int.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/ext_int.c  -o ${OBJECTDIR}/mcc_generated_files/ext_int.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/ext_int.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/ext_int.c  -o ${OBJECTDIR}/mcc_generated_files/ext_int.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/ext_int.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/mcc_generated_files/ext_int.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/mcc_generated_files/i2c1.o: mcc_generated_files/i2c1.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/mcc_generated_files" 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/i2c1.o.d 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/i2c1.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/i2c1.c  -o ${OBJECTDIR}/mcc_generated_files/i2c1.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/i2c1.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/i2c1.c  -o ${OBJECTDIR}/mcc_generated_files/i2c1.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/i2c1.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/mcc_generated_files/i2c1.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/mcc_generated_files/rtcc.o: mcc_generated_files/rtcc.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/mcc_generated_files" 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/rtcc.o.d 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/rtcc.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/rtcc.c  -o ${OBJECTDIR}/mcc_generated_files/rtcc.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/rtcc.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/rtcc.c  -o ${OBJECTDIR}/mcc_generated_files/rtcc.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/rtcc.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/mcc_generated_files/rtcc.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/mcc_generated_files/adc1.o: mcc_generated_files/adc1.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/mcc_generated_files" 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/adc1.o.d 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/adc1.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/adc1.c  -o ${OBJECTDIR}/mcc_generated_files/adc1.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/adc1.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/adc1.c  -o ${OBJECTDIR}/mcc_generated_files/adc1.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/adc1.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/mcc_generated_files/adc1.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/mcc_generated_files/tmr4.o: mcc_generated_files/tmr4.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/mcc_generated_files" 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/tmr4.o.d 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/tmr4.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/tmr4.c  -o ${OBJECTDIR}/mcc_generated_files/tmr4.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/tmr4.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/tmr4.c  -o ${OBJECTDIR}/mcc_generated_files/tmr4.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/tmr4.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/mcc_generated_files/tmr4.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/mcc_generated_files/tmr3.o: mcc_generated_files/tmr3.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/mcc_generated_files" 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/tmr3.o.d 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/tmr3.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/tmr3.c  -o ${OBJECTDIR}/mcc_generated_files/tmr3.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/tmr3.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/tmr3.c  -o ${OBJECTDIR}/mcc_generated_files/tmr3.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/tmr3.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/mcc_generated_files/tmr3.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/mcc_generated_files/oc4.o: mcc_generated_files/oc4.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/mcc_generated_files" 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/oc4.o.d 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/oc4.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/oc4.c  -o ${OBJECTDIR}/mcc_generated_files/oc4.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/oc4.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/oc4.c  -o ${OBJECTDIR}/mcc_generated_files/oc4.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/oc4.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/mcc_generated_files/oc4.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/mcc_generated_files/oc5.o: mcc_generated_files/oc5.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/mcc_generated_files" 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/oc5.o.d 
 	@${RM} ${OBJECTDIR}/mcc_generated_files/oc5.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/oc5.c  -o ${OBJECTDIR}/mcc_generated_files/oc5.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/oc5.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  mcc_generated_files/oc5.c  -o ${OBJECTDIR}/mcc_generated_files/oc5.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/mcc_generated_files/oc5.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/mcc_generated_files/oc5.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/main.o: main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/main.o.d 
 	@${RM} ${OBJECTDIR}/main.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  main.c  -o ${OBJECTDIR}/main.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/main.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
+	${MP_CC} $(MP_EXTRA_CC_PRE)  main.c  -o ${OBJECTDIR}/main.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/main.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -mlarge-code -O0 -I"../src" -I"../src/app" -I"../src/driver" -I"../src/framework/fileio" -I"../src/framework/minini" -I"../src/framework/usb" -I"mcc_generated_files" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/main.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 else
@@ -803,7 +803,7 @@ endif
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
 dist/${CND_CONF}/${IMAGE_TYPE}/fw02_1.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk    
 	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
-	${MP_CC} $(MP_EXTRA_LD_PRE)  -o dist/${CND_CONF}/${IMAGE_TYPE}/fw02_1.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}      -mcpu=$(MP_PROCESSOR_OPTION)        -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)   -mreserve=data@0x800:0x81B -mreserve=data@0x81C:0x81D -mreserve=data@0x81E:0x81F -mreserve=data@0x820:0x821 -mreserve=data@0x822:0x823 -mreserve=data@0x824:0x827 -mreserve=data@0x82A:0x84F   -Wl,--local-stack,,--defsym=__MPLAB_BUILD=1,--defsym=__MPLAB_DEBUG=1,--defsym=__DEBUG=1,--defsym=__MPLAB_DEBUGGER_ICD3=1,$(MP_LINKER_FILE_OPTION),--heap=512,--stack=16,--check-sections,--data-init,--pack-data,--handles,--isr,--no-gc-sections,--fill-upper=0,--stackguard=16,--no-force-link,--smart-io,-Map="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map",--report-mem,--memorysummary,dist/${CND_CONF}/${IMAGE_TYPE}/memoryfile.xml$(MP_EXTRA_LD_POST) 
+	${MP_CC} $(MP_EXTRA_LD_PRE)  -o dist/${CND_CONF}/${IMAGE_TYPE}/fw02_1.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}      -mcpu=$(MP_PROCESSOR_OPTION)        -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -omf=elf -DXPRJ_OF_fw_2_1_brd_3_0_no_ver=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)   -mreserve=data@0x800:0x81B -mreserve=data@0x81C:0x81D -mreserve=data@0x81E:0x81F -mreserve=data@0x820:0x821 -mreserve=data@0x822:0x823 -mreserve=data@0x824:0x827 -mreserve=data@0x82A:0x84F   -Wl,--local-stack,,--defsym=__MPLAB_BUILD=1,--defsym=__MPLAB_DEBUG=1,--defsym=__DEBUG=1,--defsym=__MPLAB_DEBUGGER_PK3=1,$(MP_LINKER_FILE_OPTION),--heap=512,--stack=16,--check-sections,--data-init,--pack-data,--handles,--isr,--no-gc-sections,--fill-upper=0,--stackguard=16,--no-force-link,--smart-io,-Map="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map",--report-mem,--memorysummary,dist/${CND_CONF}/${IMAGE_TYPE}/memoryfile.xml$(MP_EXTRA_LD_POST) 
 	
 else
 dist/${CND_CONF}/${IMAGE_TYPE}/fw02_1.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk   

@@ -288,8 +288,12 @@ void APP_Tasks( void )
                     if ( initAttractiveLeds( ) )
                     {
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
-                        printf( "\tAttractive LEDs: ok\n" );
+                        printf( "\tAttractive LEDs: ok\n" ); 
 #endif
+                        setAttractiveLedsOn();
+                        testAttractiveLeds();
+                        setAttractiveLedsOff();
+
                     }
                     else
                     {
@@ -358,6 +362,12 @@ void APP_Tasks( void )
                 
                 appData.test_rfid = false;
                 clear_bird_sensor_detected( );
+                
+                if ( DOOR_HABITUATION == appData.scenario_number )
+                {
+                    appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_A;
+                    setAttractiveLedsColor( );
+                }
 
             }
 
