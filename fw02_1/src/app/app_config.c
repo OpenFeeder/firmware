@@ -337,6 +337,20 @@ INI_READ_STATE config_read_ini( void )
             appDataAttractiveLeds.sleep_time.tm_min = ( int ) read_parameter;
         }
         appDataAttractiveLeds.sleep_time.tm_sec = 0;
+        
+        if ( GO_NO_GO == appData.scenario_number )
+        {
+            read_parameter = ini_getl( "attractiveleds", "pattern", -1, "CONFIG.INI" );
+            if ( read_parameter == -1 )
+            {
+                return INI_PB_ATTRACTIVE_LEDS_PATTERN;
+            }
+            else
+            {
+                appDataAttractiveLeds.pattern_number = ( uint8_t ) read_parameter;
+            }
+            
+        }
     }
 
     /* PIT Tags denied or associated with color A. */
@@ -596,6 +610,9 @@ void config_print( void )
         case OPEN_BAR:
             printf( " open-bar\n" );
             break;
+        case GO_NO_GO:
+            printf( " go-no go\n" );
+            break;
         case LONG_TERM_SPATIAL_MEMORY:
             printf( " long term spatial memory\n" );
             break;
@@ -692,30 +709,81 @@ void config_print( void )
     printf( "\tData logger\n" );
     printf( "\t\tFile name: %s\n", appDataLog.filename );
     printf( "\t\tData separator: %s\n", appDataLog.separator );
+            
+    if ( DOOR_HABITUATION < appData.scenario_number )
+    {
+        if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number)
+        {
+            printf( "\tPIT tags associated with color A\n" );
+        }
+        else if ( GO_NO_GO == appData.scenario_number)
+        {
+            if ( LEFT_RIGHT_LEDS == appDataAttractiveLeds.pattern_number )
+            {
+                printf( "\tPIT tags associated with left attractive LEDs\n" );
+            }
+            else if ( TOP_BOTTOM_LEDS == appDataAttractiveLeds.pattern_number )
+            {
+                printf( "\tPIT Tags associated with bottom attractive LEDs\n" );
+            }
+            else
+            {
+                printf( "\tPIT tags associated with pattern 1\n" );
+            }
+        }
+        else
+        {
+            printf( "\tPIT tags denied\n" );
+        }
+        
+        if ( appDataPitTag.numPitTagDeniedOrColorA > 0 )
+        {
+            for ( i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; ++i )
+            {
+                printf( "\t\tSN%d: %s\n", i + 1, appDataPitTag.pit_tags_list[i] );
+            }
+        }
+        else
+        {
+            printf( "\t\tNone\n" );
+        }
+        
+        if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number)
+        {
+            printf( "\tPIT Tags associated with color B\n" );
+        }
+        else if ( GO_NO_GO == appData.scenario_number)
+        {
+            if ( LEFT_RIGHT_LEDS == appDataAttractiveLeds.pattern_number )
+            {
+                printf( "\tPIT tags associated with right attractive LEDs\n" );
+            }
+            else if ( TOP_BOTTOM_LEDS == appDataAttractiveLeds.pattern_number )
+            {
+                printf( "\tPIT Tags associated with bottom attractive LEDs\n" );
+            }
+            else
+            {
+                printf( "\tPIT Tags associated with pattern 2\n" );
+            }
+        }
+        else
+        {
+            printf( "\tPIT tags accepted\n" );
+        }
 
-    printf( "\tPIT Tags denied or associated with color A\n" );
-    if ( appDataPitTag.numPitTagDeniedOrColorA > 0 )
-    {
-        for ( i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; ++i )
+        if ( appDataPitTag.numPitTagAcceptedOrColorB > 0 )
         {
-            printf( "\t\tSN%d: %s\n", i + 1, appDataPitTag.pit_tags_list[i] );
+            for ( i = appDataPitTag.numPitTagDeniedOrColorA; i < ( appDataPitTag.numPitTagDeniedOrColorA + appDataPitTag.numPitTagAcceptedOrColorB ); ++i )
+            {
+                printf( "\t\tSN%d: %s\n", i + 1 - appDataPitTag.numPitTagDeniedOrColorA, appDataPitTag.pit_tags_list[i] );
+            }
         }
-    }
-    else
-    {
-        printf( "\t\tNone\n" );
-    }
-    printf( "\tPIT Tags accepted or associated with color B\n" );
-    if ( appDataPitTag.numPitTagAcceptedOrColorB > 0 )
-    {
-        for ( i = appDataPitTag.numPitTagDeniedOrColorA; i < ( appDataPitTag.numPitTagDeniedOrColorA + appDataPitTag.numPitTagAcceptedOrColorB ); ++i )
+        else
         {
-            printf( "\t\tSN%d: %s\n", i + 1 - appDataPitTag.numPitTagDeniedOrColorA, appDataPitTag.pit_tags_list[i] );
+            printf( "\t\tNone\n" );
         }
-    }
-    else
-    {
-        printf( "\t\tNone\n" );
+        
     }
 
 }
@@ -778,6 +846,9 @@ void getIniPbChar( INI_READ_STATE state, char *buf, uint8_t n )
         case INI_PB_ATTRACTIVE_LEDS_OFF_MINUTE:
             snprintf( buf, n, "Attractive LEDs: off minute" );
             break;
+        case INI_PB_ATTRACTIVE_LEDS_PATTERN:
+            snprintf( buf, n, "Attractive LEDs: pattern" );
+            break;     
         case INI_PB_DOOR_TON_MIN:
             snprintf( buf, n, "Door: position min" );
             break;

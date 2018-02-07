@@ -16,9 +16,9 @@
 
 typedef struct
 {
-    uint16_t red[2];
-    uint16_t green[2];
-    uint16_t blue[2];
+    uint8_t red[2]; // FIXME : uint16_t pass to uint8_t
+    uint8_t green[2];
+    uint8_t blue[2];
 
     struct tm wake_up_time;
     struct tm sleep_time;
@@ -29,8 +29,21 @@ typedef struct
     bool status;
 
     uint8_t current_color_index;
+    
+    uint8_t pattern_number;
+    bool pattern_idx;    
+    bool pattern[4];    
+    uint8_t leds_index[4];
 
 } APP_DATA_LEDS;
+
+typedef enum
+{
+    ALL_LEDS,
+    LEFT_RIGHT_LEDS,
+    TOP_BOTTOM_LEDS
+        
+} LEDS_PATTERN;
 
 bool initAttractiveLeds( void );
 void setAttractiveLedsOff( void );
@@ -40,6 +53,10 @@ void setAttractiveLedsNoColor( void );
 void setAttractiveRedLedsColor( uint8_t );
 void setAttractiveGreenLedsColor( uint8_t );
 void setAttractiveBlueLedsColor( uint8_t );
+
+void setOneAttractiveLedColor( uint8_t, uint8_t, uint8_t, uint8_t );
+
+void setAttractiveLedsPattern( void );
 
 void testAttractiveLeds( void );
 

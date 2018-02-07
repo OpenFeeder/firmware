@@ -85,7 +85,7 @@ FIXDEPS=fixDeps
 
 # The following macros may be used in the pre and post step lines
 Device=PIC24FJ256GB406
-ProjectDir="C:\Users\JeromeBriot\Documents\github\openfeeder\firmwares\fw02_1\fw02_1.X"
+ProjectDir="D:\github\openfeeder\firmwares\fw02_1\fw02_1.X"
 ConfName=OF_fw_2_1_brd_3_0_no_ver
 ImagePath="dist\OF_fw_2_1_brd_3_0_no_ver\${IMAGE_TYPE}\fw02_1.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}"
 ImageDir="dist\OF_fw_2_1_brd_3_0_no_ver\${IMAGE_TYPE}"

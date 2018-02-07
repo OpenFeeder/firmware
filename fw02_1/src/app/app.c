@@ -119,7 +119,7 @@ void APP_Tasks( void )
     bool flag;
     I2C1_MESSAGE_STATUS i2c_status;
     int i;
-    bool enter_default_state = false;
+    static bool enter_default_state = false;
 
     static int num_timeout_reward;
     
@@ -305,6 +305,43 @@ void APP_Tasks( void )
                         break;
                     }
 
+                    if ( GO_NO_GO == appData.scenario_number )
+                    {
+                        if ( ALL_LEDS == appDataAttractiveLeds.pattern_number )
+                        {
+                           appDataAttractiveLeds.pattern[0] = 0;
+                           appDataAttractiveLeds.pattern[1] = 0;
+                           appDataAttractiveLeds.pattern[2] = 0;
+                           appDataAttractiveLeds.pattern[3] = 0;
+                        }
+                        else if ( LEFT_RIGHT_LEDS == appDataAttractiveLeds.pattern_number )
+                        {
+                           appDataAttractiveLeds.pattern[0] = 1;
+                           appDataAttractiveLeds.pattern[1] = 0;
+                           appDataAttractiveLeds.pattern[2] = 0;
+                           appDataAttractiveLeds.pattern[3] = 1;  
+                        }
+                        else
+                        {
+                           appDataAttractiveLeds.pattern[0] = 1;
+                           appDataAttractiveLeds.pattern[1] = 1;
+                           appDataAttractiveLeds.pattern[2] = 0;
+                           appDataAttractiveLeds.pattern[3] = 0;  
+                        }
+                        
+                        appDataAttractiveLeds.leds_index[0] = 2;
+                        appDataAttractiveLeds.leds_index[1] = 4;
+                        appDataAttractiveLeds.leds_index[2] = 3;
+                        appDataAttractiveLeds.leds_index[3] = 1;
+                        
+                        appDataAttractiveLeds.pattern_idx = 0;
+                            
+                    }
+                    else
+                    {
+                        appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_A;
+                    }
+                    
                     while ( !RTCC_TimeGet( &appData.current_time ) )
                     {
                         Nop( );
@@ -362,13 +399,23 @@ void APP_Tasks( void )
                 
                 appData.test_rfid = false;
                 clear_bird_sensor_detected( );
-                
-                if ( DOOR_HABITUATION == appData.scenario_number )
+
+                if ( DOOR_HABITUATION == appData.scenario_number || LONG_TERM_SPATIAL_MEMORY == appData.scenario_number || WORKING_SPATIAL_MEMORY == appData.scenario_number)
                 {
                     appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_A;
                     setAttractiveLedsColor( );
                 }
-
+//                else if ( GO_NO_GO == appData.scenario_number )
+//                {
+//                    appDataAttractiveLeds.pattern_idx = 0;
+//                    setAttractiveLedsColor( );
+//                }
+//                else
+//                {
+//                    appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_A;
+//                    setAttractiveLedsColor( );
+//                }
+                
             }
 
             if ( appData.need_to_reconfigure )
@@ -473,18 +520,36 @@ void APP_Tasks( void )
                 if ( RTCC_ALARM_ALT_ATTRACTIVE_LEDS == appData.rtcc_alarm_action )
                 {
                     double t = rand( );
+                    if ( ( t / RAND_MAX ) > 0.5 )
+                    {
+                        appDataAttractiveLeds.current_color_index = !appDataAttractiveLeds.current_color_index;
+                        setAttractiveLedsColor( );
+                    }                                
+//                    if ( ( t / RAND_MAX ) > 0.5 )
+//                    {
+//                        appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_A;
+//                    }
+//                    else
+//                    {
+//                        appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_B;
+//                    }
+//                    setAttractiveLedsColor( );
+                }
+                if ( RTCC_ALARM_ALT_ATTRACTIVE_LEDS_PATTERN == appData.rtcc_alarm_action )
+                {
+                    double t = rand( );
 
                     if ( ( t / RAND_MAX ) > 0.5 )
                     {
-                        appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_A;
+                        for (i=0;i<4;i++)
+                        {
+                           appDataAttractiveLeds.pattern[i] = !appDataAttractiveLeds.pattern[i]; 
+                        }
+                        appDataAttractiveLeds.pattern_idx = !appDataAttractiveLeds.pattern_idx;
+                        setAttractiveLedsPattern( );
                     }
-                    else
-                    {
-                        appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_B;
-                    }
-                    setAttractiveLedsColor( );
+                    
                 }
-
                 if ( DOOR_OPENED != appDataDoor.reward_door_status && RTCC_ALARM_OPEN_DOOR == appData.rtcc_alarm_action )
                 {
                     /* Open reward door */
@@ -636,36 +701,100 @@ void APP_Tasks( void )
                     case NO_SCENARIO:
                     case OPEN_BAR:
                         /* No PIT tag denied */
+                        appDataPitTag.didPitTagMatched = true;
                         appDataLog.is_pit_tag_denied = false;
                         break;
                         
                     case DOOR_HABITUATION:
                         /* No PIT tag denied */
+                        appDataPitTag.didPitTagMatched = true;
                         appDataLog.is_pit_tag_denied = false;
                         break;
                         
-                    case LONG_TERM_SPATIAL_MEMORY:
-                        /* Check if PIT tag is denied */
-                        appDataLog.is_pit_tag_denied = isPitTagDenied( );
-                        break;
+                    case GO_NO_GO:
 
-                    case WORKING_SPATIAL_MEMORY:
-                        /* Check if PIT tag is denied */
-                        appDataLog.is_pit_tag_denied = isPitTagDenied( );
-                        /* Bird is allowed only one time */
-                        appDataPitTag.isPitTagdeniedOrColorA[appDataPitTag.pitTagIndexInList] = true;
-                        break;
-
-                    case COLOR_ASSOCIATIVE_LEARNING:
                         appDataLog.is_pit_tag_denied = false;
-                        /* Check if PIT tag is denied */
-                        if ( ( appDataPitTag.pitTagIndexInList >= appDataPitTag.numPitTagDeniedOrColorA ) && ( appDataLog.attractive_leds_current_color_index == ATTRACTIVE_LEDS_COLOR_A ) )
+                        
+                        if ( ALL_LEDS == appDataAttractiveLeds.pattern_number )
+                        {
+                            appDataPitTag.didPitTagMatched = true;
+                            
+                            if ( 1 == appDataAttractiveLeds.pattern_idx )
+                            {                                
+                                appDataLog.is_pit_tag_denied = true;
+                            }
+                        }
+                        else
+                        {
+                            findPitTagInList( );
+                            if ( false == appDataPitTag.didPitTagMatched )
+                            {
+                                appDataLog.is_pit_tag_denied = true;
+                            }
+                            else
+                            {
+                                if ( ( appDataPitTag.pitTagIndexInList >= appDataPitTag.numPitTagDeniedOrColorA ) && ( 1 == appDataAttractiveLeds.pattern_idx ) )
+                                {
+                                    appDataLog.is_pit_tag_denied = true;
+                                }
+                                if ( ( appDataPitTag.pitTagIndexInList < appDataPitTag.numPitTagDeniedOrColorA ) && ( 0 == appDataAttractiveLeds.pattern_idx ) )
+                                {
+                                    appDataLog.is_pit_tag_denied = true;
+                                }
+                            }
+                        }
+
+                        break;
+                        
+                    case LONG_TERM_SPATIAL_MEMORY:
+                        
+                        findPitTagInList( );
+                        if ( false == appDataPitTag.didPitTagMatched )
                         {
                             appDataLog.is_pit_tag_denied = true;
                         }
-                        if ( ( appDataPitTag.pitTagIndexInList < appDataPitTag.numPitTagDeniedOrColorA )  && ( appDataLog.attractive_leds_current_color_index == ATTRACTIVE_LEDS_COLOR_B ) )
+                        else
+                        {                                                
+                            /* Check if PIT tag is denied */
+                            appDataLog.is_pit_tag_denied = isPitTagDenied( );
+                        }
+                        break;
+
+                    case WORKING_SPATIAL_MEMORY:
+                        
+                        findPitTagInList( );
+                        if ( false == appDataPitTag.didPitTagMatched )
                         {
                             appDataLog.is_pit_tag_denied = true;
+                        }
+                        else
+                        {                         
+                            /* Check if PIT tag is denied */
+                            appDataLog.is_pit_tag_denied = isPitTagDenied( );
+                            /* Bird is allowed only one time */
+                            appDataPitTag.isPitTagdeniedOrColorA[appDataPitTag.pitTagIndexInList] = true;
+                        }
+                        break;
+
+                    case COLOR_ASSOCIATIVE_LEARNING:
+                        
+                        findPitTagInList( );
+                        if ( false == appDataPitTag.didPitTagMatched )
+                        {
+                            appDataLog.is_pit_tag_denied = true;
+                        }
+                        else
+                        {                        
+                            appDataLog.is_pit_tag_denied = false;
+                            /* Check if PIT tag is denied */
+                            if ( ( appDataPitTag.pitTagIndexInList >= appDataPitTag.numPitTagDeniedOrColorA ) && ( appDataLog.attractive_leds_current_color_index == ATTRACTIVE_LEDS_COLOR_A ) )
+                            {
+                                appDataLog.is_pit_tag_denied = true;
+                            }
+                            if ( ( appDataPitTag.pitTagIndexInList < appDataPitTag.numPitTagDeniedOrColorA )  && ( appDataLog.attractive_leds_current_color_index == ATTRACTIVE_LEDS_COLOR_B ) )
+                            {
+                                appDataLog.is_pit_tag_denied = true;
+                            }
                         }
                         break;
                         
@@ -678,9 +807,16 @@ void APP_Tasks( void )
                 if ( true == appDataLog.is_pit_tag_denied )
                 {
 #if defined (USE_UART1_SERIAL_INTERFACE) 
-                    printf( "\tPIT tag %s denied.\n", appDataLog.bird_pit_tag_str );
+                    if ( true == appDataPitTag.didPitTagMatched )
+                    {
+                        printf( "\tPIT tag %s denied.\n", appDataLog.bird_pit_tag_str );
+                    }
+                    else
+                    {
+                        printf( "\tPIT tag %s not listed => consider as denied.\n", appDataLog.bird_pit_tag_str ); 
+                    }
 #endif
-                    if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number )
+                    if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number || GO_NO_GO == appData.scenario_number )
                     {
                         setAttractiveLedsNoColor( );
                         /* Delay before reactivate attractiveLEDs */
