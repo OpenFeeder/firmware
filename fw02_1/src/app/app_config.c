@@ -350,6 +350,14 @@ INI_READ_STATE config_read_ini( void )
                 appDataAttractiveLeds.pattern_number = ( uint8_t ) read_parameter;
             }
             
+            if ( ALL_LEDS == appDataAttractiveLeds.pattern_number )
+            {
+                
+                ini_gets( "attractiveleds", "pattern_percent", "1.0", str, sizearray( str ), "CONFIG.INI" );
+                appDataAttractiveLeds.pattern_percent = atof(str);
+    
+            }
+
         }
     }
 
@@ -848,7 +856,10 @@ void getIniPbChar( INI_READ_STATE state, char *buf, uint8_t n )
             break;
         case INI_PB_ATTRACTIVE_LEDS_PATTERN:
             snprintf( buf, n, "Attractive LEDs: pattern" );
-            break;     
+            break;      
+        case INI_PB_ATTRACTIVE_LEDS_PATTERN_4_NUM:
+            snprintf( buf, n, "Attractive LEDs: pattern LED number" );
+            break;  
         case INI_PB_DOOR_TON_MIN:
             snprintf( buf, n, "Door: position min" );
             break;

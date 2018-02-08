@@ -182,7 +182,7 @@ void APP_Tasks( void )
                     appData.state = APP_STATE_ERROR;
                     break;
                 }
-
+                
                 powerUsbRfidEnable( );
                 appDataUsb.key_is_nedded = true;
                 
@@ -304,6 +304,20 @@ void APP_Tasks( void )
                         appData.state = APP_STATE_ERROR;
                         break;
                     }
+                    
+                    appDataAttractiveLeds.leds_index[0] = 2;
+                    appDataAttractiveLeds.leds_index[1] = 4;
+                    appDataAttractiveLeds.leds_index[2] = 3;
+                    appDataAttractiveLeds.leds_index[3] = 1;
+
+                    if ( GO_NO_GO == appData.scenario_number || COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number)
+                    {
+                        while (!RTCC_TimeGet(&appData.current_time))
+                        {
+                            Nop();
+                        }
+                        srand(appData.current_time.tm_mon+appData.current_time.tm_mday+appData.current_time.tm_sec);
+                    }                
 
                     if ( GO_NO_GO == appData.scenario_number )
                     {
@@ -321,21 +335,30 @@ void APP_Tasks( void )
                            appDataAttractiveLeds.pattern[2] = 0;
                            appDataAttractiveLeds.pattern[3] = 1;  
                         }
-                        else
+                        else if ( TOP_BOTTOM_LEDS == appDataAttractiveLeds.pattern_number )
                         {
                            appDataAttractiveLeds.pattern[0] = 1;
                            appDataAttractiveLeds.pattern[1] = 1;
                            appDataAttractiveLeds.pattern[2] = 0;
-                           appDataAttractiveLeds.pattern[3] = 0;  
+                           appDataAttractiveLeds.pattern[3] = 0; 
                         }
-                        
-                        appDataAttractiveLeds.leds_index[0] = 2;
-                        appDataAttractiveLeds.leds_index[1] = 4;
-                        appDataAttractiveLeds.leds_index[2] = 3;
-                        appDataAttractiveLeds.leds_index[3] = 1;
-                        
-                        appDataAttractiveLeds.pattern_idx = 0;
+                        else // ONE_LED
+                        {
                             
+                           appDataAttractiveLeds.pattern[0] = 0;
+                           appDataAttractiveLeds.pattern[1] = 0;
+                           appDataAttractiveLeds.pattern[2] = 0;
+                           appDataAttractiveLeds.pattern[3] = 0;
+                           
+                           uint8_t w;
+                           w = appDataPitTag.numPitTagAcceptedOrColorB / 4;
+                           appDataAttractiveLeds.pattern_one_led_groups[0] = w;
+                           appDataAttractiveLeds.pattern_one_led_groups[1] = 2*w;
+                           appDataAttractiveLeds.pattern_one_led_groups[2] = 3*w;
+
+                        }
+
+                        appDataAttractiveLeds.pattern_idx = 0;     
                     }
                     else
                     {
@@ -405,17 +428,6 @@ void APP_Tasks( void )
                     appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_A;
                     setAttractiveLedsColor( );
                 }
-//                else if ( GO_NO_GO == appData.scenario_number )
-//                {
-//                    appDataAttractiveLeds.pattern_idx = 0;
-//                    setAttractiveLedsColor( );
-//                }
-//                else
-//                {
-//                    appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_A;
-//                    setAttractiveLedsColor( );
-//                }
-                
             }
 
             if ( appData.need_to_reconfigure )
@@ -525,28 +537,55 @@ void APP_Tasks( void )
                         appDataAttractiveLeds.current_color_index = !appDataAttractiveLeds.current_color_index;
                         setAttractiveLedsColor( );
                     }                                
-//                    if ( ( t / RAND_MAX ) > 0.5 )
-//                    {
-//                        appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_A;
-//                    }
-//                    else
-//                    {
-//                        appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_B;
-//                    }
-//                    setAttractiveLedsColor( );
                 }
                 if ( RTCC_ALARM_ALT_ATTRACTIVE_LEDS_PATTERN == appData.rtcc_alarm_action )
                 {
                     double t = rand( );
 
-                    if ( ( t / RAND_MAX ) > 0.5 )
+                    
+                    if (ONE_LED == appDataAttractiveLeds.pattern_number)
                     {
                         for (i=0;i<4;i++)
                         {
-                           appDataAttractiveLeds.pattern[i] = !appDataAttractiveLeds.pattern[i]; 
+                           appDataAttractiveLeds.pattern[i] = 1; 
                         }
-                        appDataAttractiveLeds.pattern_idx = !appDataAttractiveLeds.pattern_idx;
-                        setAttractiveLedsPattern( );
+                        
+                        if ( ( t / RAND_MAX ) > 0.75 )
+                        {
+                            appDataAttractiveLeds.pattern_one_led_current = 0;
+                        }                            
+                        else if ( ( t / RAND_MAX ) > 0.5 )
+                        {
+                            appDataAttractiveLeds.pattern_one_led_current = 1;
+                        }
+                        else if ( ( t / RAND_MAX ) > 0.25 )
+                        {
+                            appDataAttractiveLeds.pattern_one_led_current = 2; 
+                        }
+                        else
+                        {
+                            appDataAttractiveLeds.pattern_one_led_current = 3;
+                        }
+                        
+                        appDataAttractiveLeds.pattern[appDataAttractiveLeds.pattern_one_led_current] = 0;      
+
+                       setAttractiveLedsPattern( );
+                    }
+                    else
+                    {
+//                        if ( ( t / RAND_MAX ) > 0.5 )
+                        if ( ( t / RAND_MAX ) > appDataAttractiveLeds.pattern_percent )
+                        {
+                            for (i=0;i<4;i++)
+                            {
+                               appDataAttractiveLeds.pattern[i] = !appDataAttractiveLeds.pattern[i]; 
+                            }
+                            appDataAttractiveLeds.pattern_idx = !appDataAttractiveLeds.pattern_idx;
+                            setAttractiveLedsPattern( );
+                            
+                            appDataAttractiveLeds.pattern_percent = 1-appDataAttractiveLeds.pattern_percent;
+                                
+                        }
                     }
                     
                 }
@@ -723,6 +762,47 @@ void APP_Tasks( void )
                             {                                
                                 appDataLog.is_pit_tag_denied = true;
                             }
+                        }
+                        else if ( ONE_LED == appDataAttractiveLeds.pattern_number )
+                        {
+                            appDataLog.is_pit_tag_denied = false;
+                            
+                            findPitTagInList( );
+                            if ( false == appDataPitTag.didPitTagMatched )
+                            {
+                                appDataLog.is_pit_tag_denied = true;
+                            }
+                            else
+                            {                                
+                                if ( appDataPitTag.pitTagIndexInList < appDataAttractiveLeds.pattern_one_led_groups[0] )
+                                {
+                                    if ( 0 != appDataAttractiveLeds.pattern_one_led_current )
+                                    {
+                                        appDataLog.is_pit_tag_denied = true;
+                                    }                                        
+                                }
+                                else if ( appDataPitTag.pitTagIndexInList < appDataAttractiveLeds.pattern_one_led_groups[1] )
+                                {
+                                    if ( 1 != appDataAttractiveLeds.pattern_one_led_current )
+                                    {
+                                        appDataLog.is_pit_tag_denied = true;
+                                    }   
+                                }
+                                else if ( appDataPitTag.pitTagIndexInList < appDataAttractiveLeds.pattern_one_led_groups[2] )
+                                {
+                                    if ( 2 != appDataAttractiveLeds.pattern_one_led_current )
+                                    {
+                                        appDataLog.is_pit_tag_denied = true;
+                                    }     
+                                }
+                                else
+                                {
+                                    if ( 3 != appDataAttractiveLeds.pattern_one_led_current )
+                                    {
+                                        appDataLog.is_pit_tag_denied = true;
+                                    }    
+                                }
+                            } 
                         }
                         else
                         {

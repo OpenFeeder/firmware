@@ -34,6 +34,12 @@ typedef struct
     bool pattern_idx;    
     bool pattern[4];    
     uint8_t leds_index[4];
+//    uint8_t pattern_one_led_num; // number in config.ini
+//    uint8_t pattern_one_led_idx; // index on the OF
+    uint8_t pattern_one_led_current; // index on the OF
+    uint8_t pattern_one_led_groups[3];
+    
+    double pattern_percent;
 
 } APP_DATA_LEDS;
 
@@ -41,7 +47,8 @@ typedef enum
 {
     ALL_LEDS,
     LEFT_RIGHT_LEDS,
-    TOP_BOTTOM_LEDS
+    TOP_BOTTOM_LEDS,
+    ONE_LED
         
 } LEDS_PATTERN;
 

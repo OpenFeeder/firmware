@@ -3,9 +3,9 @@ Firmwares
 
 Development tools
 ---
-- [MPLAB® X Integrated Development Environment (IDE) and tools](http://www.microchip.com/mplab/mplab-x-ide)
-- [MPLAB® XC16 Compiler](http://www.microchip.com/mplab/compilers)
-- [MPLAB® Code Configurator](http://www.microchip.com/mplab/mplab-code-configurator)
+- [MPLABÂ® X Integrated Development Environment (IDE) and tools](http://www.microchip.com/mplab/mplab-x-ide)
+- [MPLABÂ® XC16 Compiler](http://www.microchip.com/mplab/compilers)
+- [MPLABÂ® Code Configurator](http://www.microchip.com/mplab/mplab-code-configurator)
 - [Microchip Libraries for Applications](http://www.microchip.com/mplab/microchip-libraries-for-applications)
 - [PICkit(TM) 3 In-Circuit Debugger](http://www.microchip.com/Developmenttools/ProductDetails.aspx?PartNO=PG164130)
 
@@ -21,7 +21,7 @@ Credits
 ---
 Firmwares were written by:
 - [Arnauld BIGANZOLI](http://tonic.inserm.fr/arnauld-biganzoli-404340.kjsp)
-- [Jérôme BRIOT](http://blog.developpez.com/dut/).
+- [JÃ©rÃ´me BRIOT](http://blog.developpez.com/dut/).
 
 
 License
