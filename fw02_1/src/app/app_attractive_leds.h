@@ -67,6 +67,8 @@ void setAttractiveLedsPattern( void );
 
 void testAttractiveLeds( void );
 
+void setAttractiveLedsIndex( void );
+
 #endif /* _APP_ATTRACTIVE_LEDS_HEADER_H */
 
 

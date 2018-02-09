@@ -304,11 +304,8 @@ void APP_Tasks( void )
                         appData.state = APP_STATE_ERROR;
                         break;
                     }
-                    
-                    appDataAttractiveLeds.leds_index[0] = 2;
-                    appDataAttractiveLeds.leds_index[1] = 4;
-                    appDataAttractiveLeds.leds_index[2] = 3;
-                    appDataAttractiveLeds.leds_index[3] = 1;
+          
+                    setAttractiveLedsIndex( );
 
                     if ( GO_NO_GO == appData.scenario_number || COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number)
                     {
@@ -541,7 +538,6 @@ void APP_Tasks( void )
                 if ( RTCC_ALARM_ALT_ATTRACTIVE_LEDS_PATTERN == appData.rtcc_alarm_action )
                 {
                     double t = rand( );
-
                     
                     if (ONE_LED == appDataAttractiveLeds.pattern_number)
                     {
@@ -571,9 +567,8 @@ void APP_Tasks( void )
 
                        setAttractiveLedsPattern( );
                     }
-                    else
+                    else if (ALL_LEDS == appDataAttractiveLeds.pattern_number)
                     {
-//                        if ( ( t / RAND_MAX ) > 0.5 )
                         if ( ( t / RAND_MAX ) > appDataAttractiveLeds.pattern_percent )
                         {
                             for (i=0;i<4;i++)
@@ -585,6 +580,18 @@ void APP_Tasks( void )
                             
                             appDataAttractiveLeds.pattern_percent = 1-appDataAttractiveLeds.pattern_percent;
                                 
+                        }
+                    }
+                    else
+                    {
+                        if ( ( t / RAND_MAX ) > 0.5 )
+                        {
+                            for (i=0;i<4;i++)
+                            {
+                               appDataAttractiveLeds.pattern[i] = !appDataAttractiveLeds.pattern[i]; 
+                            }
+                            appDataAttractiveLeds.pattern_idx = !appDataAttractiveLeds.pattern_idx;
+                            setAttractiveLedsPattern( );                                
                         }
                     }
                     

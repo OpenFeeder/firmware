@@ -62,6 +62,67 @@ bool initAttractiveLeds( void )
     return true;
 }
 
+void setAttractiveLedsIndex( void )
+{
+    FILEIO_SEARCH_RECORD searchRecord;
+    FILEIO_OBJECT file;
+    FILEIO_ERROR_TYPE errF;
+    char buf[20];
+    char subbuf[5];
+    char udid[5];
+    
+    appDataAttractiveLeds.leds_index[0] = 1;
+    appDataAttractiveLeds.leds_index[1] = 2;
+    appDataAttractiveLeds.leds_index[2] = 3;
+    appDataAttractiveLeds.leds_index[3] = 4;
+        
+    if ( FILEIO_RESULT_FAILURE == FILEIO_Find( "UDIDLEDS.TXT", FILEIO_ATTRIBUTE_ARCHIVE, &searchRecord, true ) )
+    {
+        errF = FILEIO_ErrorGet( 'A' );
+#if defined (USE_UART1_SERIAL_INTERFACE)
+            printf( "Warning:  file UDIDLEDS.TXT not found (%u). Use default numbers for attractive LEDs\n", errF);
+#endif 
+        return;
+    }
+    
+    sprintf(udid, "%02lX%02lX", appData.udid.words[3] & 0xFF, appData.udid.words[4] & 0xFF);
+
+    udid[4] = '\0';
+    
+    if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "UDIDLEDS.TXT", FILEIO_OPEN_READ ) )
+    {
+        errF = FILEIO_ErrorGet( 'A' );
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        printf( "Warning:  unable to open UDIDLEDS.TXT (%u). Use default numbers for attractive LEDs\n", errF);
+#endif 
+        return;
+    }
+
+    while ( 14 == FILEIO_Read( buf, 1, 14, &file ) )
+    {
+        memcpy(subbuf, buf, 4);
+        subbuf[4] = '\0';
+        
+        if ( 0 == strcmp( subbuf, udid ) )
+        {           
+           appDataAttractiveLeds.leds_index[0] = buf[5] - '0';
+           appDataAttractiveLeds.leds_index[1] = buf[7] - '0';
+           appDataAttractiveLeds.leds_index[2] = buf[9] - '0';
+           appDataAttractiveLeds.leds_index[3] = buf[11] - '0';
+        
+           break;
+        }             
+    }
+    
+    if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) ) 
+    {
+        errF = FILEIO_ErrorGet( 'A' );
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        printf( "Warning:  unable to close UDIDLEDS.TXT (%u).\n", errF);
+#endif 
+    }
+}
+
 void setAttractiveLedsOff( void )
 {
     /* Disable PCA9622 device */
