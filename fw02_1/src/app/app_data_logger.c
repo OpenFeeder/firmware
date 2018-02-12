@@ -18,8 +18,7 @@
 static int populateLogBuffer(void)
 {
     int flag;
-    char line[MAX_CHAR_PER_LINE];
-
+    char line[MAX_CHAR_PER_LINE];   
     unsigned long delayS;
 
     if (0 == strcmp(appDataLog.bird_pit_tag_str, "XXXXXXXXXX"))
@@ -43,7 +42,7 @@ static int populateLogBuffer(void)
     {
         delayS = 0;
     }
-
+    
     flag = sprintf(line, "%02d/%02d/%02d%s%02d:%02d:%02d%s"
                    /* siteid               */ "%c%c"
                    /* separator            */ "%s"
@@ -80,7 +79,7 @@ static int populateLogBuffer(void)
                    appData.siteid[2],
                    appData.siteid[3],
                    appDataLog.separator,
-                   appData.scenario_number,
+                   getCompletScenarioNumber(),
                    appDataLog.separator,
                    appDataLog.bird_pit_tag_str,
                    appDataLog.separator,
@@ -304,7 +303,7 @@ FILEIO_RESULT logBatteryLevel(void)
                        appData.siteid[1],
                        appData.siteid[2],
                        appData.siteid[3],
-                       appData.scenario_number,
+                       getCompletScenarioNumber(),
                        currentTime.tm_mday,
                        currentTime.tm_mon,
                        currentTime.tm_year,
@@ -456,7 +455,7 @@ FILEIO_RESULT logRfidFreq(void)
                        appData.siteid[1],
                        appData.siteid[2],
                        appData.siteid[3],
-                       appData.scenario_number,
+                       getCompletScenarioNumber(),
                        currentTime.tm_mday,
                        currentTime.tm_mon,
                        currentTime.tm_year,

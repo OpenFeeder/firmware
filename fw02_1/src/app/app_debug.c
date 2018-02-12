@@ -19,6 +19,19 @@ const uint8_t BUILD_DATE[] = { __DATE__ };
 const uint8_t BUILD_TIME[] = { __TIME__ };
 //const uint8_t REV[] = { "01" }; // TODO: Increment REV number each time the code was modified!
 
+uint8_t getCompletScenarioNumber( void )
+{
+    if ( GO_NO_GO != appData.scenario_number)
+    {
+        return appData.scenario_number;
+    }
+    else
+    {
+       return (30 + appDataAttractiveLeds.pattern_number); 
+    }
+}
+
+
 void getDeviceId( void )
 {
     int tblpageReg, addrOffset, readDataL;

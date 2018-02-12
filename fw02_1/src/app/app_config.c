@@ -609,7 +609,7 @@ void config_print( void )
     printf( "Configuration parameters\n" );
 
     printf( "\tScenario\n\t\tNumber: %u\n\t\tTitle:",
-            appData.scenario_number );
+            getCompletScenarioNumber() );
     switch ( appData.scenario_number )
     {
         case NO_SCENARIO:
@@ -619,7 +619,22 @@ void config_print( void )
             printf( " open-bar\n" );
             break;
         case GO_NO_GO:
-            printf( " go-no go\n" );
+            if ( 0 == appDataAttractiveLeds.pattern_number )
+            {
+                printf( " go-no go, all LEDs pattern (0)\n" );
+            }
+            else if ( 1 == appDataAttractiveLeds.pattern_number )
+            {
+                printf( " go-no go, left/right LEDs pattern (1)\n" );
+            }
+            else if ( 2 == appDataAttractiveLeds.pattern_number )
+            {
+                printf( " go-no go, top/bottom LEDs pattern (2)\n" );
+            }
+            else if ( 3 == appDataAttractiveLeds.pattern_number )
+            {
+                printf( " go-no go, one LED pattern (3)\n" );
+            }            
             break;
         case LONG_TERM_SPATIAL_MEMORY:
             printf( " long term spatial memory\n" );

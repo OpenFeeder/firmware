@@ -22,7 +22,8 @@ void getDeviceId( void );
 void displayDeviceId( void );
 void getUniqueDeviceId( void );
 void displayUniqueDeviceId( void );
-
+uint8_t getCompletScenarioNumber( void );
+    
 #endif /* _APP_DEBUG_HEADER_H */
 
 

@@ -44,7 +44,7 @@ FILEIO_RESULT logError(void)
                    appData.siteid[1],
                    appData.siteid[2],
                    appData.siteid[3],
-                   appData.scenario_number,
+                   getCompletScenarioNumber(),
                    currentTime.tm_mday,
                    currentTime.tm_mon,
                    currentTime.tm_year,
