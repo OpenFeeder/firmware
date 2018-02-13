@@ -1855,6 +1855,7 @@ void APP_Tasks( void )
                 EX_INT0_InterruptDisable( );
                 RFID_Disable( );                
                 IRSensorDisable( );
+                servomotorPowerDisable( );
                 
                 /* Unmount drive on USB device before power it off. */
                 if ( USB_DRIVE_MOUNTED == appDataUsb.usbDriveStatus )
