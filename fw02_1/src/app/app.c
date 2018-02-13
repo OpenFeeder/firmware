@@ -960,13 +960,16 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_OPENING_REWARD_DOOR\n" );
 #endif
-                /* Power IR sensor here because start delay */
-                IRSensorEnable( );
-                /* Enable IR 1 sensor interruption (reward)*/
-                EX_INT1_InterruptDisable( );
-                EX_INT1_PositiveEdgeSet( );
-                EX_INT1_InterruptFlagClear( );
-                EX_INT1_InterruptEnable( );
+                if ( 1 == appData.reward_enable )
+                {
+                    /* Power IR sensor here because start delay */
+                    IRSensorEnable( );
+                    /* Enable IR 1 sensor interruption (reward)*/
+                    EX_INT1_InterruptDisable( );
+                    EX_INT1_PositiveEdgeSet( );
+                    EX_INT1_InterruptFlagClear( );
+                    EX_INT1_InterruptEnable( );
+                }
 
                 appDataLog.is_reward_taken = false;
 
@@ -1172,7 +1175,7 @@ void APP_Tasks( void )
                 while ( DOOR_MOVED != appDataDoor.reward_door_status )
                 {
                     /* Check if the bird put its head in during door close */
-                    if ( 1 == BAR_IR1_OUT_GetValue( ) )
+                    if ( 1 == appData.reward_enable && 1 == BAR_IR1_OUT_GetValue( ) )
                     {
                         appData.state = APP_STATE_REOPEN_DOOR;
                         break;
@@ -1195,11 +1198,14 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
             printf( "\tDoor closed - Servo position: %u\n", servomotorGetDoorPosition( ) );
 #endif
-            IRSensorDisable( );
-            EX_INT1_InterruptDisable( );
-            EX_INT1_PositiveEdgeSet( );
-            EX_INT1_InterruptFlagClear( );
-            clear_ir1_sensor( );
+            if ( 1 == appData.reward_enable )
+            {
+                IRSensorDisable( );
+                EX_INT1_InterruptDisable( );
+                EX_INT1_PositiveEdgeSet( );
+                EX_INT1_InterruptFlagClear( );
+                clear_ir1_sensor( );  
+            }
 
             appDataDoor.num_reopen_attempt = 0;
 
