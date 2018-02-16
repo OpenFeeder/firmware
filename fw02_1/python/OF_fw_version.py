@@ -10,6 +10,7 @@ import sys
 import os
 from functools import partial
 
+
 class ver(Frame):
 
     def __init__(self, *args, firmware={}, file='', **kwargs):
@@ -74,12 +75,18 @@ class ver(Frame):
 
         if idx == 0:
             self.new_fw['version_major'] = self.current_fw['version_major'] + 1
+            self.new_fw['version_minor'] = 0
+            self.new_fw['version_patch'] = 0
         elif idx == 1:
             self.new_fw['version_major'] = self.current_fw['version_major']
+            self.new_fw['version_minor'] = self.current_fw['version_minor']
+            self.new_fw['version_patch'] = self.current_fw['version_patch']
         elif idx == 2:
             self.new_fw['version_minor'] = self.current_fw['version_minor'] + 1
+            self.new_fw['version_patch'] = 0
         elif idx == 3:
             self.new_fw['version_minor'] = self.current_fw['version_minor']
+            self.new_fw['version_patch'] = self.current_fw['version_patch']
         elif idx == 4:
             self.new_fw['version_patch'] = self.current_fw['version_patch'] + 1
         else:
@@ -118,6 +125,7 @@ class ver(Frame):
         print('Firmware version updated from {}.{}.{} to {}.{}.{}'.format(self.current_fw['version_major'], self.current_fw['version_minor'], self.current_fw['version_patch'], self.new_fw['version_major'], self.new_fw['version_minor'], self.new_fw['version_patch']))
 
         self.master.destroy()
+
 
 def readVersion(file):
 
@@ -173,11 +181,10 @@ def writeVersion(fw, file):
 
 def main():
 
-
     print('Updating app_version.h')
 
-#    file = sys.argv[1] + r'\..\src\app\app_version.h'
-    file = r'D:\github\openfeeder\firmwares\fw02_1\src\app\app_version.h'
+    file = sys.argv[1] + r'\..\src\app\app_version.h'
+#    file = r'D:\github\openfeeder\firmwares\fw02_1\src\app\app_version.h'
 
     fw = readVersion(file)
 
