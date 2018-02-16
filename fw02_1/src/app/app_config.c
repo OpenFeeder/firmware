@@ -388,50 +388,60 @@ INI_READ_STATE config_read_ini( void )
     }
     
     /* Door/servomotor configuration. */
-    read_parameter = ini_getl( "door", "ton_min", -1, "CONFIG.INI" );
+    read_parameter = ini_getl( "door", "close_position", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
     {
-        return INI_PB_DOOR_TON_MIN;
+        return INI_PB_DOOR_CLOSE_POSITION;
     }
     else
     {
-        if ( read_parameter >= SERVO_POSITION_MIN_DEFAULT )
+        if ( read_parameter >= SERVO_DEFAULT_MIN_POSITION )
         {
             appDataServo.ton_min = ( uint16_t ) read_parameter;
             appDataServo.ton_min_night = appDataServo.ton_min;
         }
         else
         {
-            appDataServo.ton_min = SERVO_POSITION_MIN_DEFAULT;
+            appDataServo.ton_min = SERVO_DEFAULT_MIN_POSITION;
             appDataServo.ton_min_night = appDataServo.ton_min;
         }
     }
 
-    read_parameter = ini_getl( "door", "ton_max", -1, "CONFIG.INI" );
+    read_parameter = ini_getl( "door", "open_position", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
     {
-        return INI_PB_DOOR_TON_MAX;
+        return INI_PB_DOOR_OPEN_POSITION;
     }
     else
     {
-        if ( read_parameter <= SERVO_POSITION_MAX_DEFAULT )
+        if ( read_parameter <= SERVO_DEFAULT_MAX_POSITION )
         {
             appDataServo.ton_max = ( uint16_t ) read_parameter;
         }
         else
         {
-            appDataServo.ton_max = SERVO_POSITION_MAX_DEFAULT;
+            appDataServo.ton_max = SERVO_DEFAULT_MAX_POSITION;
         }
     }
-
-    read_parameter = ini_getl( "door", "speed", -1, "CONFIG.INI" );
+    /* Closing speed */
+    read_parameter = ini_getl( "door", "closing_speed", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
     {
-        return INI_PB_DOOR_SPEED;
+        return INI_PB_DOOR_CLOSING_SPEED;
     }
     else
     {
-        appDataServo.speed = ( uint8_t ) read_parameter;
+        appDataServo.closing_speed = ( uint8_t ) read_parameter;
+    }
+    /* Opening speed */
+    read_parameter = ini_getl( "door", "opening_speed", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
+    {
+        return INI_PB_DOOR_OPENING_SPEED;
+    }
+    else
+    {
+        appDataServo.opening_speed = ( uint8_t ) read_parameter;
     }
     /* Door open/closee delays. */
     read_parameter = ini_getl( "door", "open_delay", -1, "CONFIG.INI" );
@@ -555,8 +565,7 @@ INI_READ_STATE config_read_ini( void )
     {
         appData.reward_enable = 1;
     }
-        
-    
+ 
     /* Timeout before standby. */
     read_parameter = ini_getl( "timeouts", "sleep", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
@@ -587,6 +596,19 @@ INI_READ_STATE config_read_ini( void )
     {
         appData.timeout_taking_reward = ( uint16_t ) read_parameter * 1000;
     }
+    /* Timeout guillotine. */
+    ini_gets( "timeouts", "guillotine", "1.0", str, sizearray( str ), "CONFIG.INI" );
+    appData.timeout_guillotine = ( uint16_t ) (atof(str) * 1000);
+    
+//    read_parameter = ini_getl( "timeouts", "guillotine", -1, "CONFIG.INI" );
+//    if ( -1 == read_parameter )
+//    {
+//        return INI_PB_TIMEOUTS_GUILLOTINE;
+//    }
+//    else
+//    {
+//        appData.timeout_guillotine = ( uint16_t ) read_parameter * 1000;
+//    }
     /* Punishment delay. */
     read_parameter = ini_getl( "punishment", "delay", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
@@ -689,7 +711,11 @@ void config_print( void )
     {
         printf( "\t\t\tDoor habituation: %d%%\n\t\t\tPosition habituation closed: %d\n", appDataDoor.habituation_percent, appDataServo.ton_min );
     }
-    printf( "\t\t\tServo increment position: %d\n", appDataServo.speed );
+    printf( "\t\t\tFull closing time: %.3fs\n", ((float)(appDataServo.ton_max-appDataServo.ton_min_night))/((float)appDataServo.closing_speed)*0.02 );
+    printf( "\t\t\tFull opening time: %.3fs\n", ((float)(appDataServo.ton_max-appDataServo.ton_min_night))/((float)appDataServo.opening_speed)*0.02 );
+    printf( "\t\t\tClosing speed factor: %d\n", appDataServo.closing_speed );
+    printf( "\t\t\tOpening speed factor: %d\n", appDataServo.opening_speed );
+    
     printf( "\t\tOpen delay: %ds\n\t\tClose delay: %ds\n",
             appDataDoor.open_delay / 1000,
             appDataDoor.close_delay / 1000 );
@@ -722,6 +748,7 @@ void config_print( void )
     printf( "\tTimeouts\n" );
     printf( "\t\tSleep: %us\n", appData.timeout_standby / 1000 );
     printf( "\t\tPIR: %us\n", appData.timeout_pir / 1000 );    
+    printf( "\t\tGuillotine: %.3fs\n", (float)appData.timeout_guillotine * 0.001 ); 
     
     if (true == appData.flags.bit_value.attractive_leds_status)
     {
@@ -875,14 +902,17 @@ void getIniPbChar( INI_READ_STATE state, char *buf, uint8_t n )
         case INI_PB_ATTRACTIVE_LEDS_PATTERN_4_NUM:
             snprintf( buf, n, "Attractive LEDs: pattern LED number" );
             break;  
-        case INI_PB_DOOR_TON_MIN:
-            snprintf( buf, n, "Door: position min" );
+        case INI_PB_DOOR_CLOSE_POSITION:
+            snprintf( buf, n, "Door: close position" );
             break;
-        case INI_PB_DOOR_TON_MAX:
-            snprintf( buf, n, "Door: position max" );
+        case INI_PB_DOOR_OPEN_POSITION:
+            snprintf( buf, n, "Door: open position" );
             break;
-        case INI_PB_DOOR_SPEED:
-            snprintf( buf, n, "Door: speed" );
+        case INI_PB_DOOR_CLOSING_SPEED:
+            snprintf( buf, n, "Door: closing speed" );
+            break;
+        case INI_PB_DOOR_OPENING_SPEED:
+            snprintf( buf, n, "Door: opening speed" );
             break;
         case INI_PB_DOOR_OPEN_DELAY:
             snprintf( buf, n, "Door: open delay" );
@@ -916,6 +946,9 @@ void getIniPbChar( INI_READ_STATE state, char *buf, uint8_t n )
             break;
         case INI_PB_TIMEOUTS_REWARD:
             snprintf( buf, n, "Timeouts: reward" );
+            break;
+        case INI_PB_TIMEOUTS_GUILLOTINE:
+            snprintf( buf, n, "Timeouts: guillotine" );
             break;
         case INI_PB_PUNISHMENT_DELAY:
             snprintf( buf, n, "New bird: delay" );

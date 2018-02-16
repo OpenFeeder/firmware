@@ -50,6 +50,7 @@
 
 #define DISPLAY_RESET_REGISTERS
 
+#define DISPLAY_SERVO_INFO
 //#define DISPLAY_SERVO_POSITION
 
 //#define TEST_RTCC_SLEEP_WAKEUP
@@ -96,6 +97,8 @@
 #include "app_usb.h"
 
 #include "app_version.h"
+
+#include "oc5.h"
 
 // *****************************************************************************
 // *****************************************************************************
@@ -309,7 +312,8 @@ typedef struct
     uint16_t timeout_standby;
     uint16_t timeout_pir;
     uint16_t timeout_taking_reward;
-
+    uint16_t timeout_guillotine;
+        
     bool bird_is_taking_reward;
     
     uint8_t reward_enable;

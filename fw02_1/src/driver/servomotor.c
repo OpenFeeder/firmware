@@ -17,9 +17,9 @@ void SERVO_Initialize( void )
     /* Servomotor power command disable. */
     servomotorPowerDisable( );
     /* Initialisation par defaut au démarrage du programme. */
-    appDataServo.ton_min = SERVO_POSITION_MIN_DEFAULT;
-    appDataServo.ton_max = SERVO_POSITION_MAX_DEFAULT;
-    appDataServo.speed = SERVO_SPEED_INC_DEFAULT;
+    appDataServo.ton_min = SERVO_DEFAULT_MIN_POSITION;
+    appDataServo.ton_max = SERVO_DEFAULT_MAX_POSITION;
+    appDataServo.speed = SERVO_DEFAULT_SPEED_INC;
     appDataServo.ton_cmd = appDataServo.ton_max;
     appDataServo.measure_position = appDataServo.ton_cmd;
 }
@@ -57,27 +57,14 @@ uint16_t servomotorGetDoorPosition( void )
 
 bool servomotorMoveTheDoor( void )
 {
-    bool last_step = false;
-    
-//    if ( 0 < appDataServo.num_step  && appDataServo.num_empty_step > appDataServo.num_step )
-//    {
-//        ++appDataServo.num_step;
-//        return false;
-//    }
-//    
-//    if (appDataServo.num_empty_step <= appDataServo.num_step )
-//    {
-//        appDataServo.num_step = 0;
-//        return false;
-//    } 
-//    
-//    ++appDataServo.num_step;
-    
+
     if ( appDataServo.ton_cmd != appDataServo.ton_goal )
     {
         /* Change servomotor position. */
         if ( appDataServo.ton_cmd > appDataServo.ton_goal )
-        {           
+        {        
+            appDataServo.speed = appDataServo.closing_speed;
+            
             if ( ( appDataServo.ton_cmd - appDataServo.ton_goal) > appDataServo.speed)
             {
                 appDataServo.ton_cmd -= ( uint16_t ) appDataServo.speed;
@@ -85,11 +72,12 @@ bool servomotorMoveTheDoor( void )
             else
             {
                 appDataServo.ton_cmd -= ( appDataServo.ton_cmd - appDataServo.ton_goal);
-                last_step = true;
             }
         }
         else
         {
+            appDataServo.speed = appDataServo.opening_speed;
+            
             if ( ( appDataServo.ton_goal-appDataServo.ton_cmd ) > appDataServo.speed)
             {
                 appDataServo.ton_cmd += ( uint16_t ) appDataServo.speed;
@@ -97,30 +85,13 @@ bool servomotorMoveTheDoor( void )
             else
             {
                 appDataServo.ton_cmd += ( appDataServo.ton_goal-appDataServo.ton_cmd );
-                last_step = true;
             }
         }
-
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
-        printf( "\t\tMoving at %u\n", appDataServo.ton_cmd );
-#endif 
-
-//        appDataServo.position_buffer[appDataServo.i_buffer++] = appDataServo.ton_cmd;
         
         /* Set DC of PWM5. */
         OC5_PrimaryValueSet( appDataServo.ton_cmd );
-        
-//        if (last_step)
-//        {
-////            if ( --appDataServo.num_step == 0)
-////            {
-//                return true;
-////            }
-//        }
-            
-//        return false;
-        
-        return last_step;
+
+        return false;
     }
 
     return true;
@@ -142,13 +113,6 @@ void servomotorPowerEnable( void )
     appDataServo.cmd_vcc_servo_state = true;
     appData.servo_powered = true;
     
-    setDelayMs( 50 );
-    while ( false == isDelayMsEnding( ) )
-    {
-        Nop( );
-    }
-        
-    OC5R = 0x0000;
     OC5_Start( );
     
 }
@@ -157,12 +121,6 @@ void servomotorPowerEnable( void )
 void servomotorPowerDisable( void )
 {
 
-//    setDelayMs( 250 );
-//    while ( false == isDelayMsEnding( ) )
-//    {
-//        Nop( );
-//    }
-        
     if (false == appData.pir_sensor_powered)
     {
         CMD_VDD_ACC_PIR_SERVO_SetLow( );
@@ -170,13 +128,6 @@ void servomotorPowerDisable( void )
     
     CMD_VCC_SERVO_SetDigitalInput( );
 
-    setDelayMs( 50 );
-    while ( false == isDelayMsEnding( ) )
-    {
-        Nop( );
-    }
-    
-    OC5R = 0x0000;
     OC5_Stop( );
     
     appDataServo.cmd_vcc_servo_state = false;  

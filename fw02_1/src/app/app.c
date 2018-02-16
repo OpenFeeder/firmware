@@ -1010,8 +1010,8 @@ void APP_Tasks( void )
             /* Servomotor power command disable. */
             servomotorPowerDisable( );
 
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
-            printf( "\tDoor opened - Servo position: %u\n", servomotorGetDoorPosition( ) );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_INFO)
+            printf( "\tDoor opened\n");
 #endif
             appData.state = APP_STATE_WAITING_CATCH_REWARD;
             break;
@@ -1161,11 +1161,14 @@ void APP_Tasks( void )
                         Nop( );
                     }
                 }
+                
+                setDelayMsStandBy( appData.timeout_guillotine );
+                    
             }
 
             /* Servomotor power command enable. */
             servomotorPowerEnable( );
-
+ 
             appDataServo.ton_cmd = servomotorGetDoorPosition( );
             appDataServo.ton_goal = appDataServo.ton_min;
 
@@ -1174,9 +1177,23 @@ void APP_Tasks( void )
                 appDataDoor.reward_door_status = DOOR_MOVING;
                 while ( DOOR_MOVED != appDataDoor.reward_door_status )
                 {
-                    /* Check if the bird put its head in during door close */
+                    /* Check if the bird puts its head in during door close */
                     if ( 1 == appData.reward_enable && 1 == BAR_IR1_OUT_GetValue( ) )
                     {
+                        appDataDoor.reward_door_status = DOOR_MOVED;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_INFO)
+            printf("\tBird puts its head in during door close => reopen\n");
+#endif  
+                        appData.state = APP_STATE_REOPEN_DOOR;
+                        break;
+                    }
+                    /* Check if door take too much time to close */
+                    if ( true == isDelayMsEndingStandBy() )
+                    {
+                        appDataDoor.reward_door_status = DOOR_MOVED;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_INFO)
+            printf("\tDoor take too much time to close => reopen\n");
+#endif  
                         appData.state = APP_STATE_REOPEN_DOOR;
                         break;
                     }
@@ -1189,14 +1206,24 @@ void APP_Tasks( void )
             }
 
             appDataDoor.reward_door_status = DOOR_CLOSED;
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
-            servomotorGetDoorPosition( );
+
+            uint16_t pos = servomotorGetDoorPosition();
+
+            if ( pos > appDataServo.ton_goal && (pos - appDataServo.ton_goal) > 150)
+            {
+                appDataDoor.reward_door_status = DOOR_MOVED;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_INFO)
+            printf("\tServo too far from goal position (%u to %u) => reopen\n", pos, appDataServo.ton_goal);
 #endif  
+                appData.state = APP_STATE_REOPEN_DOOR;
+                break;
+            }
+
             /* Servomotor power command disable. */
             servomotorPowerDisable( );
 
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_POSITION)
-            printf( "\tDoor closed - Servo position: %u\n", servomotorGetDoorPosition( ) );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_INFO)
+            printf( "\tDoor closed\n");
 #endif
             if ( 1 == appData.reward_enable )
             {
@@ -1221,10 +1248,15 @@ void APP_Tasks( void )
                 printf( "> APP_STATE_REOPEN_DOOR\n" );
 #endif           
 
-                appDataServo.ton_cmd = servomotorGetDoorPosition( );
-                appDataServo.ton_goal = appDataServo.ton_max;
-                appDataDoor.reward_door_status = DOOR_MOVING;
-
+                OC5R = appDataServo.ton_max;
+                setDelayMs( 2000 );
+                while ( false == isDelayMsEnding( ) )
+                {
+                    Nop( );
+                }
+                
+                appDataDoor.reward_door_status = DOOR_MOVED;
+                    
                 appDataDoor.num_reopen_attempt += 1;
 
                 /* Timeout before going to error. */
@@ -1253,7 +1285,7 @@ void APP_Tasks( void )
                 }
                 else
                 {
-                    if ( 0 == BAR_IR1_OUT_GetValue( ) )
+                    if ( ( 0 == appData.reward_enable ) || ( 0 == BAR_IR1_OUT_GetValue( ) ) )
                     {
                         appData.state = APP_STATE_CLOSING_DOOR;
                     }
