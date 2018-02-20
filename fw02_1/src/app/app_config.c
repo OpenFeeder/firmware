@@ -174,7 +174,11 @@ INI_READ_STATE config_read_ini( void )
     }
 
     /* Site identification. */
-    ini_gets( "siteid", "zone", "XXXX", appData.siteid, sizearray( appData.siteid ), "CONFIG.INI" );
+    s = ini_gets( "siteid", "zone", "XXXX", appData.siteid, sizearray( appData.siteid ), "CONFIG.INI" );
+    for (i=s;i<4;i++)
+    {
+        appData.siteid[i] = 'X';
+    }
 
     /* Wake up time. */
     read_parameter = ini_getl( "time", "wakeup_hour", -1, "CONFIG.INI" );

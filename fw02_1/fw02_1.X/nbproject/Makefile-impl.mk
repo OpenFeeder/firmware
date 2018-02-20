@@ -27,7 +27,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 PROJECTNAME=fw02_1.X
 
 # Active Configuration
-DEFAULTCONF=OF_fw_2_1_brd_3_0_no_ver
+DEFAULTCONF=OF_fw_2_1_brd_3_0_ver_jerome
 CONF=${DEFAULTCONF}
 
 # All Configurations
