@@ -124,7 +124,7 @@ void getUniqueDeviceId( void )
 void displayUniqueDeviceId( void )
 {
     
-    printf("\t%06lX %06lX %06lX %06lX %06lX\n", appData.udid.words[0],
+    printf("UDID: %06lX %06lX %06lX %06lX %06lX\n", appData.udid.words[0],
                                         appData.udid.words[1],
                                         appData.udid.words[2],
                                         appData.udid.words[3],
@@ -139,23 +139,28 @@ void displayBuildDateTime( void )
     printf( "Build on %s, %s\n", BUILD_DATE, BUILD_TIME );
 }
 
+void displayFirmwareVersion( void )
+{
+    /* Displaying firmware version. */
+    printf( "Firmware: %s v%d.%d.%d\n", FW_NAME, FW_VERSION_MAJOR, FW_VERSION_MINOR, FW_VERSION_PATCH);
+}
+
 void displayBootMessage( void )
 {
-    printf( "\n\n================ OpenFeeder ================\n" );
-    printf( "      Firmware: %s v%d.%d.%d\n", FW_NAME, FW_VERSION_MAJOR, FW_VERSION_MINOR, FW_VERSION_PATCH);
-    printf( "      Built on %s, %s\n", BUILD_DATE, BUILD_TIME );
-    printf( "      For board v3.0\n");
+    printf( "\n\n================ OpenFeeder ================\n\t" );
+//    printf( "      Firmware: %s v%d.%d.%d\n", FW_NAME, FW_VERSION_MAJOR, FW_VERSION_MINOR, FW_VERSION_PATCH);
+//    printf( "      Built on %s, %s\n", BUILD_DATE, BUILD_TIME );
+    displayFirmwareVersion();
+    printf( "\t" );
+    displayBuildDateTime();
+    printf( "\tFor board v3.0\n");
+    printf( "============================================\n\t" );
+    displayUniqueDeviceId();
     printf( "============================================\n" );
-    printf( "  UDID: %06lX %06lX %06lX %06lX %06lX\n", appData.udid.words[0],
-                                        appData.udid.words[1],
-                                        appData.udid.words[2],
-                                        appData.udid.words[3],
-                                        appData.udid.words[4]);
+    printf( "\tWeb page: https://github.com/OpenFeeder\n" );
+    printf( "\tMail: contact.openfeeder@gmail.com\n" );
     printf( "============================================\n" );
-    printf( "   Web page: https://github.com/OpenFeeder\n" );
-    printf( "   Mail: contact.openfeeder@gmail.com\n" );
-    printf( "============================================\n" );
-    printf( "  Type [?] key to display debug options.\n" );
+    printf( "\tType [?] key to display debug options.\n" );
     printf( "============================================\n\n" );
 }
 
@@ -483,7 +488,8 @@ void APP_SerialDebugTasks( void )
             case 'j':
             case 'J':
    
-                printf( "\t<NOT AFFECTED>\n" );
+                display_events();
+//                printf( "\t<NOT AFFECTED>\n" );
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -942,9 +948,14 @@ void APP_SerialDebugTasks( void )
 
             case 'y':
             case 'Y':
-
+ 
+                displayFirmwareVersion();
+                displayBuildDateTime();
+                putchar( '\n' );
+                displayUniqueDeviceId();
+                
                 /* Display external interrupt and timers states */
-                printf( "External interrupt states\n" );
+                printf( "\nExternal interrupt states\n" );
                 printf( "\tINT0: %d\n", IEC0bits.INT0IE );
                 printf( "\tINT1: %d\n", IEC1bits.INT1IE );
                 printf( "\tINT2: %d\n", IEC1bits.INT2IE );

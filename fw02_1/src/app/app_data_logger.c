@@ -21,6 +21,11 @@ static int populateLogBuffer(void)
     char line[MAX_CHAR_PER_LINE];   
     unsigned long delayS;
 
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_POPULATE_LOG_BUFFER); 
+    }  
+    
     if (0 == strcmp(appDataLog.bird_pit_tag_str, "XXXXXXXXXX"))
     {
         appDataLog.is_reward_taken = false;
@@ -116,6 +121,11 @@ static int writeLogFile(void)
     FILEIO_OBJECT file;
     FILEIO_ERROR_TYPE errF;
     size_t numDataWritten;
+
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_WRITE_DATA_LOG); 
+    }
 
     if (FILEIO_RESULT_FAILURE == FILEIO_Open(&file, appDataLog.filename, FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND))
     {
@@ -276,6 +286,11 @@ FILEIO_RESULT logBatteryLevel(void)
     int flag, i;
     size_t numDataWritten;
 
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_WRITE_BATTERY_LOG); 
+    }
+
     getDateTime(&currentTime);
 
     if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
@@ -360,6 +375,11 @@ FILEIO_RESULT logUDID(void)
     size_t numDataWritten;
     int flag;
     
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_WRITE_UDID_LOG); 
+    }
+
     if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
     {
         return FILEIO_RESULT_FAILURE;
@@ -427,6 +447,11 @@ FILEIO_RESULT logRfidFreq(void)
     struct tm currentTime;
     int flag, i;
     size_t numDataWritten;
+
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_WRITE_RFID_LOG); 
+    }
 
     getDateTime(&currentTime);
 

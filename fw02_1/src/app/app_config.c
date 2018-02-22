@@ -18,9 +18,10 @@ bool config_set( void )
     /* Search for the CONFIG.INI file. */
     if ( FILEIO_RESULT_FAILURE == config_find_ini( ) )
     {
-        strcpy( appError.message, "File not found (CONFIG.INI)" );
+        strcpy( appError.message, "CONFIG.INI not found" );
         appError.currentLineNumber = __LINE__;
         sprintf( appError.currentFileName, "%s", __FILE__ );
+        appError.number = ERROR_INI_FILE_NOT_FOUND;
         return false;
     }
 
@@ -538,11 +539,89 @@ INI_READ_STATE config_read_ini( void )
     }
     appDataDoor.close_time.tm_sec = 0;
 
-    /* Data separator in the log file. */
-    ini_gets( "logfile", "separator", DEFAULT_LOG_SEPARATOR, appDataLog.separator, sizearray( appDataLog.separator ), "CONFIG.INI" );
-
+    /* Logs */
+    /* Check if "reward" section is present in the INI file */ 
+    flag = false;
+    for (s = 0; ini_getsection(s, str, 20, "CONFIG.INI") > 0; s++)
+    {
+        if ( 0 == strcmp( str, "logs" ) )
+        {
+            flag = true;
+        }
+    }
+    
+    if (flag)
+    {
+        /* Data separator in the log file. */
+        ini_gets( "logs", "separator", DEFAULT_LOG_SEPARATOR, appDataLog.separator, sizearray( appDataLog.separator ), "CONFIG.INI" );
+//        read_parameter = ini_getl( "logs", "birds", -1, "CONFIG.INI" );
+//        if ( -1 == read_parameter )
+//        {
+//            return INI_PB_LOGS_BIRDS;
+//        }
+//        else
+//        {
+//            appDataLog.log_data = ( bool ) read_parameter;
+//        }
+        read_parameter = ini_getl( "logs", "udid", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_LOGS_UDID;
+        }
+        else
+        {
+            appDataLog.log_udid = ( bool ) read_parameter;
+        }
+        read_parameter = ini_getl( "logs", "events", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_LOGS_EVENTS;
+        }
+        else
+        {
+            appDataLog.log_events = ( bool ) read_parameter;
+        }
+        read_parameter = ini_getl( "logs", "errors", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_LOGS_ERRORS;
+        }
+        else
+        {
+            appDataLog.log_errors = ( bool ) read_parameter;
+        }
+        read_parameter = ini_getl( "logs", "battery", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_LOGS_BATTERY;
+        }
+        else
+        {
+            appDataLog.log_battery = ( bool ) read_parameter;
+        }
+        read_parameter = ini_getl( "logs", "rfid", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_LOGS_RFID;
+        }
+        else
+        {
+            appDataLog.log_rfid = ( bool ) read_parameter;
+        }
+    }
+    else
+    {
+        /* Data separator in the log file. */
+        ini_gets( "logfile", "separator", DEFAULT_LOG_SEPARATOR, appDataLog.separator, sizearray( appDataLog.separator ), "CONFIG.INI" );
+        appDataLog.log_birds = true;
+        appDataLog.log_udid = true;
+        appDataLog.log_events = true;
+        appDataLog.log_errors = true;
+        appDataLog.log_battery = true;
+        appDataLog.log_rfid = true;
+    }
     /* Reward. */
-    /* Check if "reward" is present in the INI file */ 
+    /* Check if "reward" section is present in the INI file */ 
     flag = false;
     for (s = 0; ini_getsection(s, str, 20, "CONFIG.INI") > 0; s++)
     {
@@ -687,6 +766,58 @@ void config_print( void )
             appDataAlarmSleep.time.tm_hour,
             appDataAlarmSleep.time.tm_min );
 
+    
+    
+    printf( "\tLoggers\n" );
+    printf( "\t\tSeparator: %s\n", appDataLog.separator );
+    if ( true == appDataLog.log_birds)
+    {
+        printf( "\t\tBirds: enable - %s\n", appDataLog.filename );   
+    }
+    else
+    {
+        printf( "\t\tBirds: disable\n");
+    }
+    if ( true == appDataLog.log_battery)
+    {
+        printf( "\t\tBattery: enable - %s\n", "BATTERY.CSV" );   
+    }
+    else
+    {
+        printf( "\t\tBattery: disable\n");
+    }  
+    if ( true == appDataLog.log_rfid)
+    {
+        printf( "\t\tRfid: enable - %s\n", "RFID.CSV" );   
+    }
+    else
+    {
+        printf( "\t\tRfid: disable\n");
+    }
+    if ( true == appDataLog.log_udid)
+    {
+        printf( "\t\tUdid: enable - %s\n", "UDID.CSV" );   
+    }
+    else
+    {
+        printf( "\t\tUdid: disable\n");
+    }
+    if ( true == appDataLog.log_errors)
+    {
+        printf( "\t\tErrors: enable - %s\n", "ERRORS.CSV" );   
+    }
+    else
+    {
+        printf( "\t\tErrors: disable\n");
+    }
+    if ( true == appDataLog.log_events)
+    {
+        printf( "\t\tEvents: enable - %s - %s\n", appDataEvent.filename, appDataEvent.binfilename );   
+    }
+    else
+    {
+        printf( "\t\tEvents: disable\n");
+    }
     if (true == appData.flags.bit_value.attractive_leds_status)
     {
         printf( "\tAttractive LEDs\n" );
@@ -708,18 +839,6 @@ void config_print( void )
     }
 
     printf( "\tDoor\n" );
-    printf( "\t\tServo\n\t\t\tPosition full closed: %d\n", appDataServo.ton_min_night );
-    printf( "\t\t\tPosition full opened: %d\n", appDataServo.ton_max );
-    
-    if (DOOR_HABITUATION == appData.scenario_number)
-    {
-        printf( "\t\t\tDoor habituation: %d%%\n\t\t\tPosition habituation closed: %d\n", appDataDoor.habituation_percent, appDataServo.ton_min );
-    }
-    printf( "\t\t\tFull closing time: %.3fs\n", ((float)(appDataServo.ton_max-appDataServo.ton_min_night))/((float)appDataServo.closing_speed)*0.02 );
-    printf( "\t\t\tFull opening time: %.3fs\n", ((float)(appDataServo.ton_max-appDataServo.ton_min_night))/((float)appDataServo.opening_speed)*0.02 );
-    printf( "\t\t\tClosing speed factor: %d\n", appDataServo.closing_speed );
-    printf( "\t\t\tOpening speed factor: %d\n", appDataServo.opening_speed );
-    
     printf( "\t\tOpen delay: %ds\n\t\tClose delay: %ds\n",
             appDataDoor.open_delay / 1000,
             appDataDoor.close_delay / 1000 );
@@ -738,6 +857,23 @@ void config_print( void )
             appDataDoor.close_time.tm_hour,
             appDataDoor.close_time.tm_min );
 
+    if (DOOR_HABITUATION == appData.scenario_number)
+    {
+        printf( "\t\tDoor habituation: %d%%\n", appDataDoor.habituation_percent );
+    }
+    
+    printf( "\tServo\n\t\tPosition full closed: %d\n", appDataServo.ton_min_night );
+    printf( "\t\tPosition full opened: %d\n", appDataServo.ton_max );
+    
+    if (DOOR_HABITUATION == appData.scenario_number)
+    {
+        printf( "\t\tPosition habituation closed: %d\n", appDataServo.ton_min );
+    }
+    printf( "\t\tFull closing time: %.3fs\n", ((float)(appDataServo.ton_max-appDataServo.ton_min_night))/((float)appDataServo.closing_speed)*0.02 );
+    printf( "\t\tFull opening time: %.3fs\n", ((float)(appDataServo.ton_max-appDataServo.ton_min_night))/((float)appDataServo.opening_speed)*0.02 );
+    printf( "\t\tClosing speed factor: %d\n", appDataServo.closing_speed );
+    printf( "\t\tOpening speed factor: %d\n", appDataServo.opening_speed );
+    
     printf( "\tReward\n" );
     if ( 0 == appData.reward_enable )
     {
@@ -759,10 +895,6 @@ void config_print( void )
         printf( "\tPunishment\n" );
         printf( "\t\tDelay: %us\n", appData.punishment_delay / 1000 );
     }
-
-    printf( "\tData logger\n" );
-    printf( "\t\tFile name: %s\n", appDataLog.filename );
-    printf( "\t\tData separator: %s\n", appDataLog.separator );
             
     if ( DOOR_HABITUATION < appData.scenario_number )
     {
@@ -866,6 +998,24 @@ void getIniPbChar( INI_READ_STATE state, char *buf, uint8_t n )
             break;
         case INI_PB_TIME_SLEEP_MINUTE:
             snprintf( buf, n, "Sleep: minute" );
+            break;
+        case INI_PB_LOGS_BIRDS:
+            snprintf( buf, n, "Logs: birds" );
+            break;
+        case INI_PB_LOGS_UDID:
+            snprintf( buf, n, "Logs: udid" );
+            break;
+        case INI_PB_LOGS_EVENTS:
+            snprintf( buf, n, "Logs: events" );
+            break;
+        case INI_PB_LOGS_ERRORS:
+            snprintf( buf, n, "Logs: errors" );
+            break;
+        case INI_PB_LOGS_BATTERY:
+            snprintf( buf, n, "Logs: battery" );
+            break;
+        case INI_PB_LOGS_RFID:
+            snprintf( buf, n, "Logs: rfid" );
             break;
         case INI_PB_ATTRACTIVE_LEDS_RED_A:
             snprintf( buf, n, "Attractive LEDs: red A" );

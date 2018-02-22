@@ -100,6 +100,11 @@ bool servomotorMoveTheDoor( void )
 void servomotorPowerEnable( void )
 {
 
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_POWER_SERVO_ON); 
+    }
+
     if ( false == appData.servo_powered && false == appData.pir_sensor_powered )
     {
         CMD_VDD_ACC_PIR_SERVO_SetHigh( );
@@ -120,6 +125,11 @@ void servomotorPowerEnable( void )
 
 void servomotorPowerDisable( void )
 {
+
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_POWER_SERVO_OFF); 
+    }
 
     if (false == appData.pir_sensor_powered)
     {

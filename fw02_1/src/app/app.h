@@ -32,6 +32,7 @@
 //#define DISPLAY_USB_INFO          // uncomment to display USB information
 //#define DISPLAY_LOG_INFO 
 //#define DISPLAY_CHECK_INFO 
+//#define DISPLAY_EVENT_INFO
 
 //#define DISPLAY_ISR_RTCC          // uncomment to display interruption event
 //#define DISPLAY_ISR_IR              // uncomment to display interruption event

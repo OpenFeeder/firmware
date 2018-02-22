@@ -19,6 +19,11 @@ bool isPowerServoEnable( void )
 
 void powerPIREnable( void )
 {
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_POWER_PIR_ON); 
+    }
+    
     if ( false == appData.servo_powered && false == appData.pir_sensor_powered )
     {
         // Power on the voltage regulator U7 (MIC39101 - 5.0YM)
@@ -30,6 +35,11 @@ void powerPIREnable( void )
 
 void powerPIRDisable( void )
 {
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_POWER_PIR_OFF); 
+    }
+
     if ( false == appData.servo_powered )
     {
         // Power off the voltage regulator U7 (MIC39101 - 5.0YM)
@@ -42,6 +52,11 @@ void powerPIRDisable( void )
 /* VDD_APP Enable function */
 void powerUsbRfidEnable( void )
 {
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_POWER_USB_RFID_ON); 
+    }
+
     // Power on the voltage regulator U5 (MIC39101 - 5.0YM)
     CMD_VDD_APP_V_USB_SetHigh( ); 
 
@@ -53,6 +68,11 @@ void powerUsbRfidEnable( void )
 /* VDD_APP Disable function */
 void powerUsbRfidDisable( void )
 {
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_POWER_USB_RFID_OFF); 
+    }
+
     CMD_VDD_USB_SetDigitalInput( ); // USB power down, VDD_USB = OFF
     
     // Power off the voltage regulator U5 (MIC39101 - 5.0YM)
@@ -138,15 +158,36 @@ void manageResetSituation( void )
     {
         case 1024: // Software reset
             appData.dsgpr0.reg = DSGPR0;
+            store_event(OF_RESET_SWR);
             break;
             
-//        case 2101:
-//        case 2107:
-//            break;
+        case 2048:
+            store_event(OF_RESET_MCLR_RUN_MODE);
+            break;
+            
+        case 2101:
+            store_event(OF_RESET_POR);
+            break;
+            
+        case 2107:
+            store_event(OF_RESET_VBAT);
+            break;
+            
+        case 2176:
+            store_event(OF_RESET_MCLR_IDLE_MODE);
+            break;
+            
+        case 2304:
+            store_event(OF_RESET_MCLR_SLEEP_MODE);
+            break;
+            
+        default:
+            store_event(OF_RESET_OTHER);
+            break;
     }
     
 }
-
+    
 void printResetSituation( void )
 {
     

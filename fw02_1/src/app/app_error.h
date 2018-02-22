@@ -29,6 +29,12 @@ typedef enum
     ERROR_CRITICAL,
     /* Non critical errors: the system resets if errors below occurred */
     ERROR_USB,
+    ERROR_USB_DEVICE_NOT_FOUND,
+    ERROR_USB_MOUNT_DRIVE,
+    ERROR_USB_UNMOUNT_DRIVE,
+    ERROR_USB_RESUME_DEVICE,
+    ERROR_USB_SUSPEND_DEVICE, 
+    ERROR_INI_FILE_NOT_FOUND,
     ERROR_INI_FILE_READ,
     ERROR_PIT_TAGS_ACCEPTED_FILE_OPEN,
     ERROR_PIT_TAGS_ACCEPTED_FILE_READ,
@@ -56,6 +62,14 @@ typedef enum
     ERROR_ERROR_FILE_OPEN,
     ERROR_ERROR_FILE_WRITE,
     ERROR_ERROR_FILE_CLOSE,
+    ERROR_EVENT_CSV_FILE_OPEN,
+    ERROR_EVENT_CSV_FILE_WRITE,
+    ERROR_EVENT_CSV_FILE_CLOSE,
+    ERROR_EVENT_CSV_FILE_SET_NAME,
+    ERROR_EVENT_BIN_FILE_OPEN,
+    ERROR_EVENT_BIN_FILE_WRITE,
+    ERROR_EVENT_BIN_FILE_CLOSE,
+    ERROR_EVENT_BIN_FILE_SET_NAME,
     ERROR_ATTRACTIVE_LED_INIT,
         
     ERROR_TOO_MANY_SOFTWARE_RESET = 100
@@ -66,7 +80,7 @@ typedef struct
 {
     char message[200]; // Error message buffer
     char currentFileName[200];
-    int16_t currentLineNumber;
+    uint16_t currentLineNumber;
     //    uint8_t priority; // Message priority: 0 => high priority
     //                      //                   1 => low priority 
 
@@ -74,10 +88,12 @@ typedef struct
     LED_STATUS ledColor_2;
 
     ERROR_NUMBER number;
+    
+    struct tm time;
 
 } APP_ERROR;
 
-
+FILEIO_RESULT logError(void);
 void printError( void );
 void clearError( void );
 

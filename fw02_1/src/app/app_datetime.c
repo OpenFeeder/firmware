@@ -56,6 +56,11 @@ void calibrateCurrentDate( void )
                      appData.i2c_current_time.hour, 
                      appData.i2c_current_time.min, 
                      appData.i2c_current_time.sec );
+       
+        if ( true == appDataLog.log_events )
+        {
+           store_event(OF_CALIBRATE_TIME); 
+        }
     }
 }
 
@@ -70,22 +75,7 @@ void printCurrentDate( void )
             appData.current_time.tm_hour,
             appData.current_time.tm_min,
             appData.current_time.tm_sec );
-        
-//    struct tm current_time;
-//
-//    /* Get current Time. */
-//    while ( !RTCC_TimeGet( &current_time ) )
-//    {
-//        Nop( );
-//    }
-//
-//    printf( "%02u/%02u/20%02u %02u:%02u:%02u",
-//            current_time.tm_mday,
-//            current_time.tm_mon,
-//            current_time.tm_year,
-//            current_time.tm_hour,
-//            current_time.tm_min,
-//            current_time.tm_sec );
+
 }
 
 /*******************************************************************************

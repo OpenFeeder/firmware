@@ -79,6 +79,12 @@ APP_CHECK checkImportantParameters(void)
 bool isPowerBatteryGood(void)
 {
     bool batteryLevelOK;
+    
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_CHECK_BATTERY); 
+    }
+
     getBatteryLevel();
     batteryLevelOK = appData.battery_level > LOW_BATTERY_LEVEL;
 
@@ -97,6 +103,12 @@ bool isPowerBatteryGood(void)
 bool isPowerVbatGood(void)
 {
     bool vbatLevelOK;
+    
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_CHECK_VBAT); 
+    }
+
     getVBatLevel();
     vbatLevelOK = appData.vbat_level > LOW_VBAT_LEVEL;
 
@@ -116,6 +128,11 @@ bool isEnoughFood(void)
 {
     bool foodLevelOK;
     bool flag = false;
+    
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_CHECK_FOOD); 
+    }
 
     if (CMD_VCC_IR_GetValue() == 1)
     {
@@ -148,6 +165,11 @@ bool isEnoughFood(void)
 bool isRfidFreqGood(void)
 {
     bool flag;
+
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_CHECK_RFID); 
+    }
 
     /* Check RFID frequency */
     flag = measureRfidFreq();

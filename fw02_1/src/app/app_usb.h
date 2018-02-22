@@ -37,6 +37,8 @@
 #define USB_DRIVE_NOT_MOUNTED false
 #define USB_DRIVE_MOUNTED true
 
+#define MAX_DELAY_TO_DETECT_USB_DEVICE 60000
+
 /* Application Data
 
   Summary:

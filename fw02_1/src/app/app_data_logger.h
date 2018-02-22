@@ -51,6 +51,15 @@ typedef struct
 
     int16_t rfid_freq[96][3];
     uint8_t numRfidFreqStored;
+    
+    bool data_flush_before_error;
+    
+    bool log_birds;
+    bool log_udid;
+    bool log_events;
+    bool log_errors;
+    bool log_battery;
+    bool log_rfid;
 
 } APP_DATA_LOG;
 

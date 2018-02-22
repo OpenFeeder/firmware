@@ -60,7 +60,7 @@ typedef enum
 
     INI_PB_DOOR_REWARD_PROBABILITY, // 27
 
-        INI_PB_DOOR_OPEN_HOUR, // 28
+    INI_PB_DOOR_OPEN_HOUR, // 28
     INI_PB_DOOR_OPEN_MINUTE, // 29
 
     INI_PB_DOOR_CLOSE_HOUR, // 30
@@ -78,8 +78,15 @@ typedef enum
 
     INI_PB_PUNISHMENT_DELAY, // 39
 
-    INI_PB_DOOR_HABITUATION // 40
+    INI_PB_DOOR_HABITUATION, // 40
        
+    INI_PB_LOGS_BIRDS,
+    INI_PB_LOGS_UDID,
+    INI_PB_LOGS_EVENTS,
+    INI_PB_LOGS_ERRORS,
+    INI_PB_LOGS_BATTERY,
+    INI_PB_LOGS_RFID
+            
 } INI_READ_STATE;
 
 bool config_set( void );

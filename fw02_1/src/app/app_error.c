@@ -14,7 +14,7 @@ FILEIO_RESULT logError(void)
     
     FILEIO_OBJECT file;
     FILEIO_ERROR_TYPE errF;
-    char buf[200];
+    char buf[250];
     struct tm currentTime;
     int flag;
     size_t numDataWritten;
@@ -26,7 +26,7 @@ FILEIO_RESULT logError(void)
         return FILEIO_RESULT_FAILURE;
     }
 
-    if (FILEIO_RESULT_FAILURE == FILEIO_Open(&file, "ERROR.CSV", FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND))
+    if (FILEIO_RESULT_FAILURE == FILEIO_Open(&file, "ERRORS.CSV", FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND))
     {
         errF = FILEIO_ErrorGet('A');
         sprintf(appError.message, "Unable to open error log file (%u)", errF);
@@ -39,7 +39,7 @@ FILEIO_RESULT logError(void)
 
     memset(buf, '\0', sizeof ( buf));
 
-    flag = sprintf(buf, "%c%c,OF%c%c,%u,%02d/%02d/%02d,%02d:%02d:%2d,%u,%s\n",
+    flag = sprintf(buf, "%c%c,OF%c%c,%u,%02d/%02d/%02d,%02d:%02d:%02d,%u,\"%s\",%s,%u\n",
                    appData.siteid[0],
                    appData.siteid[1],
                    appData.siteid[2],
@@ -52,7 +52,9 @@ FILEIO_RESULT logError(void)
                    currentTime.tm_min,
                    currentTime.tm_sec,                   
                    appError.number,
-                   appError.message);
+                   appError.message,
+                   appError.currentFileName,
+                   appError.currentLineNumber);
 
     if (flag > 0)
     {
@@ -97,10 +99,22 @@ FILEIO_RESULT logError(void)
 
 void printError(void)
 {
-    if (appError.currentLineNumber > 0)
-        printf("ERROR %02d: %s\nIn %s (%d)\n", appError.number, appError.message, appError.currentFileName, appError.currentLineNumber);
+    printf( "\t%02u/%02u/20%02u %02u:%02u:%02u ",
+            appError.time.tm_mday,
+            appError.time.tm_mon,
+            appError.time.tm_year,
+            appError.time.tm_hour,
+            appError.time.tm_min,
+            appError.time.tm_sec );
+    
+    if ( appError.currentLineNumber > 0 )
+    {
+        printf( " ERROR %03d\n\t%s\n\tIn %s at line %d\n", appError.number, appError.message, appError.currentFileName, appError.currentLineNumber);
+    }
     else
-        printf("ERROR %02d: %s\n", appError.number, appError.message);
+    {
+        printf( "\tERROR %03d\n%s\n", appError.number, appError.message);
+    }
 }
 
 

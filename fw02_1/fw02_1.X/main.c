@@ -178,6 +178,8 @@
                          Main application
  */
 
+APP_DATA_EVENT appDataEvent;
+
 int main( void )
 {
     I2C1_MESSAGE_STATUS i2c_status;
@@ -213,6 +215,8 @@ int main( void )
     appData.dsgpr0.reg = 0;
     appData.dsgpr1.reg = 0;
         
+    clear_events_buffers( );
+    
     /* Initialize the device. */
     SYSTEM_Initialize( );
 
@@ -258,9 +262,12 @@ int main( void )
 
     /* Initialize the application. */
     APP_Initialize( );
-
+      
     if ( BUTTON_NOT_PRESSED == USER_BUTTON_GetValue( ) )
     {
+        
+        store_event(OF_ENTER_NORMAL_MODE);
+        
 #if defined (USE_UART1_SERIAL_INTERFACE)
         /* Display information on serial terminal. */
         displayBootMessage( );
@@ -286,6 +293,9 @@ int main( void )
     }
     else
     {
+        
+        store_event(OF_ENTER_DEBUG_MODE);
+        
         printf( "\n\nEnter in serial debug mode...\n" );
 
         /* Status LED blinks */
