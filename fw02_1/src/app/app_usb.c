@@ -36,18 +36,18 @@ bool usbMountDrive( void )
 {
     uint8_t success;
     FILEIO_ERROR_TYPE errF;
-    
-    if ( true == appDataLog.log_events )
-    {
-       store_event(OF_MOUNT_USB_DRIVE); 
-    }
-         
+             
     /* Drive is already mounted. */
     if ( USB_DRIVE_MOUNTED == appDataUsb.usbDriveStatus )
     {
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
         printf( "\tUSB drive already mounted\n" );
 #endif
+        if ( true == appDataLog.log_events )
+        {
+           store_event(OF_ALREADY_MOUNT_USB_DRIVE); 
+        }
+        
         return USB_DRIVE_MOUNTED;
     }
 
@@ -107,6 +107,11 @@ bool usbMountDrive( void )
     
     appDataUsb.usbDriveStatus = USB_DRIVE_MOUNTED;
     
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_MOUNT_USB_DRIVE); 
+    }
+    
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
     printf( "\tUSB drive mounted\n" );        
 #endif
@@ -118,17 +123,17 @@ bool usbUnmountDrive( void )
 {
     uint8_t success;
     
-    if ( true == appDataLog.log_events )
-    {
-       store_event(OF_UNMOUNT_USB_DRIVE); 
-    }
-
     /* Drive is already not mounted. */
     if ( USB_DRIVE_NOT_MOUNTED == appDataUsb.usbDriveStatus )
     {
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
         printf( "\tUSB drive already unmounted\n" );
 #endif
+        if ( true == appDataLog.log_events )
+        {
+           store_event(OF_ALREADY_UNMOUNT_USB_DRIVE); 
+        }
+        
         return appDataUsb.usbDriveStatus;
     }
 
@@ -149,6 +154,11 @@ bool usbUnmountDrive( void )
 #endif    
     appDataUsb.usbDriveStatus = USB_DRIVE_NOT_MOUNTED;
 
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_UNMOUNT_USB_DRIVE); 
+    }
+    
     // http://www.microchip.com/forums/m582058.aspx
     // help_mla_usb.pdf => 1.4.2.1.1.18 USBHostSuspendDevice Function            
     success = USBHostSuspendDevice( appDataUsb.deviceAddress ); /* now no interrupt occur */

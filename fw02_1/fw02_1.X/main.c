@@ -178,8 +178,6 @@
                          Main application
  */
 
-APP_DATA_EVENT appDataEvent;
-
 int main( void )
 {
     I2C1_MESSAGE_STATUS i2c_status;

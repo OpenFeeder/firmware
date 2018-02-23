@@ -286,11 +286,6 @@ FILEIO_RESULT logBatteryLevel(void)
     int flag, i;
     size_t numDataWritten;
 
-    if ( true == appDataLog.log_events )
-    {
-       store_event(OF_WRITE_BATTERY_LOG); 
-    }
-
     getDateTime(&currentTime);
 
     if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
@@ -298,6 +293,11 @@ FILEIO_RESULT logBatteryLevel(void)
         return FILEIO_RESULT_FAILURE;
     }
 
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_WRITE_BATTERY_LOG); 
+    }
+    
     if (FILEIO_RESULT_FAILURE == FILEIO_Open(&file, "BATTERY.CSV", FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND))
     {
         errF = FILEIO_ErrorGet('A');
@@ -375,14 +375,14 @@ FILEIO_RESULT logUDID(void)
     size_t numDataWritten;
     int flag;
     
-    if ( true == appDataLog.log_events )
-    {
-       store_event(OF_WRITE_UDID_LOG); 
-    }
-
     if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
     {
         return FILEIO_RESULT_FAILURE;
+    }
+    
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_WRITE_UDID_LOG); 
     }
     
     if (FILEIO_RESULT_FAILURE == FILEIO_Open(&file, "UDID.CSV", FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND))
@@ -448,11 +448,6 @@ FILEIO_RESULT logRfidFreq(void)
     int flag, i;
     size_t numDataWritten;
 
-    if ( true == appDataLog.log_events )
-    {
-       store_event(OF_WRITE_RFID_LOG); 
-    }
-
     getDateTime(&currentTime);
 
     if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
@@ -460,6 +455,11 @@ FILEIO_RESULT logRfidFreq(void)
         return FILEIO_RESULT_FAILURE;
     }
 
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_WRITE_RFID_LOG); 
+    }
+    
     if (FILEIO_RESULT_FAILURE == FILEIO_Open(&file, "RFIDFREQ.CSV", FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND))
     {
         errF = FILEIO_ErrorGet('A');

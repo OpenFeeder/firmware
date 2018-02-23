@@ -8,7 +8,7 @@
 #ifndef _APP_EVENT_HEADER_H
 #define _APP_EVENT_HEADER_H
 
-#define MAX_NUMBER_OF_EVENT 100
+#define MAX_NUMBER_OF_EVENT 150
 #define MAX_NUM_EVENT_BEFORE_SAVE 50
 
 typedef enum
@@ -45,6 +45,10 @@ typedef enum
         
     OF_SYSTEM_RESET,
 
+    OF_FIND_INI,    
+    OF_READ_INI,
+    OF_READ_PIT_TAGS,
+        
     OF_CHECK_BATTERY,
     OF_CHECK_VBAT,
     OF_CHECK_FOOD,
@@ -75,6 +79,8 @@ typedef enum
     OF_UNMOUNT_USB_DRIVE,
     OF_SUSPEND_USB_DRIVE,
     OF_RESUME_USB_DRIVE,
+    OF_ALREADY_MOUNT_USB_DRIVE,
+    OF_ALREADY_UNMOUNT_USB_DRIVE,
         
     OF_ATTRACTIVE_LEDS_OFF,
     OF_ATTRACTIVE_LEDS_ON,

@@ -24,6 +24,11 @@ bool config_set( void )
         appError.number = ERROR_INI_FILE_NOT_FOUND;
         return false;
     }
+    
+    if ( true == appDataLog.log_events )
+    {
+        store_event(OF_FIND_INI);
+    }
 
     /* Read the CONFIG.INI file. */
     read_ini_status = config_read_ini( );
@@ -40,11 +45,21 @@ bool config_set( void )
         return false;
     }
 
+    if ( true == appDataLog.log_events )
+    {
+        store_event(OF_READ_INI);
+    }
+    
     if ( appDataPitTag.numPitTagDeniedOrColorA > 0 || appDataPitTag.numPitTagAcceptedOrColorB > 0 )
     {
         if ( FILEIO_RESULT_FAILURE == read_PIT_tags( ) )
         {
             return false;
+        }
+        
+        if ( true == appDataLog.log_events )
+        {
+            store_event(OF_READ_PIT_TAGS);
         }
     }
 

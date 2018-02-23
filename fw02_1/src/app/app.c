@@ -101,7 +101,7 @@ APP_DATA_LEDS appDataAttractiveLeds;
 APP_DATA_LOG appDataLog;
 APP_DATA_SERVO appDataServo; /* Servomotor application data. */
 APP_DATA_RC appDataRc;
-//APP_DATA_EVENT appDataEvent;
+APP_DATA_EVENT appDataEvent;
 APP_DATA_DOOR appDataDoor;
 
 /******************************************************************************
@@ -139,8 +139,10 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_INITIALIZE\n" );
 #endif
-
-            store_event(OF_STATE_INITIALIZE);
+                if ( true == appDataLog.log_events )
+                {
+                    store_event(OF_STATE_INITIALIZE);
+                }
             
             }
 
@@ -188,9 +190,11 @@ void APP_Tasks( void )
                 
                 powerUsbRfidEnable( );
                 appDataUsb.key_is_nedded = true;
-
-                store_event(OF_STATE_CONFIGURE_SYSTEM);
                 
+                if ( true == appDataLog.log_events )
+                {
+                    store_event(OF_STATE_CONFIGURE_SYSTEM);
+                }
                 setDelayMs(MAX_DELAY_TO_DETECT_USB_DEVICE);
                     
             }
@@ -262,6 +266,11 @@ void APP_Tasks( void )
                     break;
                 }
 
+                if ( true == appDataLog.log_udid )
+                {
+                    logUDID();
+                }
+                
                 setLedsStatusColor( LED_YELLOW );
 
                 /* Servomotor power command enable. */
@@ -438,17 +447,12 @@ void APP_Tasks( void )
                 appData.state = APP_STATE_ERROR;
                 break;
             }
-
+  
             if ( USB_DRIVE_MOUNTED == usbUnmountDrive( ) )
             {
                 appData.state = APP_STATE_ERROR;
             }
-            
-            if ( true == appDataLog.log_udid )
-            {
-                logUDID();
-            }
-            
+
             appDataUsb.key_is_nedded = false;
 
             break;
@@ -2345,7 +2349,7 @@ void APP_Initialize( void )
     appDataLog.data_flush_before_error = false;
     appDataLog.log_birds = true;
     appDataLog.log_udid = false;
-    appDataLog.log_events = false;
+    appDataLog.log_events = true;
     appDataLog.log_errors = false;
     appDataLog.log_battery = false;
     appDataLog.log_rfid = false;
