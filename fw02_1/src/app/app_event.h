@@ -74,10 +74,35 @@ typedef enum
     OF_MOUNT_USB_DRIVE,
     OF_UNMOUNT_USB_DRIVE,
     OF_SUSPEND_USB_DRIVE,
-    OF_RESUME_USB_DRIVE
+    OF_RESUME_USB_DRIVE,
         
+    OF_ATTRACTIVE_LEDS_OFF,
+    OF_ATTRACTIVE_LEDS_ON,
+    OF_ATTRACTIVE_LEDS_NO_COLOR,
+        
+    OF_GO_NO_GO_ALL_ON,
+    OF_GO_NO_GO_ALL_OFF,
+    OF_GO_NO_GO_LR_L,
+    OF_GO_NO_GO_LR_R,
+    OF_GO_NO_GO_TB_T,
+    OF_GO_NO_GO_TB_B,
+    OF_GO_NO_GO_ONE_NONE,
+    OF_GO_NO_GO_ONE_1,
+    OF_GO_NO_GO_ONE_2,
+    OF_GO_NO_GO_ONE_3,
+    OF_GO_NO_GO_ONE_4,
+    OF_CAL_A,
+    OF_CAL_B
         
 } APP_EVENT;
+
+typedef enum
+{
+    EVENT_FILE_BINARY,
+    EVENT_FILE_TEXT,
+    EVENT_FILE_BINARY_AND_TEXT
+        
+} EVENT_FILE_TYPE;
 
 typedef struct
 {
@@ -92,6 +117,8 @@ typedef struct
     uint8_t seconds[MAX_NUMBER_OF_EVENT];
     uint8_t numbers[MAX_NUMBER_OF_EVENT];
     uint8_t num_events_stored;
+    
+    uint8_t file_type;
 
 } APP_DATA_EVENT;
 

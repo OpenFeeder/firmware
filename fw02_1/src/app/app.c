@@ -355,38 +355,55 @@ void APP_Tasks( void )
                     {
                         if ( ALL_LEDS == appDataAttractiveLeds.pattern_number )
                         {
-                           appDataAttractiveLeds.pattern[0] = 0;
-                           appDataAttractiveLeds.pattern[1] = 0;
-                           appDataAttractiveLeds.pattern[2] = 0;
-                           appDataAttractiveLeds.pattern[3] = 0;
+                            appDataAttractiveLeds.pattern[0] = 0;
+                            appDataAttractiveLeds.pattern[1] = 0;
+                            appDataAttractiveLeds.pattern[2] = 0;
+                            appDataAttractiveLeds.pattern[3] = 0;
+                            if ( true == appDataLog.log_events )
+                            {
+                                store_event(OF_GO_NO_GO_ALL_ON);
+                            }
                         }
                         else if ( LEFT_RIGHT_LEDS == appDataAttractiveLeds.pattern_number )
                         {
-                           appDataAttractiveLeds.pattern[0] = 1;
-                           appDataAttractiveLeds.pattern[1] = 0;
-                           appDataAttractiveLeds.pattern[2] = 0;
-                           appDataAttractiveLeds.pattern[3] = 1;  
+                            appDataAttractiveLeds.pattern[0] = 1;
+                            appDataAttractiveLeds.pattern[1] = 0;
+                            appDataAttractiveLeds.pattern[2] = 0;
+                            appDataAttractiveLeds.pattern[3] = 1; 
+                            if ( true == appDataLog.log_events )
+                            {
+                                store_event(OF_GO_NO_GO_LR_L);
+                            }
                         }
                         else if ( TOP_BOTTOM_LEDS == appDataAttractiveLeds.pattern_number )
                         {
-                           appDataAttractiveLeds.pattern[0] = 1;
-                           appDataAttractiveLeds.pattern[1] = 1;
-                           appDataAttractiveLeds.pattern[2] = 0;
-                           appDataAttractiveLeds.pattern[3] = 0; 
+                            appDataAttractiveLeds.pattern[0] = 1;
+                            appDataAttractiveLeds.pattern[1] = 1;
+                            appDataAttractiveLeds.pattern[2] = 0;
+                            appDataAttractiveLeds.pattern[3] = 0; 
+                            if ( true == appDataLog.log_events )
+                            {
+                                store_event(OF_GO_NO_GO_TB_T);
+                            }
                         }
                         else // ONE_LED
                         {
                             
-                           appDataAttractiveLeds.pattern[0] = 0;
-                           appDataAttractiveLeds.pattern[1] = 0;
-                           appDataAttractiveLeds.pattern[2] = 0;
-                           appDataAttractiveLeds.pattern[3] = 0;
+                            appDataAttractiveLeds.pattern[0] = 0;
+                            appDataAttractiveLeds.pattern[1] = 0;
+                            appDataAttractiveLeds.pattern[2] = 0;
+                            appDataAttractiveLeds.pattern[3] = 0;
+
+                            if ( true == appDataLog.log_events )
+                            {
+                                store_event(OF_GO_NO_GO_ONE_NONE);
+                            }
                            
-                           uint8_t w;
-                           w = appDataPitTag.numPitTagAcceptedOrColorB / 4;
-                           appDataAttractiveLeds.pattern_one_led_groups[0] = w;
-                           appDataAttractiveLeds.pattern_one_led_groups[1] = 2*w;
-                           appDataAttractiveLeds.pattern_one_led_groups[2] = 3*w;
+                            uint8_t w;
+                            w = appDataPitTag.numPitTagAcceptedOrColorB / 4;
+                            appDataAttractiveLeds.pattern_one_led_groups[0] = w;
+                            appDataAttractiveLeds.pattern_one_led_groups[1] = 2*w;
+                            appDataAttractiveLeds.pattern_one_led_groups[2] = 3*w;
 
                         }
 
@@ -395,6 +412,10 @@ void APP_Tasks( void )
                     else
                     {
                         appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_A;
+                        if ( true == appDataLog.log_events )
+                        {
+                            store_event(OF_CAL_A);
+                        }
                     }
                     
                     while ( !RTCC_TimeGet( &appData.current_time ) )
@@ -539,7 +560,6 @@ void APP_Tasks( void )
  
             if ( true == appDataLog.log_events && appDataEvent.num_events_stored >= MAX_NUM_EVENT_BEFORE_SAVE )
             {
-                
                 store_event(OF_WRITE_EVENT_LOG);
                 
                 if ( FILEIO_RESULT_FAILURE == logEvents( ) )
@@ -593,6 +613,17 @@ void APP_Tasks( void )
                     {
                         appDataAttractiveLeds.current_color_index = !appDataAttractiveLeds.current_color_index;
                         setAttractiveLedsColor( );
+                        if ( true == appDataLog.log_events )
+                        {
+                            if ( 0 == appDataAttractiveLeds.current_color_index )
+                            {
+                                store_event(OF_CAL_A);
+                            }
+                            else
+                            {
+                                store_event(OF_CAL_B);
+                            }
+                        }  
                     }                                
                 }
                 if ( RTCC_ALARM_ALT_ATTRACTIVE_LEDS_PATTERN == appData.rtcc_alarm_action )
@@ -609,18 +640,34 @@ void APP_Tasks( void )
                         if ( ( t / RAND_MAX ) > 0.75 )
                         {
                             appDataAttractiveLeds.pattern_one_led_current = 0;
+                            if ( true == appDataLog.log_events )
+                            {
+                                store_event( OF_GO_NO_GO_ONE_1 );
+                            }
                         }                            
                         else if ( ( t / RAND_MAX ) > 0.5 )
                         {
                             appDataAttractiveLeds.pattern_one_led_current = 1;
+                            if ( true == appDataLog.log_events )
+                            {
+                                store_event( OF_GO_NO_GO_ONE_2 );
+                            }
                         }
                         else if ( ( t / RAND_MAX ) > 0.25 )
                         {
                             appDataAttractiveLeds.pattern_one_led_current = 2; 
+                            if ( true == appDataLog.log_events )
+                            {
+                                store_event( OF_GO_NO_GO_ONE_3 );
+                            }
                         }
                         else
                         {
                             appDataAttractiveLeds.pattern_one_led_current = 3;
+                            if ( true == appDataLog.log_events )
+                            {
+                                store_event( OF_GO_NO_GO_ONE_4 );
+                            }
                         }
                         
                         appDataAttractiveLeds.pattern[appDataAttractiveLeds.pattern_one_led_current] = 0;      
@@ -639,7 +686,18 @@ void APP_Tasks( void )
                             setAttractiveLedsPattern( );
                             
                             appDataAttractiveLeds.pattern_percent = 1-appDataAttractiveLeds.pattern_percent;
-                                
+                            
+                            if ( true == appDataLog.log_events )
+                            {
+                                if ( 0 == appDataAttractiveLeds.pattern_idx )
+                                {
+                                    store_event( OF_GO_NO_GO_ALL_ON );
+                                }
+                                else
+                                {
+                                    store_event( OF_GO_NO_GO_ALL_OFF );
+                                }
+                            }                                
                         }
                     }
                     else
@@ -651,7 +709,33 @@ void APP_Tasks( void )
                                appDataAttractiveLeds.pattern[i] = !appDataAttractiveLeds.pattern[i]; 
                             }
                             appDataAttractiveLeds.pattern_idx = !appDataAttractiveLeds.pattern_idx;
-                            setAttractiveLedsPattern( );                                
+                            setAttractiveLedsPattern( );   
+                            
+                            if ( true == appDataLog.log_events )
+                            {
+                                if ( 0 == appDataAttractiveLeds.pattern_idx )
+                                {
+                                    if ( LEFT_RIGHT_LEDS == appDataAttractiveLeds.pattern_number )
+                                    {
+                                        store_event( OF_GO_NO_GO_LR_L );
+                                    }
+                                    else
+                                    {
+                                        store_event( OF_GO_NO_GO_TB_T );
+                                    }
+                                }
+                                else
+                                {
+                                    if ( LEFT_RIGHT_LEDS == appDataAttractiveLeds.pattern_number )
+                                    {
+                                        store_event( OF_GO_NO_GO_LR_R );
+                                    }
+                                    else
+                                    {
+                                        store_event( OF_GO_NO_GO_TB_B );
+                                    }
+                                }
+                            }  
                         }
                     }
                     
@@ -2315,6 +2399,8 @@ void APP_Initialize( void )
     appData.scenario_number = 0;
     
     clear_bird_sensor_detected( );
+    
+    appDataEvent.file_type = EVENT_FILE_BINARY;
     
 }
 

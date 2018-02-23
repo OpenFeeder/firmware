@@ -129,6 +129,10 @@ void setAttractiveLedsOff( void )
     PCA9622_OE_SetHigh( );
 
     appDataAttractiveLeds.status = ATTRACTIVE_LEDS_OFF;
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_ATTRACTIVE_LEDS_OFF); 
+    }
 }
 
 /* Set attractive LEDs color. */
@@ -138,6 +142,10 @@ void setAttractiveLedsOn( void )
     PCA9622_OE_SetLow( ); // output enable pin is active LOW
 
     appDataAttractiveLeds.status = ATTRACTIVE_LEDS_ON;
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_ATTRACTIVE_LEDS_ON); 
+    }
 }
 
 /* Set all color for attractive LEDs. */
@@ -153,6 +161,10 @@ void setAttractiveLedsNoColor( void )
     setAttractiveBlueLedsColor( 0 );
 
     appDataAttractiveLeds.status = ATTRACTIVE_LEDS_ON;
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_ATTRACTIVE_LEDS_NO_COLOR); 
+    }
 }
 
 /* Set all color for attractive LEDs. */
@@ -345,6 +357,22 @@ void setAttractiveLedsPattern( void )
     }
     
 }
+
+//void storeAttractiveLedsPattern( void )
+//{
+//    struct tm currentTime;
+//    getDateTime(&currentTime);
+//   
+//    appDataAttractiveLeds.patterns[4*appDataAttractiveLeds.num_patterns_stored] = appDataAttractiveLeds.pattern[0];    
+//    appDataAttractiveLeds.patterns[4*appDataAttractiveLeds.num_patterns_stored+1] = appDataAttractiveLeds.pattern[1];
+//    appDataAttractiveLeds.patterns[4*appDataAttractiveLeds.num_patterns_stored+2] = appDataAttractiveLeds.pattern[2];
+//    appDataAttractiveLeds.patterns[4*appDataAttractiveLeds.num_patterns_stored+3] = appDataAttractiveLeds.pattern[3];
+//    appDataAttractiveLeds.hours[appDataAttractiveLeds.num_patterns_stored] = currentTime.tm_hour;
+//    appDataAttractiveLeds.minutes[appDataAttractiveLeds.num_patterns_stored] = currentTime.tm_min;
+//    appDataAttractiveLeds.seconds[appDataAttractiveLeds.num_patterns_stored] = currentTime.tm_sec;
+//    
+//    appDataAttractiveLeds.num_patterns_stored +=1;
+//}
 
 void testAttractiveLeds( void )
 {

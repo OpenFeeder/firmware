@@ -726,19 +726,19 @@ void config_print( void )
         case GO_NO_GO:
             if ( 0 == appDataAttractiveLeds.pattern_number )
             {
-                printf( " go-no go, all LEDs pattern (0)\n" );
+                printf( " go-no go, all LEDs (pattern 0)\n" );
             }
             else if ( 1 == appDataAttractiveLeds.pattern_number )
             {
-                printf( " go-no go, left/right LEDs pattern (1)\n" );
+                printf( " go-no go, left/right LEDs (pattern 1)\n" );
             }
             else if ( 2 == appDataAttractiveLeds.pattern_number )
             {
-                printf( " go-no go, top/bottom LEDs pattern (2)\n" );
+                printf( " go-no go, top/bottom LEDs (pattern 2)\n" );
             }
             else if ( 3 == appDataAttractiveLeds.pattern_number )
             {
-                printf( " go-no go, one LED pattern (3)\n" );
+                printf( " go-no go, one LED (pattern 3)\n" );
             }            
             break;
         case LONG_TERM_SPATIAL_MEMORY:
@@ -812,7 +812,18 @@ void config_print( void )
     }
     if ( true == appDataLog.log_events)
     {
-        printf( "\t\tEvents: enable - %s - %s\n", appDataEvent.filename, appDataEvent.binfilename );   
+        if ( EVENT_FILE_BINARY == appDataEvent.file_type )
+        {
+            printf( "\t\tEvents: enable - %s\n", appDataEvent.binfilename );
+        } 
+        else if ( EVENT_FILE_TEXT == appDataEvent.file_type )
+        {
+            printf( "\t\tEvents: enable - %s\n", appDataEvent.filename );   
+        }
+        else
+        {
+           printf( "\t\tEvents: enable - %s - %s\n", appDataEvent.filename, appDataEvent.binfilename ); 
+        }
     }
     else
     {
@@ -910,11 +921,11 @@ void config_print( void )
             }
             else if ( TOP_BOTTOM_LEDS == appDataAttractiveLeds.pattern_number )
             {
-                printf( "\tPIT Tags associated with bottom attractive LEDs\n" );
+                printf( "\tPIT tags associated with bottom attractive LEDs\n" );
             }
             else
             {
-                printf( "\tPIT tags associated with pattern 1\n" );
+                printf( "\tPIT tags associated with pattern 1/2\n" );
             }
         }
         else
@@ -950,7 +961,7 @@ void config_print( void )
             }
             else
             {
-                printf( "\tPIT Tags associated with pattern 2\n" );
+                printf( "\tPIT tags associated with pattern 2/2\n" );
             }
         }
         else

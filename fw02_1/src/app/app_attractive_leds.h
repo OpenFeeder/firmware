@@ -14,6 +14,9 @@
 #define ATTRACTIVE_LEDS_COLOR_A 0
 #define ATTRACTIVE_LEDS_COLOR_B 1
 
+//#define MAX_NUMBER_OF_PATTERN 100
+//#define MAX_NUM_PATTERN_BEFORE_SAVE 50
+
 typedef struct
 {
     uint8_t red[2]; // FIXME : uint16_t pass to uint8_t
@@ -40,6 +43,13 @@ typedef struct
     uint8_t pattern_one_led_groups[3];
     
     double pattern_percent;
+    
+//    uint8_t hours[MAX_NUMBER_OF_PATTERN];
+//    uint8_t minutes[MAX_NUMBER_OF_PATTERN];
+//    uint8_t seconds[MAX_NUMBER_OF_PATTERN];
+//    uint8_t patterns[4*MAX_NUMBER_OF_PATTERN];
+//    uint8_t num_patterns_stored;
+    
 
 } APP_DATA_LEDS;
 
@@ -68,6 +78,8 @@ void setAttractiveLedsPattern( void );
 void testAttractiveLeds( void );
 
 void setAttractiveLedsIndex( void );
+
+void storeAttractiveLedsPattern( void );
 
 #endif /* _APP_ATTRACTIVE_LEDS_HEADER_H */
 
