@@ -979,7 +979,7 @@ void APP_SerialDebugTasks( void )
 
                 if ( I2C1_MESSAGE_COMPLETE == I2C1_MasterReadDS3231_get( &appData.i2c_current_time ))
                 {
-                    date[6] = (uint8_t)appData.i2c_current_time.year;
+                    date[6] = (uint8_t)appData.i2c_current_time.year_s;
                     date[7] = (uint8_t)appData.i2c_current_time.mon;
                     date[8] = (uint8_t)appData.i2c_current_time.mday;
                     date[9] = (uint8_t)appData.i2c_current_time.hour;
