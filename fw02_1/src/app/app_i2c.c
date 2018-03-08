@@ -396,7 +396,6 @@ void APP_I2CRTC_DateTime_print( void )
 
 bool APP_I2CRTC_DateTime_set( uint8_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second ) /* Set date and time. */
 {
-    I2C1_MESSAGE_STATUS status;
     struct ts t;
 
     t.year = year;
@@ -406,17 +405,16 @@ bool APP_I2CRTC_DateTime_set( uint8_t year, uint8_t month, uint8_t day, uint8_t 
     t.min = minute;
     t.sec = second;
 
-    status = I2C1_MasterReadDS3231_set( &t );
-
-    if ( status == I2C1_MESSAGE_COMPLETE )
+    if ( I2C1_MESSAGE_COMPLETE == I2C1_MasterReadDS3231_set( &t ) )
     {
         APP_I2CRTC_DateTime_get( );
-        printf( "\nEXT RTC done.\n" );
         return true;
     }
-
-    printf( "\nEXT RTC not found!\n" );
-    return false;
+    else
+    {
+      return false;  
+    }
+   
 }
 
 

@@ -179,7 +179,11 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_CONFIGURE_SYSTEM\n" );
 #endif
-
+                if ( true == appDataLog.log_events )
+                {
+                    store_event(OF_STATE_CONFIGURE_SYSTEM);
+                }
+                
                 /* Set log file name => 20yymmdd.CSV (one log file per day). */
                 if ( false == setLogFileName( ) )
                 {
@@ -190,11 +194,7 @@ void APP_Tasks( void )
                 
                 powerUsbRfidEnable( );
                 appDataUsb.key_is_nedded = true;
-                
-                if ( true == appDataLog.log_events )
-                {
-                    store_event(OF_STATE_CONFIGURE_SYSTEM);
-                }
+
                 setDelayMs(MAX_DELAY_TO_DETECT_USB_DEVICE);
                     
             }
@@ -335,7 +335,9 @@ void APP_Tasks( void )
                         printf( "\tAttractive LEDs: ok\n" ); 
 #endif
                         setAttractiveLedsOn();
+                        setAttractiveLedsNoColor();
                         testAttractiveLeds();
+                        setAttractiveLedsNoColor();
                         setAttractiveLedsOff();
 
                     }
@@ -349,7 +351,23 @@ void APP_Tasks( void )
                         break;
                     }
           
-                    setAttractiveLedsIndex( );
+                    if ( true == setAttractiveLedsIndex( ))
+                    {
+                        setAttractiveLedsOn();
+                        setAttractiveLedsNoColor();
+                        for (i=0;i<4;i++)
+                        {
+                            setOneAttractiveLedColor( appDataAttractiveLeds.leds_index[i], 0, 35, 0);
+                            setDelayMs( 1000 );
+                            while ( 0 == isDelayMsEnding( ) );
+                        }
+                        setAttractiveLedsNoColor();
+                        setAttractiveLedsOff();
+                    }
+//                    else
+//                    {
+//                        
+//                    }
 
                     if ( GO_NO_GO == appData.scenario_number || COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number)
                     {
@@ -407,13 +425,7 @@ void APP_Tasks( void )
                             {
                                 store_event(OF_GO_NO_GO_ONE_NONE);
                             }
-                           
-                            uint8_t w;
-                            w = appDataPitTag.numPitTagAcceptedOrColorB / 4;
-                            appDataAttractiveLeds.pattern_one_led_groups[0] = w;
-                            appDataAttractiveLeds.pattern_one_led_groups[1] = 2*w;
-                            appDataAttractiveLeds.pattern_one_led_groups[2] = 3*w;
-
+                            
                         }
 
                         appDataAttractiveLeds.pattern_idx = 0;     
@@ -470,7 +482,12 @@ void APP_Tasks( void )
 //                    /* Timeout before going to standby mode */
 //                    setDelayMsStandBy( appData.timeout_standby );
 //                }
-
+                
+                if ( true == appDataLog.log_events )
+                {
+                    store_event(OF_STATE_IDLE);
+                }
+                
                 rtcc_start_alarm( );
 
                 /* Enable PIR sensor interruption for bird detection */
@@ -488,10 +505,7 @@ void APP_Tasks( void )
                     appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_A;
                     setAttractiveLedsColor( );
                 }
-                if ( true == appDataLog.log_events )
-                {
-                    store_event(OF_STATE_IDLE);
-                }
+
             }
 
             if ( appData.need_to_reconfigure )
@@ -564,15 +578,12 @@ void APP_Tasks( void )
  
             if ( true == appDataLog.log_events && appDataEvent.num_events_stored >= MAX_NUM_EVENT_BEFORE_SAVE )
             {
-                store_event(OF_WRITE_EVENT_LOG);
-                
                 if ( FILEIO_RESULT_FAILURE == logEvents( ) )
                 {
                     appDataUsb.key_is_nedded = false;
                     appData.state = APP_STATE_ERROR;
                     break;
                 }
-                clear_events_buffers( );
             }
  
             if ( RTCC_ALARM_IDLE != appData.rtcc_alarm_action )
@@ -874,16 +885,17 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_RFID_READING_PIT_TAG\n" );
 #endif
+                                
+                if ( true == appDataLog.log_events )
+                {
+                   store_event(OF_STATE_RFID_READING_PIT_TAG); 
+                }
+                
                 EX_INT0_InterruptFlagClear( );
                 EX_INT0_InterruptDisable( );
                 rtcc_stop_alarm( );
 
                 APP_Rfid_Init( );
-                
-                if ( true == appDataLog.log_events )
-                {
-                   store_event(OF_STATE_RFID_READING_PIT_TAG); 
-                }
 
             }
 
@@ -933,34 +945,41 @@ void APP_Tasks( void )
                                 appDataLog.is_pit_tag_denied = true;
                             }
                             else
-                            {                                
-                                if ( appDataPitTag.pitTagIndexInList < appDataAttractiveLeds.pattern_one_led_groups[0] )
+                            {        
+                                if (0 == appDataPitTag.numPitTagGroup[appDataAttractiveLeds.pattern_one_led_current])
                                 {
-                                    if ( 0 != appDataAttractiveLeds.pattern_one_led_current )
-                                    {
-                                        appDataLog.is_pit_tag_denied = true;
-                                    }                                        
-                                }
-                                else if ( appDataPitTag.pitTagIndexInList < appDataAttractiveLeds.pattern_one_led_groups[1] )
-                                {
-                                    if ( 1 != appDataAttractiveLeds.pattern_one_led_current )
-                                    {
-                                        appDataLog.is_pit_tag_denied = true;
-                                    }   
-                                }
-                                else if ( appDataPitTag.pitTagIndexInList < appDataAttractiveLeds.pattern_one_led_groups[2] )
-                                {
-                                    if ( 2 != appDataAttractiveLeds.pattern_one_led_current )
-                                    {
-                                        appDataLog.is_pit_tag_denied = true;
-                                    }     
+                                   appDataLog.is_pit_tag_denied = true; 
                                 }
                                 else
                                 {
-                                    if ( 3 != appDataAttractiveLeds.pattern_one_led_current )
+                                    if ( appDataPitTag.pitTagIndexInList < appDataAttractiveLeds.pattern_one_led_groups[0] )
                                     {
-                                        appDataLog.is_pit_tag_denied = true;
-                                    }    
+                                        if ( 0 != appDataAttractiveLeds.pattern_one_led_current )
+                                        {
+                                            appDataLog.is_pit_tag_denied = true;
+                                        }                                        
+                                    }
+                                    else if ( appDataPitTag.pitTagIndexInList < appDataAttractiveLeds.pattern_one_led_groups[1] )
+                                    {
+                                        if ( 1 != appDataAttractiveLeds.pattern_one_led_current )
+                                        {
+                                            appDataLog.is_pit_tag_denied = true;
+                                        }   
+                                    }
+                                    else if ( appDataPitTag.pitTagIndexInList < appDataAttractiveLeds.pattern_one_led_groups[2] )
+                                    {
+                                        if ( 2 != appDataAttractiveLeds.pattern_one_led_current )
+                                        {
+                                            appDataLog.is_pit_tag_denied = true;
+                                        }     
+                                    }
+                                    else
+                                    {
+                                        if ( 3 != appDataAttractiveLeds.pattern_one_led_current )
+                                        {
+                                            appDataLog.is_pit_tag_denied = true;
+                                        }    
+                                    }
                                 }
                             } 
                         }
@@ -1113,6 +1132,11 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_OPENING_REWARD_DOOR\n" );
 #endif
+                if ( true == appDataLog.log_events )
+                {
+                   store_event(OF_STATE_OPENING_DOOR); 
+                }
+                
                 if ( 1 == appData.reward_enable )
                 {
                     /* Power IR sensor here because start delay */
@@ -1142,11 +1166,7 @@ void APP_Tasks( void )
                         Nop( );
                     }
                 }
-                
-                if ( true == appDataLog.log_events )
-                {
-                   store_event(OF_STATE_OPENING_DOOR); 
-                }
+
             }
 
             /* Servomotor power command enable. */
@@ -1183,7 +1203,11 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_WAITING_CATCH_REWARD\n" );
 #endif           
-
+                if ( true == appDataLog.log_events )
+                {
+                   store_event(OF_STATE_WAITING_CATCH_REWARD); 
+                }
+                
                 num_timeout_reward = 0;
                     
                 /* Timeout before door closing if reward is not taken */
@@ -1207,10 +1231,6 @@ void APP_Tasks( void )
 
                     appData.state = APP_STATE_CLOSING_DOOR;
                     break;
-                }
-                if ( true == appDataLog.log_events )
-                {
-                   store_event(OF_STATE_WAITING_CATCH_REWARD); 
                 }
             }
 
@@ -1294,6 +1314,11 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_CLOSING_REWARD_DOOR\n" );
 #endif
+                if ( true == appDataLog.log_events )
+                {
+                   store_event(OF_STATE_CLOSING_DOOR); 
+                }
+                
                 /* Enregistrement de l'heure de fin de détection de l'oiseau. */
                 while ( !RTCC_TimeGet( &appDataLog.bird_quit_time ) )
                 {
@@ -1325,10 +1350,6 @@ void APP_Tasks( void )
                 
                 setDelayMsStandBy( appData.timeout_guillotine );
                 
-                if ( true == appDataLog.log_events )
-                {
-                   store_event(OF_STATE_CLOSING_DOOR); 
-                }
             }
 
             /* Servomotor power command enable. */
@@ -1411,7 +1432,11 @@ void APP_Tasks( void )
                 appData.previous_state = appData.state;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_REOPEN_DOOR\n" );
-#endif           
+#endif          
+                if ( true == appDataLog.log_events )
+                {
+                   store_event(OF_STATE_REOPEN_DOOR); 
+                } 
 
                 OC5R = appDataServo.ton_max;
                 setDelayMs( 2000 );
@@ -1426,11 +1451,7 @@ void APP_Tasks( void )
 
                 /* Timeout before going to error. */
                 setDelayMs( 10000 );
-                
-                if ( true == appDataLog.log_events )
-                {
-                   store_event(OF_STATE_REOPEN_DOOR); 
-                } 
+
             }
 
             if ( true == isDelayMsEnding( ) )
@@ -1493,6 +1514,11 @@ void APP_Tasks( void )
             {
                 appData.previous_state = appData.state;
 
+                if ( true == appDataLog.log_events )
+                {
+                   store_event(OF_STATE_REMOVE_USB_DEVICE); 
+                }
+                
                 /* Unmount drive on USB device before power it off. */
                 if ( USB_DRIVE_MOUNTED == appDataUsb.usbDriveStatus )
                 {
@@ -1516,10 +1542,6 @@ void APP_Tasks( void )
                 
                 setDelayMsStandBy(60000);
                 
-                if ( true == appDataLog.log_events )
-                {
-                   store_event(OF_STATE_REMOVE_USB_DEVICE); 
-                }
             }
 
             if ( true == isDelayMsEndingStandBy( ) )
@@ -1545,6 +1567,11 @@ void APP_Tasks( void )
                 printf( "> APP_STATE_FLUSH_DATA_TO_USB\n" );
 #endif
                 
+                if ( true == appDataLog.log_events )
+                {
+                   store_event(OF_STATE_FLUSH_DATA_TO_USB); 
+                }
+                
                 setLedsStatusColor( LED_USB_ACCESS );
                 
                 if ( appDataLog.numDataStored > 0 || 
@@ -1564,20 +1591,22 @@ void APP_Tasks( void )
                     break;
 #endif
                 }
-                
-                if ( true == appDataLog.log_events )
-                {
-                   store_event(OF_STATE_FLUSH_DATA_TO_USB); 
-                }
-    
+
                 setDelayMs(MAX_DELAY_TO_DETECT_USB_DEVICE);
             
             }
 
             if ( appDataUsb.getValidDeviceAdress )
             {
-                
+
                 setLedsStatusColor( LED_USB_ACCESS );
+                
+                if ( USB_DRIVE_NOT_MOUNTED == usbMountDrive( ) )
+                {
+                    appDataUsb.key_is_nedded = false;
+                    appData.state = APP_STATE_ERROR;
+                    break;
+                }
                 
                 if ( appDataLog.numDataStored > 0 )
                 {
@@ -1627,6 +1656,11 @@ void APP_Tasks( void )
                         break;
                     }
                 }
+                
+                if ( USB_DRIVE_MOUNTED == appDataUsb.usbDriveStatus )
+                {
+                    usbUnmountDrive();
+                }
 
             }
             else
@@ -1663,6 +1697,11 @@ void APP_Tasks( void )
                 printf( "\tDebug not available\n\tPress the user button to stop RFID\n" );
 #endif
                 
+                if ( true == appDataLog.log_events )
+                {
+                   store_event(OF_STATE_TEST_RFID); 
+                }
+                
                 setDelayMsStandBy(60000);
                 
                 /* Debounce à la noix */
@@ -1685,10 +1724,6 @@ void APP_Tasks( void )
                 
                 APP_Rfid_Init();
                 
-                if ( true == appDataLog.log_events )
-                {
-                   store_event(OF_STATE_TEST_RFID); 
-                }
             }
 
             APP_Rfid_Task( );
@@ -1815,6 +1850,10 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_SLEEP\n" );
 #endif
+                if ( true == appDataLog.log_events )
+                {
+                   store_event(OF_STATE_SLEEP); 
+                }
 
                 /* Stop RTCC interuption during shutdown process */
                 rtcc_stop_alarm( );
@@ -1850,17 +1889,20 @@ void APP_Tasks( void )
                 /* Log data on USB device */
                 powerUsbRfidEnable( );
                 appDataUsb.key_is_nedded = true;
-                
-                if ( true == appDataLog.log_events )
-                {
-                   store_event(OF_STATE_SLEEP); 
-                }
+
             }
 
             if ( true == appDataUsb.key_is_nedded )
             {
                 if ( appDataUsb.getValidDeviceAdress )
                 {
+                    if ( USB_DRIVE_NOT_MOUNTED == usbMountDrive( ) )
+                    {
+                        appDataUsb.key_is_nedded = false;
+                        appData.state = APP_STATE_ERROR;
+                        break;
+                    }
+                                    
                     if ( appDataLog.numDataStored > 0 )
                     {
                         setLedsStatusColor( LED_USB_ACCESS );
@@ -1906,7 +1948,7 @@ void APP_Tasks( void )
                             break;
                         }
                     }
-
+                    
                     /* Unmount drive on USB device before power it off. */
                     if ( USB_DRIVE_MOUNTED == appDataUsb.usbDriveStatus )
                     {
@@ -2024,7 +2066,14 @@ void APP_Tasks( void )
             }
 
             if ( appDataUsb.getValidDeviceAdress )
-            {              
+            {        
+                if ( USB_DRIVE_NOT_MOUNTED == usbMountDrive( ) )
+                {
+                    appDataUsb.key_is_nedded = false;
+                    appData.state = APP_STATE_ERROR;
+                    break;
+                }
+                
                 if ( appDataLog.numDataStored > 0 )
                 {
                     setLedsStatusColor( LED_USB_ACCESS );
@@ -2081,6 +2130,12 @@ void APP_Tasks( void )
                         break;
                     }
                 }
+                
+                if ( USB_DRIVE_MOUNTED == usbUnmountDrive( ) )
+                {
+                    appData.state = APP_STATE_ERROR;
+                }
+                
             }
             else
             {
@@ -2111,7 +2166,11 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_ERROR\n" );
 #endif
-
+                if ( true == appDataLog.log_events )
+                {
+                   store_event(OF_STATE_ERROR); 
+                }
+                
                 if (appError.number<ERROR_USB || appError.number>ERROR_USB_SUSPEND_DEVICE)
                 {
                     if ( false == appDataLog.data_flush_before_error )

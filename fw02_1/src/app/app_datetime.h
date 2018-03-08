@@ -15,10 +15,10 @@
 #include "rtcc.h"
 
 
-void setDateTime( int, int, int, int, int, int );
+bool setDateTime( int, int, int, int, int, int );
 void printCurrentDate( );
-void getDateTime( struct tm * );
-void getCurrentDate( void );
+bool getDateTime( struct tm * );
+bool getCurrentDate( void );
 void calibrateCurrentDate( void );
 
 #endif /* _APP_DATETIME_HEADER_H */

@@ -174,7 +174,8 @@ static int writeLogFile(void)
 bool dataLog(bool newData)
 {
     unsigned int nChar = 0;
-
+    bool needToUnmount;
+    
     /* Check if new data need to be added to the log buffer */
     if (true == newData)
     {
@@ -205,20 +206,36 @@ bool dataLog(bool newData)
     {
         setLedsStatusColor(LED_USB_ACCESS);
 
-        if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
+        if ( USB_DRIVE_MOUNTED == appDataUsb.usbDriveStatus )
         {
-            return false;
+            needToUnmount = false;
+        }
+        else
+        {
+            if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
+            {
+                return FILEIO_RESULT_FAILURE;
+            }
+            needToUnmount = true;
         }
 
         /* Ecriture fichier LOG. */
         if (FILEIO_RESULT_FAILURE == writeLogFile())
         {
-            usbUnmountDrive();
+//            usbUnmountDrive();
             //            CMD_VDD_APP_V_USB_SetLow( );
             return false;
         }
+        
         appDataLog.numDataStored = 0;
-        usbUnmountDrive();
+        
+        if (true == needToUnmount)
+        {
+            if (USB_DRIVE_MOUNTED == usbUnmountDrive())
+            {
+                return FILEIO_RESULT_FAILURE;
+            }
+        }
         //        CMD_VDD_APP_V_USB_SetLow( );
         setLedsStatusColor(LEDS_OFF);
     }
@@ -285,12 +302,21 @@ FILEIO_RESULT logBatteryLevel(void)
     struct tm currentTime;
     int flag, i;
     size_t numDataWritten;
+    bool needToUnmount;
 
     getDateTime(&currentTime);
 
-    if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
+    if ( USB_DRIVE_MOUNTED == appDataUsb.usbDriveStatus )
     {
-        return FILEIO_RESULT_FAILURE;
+        needToUnmount = false;
+    }
+    else
+    {
+        if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
+        {
+            return FILEIO_RESULT_FAILURE;
+        }
+        needToUnmount = true;
     }
 
     if ( true == appDataLog.log_events )
@@ -353,9 +379,12 @@ FILEIO_RESULT logBatteryLevel(void)
         return FILEIO_RESULT_FAILURE;
     }
 
-    if (USB_DRIVE_MOUNTED == usbUnmountDrive())
+    if (true == needToUnmount)
     {
-        return FILEIO_RESULT_FAILURE;
+        if (USB_DRIVE_MOUNTED == usbUnmountDrive())
+        {
+            return FILEIO_RESULT_FAILURE;
+        }
     }
 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
@@ -374,10 +403,19 @@ FILEIO_RESULT logUDID(void)
     char buf[35];
     size_t numDataWritten;
     int flag;
+    bool needToUnmount;
     
-    if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
+    if ( USB_DRIVE_MOUNTED == appDataUsb.usbDriveStatus )
     {
-        return FILEIO_RESULT_FAILURE;
+        needToUnmount = false;
+    }
+    else
+    {
+        if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
+        {
+            return FILEIO_RESULT_FAILURE;
+        }
+        needToUnmount = true;
     }
     
     if ( true == appDataLog.log_events )
@@ -430,9 +468,12 @@ FILEIO_RESULT logUDID(void)
         return FILEIO_RESULT_FAILURE;
     }
     
-    if (USB_DRIVE_MOUNTED == usbUnmountDrive())
+    if (true == needToUnmount)
     {
-        return FILEIO_RESULT_FAILURE;
+        if (USB_DRIVE_MOUNTED == usbUnmountDrive())
+        {
+            return FILEIO_RESULT_FAILURE;
+        }
     }
     
     return FILEIO_RESULT_SUCCESS;
@@ -447,12 +488,21 @@ FILEIO_RESULT logRfidFreq(void)
     struct tm currentTime;
     int flag, i;
     size_t numDataWritten;
+    bool needToUnmount;
 
     getDateTime(&currentTime);
-
-    if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
+    
+    if ( USB_DRIVE_MOUNTED == appDataUsb.usbDriveStatus )
     {
-        return FILEIO_RESULT_FAILURE;
+        needToUnmount = false;
+    }
+    else
+    {
+        if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
+        {
+            return FILEIO_RESULT_FAILURE;
+        }
+        needToUnmount = true;
     }
 
     if ( true == appDataLog.log_events )
@@ -516,9 +566,12 @@ FILEIO_RESULT logRfidFreq(void)
         return FILEIO_RESULT_FAILURE;
     }
 
-    if (USB_DRIVE_MOUNTED == usbUnmountDrive())
+    if (true == needToUnmount)
     {
-        return FILEIO_RESULT_FAILURE;
+        if (USB_DRIVE_MOUNTED == usbUnmountDrive())
+        {
+            return FILEIO_RESULT_FAILURE;
+        }
     }
 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)

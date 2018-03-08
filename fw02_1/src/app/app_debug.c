@@ -808,10 +808,10 @@ void APP_SerialDebugTasks( void )
                 /* -------------------------------------------------------------- */
 
             case 's':
-            case 'S':
             {
                 /* Set RTCC module date and time value. */
                 uint8_t mday, mon, year, hour, min, sec;
+                
                 printf( "Set date dd/mm/20yy and time hh:mm:ss\n" );
 
                 printf( "Set day (1 to 31):\n" );
@@ -859,14 +859,94 @@ void APP_SerialDebugTasks( void )
                 /* Dynamic configuration date, example 22/08/2016 and time to 15:59:30 */
                 // setDateTime( 16, 8, 22, 15, 59, 30 ); /* Set date and time. */
                 setDateTime( year, mon, mday, hour, min, sec ); /* Set date and time. */
-                APP_I2CRTC_DateTime_set( year, mon, mday, hour, min, sec );
-                printf( "\nSet done.\n" );
+                if ( APP_I2CRTC_DateTime_set( year, mon, mday, hour, min, sec ) )
+                {
+                    printf( "\nEXT RTC done.\n" );
+                }
+                else
+                {
+                    printf( "\nEXT RTC not found!\n" );
+                }
+                printf( "\nTime set.\n" );
+                break;
+            }
+            /* -------------------------------------------------------------- */
+            
+            case 'S':
+            {
+                /* Set RTCC module date and time value. */
+                char date[6];
+                uint8_t numBytes;
+                uint16_t delay = 1000;
+                bool flag = false;
+                
+                setDelayMs(delay);
+                  
+                numBytes = 0; /* initialized numBytes */
+                
+                while (false == isDelayMsEnding())
+                {
+                    while ( numBytes < 6 )
+                    {
+                        if ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) )
+                        {
+                            date[numBytes] = UART1_Read( );
+
+                            ++numBytes;
+                        }
+                    }
+                }
+                
+                delay /= 1000;
+                    
+                if ( date[5] > (60 - delay - 1) )
+                {
+                    date[5] += delay - 60;
+                    date[4] += 1;
+                    if ( date[4] > 60)
+                    {
+                       date[4] = 0;
+                       date[3] += 1;
+                    }
+                }
+                else
+                {
+                    date[5] += delay;
+                }
+    
+                setDelayMs(delay);
+                
+                while ( false == isDelayMsEnding() )
+                {
+                    if ( false == flag )
+                    {
+                        flag = setDateTime( date[0], date[1], date[2], date[3], date[4], date[5] ); /* Set date and time. */ 
+                    }
+                    
+                }
+                
+                if ( date[5] > (60 - delay - 1) )
+                {
+                    date[5] += delay - 60;
+                    date[4] += 1;
+                    if ( date[4] > 60)
+                    {
+                       date[4] = 0;
+                       date[3] += 1;
+                    }
+                }
+                else
+                {
+                    date[5] += delay;
+                }
+                
+                APP_I2CRTC_DateTime_set( date[0], date[1], date[2], date[3], date[4], date[5] );
+
                 break;
             }
                 /* -------------------------------------------------------------- */
 
             case 't':
-            case 'T':
                 /* Display date and time from RTCC module. */
                 getCurrentDate( );
                 APP_I2CRTC_DateTime_get( );
@@ -878,6 +958,39 @@ void APP_SerialDebugTasks( void )
                 APP_I2CRTC_DateTime_print( );
                 putchar( '\n' );
                 break;
+                /* -------------------------------------------------------------- */
+                
+            case 'T':
+            {
+                uint8_t date[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};                
+                struct tm date_time;
+                
+                while ( !RTCC_TimeGet( &date_time ) )
+                {
+                    Nop( );
+                }
+                
+                date[0] = (uint8_t)date_time.tm_year;
+                date[1] = (uint8_t)date_time.tm_mon;
+                date[2] = (uint8_t)date_time.tm_mday;
+                date[3] = (uint8_t)date_time.tm_hour;
+                date[4] = (uint8_t)date_time.tm_min;
+                date[5] = (uint8_t)date_time.tm_sec;
+
+                if ( I2C1_MESSAGE_COMPLETE == I2C1_MasterReadDS3231_get( &appData.i2c_current_time ))
+                {
+                    date[6] = (uint8_t)appData.i2c_current_time.year;
+                    date[7] = (uint8_t)appData.i2c_current_time.mon;
+                    date[8] = (uint8_t)appData.i2c_current_time.mday;
+                    date[9] = (uint8_t)appData.i2c_current_time.hour;
+                    date[10] = (uint8_t)appData.i2c_current_time.min;
+                    date[11] = (uint8_t)appData.i2c_current_time.sec;
+                }
+
+                UART1_WriteBuffer(date, 12);
+
+                break;
+            }
                 /* -------------------------------------------------------------- */
 
             case 'u':

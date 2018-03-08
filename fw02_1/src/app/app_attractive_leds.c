@@ -62,27 +62,42 @@ bool initAttractiveLeds( void )
     return true;
 }
 
-void setAttractiveLedsIndex( void )
+bool setAttractiveLedsIndex( void )
 {
-    FILEIO_SEARCH_RECORD searchRecord;
+    FILEIO_SEARCH_RECORD sR;
     FILEIO_OBJECT file;
     FILEIO_ERROR_TYPE errF;
     char buf[20];
     char subbuf[5];
     char udid[5];
+    bool udidfound = false;
+    int i;
     
     appDataAttractiveLeds.leds_index[0] = 1;
     appDataAttractiveLeds.leds_index[1] = 2;
     appDataAttractiveLeds.leds_index[2] = 3;
     appDataAttractiveLeds.leds_index[3] = 4;
         
-    if ( FILEIO_RESULT_FAILURE == FILEIO_Find( "UDIDLEDS.TXT", FILEIO_ATTRIBUTE_ARCHIVE, &searchRecord, true ) )
+    if ( true == appDataLog.log_events )
+    {
+        store_event(OF_ATTRACTIVE_LEDS_SET_INDEX);
+    }
+    
+    if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
+    {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+            printf( "\tWarning:  unable to mount drive. Use default order for attractive LEDs\n");
+#endif 
+        return false;
+    }
+    
+    if ( FILEIO_RESULT_FAILURE == FILEIO_Find( "UDIDLEDS.TXT", FILEIO_ATTRIBUTE_ARCHIVE, &sR, true ) )
     {
         errF = FILEIO_ErrorGet( 'A' );
 #if defined (USE_UART1_SERIAL_INTERFACE)
-            printf( "Warning:  file UDIDLEDS.TXT not found (%u). Use default numbers for attractive LEDs\n", errF);
+            printf( "\tWarning:  file UDIDLEDS.TXT not found (%u). Use default order for attractive LEDs\n", errF);
 #endif 
-        return;
+        return false;
     }
     
     sprintf(udid, "%02lX%02lX", appData.udid.words[3] & 0xFF, appData.udid.words[4] & 0xFF);
@@ -93,9 +108,9 @@ void setAttractiveLedsIndex( void )
     {
         errF = FILEIO_ErrorGet( 'A' );
 #if defined (USE_UART1_SERIAL_INTERFACE)
-        printf( "Warning:  unable to open UDIDLEDS.TXT (%u). Use default numbers for attractive LEDs\n", errF);
+        printf( "\tWarning:  unable to open UDIDLEDS.TXT (%u). Use default order for attractive LEDs\n", errF);
 #endif 
-        return;
+        return false;
     }
 
     while ( 14 == FILEIO_Read( buf, 1, 14, &file ) )
@@ -104,23 +119,50 @@ void setAttractiveLedsIndex( void )
         subbuf[4] = '\0';
         
         if ( 0 == strcmp( subbuf, udid ) )
-        {           
-           appDataAttractiveLeds.leds_index[0] = buf[5] - '0';
-           appDataAttractiveLeds.leds_index[1] = buf[7] - '0';
-           appDataAttractiveLeds.leds_index[2] = buf[9] - '0';
-           appDataAttractiveLeds.leds_index[3] = buf[11] - '0';
-        
+        {          
+            
+            for (i=0;i<4;i++)
+            {
+                appDataAttractiveLeds.leds_order[i] = buf[2*i+5] - '0';
+                appDataAttractiveLeds.leds_index[appDataAttractiveLeds.leds_order[i]-1] = i+1;                     
+            }
+
+           udidfound = true;
            break;
         }             
+    }
+    
+    if (false == udidfound)
+    {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        printf( "\tWarning:  unable to match UDID %s in UDIDLEDS.TXT. Use default order for attractive LEDs\n", udid);
+#endif 
+    }
+    else
+    {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        printf( "\tAttractive LEDs order: %u %u %u %u\n", 
+               appDataAttractiveLeds.leds_order[0], appDataAttractiveLeds.leds_order[1], 
+               appDataAttractiveLeds.leds_order[2], appDataAttractiveLeds.leds_order[3]);
+#endif   
     }
     
     if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) ) 
     {
         errF = FILEIO_ErrorGet( 'A' );
 #if defined (USE_UART1_SERIAL_INTERFACE)
-        printf( "Warning:  unable to close UDIDLEDS.TXT (%u).\n", errF);
+        printf( "\tWarning:  unable to close UDIDLEDS.TXT (%u).\n", errF);
 #endif 
     }
+    
+    if (USB_DRIVE_MOUNTED == usbUnmountDrive())
+    {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+            printf( "\tWarning:  unable to unmount drive\n");
+#endif 
+    }
+       
+    return udidfound;
 }
 
 void setAttractiveLedsOff( void )
@@ -406,35 +448,40 @@ void testAttractiveLeds( void )
     i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
     
     writeBuffer[0] = CTRLREG_PWM3;
-    writeBuffer[1] = 55; // PWM0 Individual Duty Cycle for LED_RGB1_R
+    writeBuffer[1] = 55; // PWM0 Individual Duty Cycle for LED_RGB2_R
     i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
     
     setDelayMs( delay );
     while ( 0 == isDelayMsEnding( ) );
     
     writeBuffer[0] = CTRLREG_PWM3;
-    writeBuffer[1] = 0; // PWM0 Individual Duty Cycle for LED_RGB1_R
+    writeBuffer[1] = 0; // PWM0 Individual Duty Cycle for LED_RGB2_R
     i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
     
     writeBuffer[0] = CTRLREG_PWM6;
-    writeBuffer[1] = 55; // PWM0 Individual Duty Cycle for LED_RGB1_R
+    writeBuffer[1] = 55; // PWM0 Individual Duty Cycle for LED_RGB3_R
     i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
     
     setDelayMs( delay );
     while ( 0 == isDelayMsEnding( ) );
     
     writeBuffer[0] = CTRLREG_PWM6;
-    writeBuffer[1] = 0; // PWM0 Individual Duty Cycle for LED_RGB1_R
+    writeBuffer[1] = 0; // PWM0 Individual Duty Cycle for LED_RGB3_R
     i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
     
     writeBuffer[0] = CTRLREG_PWM9;
-    writeBuffer[1] = 55; // PWM0 Individual Duty Cycle for LED_RGB1_R
+    writeBuffer[1] = 55; // PWM0 Individual Duty Cycle for LED_RGB4_R
     i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
     
     setDelayMs( delay );
     while ( 0 == isDelayMsEnding( ) );
     
     appDataAttractiveLeds.status = ATTRACTIVE_LEDS_OFF;
+    
+    if ( true == appDataLog.log_events )
+    {
+        store_event(OF_ATTRACTIVE_LEDS_TEST);
+    }
     
 }
 /*******************************************************************************

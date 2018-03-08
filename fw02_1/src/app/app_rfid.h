@@ -31,9 +31,14 @@ typedef struct
     uint16_t numPitTagDeniedOrColorA;
     /* Number of PIT tags accepted or associated with color B */
     uint16_t numPitTagAcceptedOrColorB;
+
+    uint16_t numPitTagGroup[4];    
+    
     /* List of PIT tags denied */
     char pit_tags_list[MAX_PIT_TAGS_LIST_NUMBER][11];
 
+    uint16_t numPitTagStored;
+    
     bool isPitTagdeniedOrColorA[MAX_PIT_TAGS_LIST_NUMBER];
 
     bool didPitTagMatched;

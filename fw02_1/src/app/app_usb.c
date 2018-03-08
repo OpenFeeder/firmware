@@ -45,7 +45,7 @@ bool usbMountDrive( void )
 #endif
         if ( true == appDataLog.log_events )
         {
-           store_event(OF_ALREADY_MOUNT_USB_DRIVE); 
+           store_event(OF_ALREADY_MOUNTED_USB_DRIVE); 
         }
         
         return USB_DRIVE_MOUNTED;
@@ -131,7 +131,7 @@ bool usbUnmountDrive( void )
 #endif
         if ( true == appDataLog.log_events )
         {
-           store_event(OF_ALREADY_UNMOUNT_USB_DRIVE); 
+           store_event(OF_ALREADY_UNMOUNTED_USB_DRIVE); 
         }
         
         return appDataUsb.usbDriveStatus;

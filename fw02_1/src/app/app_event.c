@@ -19,6 +19,14 @@ void store_event(APP_EVENT ev)
     appDataEvent.minutes[appDataEvent.num_events_stored] = currentTime.tm_min;
     appDataEvent.seconds[appDataEvent.num_events_stored] = currentTime.tm_sec;
     
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_EVENT_INFO )
+    printf("\t\tEvent %03d - %02d:%02d:%02d %03d\n", appDataEvent.num_events_stored, 
+       appDataEvent.hours[appDataEvent.num_events_stored], 
+       appDataEvent.minutes[appDataEvent.num_events_stored], 
+       appDataEvent.seconds[appDataEvent.num_events_stored], 
+       appDataEvent.numbers[appDataEvent.num_events_stored]);
+#endif
+    
     appDataEvent.num_events_stored +=1;
     
 }
@@ -32,12 +40,30 @@ FILEIO_RESULT logEvents(void)
     struct tm currentTime;
     int flag, i;
     size_t numDataWritten;
-
+    bool needToUnmount;
+    
     getDateTime(&currentTime);
 
-    if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
+    if ( true == appDataLog.log_events )
     {
-        return FILEIO_RESULT_FAILURE;
+       store_event(OF_WRITE_EVENTS_LOG); 
+    }
+    
+    if ( USB_DRIVE_MOUNTED == appDataUsb.usbDriveStatus )
+    {
+        needToUnmount = false;
+        if ( true == appDataLog.log_events )
+        {
+           store_event(OF_ALREADY_MOUNTED_USB_DRIVE); 
+        }
+    }
+    else
+    {
+        if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
+        {
+            return FILEIO_RESULT_FAILURE;
+        }
+        needToUnmount = true;
     }
 
     if (EVENT_FILE_TEXT == appDataEvent.file_type || EVENT_FILE_BINARY_AND_TEXT == appDataEvent.file_type )
@@ -113,7 +139,7 @@ FILEIO_RESULT logEvents(void)
             buf[1] = appDataEvent.minutes[i]; 
             buf[2] = appDataEvent.seconds[i]; 
             buf[3] = appDataEvent.numbers[i];
-
+            
             numDataWritten = FILEIO_Write(buf, 1, 4, &file);
 
             if (numDataWritten < 4)
@@ -140,17 +166,21 @@ FILEIO_RESULT logEvents(void)
         }
     }
     
-    if (USB_DRIVE_MOUNTED == usbUnmountDrive())
+    /* Do not move the next line below unmount action because unmount events wont be recorded */
+    clear_events_buffers( );
+    
+    if (true == needToUnmount)
     {
-        return FILEIO_RESULT_FAILURE;
+        if (USB_DRIVE_MOUNTED == usbUnmountDrive())
+        {
+            return FILEIO_RESULT_FAILURE;
+        }
     }
 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
     printf("\tWrite events to file success\n");
 #endif 
 
-    clear_events_buffers( );
-    
     return FILEIO_RESULT_SUCCESS;
 }
 
@@ -186,6 +216,9 @@ bool setEventFileName(void)
             appError.number = ERROR_EVENT_CSV_FILE_SET_NAME;
             return false;
         }
+    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_EVENT_INFO )
+            printf("\tTXT event file name: %s\n", appDataEvent.filename);
+    #endif      
     }
     
     if (EVENT_FILE_BINARY == appDataEvent.file_type || EVENT_FILE_BINARY_AND_TEXT == appDataEvent.file_type )
@@ -206,6 +239,9 @@ bool setEventFileName(void)
             appError.number = ERROR_EVENT_BIN_FILE_SET_NAME;
             return false;
         }
+    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_EVENT_INFO )
+            printf("\tBIN event file name: %s\n", appDataEvent.binfilename);
+    #endif 
     }
     return true;
 }

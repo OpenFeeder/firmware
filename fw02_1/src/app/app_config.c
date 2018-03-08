@@ -50,7 +50,8 @@ bool config_set( void )
         store_event(OF_READ_INI);
     }
     
-    if ( appDataPitTag.numPitTagDeniedOrColorA > 0 || appDataPitTag.numPitTagAcceptedOrColorB > 0 )
+//    if ( appDataPitTag.numPitTagDeniedOrColorA > 0 || appDataPitTag.numPitTagAcceptedOrColorB > 0 )
+    if ( ( GO_NO_GO == appData.scenario_number && appDataAttractiveLeds.pattern_number > ALL_LEDS) || appData.scenario_number > GO_NO_GO )
     {
         if ( FILEIO_RESULT_FAILURE == read_PIT_tags( ) )
         {
@@ -72,88 +73,337 @@ FILEIO_RESULT read_PIT_tags( void )
 
     FILEIO_OBJECT file;
     FILEIO_ERROR_TYPE errF;
-    uint16_t i;
+    uint16_t i, j, s;
+    char buf[13];
 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
     printf( "Read PIT tags files\n" );
 #endif 
 
-    if ( appDataPitTag.numPitTagDeniedOrColorA > 0 )
+    
+    appDataPitTag.numPitTagStored = 0;
+        
+    if ( appData.scenario_number > GO_NO_GO )
     {
-
-        if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "PTDENIED.TXT", FILEIO_OPEN_READ ) )
+        if ( appDataPitTag.numPitTagDeniedOrColorA > 0 )
         {
-            errF = FILEIO_ErrorGet( 'A' );
+
+            if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "PTDENIED.TXT", FILEIO_OPEN_READ ) )
+            {
+                errF = FILEIO_ErrorGet( 'A' );
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-            printf( "unable to open PIT tags denied file (%u)", errF );
+                printf( "unable to open PIT tags denied file (%u)", errF );
 #endif 
-            sprintf( appError.message, "Unable to open PIT tags denied file (%u)", errF );
-            appError.currentLineNumber = __LINE__;
-            sprintf( appError.currentFileName, "%s", __FILE__ );
-            FILEIO_ErrorClear( 'A' );
-            appError.number = ERROR_PIT_TAGS_DENIED_FILE_OPEN;
-            return FILEIO_RESULT_FAILURE;
-        }
+                sprintf( appError.message, "Unable to open PIT tags denied file (%u)", errF );
+                appError.currentLineNumber = __LINE__;
+                sprintf( appError.currentFileName, "%s", __FILE__ );
+                FILEIO_ErrorClear( 'A' );
+                appError.number = ERROR_PIT_TAGS_DENIED_FILE_OPEN;
+                return FILEIO_RESULT_FAILURE;
+            }
 
-        for ( i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; i++ )
-        {
-            FILEIO_Read( appDataPitTag.pit_tags_list[i], 1, 10, &file );
-            appDataPitTag.pit_tags_list[i][11] = '\0';
-        }
+            for ( i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; i++ )
+            {
+                FILEIO_Read( appDataPitTag.pit_tags_list[i], 1, 10, &file );
+                appDataPitTag.pit_tags_list[i][11] = '\0';
+                appDataPitTag.numPitTagStored += 1;
+            }
 
-        if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
-        {
-            errF = FILEIO_ErrorGet( 'A' );
+            if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
+            {
+                errF = FILEIO_ErrorGet( 'A' );
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-            printf( "unable to close PIT tags denied file (%u)", errF );
+                printf( "unable to close PIT tags denied file (%u)", errF );
 #endif 
-            sprintf( appError.message, "Unable to close PIT tags denied file (%u)", errF );
-            appError.currentLineNumber = __LINE__;
-            sprintf( appError.currentFileName, "%s", __FILE__ );
-            FILEIO_ErrorClear( 'A' );
-            appError.number = ERROR_PIT_TAGS_DENIED_FILE_CLOSE;
-            return FILEIO_RESULT_FAILURE;
+                sprintf( appError.message, "Unable to close PIT tags denied file (%u)", errF );
+                appError.currentLineNumber = __LINE__;
+                sprintf( appError.currentFileName, "%s", __FILE__ );
+                FILEIO_ErrorClear( 'A' );
+                appError.number = ERROR_PIT_TAGS_DENIED_FILE_CLOSE;
+                return FILEIO_RESULT_FAILURE;
+            }
+
         }
 
+        if ( appDataPitTag.numPitTagAcceptedOrColorB > 0 )
+        {
+
+            if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "PTACCEPT.TXT", FILEIO_OPEN_READ ) )
+            {
+                errF = FILEIO_ErrorGet( 'A' );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+                printf( "unable to open PIT tags accepted file (%u)", errF );
+#endif 
+                sprintf( appError.message, "Unable to open PIT tags accepted file (%u)", errF );
+                appError.currentLineNumber = __LINE__;
+                sprintf( appError.currentFileName, "%s", __FILE__ );
+                FILEIO_ErrorClear( 'A' );
+                appError.number = ERROR_PIT_TAGS_ACCEPTED_FILE_OPEN;
+                return FILEIO_RESULT_FAILURE;
+            }
+
+            for ( i = 0; i < appDataPitTag.numPitTagAcceptedOrColorB; i++ )
+            {
+                FILEIO_Read( appDataPitTag.pit_tags_list[i + appDataPitTag.numPitTagDeniedOrColorA], 1, 10, &file );
+                appDataPitTag.pit_tags_list[i + appDataPitTag.numPitTagDeniedOrColorA][11] = '\0';
+                appDataPitTag.numPitTagStored += 1;
+            }
+
+            if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
+            {
+                errF = FILEIO_ErrorGet( 'A' );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+                printf( "unable to close PIT tags accepted file (%u)", errF );
+#endif 
+                sprintf( appError.message, "Unable to close PIT tags accepted file (%u)", errF );
+                appError.currentLineNumber = __LINE__;
+                sprintf( appError.currentFileName, "%s", __FILE__ );
+                FILEIO_ErrorClear( 'A' );
+                appError.number = ERROR_PIT_TAGS_ACCEPTED_FILE_CLOSE;
+                return FILEIO_RESULT_FAILURE;
+            }
+        }
     }
-
-    if ( appDataPitTag.numPitTagAcceptedOrColorB > 0 )
+    else if ( GO_NO_GO == appData.scenario_number )
     {
-
-        if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "PTACCEPT.TXT", FILEIO_OPEN_READ ) )
+        if ( LEFT_RIGHT_LEDS == appDataAttractiveLeds.pattern_number )
         {
-            errF = FILEIO_ErrorGet( 'A' );
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-            printf( "unable to open PIT tags accepted file (%u)", errF );
-#endif 
-            sprintf( appError.message, "Unable to open PIT tags accepted file (%u)", errF );
-            appError.currentLineNumber = __LINE__;
-            sprintf( appError.currentFileName, "%s", __FILE__ );
-            FILEIO_ErrorClear( 'A' );
-            appError.number = ERROR_PIT_TAGS_ACCEPTED_FILE_OPEN;
-            return FILEIO_RESULT_FAILURE;
-        }
+           if ( appDataPitTag.numPitTagDeniedOrColorA > 0 )
+            {
 
-        for ( i = 0; i < appDataPitTag.numPitTagAcceptedOrColorB; i++ )
+                if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "PTLEFT.TXT", FILEIO_OPEN_READ ) )
+                {
+                    errF = FILEIO_ErrorGet( 'A' );
+    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+                    printf( "unable to open PIT tags left file (%u)", errF );
+    #endif 
+                    sprintf( appError.message, "Unable to open PIT tags left file (%u)", errF );
+                    appError.currentLineNumber = __LINE__;
+                    sprintf( appError.currentFileName, "%s", __FILE__ );
+                    FILEIO_ErrorClear( 'A' );
+                    appError.number = ERROR_PIT_TAGS_DENIED_FILE_OPEN;
+                    return FILEIO_RESULT_FAILURE;
+                }
+                
+                for ( i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; i++ )
+                {
+                    FILEIO_Read( appDataPitTag.pit_tags_list[i], 1, 10, &file );
+                    appDataPitTag.pit_tags_list[i][11] = '\0';
+                    appDataPitTag.numPitTagStored += 1;
+                }
+                
+                if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
+                {
+                    errF = FILEIO_ErrorGet( 'A' );
+    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+                    printf( "unable to close PIT tags left file (%u)", errF );
+    #endif 
+                    sprintf( appError.message, "Unable to close PIT tags left file (%u)", errF );
+                    appError.currentLineNumber = __LINE__;
+                    sprintf( appError.currentFileName, "%s", __FILE__ );
+                    FILEIO_ErrorClear( 'A' );
+                    appError.number = ERROR_PIT_TAGS_DENIED_FILE_CLOSE;
+                    return FILEIO_RESULT_FAILURE;
+                }
+
+            }
+
+            if ( appDataPitTag.numPitTagAcceptedOrColorB > 0 )
+            {
+
+                if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "PTRIGHT.TXT", FILEIO_OPEN_READ ) )
+                {
+                    errF = FILEIO_ErrorGet( 'A' );
+    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+                    printf( "unable to open PIT tags right file (%u)", errF );
+    #endif 
+                    sprintf( appError.message, "Unable to open PIT tags right file (%u)", errF );
+                    appError.currentLineNumber = __LINE__;
+                    sprintf( appError.currentFileName, "%s", __FILE__ );
+                    FILEIO_ErrorClear( 'A' );
+                    appError.number = ERROR_PIT_TAGS_ACCEPTED_FILE_OPEN;
+                    return FILEIO_RESULT_FAILURE;
+                }
+
+                for ( i = 0; i < appDataPitTag.numPitTagAcceptedOrColorB; i++ )
+                {
+                    FILEIO_Read( appDataPitTag.pit_tags_list[i + appDataPitTag.numPitTagDeniedOrColorA], 1, 10, &file );
+                    appDataPitTag.pit_tags_list[i + appDataPitTag.numPitTagDeniedOrColorA][11] = '\0';
+                    appDataPitTag.numPitTagStored += 1;
+                }
+
+                if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
+                {
+                    errF = FILEIO_ErrorGet( 'A' );
+    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+                    printf( "unable to close PIT tags right file (%u)", errF );
+    #endif 
+                    sprintf( appError.message, "Unable to close PIT tags right file (%u)", errF );
+                    appError.currentLineNumber = __LINE__;
+                    sprintf( appError.currentFileName, "%s", __FILE__ );
+                    FILEIO_ErrorClear( 'A' );
+                    appError.number = ERROR_PIT_TAGS_ACCEPTED_FILE_CLOSE;
+                    return FILEIO_RESULT_FAILURE;
+                }
+            }
+        }
+        else if ( TOP_BOTTOM_LEDS == appDataAttractiveLeds.pattern_number )
         {
-            FILEIO_Read( appDataPitTag.pit_tags_list[i + appDataPitTag.numPitTagDeniedOrColorA], 1, 10, &file );
-            appDataPitTag.pit_tags_list[i + appDataPitTag.numPitTagDeniedOrColorA][11] = '\0';
-        }
+           if ( appDataPitTag.numPitTagDeniedOrColorA > 0 )
+            {
 
-        if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
+                if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "PTTOP.TXT", FILEIO_OPEN_READ ) )
+                {
+                    errF = FILEIO_ErrorGet( 'A' );
+    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+                    printf( "unable to open PIT tags top file (%u)", errF );
+    #endif 
+                    sprintf( appError.message, "Unable to open PIT tags top file (%u)", errF );
+                    appError.currentLineNumber = __LINE__;
+                    sprintf( appError.currentFileName, "%s", __FILE__ );
+                    FILEIO_ErrorClear( 'A' );
+                    appError.number = ERROR_PIT_TAGS_DENIED_FILE_OPEN;
+                    return FILEIO_RESULT_FAILURE;
+                }
+
+                for ( i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; i++ )
+                {
+                    FILEIO_Read( appDataPitTag.pit_tags_list[i], 1, 10, &file );
+                    appDataPitTag.pit_tags_list[i][11] = '\0';
+                    appDataPitTag.numPitTagStored += 1;
+                }
+
+                if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
+                {
+                    errF = FILEIO_ErrorGet( 'A' );
+    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+                    printf( "unable to close PIT tags top file (%u)", errF );
+    #endif 
+                    sprintf( appError.message, "Unable to close PIT tags top file (%u)", errF );
+                    appError.currentLineNumber = __LINE__;
+                    sprintf( appError.currentFileName, "%s", __FILE__ );
+                    FILEIO_ErrorClear( 'A' );
+                    appError.number = ERROR_PIT_TAGS_DENIED_FILE_CLOSE;
+                    return FILEIO_RESULT_FAILURE;
+                }
+
+            }
+
+            if ( appDataPitTag.numPitTagAcceptedOrColorB > 0 )
+            {
+
+                if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "PTBOTTOM.TXT", FILEIO_OPEN_READ ) )
+                {
+                    errF = FILEIO_ErrorGet( 'A' );
+    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+                    printf( "unable to open PIT tags bottom file (%u)", errF );
+    #endif 
+                    sprintf( appError.message, "Unable to open PIT tags bottom file (%u)", errF );
+                    appError.currentLineNumber = __LINE__;
+                    sprintf( appError.currentFileName, "%s", __FILE__ );
+                    FILEIO_ErrorClear( 'A' );
+                    appError.number = ERROR_PIT_TAGS_ACCEPTED_FILE_OPEN;
+                    return FILEIO_RESULT_FAILURE;
+                }
+
+                for ( i = 0; i < appDataPitTag.numPitTagAcceptedOrColorB; i++ )
+                {
+                    FILEIO_Read( appDataPitTag.pit_tags_list[i + appDataPitTag.numPitTagDeniedOrColorA], 1, 10, &file );
+                    appDataPitTag.pit_tags_list[i + appDataPitTag.numPitTagDeniedOrColorA][11] = '\0';
+                    appDataPitTag.numPitTagStored += 1;
+                }
+
+                if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
+                {
+                    errF = FILEIO_ErrorGet( 'A' );
+    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+                    printf( "unable to close PIT tags bottom file (%u)", errF );
+    #endif 
+                    sprintf( appError.message, "Unable to close PIT tags bottom file (%u)", errF );
+                    appError.currentLineNumber = __LINE__;
+                    sprintf( appError.currentFileName, "%s", __FILE__ );
+                    FILEIO_ErrorClear( 'A' );
+                    appError.number = ERROR_PIT_TAGS_ACCEPTED_FILE_CLOSE;
+                    return FILEIO_RESULT_FAILURE;
+                }
+            }
+        }    
+        else if ( ONE_LED == appDataAttractiveLeds.pattern_number )
         {
-            errF = FILEIO_ErrorGet( 'A' );
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-            printf( "unable to close PIT tags denied file (%u)", errF );
-#endif 
-            sprintf( appError.message, "Unable to close PIT tags accepted file (%u)", errF );
-            appError.currentLineNumber = __LINE__;
-            sprintf( appError.currentFileName, "%s", __FILE__ );
-            FILEIO_ErrorClear( 'A' );
-            appError.number = ERROR_PIT_TAGS_ACCEPTED_FILE_CLOSE;
-            return FILEIO_RESULT_FAILURE;
-        }
+            memset(buf, 0, sizeof (buf));
 
+            for ( j=0; j<4; j++ )
+            {
+//                printf("%d %d\n", j, appDataPitTag.numPitTagGroup[j]);
+                    
+                if (0 == appDataPitTag.numPitTagGroup[j])
+                {
+                    if ( 0 == j )
+                    {
+                        s = 0;
+                        appDataAttractiveLeds.pattern_one_led_groups[j] = 0;
+                    }
+                    else
+                    {
+                        s += appDataPitTag.numPitTagGroup[j-1];
+                        appDataAttractiveLeds.pattern_one_led_groups[j] = appDataAttractiveLeds.pattern_one_led_groups[j-1];
+                    }
+                    continue;
+                }
+                
+                snprintf(buf, 13, "PTONE%d.TXT", j+1);
+                
+                if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, buf, FILEIO_OPEN_READ ) )
+                {
+                    errF = FILEIO_ErrorGet( 'A' );
+    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+                    printf( "unable to open PIT tags group %d file (%u)", j+1, errF );
+    #endif 
+                    sprintf( appError.message, "Unable to open PIT tags group %d file (%u)", j+1, errF );
+                    appError.currentLineNumber = __LINE__;
+                    sprintf( appError.currentFileName, "%s", __FILE__ );
+                    FILEIO_ErrorClear( 'A' );
+                    appError.number = ERROR_PIT_TAGS_DENIED_FILE_OPEN;
+                    return FILEIO_RESULT_FAILURE;
+                }
+                
+                if ( 0 == j )
+                {
+                    s = 0;
+                    appDataAttractiveLeds.pattern_one_led_groups[j] = appDataPitTag.numPitTagGroup[j];
+                }
+                else
+                {
+                    s += appDataPitTag.numPitTagGroup[j-1];
+                    appDataAttractiveLeds.pattern_one_led_groups[j] = appDataAttractiveLeds.pattern_one_led_groups[j-1] + appDataPitTag.numPitTagGroup[j];
+                }
+                
+//                printf("\t%d %d\n", s, appDataAttractiveLeds.pattern_one_led_groups[j]);
+                
+                for ( i = 0; i < appDataPitTag.numPitTagGroup[j]; i++ )
+                {
+                    FILEIO_Read( appDataPitTag.pit_tags_list[i+s], 1, 10, &file );
+                    appDataPitTag.pit_tags_list[i+s][11] = '\0';
+                    appDataPitTag.numPitTagStored += 1;
+                }
+                
+                
+                if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
+                {
+                    errF = FILEIO_ErrorGet( 'A' );
+    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+                    printf( "unable to close PIT tags group %d file (%u)", j+1, errF );
+    #endif 
+                    sprintf( appError.message, "Unable to close PIT tags group %d file (%u)", j+1, errF );
+                    appError.currentLineNumber = __LINE__;
+                    sprintf( appError.currentFileName, "%s", __FILE__ );
+                    FILEIO_ErrorClear( 'A' );
+                    appError.number = ERROR_PIT_TAGS_ACCEPTED_FILE_CLOSE;
+                    return FILEIO_RESULT_FAILURE;
+                }
+                
+            }
+        }
     }
 
     return FILEIO_RESULT_SUCCESS;
@@ -191,7 +441,7 @@ INI_READ_STATE config_read_ini( void )
 
     /* Site identification. */
     s = ini_gets( "siteid", "zone", "XXXX", appData.siteid, sizearray( appData.siteid ), "CONFIG.INI" );
-    for (i=s;i<4;i++)
+    for ( i=s; i<4; i++ )
     {
         appData.siteid[i] = 'X';
     }
@@ -381,32 +631,141 @@ INI_READ_STATE config_read_ini( void )
         }
     }
 
-    /* PIT Tags denied or associated with color A. */
-    read_parameter = ini_getl( "pittagsdenied", "num", -1, "CONFIG.INI" );
-    if ( -1 == read_parameter )
+    if ( appData.scenario_number > GO_NO_GO )
     {
-        return INI_PB_PIT_TAG_DENIED;
-    }
-    else
-    {
-        appDataPitTag.numPitTagDeniedOrColorA = ( uint16_t ) read_parameter;
-    }
-    /* PIT Tags accepted or associated with color B. */
-    read_parameter = ini_getl( "pittagsaccepted", "num", -1, "CONFIG.INI" );
-    if ( -1 == read_parameter )
-    {
-        return INI_PB_PIT_TAG_ACCEPTED;
-    }
-    else
-    {
-        appDataPitTag.numPitTagAcceptedOrColorB = ( uint16_t ) read_parameter;
-    }
+        /* PIT Tags denied or associated with color A. */
+        read_parameter = ini_getl( "pittags", "num_denied", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_PIT_TAG_DENIED;
+        }
+        else
+        {
+            appDataPitTag.numPitTagDeniedOrColorA = ( uint16_t ) read_parameter;
+        }
+        /* PIT Tags accepted or associated with color B. */
+        read_parameter = ini_getl( "pittags", "num_accepted", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_PIT_TAG_ACCEPTED;
+        }
+        else
+        {
+            appDataPitTag.numPitTagAcceptedOrColorB = ( uint16_t ) read_parameter;
+        }
 
-    for (i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; i++)
-    {
-        appDataPitTag.isPitTagdeniedOrColorA[i] = true;
+        for (i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; i++)
+        {
+            appDataPitTag.isPitTagdeniedOrColorA[i] = true;
+        }
     }
-    
+    else if ( GO_NO_GO == appData.scenario_number )
+    {
+        if ( LEFT_RIGHT_LEDS == appDataAttractiveLeds.pattern_number )
+        {
+           /* PIT Tags associated with left LEDs. */
+            read_parameter = ini_getl( "pittags", "num_left", -1, "CONFIG.INI" );
+            if ( -1 == read_parameter )
+            {
+                return INI_PB_PIT_TAG_LEFT;
+            }
+            else
+            {
+                appDataPitTag.numPitTagDeniedOrColorA = ( uint16_t ) read_parameter;
+            }
+            /* PIT Tags associated with left LEDs. */
+            read_parameter = ini_getl( "pittags", "num_right", -1, "CONFIG.INI" );
+            if ( -1 == read_parameter )
+            {
+                return INI_PB_PIT_TAG_RIGHT;
+            }
+            else
+            {
+                appDataPitTag.numPitTagAcceptedOrColorB = ( uint16_t ) read_parameter;
+            }
+
+            for (i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; i++)
+            {
+                appDataPitTag.isPitTagdeniedOrColorA[i] = true;
+            } 
+        }
+        else if ( TOP_BOTTOM_LEDS == appDataAttractiveLeds.pattern_number )
+        {
+           /* PIT Tags associated with top LEDs. */
+            read_parameter = ini_getl( "pittags", "num_top", -1, "CONFIG.INI" );
+            if ( -1 == read_parameter )
+            {
+                return INI_PB_PIT_TAG_TOP;
+            }
+            else
+            {
+                appDataPitTag.numPitTagDeniedOrColorA = ( uint16_t ) read_parameter;
+            }
+            /* PIT Tags associated with bottom LEDs. */
+            read_parameter = ini_getl( "pittags", "num_bottom", -1, "CONFIG.INI" );
+            if ( -1 == read_parameter )
+            {
+                return INI_PB_PIT_TAG_BOTTOM;
+            }
+            else
+            {
+                appDataPitTag.numPitTagAcceptedOrColorB = ( uint16_t ) read_parameter;
+            }
+
+            for (i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; i++)
+            {
+                appDataPitTag.isPitTagdeniedOrColorA[i] = true;
+            } 
+        }    
+        else if ( ONE_LED == appDataAttractiveLeds.pattern_number )
+        {
+            appDataPitTag.numPitTagGroup[0] = 0;
+            appDataPitTag.numPitTagGroup[1] = 0;
+            appDataPitTag.numPitTagGroup[2] = 0;
+            appDataPitTag.numPitTagGroup[3] = 0;
+                
+            /* PIT Tags associated with group LEDs 1. */
+            read_parameter = ini_getl( "pittags", "num_led_1", -1, "CONFIG.INI" );
+            if ( -1 == read_parameter )
+            {
+                return INI_PB_PIT_TAG_LED_1;
+            }
+            else
+            {
+                appDataPitTag.numPitTagGroup[0] = ( uint16_t ) read_parameter;
+            }
+            /* PIT Tags associated with group LEDs 2. */
+            read_parameter = ini_getl( "pittags", "num_led_2", -1, "CONFIG.INI" );
+            if ( -1 == read_parameter )
+            {
+                return INI_PB_PIT_TAG_LED_2;
+            }
+            else
+            {
+                appDataPitTag.numPitTagGroup[1] = ( uint16_t ) read_parameter;
+            }
+            /* PIT Tags associated with group LEDs 3. */
+            read_parameter = ini_getl( "pittags", "num_led_3", -1, "CONFIG.INI" );
+            if ( -1 == read_parameter )
+            {
+                return INI_PB_PIT_TAG_LED_3;
+            }
+            else
+            {
+                appDataPitTag.numPitTagGroup[2] = ( uint16_t ) read_parameter;
+            }
+            /* PIT Tags associated with group LEDs 4. */
+            read_parameter = ini_getl( "pittags", "num_led_4", -1, "CONFIG.INI" );
+            if ( -1 == read_parameter )
+            {
+                return INI_PB_PIT_TAG_LED_4;
+            }
+            else
+            {
+                appDataPitTag.numPitTagGroup[3] = ( uint16_t ) read_parameter;
+            }   
+        }
+    }
     /* Door/servomotor configuration. */
     read_parameter = ini_getl( "door", "close_position", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
@@ -724,7 +1083,7 @@ INI_READ_STATE config_read_ini( void )
 
 void config_print( void )
 {
-    int i;
+    int i, j;
 
     printf( "Configuration parameters\n" );
 
@@ -846,16 +1205,42 @@ void config_print( void )
     }
     if (true == appData.flags.bit_value.attractive_leds_status)
     {
+
         printf( "\tAttractive LEDs\n" );
-        printf( "\t\tColor A: RGB(%d, %d, %d)\n",
-                appDataAttractiveLeds.red[0],
-                appDataAttractiveLeds.green[0],
-                appDataAttractiveLeds.blue[0] );
-        printf( "\t\tColor B: RGB(%d, %d, %d)\n",
-                appDataAttractiveLeds.red[1],
-                appDataAttractiveLeds.green[1],
-                appDataAttractiveLeds.blue[1] );
-        printf( "\t\tAlternate delay: %us\n", appDataAttractiveLeds.alt_delay );
+        
+        printf( "\t\tLEDs order: %u %u %u %u\n", 
+               appDataAttractiveLeds.leds_order[0], appDataAttractiveLeds.leds_order[1], 
+               appDataAttractiveLeds.leds_order[2], appDataAttractiveLeds.leds_order[3]);
+    
+        if (COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number)
+        {
+
+            printf( "\t\tColor A: RGB(%d, %d, %d)\n",
+                    appDataAttractiveLeds.red[0],
+                    appDataAttractiveLeds.green[0],
+                    appDataAttractiveLeds.blue[0] );
+            printf( "\t\tColor B: RGB(%d, %d, %d)\n",
+                    appDataAttractiveLeds.red[1],
+                    appDataAttractiveLeds.green[1],
+                    appDataAttractiveLeds.blue[1] );
+            printf( "\t\tAlternate delay: %us\n", appDataAttractiveLeds.alt_delay );
+        }
+        else if (DOOR_HABITUATION == appData.scenario_number) 
+        {
+            printf( "\t\tColor: RGB(%d, %d, %d)\n",
+                    appDataAttractiveLeds.red[0],
+                    appDataAttractiveLeds.green[0],
+                    appDataAttractiveLeds.blue[0] );
+        }            
+        else if (GO_NO_GO == appData.scenario_number)
+        {
+            printf( "\t\tColor: RGB(%d, %d, %d)\n",
+                    appDataAttractiveLeds.red[0],
+                    appDataAttractiveLeds.green[0],
+                    appDataAttractiveLeds.blue[0] );   
+            printf( "\t\tAlternate delay: %us\n", appDataAttractiveLeds.alt_delay );
+        }
+        
         printf( "\t\tOn time: %02d:%02d\n",
                 appDataAttractiveLeds.wake_up_time.tm_hour,
                 appDataAttractiveLeds.wake_up_time.tm_min );
@@ -922,82 +1307,115 @@ void config_print( void )
         printf( "\t\tDelay: %us\n", appData.punishment_delay / 1000 );
     }
             
-    if ( DOOR_HABITUATION < appData.scenario_number )
+    if ( appData.scenario_number > DOOR_HABITUATION )
     {
-        if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number)
-        {
-            printf( "\tPIT tags associated with color A\n" );
-        }
-        else if ( GO_NO_GO == appData.scenario_number)
-        {
-            if ( LEFT_RIGHT_LEDS == appDataAttractiveLeds.pattern_number )
+        
+        if ( GO_NO_GO == appData.scenario_number && ONE_LED == appDataAttractiveLeds.pattern_number )
+        {        
+            
+//            for (i=0;i<appDataPitTag.numPitTagStored;i++)
+//            {
+//              printf( "\t\tSN%d: %s\n", i + 1, appDataPitTag.pit_tags_list[i] );  
+//            }
+ 
+            for ( i=0; i<4; i++)
             {
-                printf( "\tPIT tags associated with left attractive LEDs\n" );
+                printf( "\tPIT tags associated with LED %d\n", i+1);
+                if (0==i)
+                {
+                    for (j=0;j<appDataAttractiveLeds.pattern_one_led_groups[0];j++)
+                    {
+                        printf( "\t\tSN%02d: %s\n", j + 1, appDataPitTag.pit_tags_list[j] );
+                    }
+                }
+                else
+                {
+                   for (j=appDataAttractiveLeds.pattern_one_led_groups[i-1];j<appDataAttractiveLeds.pattern_one_led_groups[i];j++)
+                    {
+                        printf( "\t\tSN%02d: %s\n", j + 1, appDataPitTag.pit_tags_list[j] );
+                    } 
+                }
             }
-            else if ( TOP_BOTTOM_LEDS == appDataAttractiveLeds.pattern_number )
+            
+        }
+        else
+        {        
+            if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number)
             {
-                printf( "\tPIT tags associated with bottom attractive LEDs\n" );
+                printf( "\tPIT tags associated with color A\n" );
+            }
+            else if ( GO_NO_GO == appData.scenario_number)
+            {
+                if ( LEFT_RIGHT_LEDS == appDataAttractiveLeds.pattern_number )
+                {
+                    printf( "\tPIT tags associated with left attractive LEDs\n" );
+                }
+                else if ( TOP_BOTTOM_LEDS == appDataAttractiveLeds.pattern_number )
+                {
+                    printf( "\tPIT tags associated with top attractive LEDs\n" );
+                }
+                else
+                {
+                    printf( "\tPIT tags associated with pattern 1/2\n" );
+                }
             }
             else
             {
-                printf( "\tPIT tags associated with pattern 1/2\n" );
+                printf( "\tPIT tags denied\n" );
             }
-        }
-        else
-        {
-            printf( "\tPIT tags denied\n" );
-        }
-        
-        if ( appDataPitTag.numPitTagDeniedOrColorA > 0 )
-        {
-            for ( i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; ++i )
-            {
-                printf( "\t\tSN%d: %s\n", i + 1, appDataPitTag.pit_tags_list[i] );
-            }
-        }
-        else
-        {
-            printf( "\t\tNone\n" );
-        }
-        
-        if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number)
-        {
-            printf( "\tPIT Tags associated with color B\n" );
-        }
-        else if ( GO_NO_GO == appData.scenario_number)
-        {
-            if ( LEFT_RIGHT_LEDS == appDataAttractiveLeds.pattern_number )
-            {
-                printf( "\tPIT tags associated with right attractive LEDs\n" );
-            }
-            else if ( TOP_BOTTOM_LEDS == appDataAttractiveLeds.pattern_number )
-            {
-                printf( "\tPIT Tags associated with bottom attractive LEDs\n" );
-            }
-            else
-            {
-                printf( "\tPIT tags associated with pattern 2/2\n" );
-            }
-        }
-        else
-        {
-            printf( "\tPIT tags accepted\n" );
-        }
 
-        if ( appDataPitTag.numPitTagAcceptedOrColorB > 0 )
-        {
-            for ( i = appDataPitTag.numPitTagDeniedOrColorA; i < ( appDataPitTag.numPitTagDeniedOrColorA + appDataPitTag.numPitTagAcceptedOrColorB ); ++i )
+            if ( appDataPitTag.numPitTagDeniedOrColorA > 0 )
             {
-                printf( "\t\tSN%d: %s\n", i + 1 - appDataPitTag.numPitTagDeniedOrColorA, appDataPitTag.pit_tags_list[i] );
+                for ( i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; ++i )
+                {
+                    printf( "\t\tSN%02d: %s\n", i + 1, appDataPitTag.pit_tags_list[i] );
+                }
             }
-        }
-        else
-        {
-            printf( "\t\tNone\n" );
+            else
+            {
+                printf( "\t\tNone\n" );
+            }
+
+            if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number)
+            {
+                printf( "\tPIT Tags associated with color B\n" );
+            }
+            else if ( GO_NO_GO == appData.scenario_number)
+            {
+                if ( LEFT_RIGHT_LEDS == appDataAttractiveLeds.pattern_number )
+                {
+                    printf( "\tPIT tags associated with right attractive LEDs\n" );
+                }
+                else if ( TOP_BOTTOM_LEDS == appDataAttractiveLeds.pattern_number )
+                {
+                    printf( "\tPIT Tags associated with bottom attractive LEDs\n" );
+                }
+                else
+                {
+                    printf( "\tPIT tags associated with pattern 2/2\n" );
+                }
+            }
+            else
+            {
+                printf( "\tPIT tags accepted\n" );
+            }
+
+            if ( appDataPitTag.numPitTagAcceptedOrColorB > 0 )
+            {
+                for ( i = appDataPitTag.numPitTagDeniedOrColorA; i < ( appDataPitTag.numPitTagDeniedOrColorA + appDataPitTag.numPitTagAcceptedOrColorB ); ++i )
+                {
+                    printf( "\t\tSN%02d: %s\n", i + 1 - appDataPitTag.numPitTagDeniedOrColorA, appDataPitTag.pit_tags_list[i] );
+                }
+            }
+            else
+            {
+                printf( "\t\tNone\n" );
+            }
         }
         
     }
 
+    printf( "\n" );
 }
 
 
@@ -1081,7 +1499,31 @@ void getIniPbChar( INI_READ_STATE state, char *buf, uint8_t n )
             break;      
         case INI_PB_ATTRACTIVE_LEDS_PATTERN_4_NUM:
             snprintf( buf, n, "Attractive LEDs: pattern LED number" );
-            break;  
+            break;
+        case INI_PB_PIT_TAG_LEFT:
+            snprintf( buf, n, "Attractive LEDs: pattern left LEDs" );
+            break;
+        case INI_PB_PIT_TAG_RIGHT:
+            snprintf( buf, n, "Attractive LEDs: pattern right LEDs" );
+            break;
+        case INI_PB_PIT_TAG_TOP:
+            snprintf( buf, n, "Attractive LEDs: pattern top LEDs" );
+            break;
+        case INI_PB_PIT_TAG_BOTTOM:
+            snprintf( buf, n, "Attractive LEDs: pattern bottom LEDs" );
+            break;
+        case INI_PB_PIT_TAG_LED_1:
+            snprintf( buf, n, "Attractive LEDs: pattern group LEDs 1" );
+            break;   
+        case INI_PB_PIT_TAG_LED_2:
+            snprintf( buf, n, "Attractive LEDs: pattern group LEDs 2" );
+            break; 
+        case INI_PB_PIT_TAG_LED_3:
+            snprintf( buf, n, "Attractive LEDs: pattern group LEDs 3" );
+            break; 
+        case INI_PB_PIT_TAG_LED_4:
+            snprintf( buf, n, "Attractive LEDs: pattern group LEDs 4" );
+            break;    
         case INI_PB_DOOR_CLOSE_POSITION:
             snprintf( buf, n, "Door: close position" );
             break;

@@ -11,7 +11,7 @@
 #include "app_datetime.h"
 #include "app.h"
 
-void setDateTime( int year, int month, int day, int hour, int minute, int second )
+bool setDateTime( int year, int month, int day, int hour, int minute, int second )
 {
     struct tm date_time;
 
@@ -24,24 +24,30 @@ void setDateTime( int year, int month, int day, int hour, int minute, int second
     date_time.tm_sec = second;
 
     RTCC_TimeSet( &date_time );
+    
+    return true;
 }
 
-void getDateTime( struct tm *currentTime )
+bool getDateTime( struct tm *currentTime )
 {
     /* Get Date and Time. */
     while ( !RTCC_TimeGet( currentTime ) )
     {
         Nop( );
     }
+    
+    return true;
 }
 
-void getCurrentDate( void )
+bool getCurrentDate( void )
 {
     
     while ( !RTCC_TimeGet( &appData.current_time ) )
     {
         Nop( );
     }
+    
+    return true;
     
 }
 

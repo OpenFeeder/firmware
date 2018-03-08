@@ -18,14 +18,28 @@ FILEIO_RESULT logError(void)
     struct tm currentTime;
     int flag;
     size_t numDataWritten;
+    bool needToUnmount;
 
     getDateTime(&currentTime);
 
-    if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
+    if ( USB_DRIVE_MOUNTED == appDataUsb.usbDriveStatus )
     {
-        return FILEIO_RESULT_FAILURE;
+        needToUnmount = false;
+    }
+    else
+    {
+        if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
+        {
+            return FILEIO_RESULT_FAILURE;
+        }
+        needToUnmount = true;
     }
 
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_WRITE_ERRORS_LOG); 
+    }
+    
     if (FILEIO_RESULT_FAILURE == FILEIO_Open(&file, "ERRORS.CSV", FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND))
     {
         errF = FILEIO_ErrorGet('A');
@@ -83,9 +97,12 @@ FILEIO_RESULT logError(void)
         return FILEIO_RESULT_FAILURE;
     }
 
-    if (USB_DRIVE_MOUNTED == usbUnmountDrive())
+    if (true == needToUnmount)
     {
-        return FILEIO_RESULT_FAILURE;
+        if (USB_DRIVE_MOUNTED == usbUnmountDrive())
+        {
+            return FILEIO_RESULT_FAILURE;
+        }
     }
 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)

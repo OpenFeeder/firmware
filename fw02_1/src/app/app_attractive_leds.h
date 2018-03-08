@@ -36,6 +36,7 @@ typedef struct
     uint8_t pattern_number;
     bool pattern_idx;    
     bool pattern[4];    
+    uint8_t leds_order[4];
     uint8_t leds_index[4];
 //    uint8_t pattern_one_led_num; // number in config.ini
 //    uint8_t pattern_one_led_idx; // index on the OF
@@ -77,7 +78,7 @@ void setAttractiveLedsPattern( void );
 
 void testAttractiveLeds( void );
 
-void setAttractiveLedsIndex( void );
+bool setAttractiveLedsIndex( void );
 
 void storeAttractiveLedsPattern( void );
 

@@ -282,7 +282,9 @@ void findPitTagInList( void )
 
     int i;
 
-    for ( i = 0; i < ( appDataPitTag.numPitTagDeniedOrColorA + appDataPitTag.numPitTagAcceptedOrColorB ); ++i )
+//    for ( i = 0; i < ( appDataPitTag.numPitTagDeniedOrColorA + appDataPitTag.numPitTagAcceptedOrColorB ); ++i )
+        
+    for ( i = 0; i < appDataPitTag.numPitTagStored; ++i )    
     {
 #if defined( USE_UART1_SERIAL_INTERFACE ) && defined (DISPLAY_PIT_TAG_INFO)
         printf( "%s %s ", appDataLog.bird_pit_tag_str, appDataPitTag.pit_tags_list[i] );
