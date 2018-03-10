@@ -228,22 +228,21 @@ void APP_Tasks( void )
 
             setLedsStatusColor( LED_BLUE );
 
+            if ( true == appDataLog.log_events )
+            {
+                if ( false == setEventFileName( ) )
+                {
+                    appDataUsb.key_is_nedded = false;
+                    appData.state = APP_STATE_ERROR;
+                    break;
+                }
+            }
+            
             /* System configuration. */
             appData.flags.bit_value.systemInit = config_set( );
 
             if ( true == appData.flags.bit_value.systemInit )
             {
-                
-                if ( true == appDataLog.log_events )
-                {
-                    if ( false == setEventFileName( ) )
-                    {
-                        appDataUsb.key_is_nedded = false;
-                        appData.state = APP_STATE_ERROR;
-                        break;
-                    }
-                }
-                
                 /* Check all status LEDs */
                 checkLedsStatus( );
 

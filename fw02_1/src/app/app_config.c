@@ -1054,8 +1054,12 @@ INI_READ_STATE config_read_ini( void )
         appData.timeout_taking_reward = ( uint16_t ) read_parameter * 1000;
     }
     /* Timeout guillotine. */
-    ini_gets( "timeouts", "guillotine", "1.0", str, sizearray( str ), "CONFIG.INI" );
-    appData.timeout_guillotine = ( uint16_t ) (atof(str) * 1000);
+//    ini_gets( "timeouts", "guillotine", "1.0", str, sizearray( str ), "CONFIG.INI" );
+//    appData.timeout_guillotine = ( uint16_t ) (atof(str) * 1000);
+
+      appData.timeout_guillotine = (appDataServo.ton_max - appDataServo.ton_min)/appDataServo.closing_speed*(PR3/1000)+500;
+        
+//    printf("%d %d %d\n", appData.timeout_guillotine, TMR3_Period16BitGet(), (appDataServo.ton_max - appDataServo.ton_min)/appDataServo.closing_speed*(PR3/1000)+500);
     
 //    read_parameter = ini_getl( "timeouts", "guillotine", -1, "CONFIG.INI" );
 //    if ( -1 == read_parameter )

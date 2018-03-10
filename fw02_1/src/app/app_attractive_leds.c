@@ -140,11 +140,11 @@ bool setAttractiveLedsIndex( void )
     }
     else
     {
-#if defined (USE_UART1_SERIAL_INTERFACE)
-        printf( "\tAttractive LEDs order: %u %u %u %u\n", 
-               appDataAttractiveLeds.leds_order[0], appDataAttractiveLeds.leds_order[1], 
-               appDataAttractiveLeds.leds_order[2], appDataAttractiveLeds.leds_order[3]);
-#endif   
+//#if defined (USE_UART1_SERIAL_INTERFACE)
+//        printf( "\tAttractive LEDs order: %u %u %u %u\n", 
+//               appDataAttractiveLeds.leds_order[0], appDataAttractiveLeds.leds_order[1], 
+//               appDataAttractiveLeds.leds_order[2], appDataAttractiveLeds.leds_order[3]);
+//#endif   
     }
     
     if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) ) 
