@@ -51,7 +51,7 @@ bool config_set( void )
     }
     
 //    if ( appDataPitTag.numPitTagDeniedOrColorA > 0 || appDataPitTag.numPitTagAcceptedOrColorB > 0 )
-    if ( ( GO_NO_GO == appData.scenario_number && appDataAttractiveLeds.pattern_number > ALL_LEDS) || appData.scenario_number > GO_NO_GO )
+    if ( ( GO_NO_GO == appData.scenario_number && appDataAttractiveLeds.pattern_number > ALL_LEDS) || ( appData.scenario_number > GO_NO_GO && appData.scenario_number < RISK_AVERSION ) )
     {
         if ( FILEIO_RESULT_FAILURE == read_PIT_tags( ) )
         {
@@ -436,6 +436,9 @@ INI_READ_STATE config_read_ini( void )
     }
     else
     {
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+    printf( "\t\tScenario number... READ\n" );
+#endif 
         appData.scenario_number = ( uint8_t ) read_parameter;
     }
 
@@ -446,6 +449,10 @@ INI_READ_STATE config_read_ini( void )
         appData.siteid[i] = 'X';
     }
 
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+    printf( "\t\tSite ID... READ\n" );
+#endif 
+    
     /* Wake up time. */
     read_parameter = ini_getl( "time", "wakeup_hour", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
@@ -455,6 +462,9 @@ INI_READ_STATE config_read_ini( void )
     else
     {
         appDataAlarmWakeup.time.tm_hour = ( int ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+        printf( "\t\tTime Wakeup hour... READ\n" );
+#endif     
     }
     read_parameter = ini_getl( "time", "wakeup_minute", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
@@ -464,6 +474,9 @@ INI_READ_STATE config_read_ini( void )
     else
     {
         appDataAlarmWakeup.time.tm_min = ( int ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+        printf( "\t\tTime Wakeup minute... READ\n" );
+#endif
     }
     appDataAlarmWakeup.time.tm_sec = 0;
 
@@ -476,6 +489,9 @@ INI_READ_STATE config_read_ini( void )
     else
     {
         appDataAlarmSleep.time.tm_hour = ( int ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+        printf( "\t\tTime sleep hour... READ\n" );
+#endif
     }
     read_parameter = ini_getl( "time", "sleep_minute", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
@@ -485,6 +501,9 @@ INI_READ_STATE config_read_ini( void )
     else
     {
         appDataAlarmSleep.time.tm_min = ( int ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+        printf( "\t\tTime sleep minute... READ\n" );
+#endif
     }
     appDataAlarmSleep.time.tm_sec = 0;
 
@@ -509,6 +528,9 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appDataAttractiveLeds.red[0] = ( uint8_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tAttractive LEDs red A... READ\n" );
+#endif
         }
         read_parameter = ini_getl( "attractiveleds", "green_a", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
@@ -518,6 +540,9 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appDataAttractiveLeds.green[0] = ( uint8_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tAttractive LEDs green A... READ\n" );
+#endif
         }
         read_parameter = ini_getl( "attractiveleds", "blue_a", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
@@ -527,6 +552,9 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appDataAttractiveLeds.blue[0] = ( uint8_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tAttractive LEDs blue A... READ\n" );
+#endif
         }
         read_parameter = ini_getl( "attractiveleds", "red_b", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
@@ -536,6 +564,9 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appDataAttractiveLeds.red[1] = ( uint8_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tAttractive LEDs red B... READ\n" );
+#endif
         }
         read_parameter = ini_getl( "attractiveleds", "green_b", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
@@ -545,6 +576,9 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appDataAttractiveLeds.green[1] = ( uint8_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tAttractive LEDs green B... READ\n" );
+#endif
         }
         read_parameter = ini_getl( "attractiveleds", "blue_b", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
@@ -554,6 +588,9 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appDataAttractiveLeds.blue[1] = ( uint8_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tAttractive LEDs blue B... READ\n" );
+#endif
         }
         /* Attractive LEDs alternate delay. */
         read_parameter = ini_getl( "attractiveleds", "alt_delay", -1, "CONFIG.INI" );
@@ -564,6 +601,9 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appDataAttractiveLeds.alt_delay = ( uint8_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tAttractive LEDs atlernate delay... READ\n" );
+#endif
         }
         /* Attractive LEDs wake up time. */
         read_parameter = ini_getl( "attractiveleds", "on_hour", -1, "CONFIG.INI" );
@@ -574,6 +614,9 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appDataAttractiveLeds.wake_up_time.tm_hour = ( int ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tAttractive LEDs on hour... READ\n" );
+#endif
         }
         read_parameter = ini_getl( "attractiveleds", "on_minute", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
@@ -583,6 +626,9 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appDataAttractiveLeds.wake_up_time.tm_min = ( int ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tAttractive LEDs on minute... READ\n" );
+#endif
         }
 
         appDataAttractiveLeds.wake_up_time.tm_sec = 0;
@@ -596,6 +642,9 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appDataAttractiveLeds.sleep_time.tm_hour = ( int ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tAttractive LEDs off hour... READ\n" );
+#endif
         }
         read_parameter = ini_getl( "attractiveleds", "off_minute", -1, "CONFIG.INI" );
         if ( read_parameter == -1 )
@@ -605,6 +654,9 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appDataAttractiveLeds.sleep_time.tm_min = ( int ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tAttractive LEDs off minute... READ\n" );
+#endif
         }
         appDataAttractiveLeds.sleep_time.tm_sec = 0;
         
@@ -618,6 +670,9 @@ INI_READ_STATE config_read_ini( void )
             else
             {
                 appDataAttractiveLeds.pattern_number = ( uint8_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+                printf( "\t\tAttractive LEDs pattern number... READ\n" );
+#endif
             }
             
             if ( ALL_LEDS == appDataAttractiveLeds.pattern_number )
@@ -625,13 +680,15 @@ INI_READ_STATE config_read_ini( void )
                 
                 ini_gets( "attractiveleds", "pattern_percent", "1.0", str, sizearray( str ), "CONFIG.INI" );
                 appDataAttractiveLeds.pattern_percent = atof(str);
-    
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+                printf( "\t\tAttractive LEDs pattern percent... READ\n" );
+#endif
             }
 
         }
     }
 
-    if ( appData.scenario_number > GO_NO_GO )
+    if ( appData.scenario_number > GO_NO_GO && appData.scenario_number < RISK_AVERSION )
     {
         /* PIT Tags denied or associated with color A. */
         read_parameter = ini_getl( "pittags", "num_denied", -1, "CONFIG.INI" );
@@ -642,6 +699,9 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appDataPitTag.numPitTagDeniedOrColorA = ( uint16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tPIT tags number of denied... READ\n" );
+#endif
         }
         /* PIT Tags accepted or associated with color B. */
         read_parameter = ini_getl( "pittags", "num_accepted", -1, "CONFIG.INI" );
@@ -652,6 +712,9 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appDataPitTag.numPitTagAcceptedOrColorB = ( uint16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tPIT tags number of accepted... READ\n" );
+#endif
         }
 
         for (i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; i++)
@@ -672,6 +735,9 @@ INI_READ_STATE config_read_ini( void )
             else
             {
                 appDataPitTag.numPitTagDeniedOrColorA = ( uint16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tPIT tags number of left... READ\n" );
+#endif
             }
             /* PIT Tags associated with left LEDs. */
             read_parameter = ini_getl( "pittags", "num_right", -1, "CONFIG.INI" );
@@ -682,6 +748,9 @@ INI_READ_STATE config_read_ini( void )
             else
             {
                 appDataPitTag.numPitTagAcceptedOrColorB = ( uint16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tPIT tags number of right... READ\n" );
+#endif
             }
 
             for (i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; i++)
@@ -700,6 +769,9 @@ INI_READ_STATE config_read_ini( void )
             else
             {
                 appDataPitTag.numPitTagDeniedOrColorA = ( uint16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tPIT tags number of top... READ\n" );
+#endif
             }
             /* PIT Tags associated with bottom LEDs. */
             read_parameter = ini_getl( "pittags", "num_bottom", -1, "CONFIG.INI" );
@@ -710,6 +782,9 @@ INI_READ_STATE config_read_ini( void )
             else
             {
                 appDataPitTag.numPitTagAcceptedOrColorB = ( uint16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tPIT tags number of bottom... READ\n" );
+#endif
             }
 
             for (i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; i++)
@@ -733,6 +808,9 @@ INI_READ_STATE config_read_ini( void )
             else
             {
                 appDataPitTag.numPitTagGroup[0] = ( uint16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tPIT tags group 1 number... READ\n" );
+#endif
             }
             /* PIT Tags associated with group LEDs 2. */
             read_parameter = ini_getl( "pittags", "num_led_2", -1, "CONFIG.INI" );
@@ -743,6 +821,9 @@ INI_READ_STATE config_read_ini( void )
             else
             {
                 appDataPitTag.numPitTagGroup[1] = ( uint16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tPIT tags group 2 number... READ\n" );
+#endif
             }
             /* PIT Tags associated with group LEDs 3. */
             read_parameter = ini_getl( "pittags", "num_led_3", -1, "CONFIG.INI" );
@@ -753,6 +834,9 @@ INI_READ_STATE config_read_ini( void )
             else
             {
                 appDataPitTag.numPitTagGroup[2] = ( uint16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tPIT tags group 3 number... READ\n" );
+#endif
             }
             /* PIT Tags associated with group LEDs 4. */
             read_parameter = ini_getl( "pittags", "num_led_4", -1, "CONFIG.INI" );
@@ -763,6 +847,9 @@ INI_READ_STATE config_read_ini( void )
             else
             {
                 appDataPitTag.numPitTagGroup[3] = ( uint16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tPIT tags group 4 number... READ\n" );
+#endif
             }   
         }
     }
@@ -784,6 +871,9 @@ INI_READ_STATE config_read_ini( void )
             appDataServo.ton_min = SERVO_DEFAULT_MIN_POSITION;
             appDataServo.ton_min_night = appDataServo.ton_min;
         }
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+        printf( "\t\tDoor close position... READ\n" );
+#endif
     }
 
     read_parameter = ini_getl( "door", "open_position", -1, "CONFIG.INI" );
@@ -801,6 +891,9 @@ INI_READ_STATE config_read_ini( void )
         {
             appDataServo.ton_max = SERVO_DEFAULT_MAX_POSITION;
         }
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+        printf( "\t\tDoor open position... READ\n" );
+#endif
     }
     /* Closing speed */
     read_parameter = ini_getl( "door", "closing_speed", -1, "CONFIG.INI" );
@@ -811,6 +904,9 @@ INI_READ_STATE config_read_ini( void )
     else
     {
         appDataServo.closing_speed = ( uint8_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+        printf( "\t\tDoor close speed... READ\n" );
+#endif
     }
     /* Opening speed */
     read_parameter = ini_getl( "door", "opening_speed", -1, "CONFIG.INI" );
@@ -821,6 +917,9 @@ INI_READ_STATE config_read_ini( void )
     else
     {
         appDataServo.opening_speed = ( uint8_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+        printf( "\t\tDoor opening speed... READ\n" );
+#endif
     }
     /* Door open/closee delays. */
     read_parameter = ini_getl( "door", "open_delay", -1, "CONFIG.INI" );
@@ -831,6 +930,9 @@ INI_READ_STATE config_read_ini( void )
     else
     {
         appDataDoor.open_delay = ( uint16_t ) read_parameter * 1000;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+        printf( "\t\tDoor open delay... READ\n" );
+#endif
     }
     read_parameter = ini_getl( "door", "close_delay", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
@@ -840,7 +942,11 @@ INI_READ_STATE config_read_ini( void )
     else
     {
         appDataDoor.close_delay = ( uint16_t ) read_parameter * 1000;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+        printf( "\t\tDoor close delay... READ\n" );
+#endif
     }
+    
     /* Door habituation */
     if (DOOR_HABITUATION == appData.scenario_number)
     {
@@ -854,6 +960,9 @@ INI_READ_STATE config_read_ini( void )
             appDataDoor.habituation_percent = ( uint8_t ) read_parameter;
 //            appDataServo.ton_max = (appDataServo.ton_max-appDataServo.ton_min)/100*appDataDoor.habituation_percent+appDataServo.ton_min;
             appDataServo.ton_min = (appDataServo.ton_max-appDataServo.ton_min)/100*appDataDoor.habituation_percent+appDataServo.ton_min;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tDoor habituation... READ\n" );
+#endif
         }
     }
     /* Door remain open */
@@ -865,11 +974,14 @@ INI_READ_STATE config_read_ini( void )
     else
     {
         appDataDoor.remain_open = ( uint8_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tDoor remain opened... READ\n" );
+#endif
     }
-    /* Door reward probability */
-//    read_parameter = ini_getf( "door", "reward_probability", -1, "CONFIG.INI" );
-    ini_gets( "door", "reward_probability", "1.0", str, sizearray( str ), "CONFIG.INI" );
-    appDataDoor.reward_probability = atof(str);
+//    /* Door reward probability */
+////    read_parameter = ini_getf( "door", "reward_probability", -1, "CONFIG.INI" );
+//    ini_gets( "door", "reward_probability", "1.0", str, sizearray( str ), "CONFIG.INI" );
+//    appDataDoor.reward_probability = atof(str);
 
     /* Door open time. */
     read_parameter = ini_getl( "door", "open_hour", -1, "CONFIG.INI" );
@@ -880,6 +992,9 @@ INI_READ_STATE config_read_ini( void )
     else
     {
         appDataDoor.open_time.tm_hour = ( int ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tDoor open hour... READ\n" );
+#endif
     }
     read_parameter = ini_getl( "door", "open_minute", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
@@ -889,6 +1004,9 @@ INI_READ_STATE config_read_ini( void )
     else
     {
         appDataDoor.open_time.tm_min = ( int ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tDoor open minute... READ\n" );
+#endif
     }
     appDataDoor.open_time.tm_sec = 0;
 
@@ -901,6 +1019,9 @@ INI_READ_STATE config_read_ini( void )
     else
     {
         appDataDoor.close_time.tm_hour = ( int ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tDoor close hour... READ\n" );
+#endif
     }
     read_parameter = ini_getl( "door", "close_minute", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
@@ -910,6 +1031,9 @@ INI_READ_STATE config_read_ini( void )
     else
     {
         appDataDoor.close_time.tm_min = ( int ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tDoor close minute... READ\n" );
+#endif
     }
     appDataDoor.close_time.tm_sec = 0;
 
@@ -928,6 +1052,9 @@ INI_READ_STATE config_read_ini( void )
     {
         /* Data separator in the log file. */
         ini_gets( "logs", "separator", DEFAULT_LOG_SEPARATOR, appDataLog.separator, sizearray( appDataLog.separator ), "CONFIG.INI" );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tLogs separator... READ\n" );
+#endif
 //        read_parameter = ini_getl( "logs", "birds", -1, "CONFIG.INI" );
 //        if ( -1 == read_parameter )
 //        {
@@ -945,6 +1072,9 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appDataLog.log_udid = ( bool ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tLogs UDID... READ\n" );
+#endif
         }
         read_parameter = ini_getl( "logs", "events", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
@@ -954,6 +1084,9 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appDataLog.log_events = ( bool ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tLogs events... READ\n" );
+#endif
         }
         read_parameter = ini_getl( "logs", "errors", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
@@ -963,6 +1096,9 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appDataLog.log_errors = ( bool ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tLogs errors... READ\n" );
+#endif
         }
         read_parameter = ini_getl( "logs", "battery", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
@@ -972,6 +1108,9 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appDataLog.log_battery = ( bool ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tLogs battery... READ\n" );
+#endif
         }
         read_parameter = ini_getl( "logs", "rfid", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
@@ -981,6 +1120,9 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appDataLog.log_rfid = ( bool ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tLogs RFID... READ\n" );
+#endif
         }
     }
     else
@@ -1016,6 +1158,9 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appData.reward_enable = ( uint8_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tReward enable... READ\n" );
+#endif
         } 
     }
     else
@@ -1023,6 +1168,13 @@ INI_READ_STATE config_read_ini( void )
         appData.reward_enable = 1;
     }
  
+    /* Reward probability */
+    ini_gets( "reward", "probability", "1.0", str, sizearray( str ), "CONFIG.INI" );
+    appDataDoor.reward_probability = atof(str);       
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+    printf( "\t\tReward probability... READ\n" );
+#endif
+            
     /* Timeout before standby. */
     read_parameter = ini_getl( "timeouts", "sleep", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
@@ -1032,6 +1184,9 @@ INI_READ_STATE config_read_ini( void )
     else
     {
         appData.timeout_standby = ( uint16_t ) read_parameter * 1000;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+        printf( "\t\tTimeout standby... READ\n" );
+#endif
     }
     /* Timeout before pir. */
     read_parameter = ini_getl( "timeouts", "pir", -1, "CONFIG.INI" );
@@ -1042,6 +1197,9 @@ INI_READ_STATE config_read_ini( void )
     else
     {
         appData.timeout_pir = ( uint16_t ) read_parameter * 1000;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+        printf( "\t\tTimeout problem PIR... READ\n" );
+#endif
     }
     /* Timeout taking reward. */
     read_parameter = ini_getl( "timeouts", "reward", -1, "CONFIG.INI" );
@@ -1052,6 +1210,9 @@ INI_READ_STATE config_read_ini( void )
     else
     {
         appData.timeout_taking_reward = ( uint16_t ) read_parameter * 1000;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+        printf( "\t\tTimeout reward... READ\n" );
+#endif
     }
     /* Timeout guillotine. */
 //    ini_gets( "timeouts", "guillotine", "1.0", str, sizearray( str ), "CONFIG.INI" );
@@ -1079,6 +1240,9 @@ INI_READ_STATE config_read_ini( void )
     else
     {
         appData.punishment_delay = ( uint16_t ) read_parameter * 1000;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+        printf( "\t\tPunishment delay... READ\n" );
+#endif
     }
 
     return INI_READ_OK;
@@ -1130,6 +1294,9 @@ void config_print( void )
             break;
         case DOOR_HABITUATION:
             printf( " door habituation\n" );
+            break;
+        case RISK_AVERSION:
+            printf( " risk aversion\n" );
             break;
     }
 
@@ -1229,7 +1396,7 @@ void config_print( void )
                     appDataAttractiveLeds.blue[1] );
             printf( "\t\tAlternate delay: %us\n", appDataAttractiveLeds.alt_delay );
         }
-        else if (DOOR_HABITUATION == appData.scenario_number) 
+        else if (DOOR_HABITUATION == appData.scenario_number ||  RISK_AVERSION == appData.scenario_number) 
         {
             printf( "\t\tColor: RGB(%d, %d, %d)\n",
                     appDataAttractiveLeds.red[0],
@@ -1272,6 +1439,8 @@ void config_print( void )
             appDataDoor.close_time.tm_hour,
             appDataDoor.close_time.tm_min );
 
+    printf( "\t\tReward probability: %.3f\n", appDataDoor.reward_probability );
+
     if (DOOR_HABITUATION == appData.scenario_number)
     {
         printf( "\t\tDoor habituation: %d%%\n", appDataDoor.habituation_percent );
@@ -1311,7 +1480,7 @@ void config_print( void )
         printf( "\t\tDelay: %us\n", appData.punishment_delay / 1000 );
     }
             
-    if ( appData.scenario_number > DOOR_HABITUATION )
+    if ( appData.scenario_number > DOOR_HABITUATION && appData.scenario_number < RISK_AVERSION )
     {
         
         if ( GO_NO_GO == appData.scenario_number && ONE_LED == appDataAttractiveLeds.pattern_number )
@@ -1358,12 +1527,12 @@ void config_print( void )
                 {
                     printf( "\tPIT tags associated with top attractive LEDs\n" );
                 }
-                else
+                else if ( appDataAttractiveLeds.pattern_number > ALL_LEDS)
                 {
                     printf( "\tPIT tags associated with pattern 1/2\n" );
                 }
             }
-            else
+            else 
             {
                 printf( "\tPIT tags denied\n" );
             }
@@ -1375,10 +1544,10 @@ void config_print( void )
                     printf( "\t\tSN%02d: %s\n", i + 1, appDataPitTag.pit_tags_list[i] );
                 }
             }
-            else
-            {
-                printf( "\t\tNone\n" );
-            }
+//            else
+//            {
+//                printf( "\t\tNone\n" );
+//            }
 
             if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number)
             {
@@ -1394,7 +1563,7 @@ void config_print( void )
                 {
                     printf( "\tPIT Tags associated with bottom attractive LEDs\n" );
                 }
-                else
+                else if ( appDataAttractiveLeds.pattern_number > ALL_LEDS)
                 {
                     printf( "\tPIT tags associated with pattern 2/2\n" );
                 }
@@ -1411,10 +1580,10 @@ void config_print( void )
                     printf( "\t\tSN%02d: %s\n", i + 1 - appDataPitTag.numPitTagDeniedOrColorA, appDataPitTag.pit_tags_list[i] );
                 }
             }
-            else
-            {
-                printf( "\t\tNone\n" );
-            }
+//            else
+//            {
+//                printf( "\t\tNone\n" );
+//            }
         }
         
     }

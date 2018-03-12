@@ -29,6 +29,7 @@
 #define USE_UART1_SERIAL_INTERFACE  // uncomment to display information dsent to UART
 #define DISPLAY_CURRENT_STATE       // uncomment to display the current state of main state machine (app.c))
 
+#define DISPLAY_INI_READ_DATA
 //#define DISPLAY_USB_INFO          // uncomment to display USB information
 //#define DISPLAY_LOG_INFO 
 //#define DISPLAY_CHECK_INFO 
@@ -45,9 +46,9 @@
 //#define DISPLAY_PIT_TAG_INFO 
 //#define DEBUG_RFID_WORKING_ON_LED_STATUS // uncomment to display hardware trace in RFID decoding routine
 
-//#define DISPLAY_REMOTE_CONTROL_INFO 
+#define DISPLAY_REWARD_PROBABILITY
 
-//#define PATH_HARDWARE_IR_SENSOR_DISABLE // FIXME: comment for normal use of OpenFeeder
+//#define DISPLAY_REMOTE_CONTROL_INFO 
 
 #define DISPLAY_RESET_REGISTERS
 
@@ -178,7 +179,8 @@ typedef enum
     GO_NO_GO,
     LONG_TERM_SPATIAL_MEMORY,
     WORKING_SPATIAL_MEMORY,
-    COLOR_ASSOCIATIVE_LEARNING
+    COLOR_ASSOCIATIVE_LEARNING,
+    RISK_AVERSION
         
 } SCENARIO;
 

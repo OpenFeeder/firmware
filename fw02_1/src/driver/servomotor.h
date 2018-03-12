@@ -76,6 +76,8 @@ typedef struct
 
     uint8_t num_step;
     uint8_t num_empty_step;
+    
+    double reward_probability;
         
 } APP_DATA_SERVO;
 

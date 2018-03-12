@@ -499,7 +499,10 @@ void APP_Tasks( void )
                 appData.test_rfid = false;
                 clear_bird_sensor_detected( );
 
-                if ( DOOR_HABITUATION == appData.scenario_number || LONG_TERM_SPATIAL_MEMORY == appData.scenario_number || WORKING_SPATIAL_MEMORY == appData.scenario_number)
+                if ( DOOR_HABITUATION == appData.scenario_number || 
+                     LONG_TERM_SPATIAL_MEMORY == appData.scenario_number || 
+                     WORKING_SPATIAL_MEMORY == appData.scenario_number ||
+                     RISK_AVERSION == appData.scenario_number)
                 {
                     appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_A;
                     setAttractiveLedsColor( );
@@ -916,6 +919,7 @@ void APP_Tasks( void )
                         break;
                         
                     case DOOR_HABITUATION:
+                    case RISK_AVERSION:
                         /* No PIT tag denied */
                         appDataPitTag.didPitTagMatched = true;
                         appDataLog.is_pit_tag_denied = false;
@@ -1134,6 +1138,34 @@ void APP_Tasks( void )
                 if ( true == appDataLog.log_events )
                 {
                    store_event(OF_STATE_OPENING_DOOR); 
+                }
+                
+                /* Reward probability */
+                if ( appDataDoor.reward_probability < 1.0 )
+                {
+                    double t = rand( ) / (double)RAND_MAX;
+                    if ( t > appDataDoor.reward_probability )
+                    {
+                        setAttractiveLedsNoColor( );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_REWARD_PROBABILITY)
+                        printf( "\t%.3f > %.3f (reward prob.) => consider as denied.\n", t, appDataDoor.reward_probability);
+#endif
+                        /* Delay before reactivate attractiveLEDs */
+                        setDelayMs( appData.punishment_delay );
+                        while ( false == isDelayMsEnding( ) )
+                        {
+                            Nop( );
+                        }
+                        appDataLog.is_pit_tag_denied = true; 
+                        appData.state = APP_STATE_DATA_LOG;
+                        break;
+                    }
+                    else
+                    {
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_REWARD_PROBABILITY)
+                        printf( "\t%.3f <= %.3f (reward prob.) => accepted.\n", t, appDataDoor.reward_probability);
+#endif
+                    }
                 }
                 
                 if ( 1 == appData.reward_enable )
@@ -1744,6 +1776,7 @@ void APP_Tasks( void )
                             break;
 
                         case DOOR_HABITUATION:
+                        case RISK_AVERSION:
                             /* No PIT tag denied */
                             appDataLog.is_pit_tag_denied = false;
                             break;
@@ -2441,7 +2474,8 @@ void APP_Initialize( void )
     appData.rfid_signal_detected = false;
 
     appDataDoor.reward_door_status = DOOR_CLOSED_AT_NIGHT;
-
+    appDataDoor.reward_probability = 1.0;
+        
     CMD_3V3_RF_SetLow( );
     
     appData.servo_powered = false;

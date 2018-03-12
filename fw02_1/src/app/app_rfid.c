@@ -169,21 +169,6 @@ bool APP_Rfid_Task( void )
 #endif
             return true;
         }
-//        if ( OPEN_BAR != appData.scenario_number && DOOR_HABITUATION != appData.scenario_number && ( GO_NO_GO == appData.scenario_number && ALL_LEDS != appDataAttractiveLeds.pattern_number) )
-//        {
-//            findPitTagInList( );
-//            if ( false == appDataPitTag.didPitTagMatched )
-//            {
-//                clearPitTagBuffers( );
-//#if defined( USE_UART1_SERIAL_INTERFACE ) && defined (DISPLAY_PIT_TAG_INFO)
-//                printf( "\t\tNot listed => consider as denied.\n" );
-//#endif
-//                appDataLog.is_pit_tag_denied = true;
-//
-//                    
-//                return true;
-//            }
-//        }
 
         ++appDataPitTag.number_of_valid_pit_tag;
 
