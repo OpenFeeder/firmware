@@ -78,6 +78,7 @@
         <itemPath>mcc_generated_files/rtcc.h</itemPath>
         <itemPath>mcc_generated_files/adc1.h</itemPath>
         <itemPath>mcc_generated_files/ext_int.h</itemPath>
+        <itemPath>mcc_generated_files/tmr1.h</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
@@ -149,6 +150,7 @@
         <itemPath>mcc_generated_files/tmr3.c</itemPath>
         <itemPath>mcc_generated_files/oc4.c</itemPath>
         <itemPath>mcc_generated_files/oc5.c</itemPath>
+        <itemPath>mcc_generated_files/tmr1.c</itemPath>
       </logicalFolder>
       <itemPath>main.c</itemPath>
     </logicalFolder>
@@ -468,7 +470,6 @@
         <property key="UART 5" value="true"/>
         <property key="UART 6" value="true"/>
         <property key="USB" value="true"/>
-        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>
@@ -719,7 +720,6 @@
         <property key="UART 5" value="true"/>
         <property key="UART 6" value="true"/>
         <property key="USB" value="true"/>
-        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>
@@ -784,7 +784,7 @@
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>true</makeCustomizationPreStepEnabled>
-        <makeCustomizationPreStep>C:\Users\jerome\Anaconda3\python ${ProjectDir}\..\python\OF_fw_version.py ${ProjectDir}</makeCustomizationPreStep>
+        <makeCustomizationPreStep>C:\Users\Asus-Home\Anaconda3\python ${ProjectDir}\..\python\OF_fw_version.py ${ProjectDir}</makeCustomizationPreStep>
         <makeCustomizationPostStepEnabled>true</makeCustomizationPostStepEnabled>
         <makeCustomizationPostStep>copy /Y /B ${ProjectDir}\${ImagePath} /B ${ProjectDir}\..\hex\fw02_1.hex</makeCustomizationPostStep>
         <makeCustomizationPutChecksumInUserID>false</makeCustomizationPutChecksumInUserID>
@@ -970,7 +970,6 @@
         <property key="UART 5" value="true"/>
         <property key="UART 6" value="true"/>
         <property key="USB" value="true"/>
-        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>

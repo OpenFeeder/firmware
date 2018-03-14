@@ -11,6 +11,10 @@
 #include "app_datetime.h"
 #include "app.h"
 
+uint16_t current_millis;
+// current_millis = TMR1_Counter16BitGet( ); // lecture des milliseconds
+
+
 bool setDateTime( int year, int month, int day, int hour, int minute, int second )
 {
     struct tm date_time;
@@ -30,6 +34,8 @@ bool setDateTime( int year, int month, int day, int hour, int minute, int second
 
 bool getDateTime( struct tm *currentTime )
 {
+    current_millis = TMR1_Counter16BitGet( ); // lecture des milliseconds
+    
     /* Get Date and Time. */
     while ( !RTCC_TimeGet( currentTime ) )
     {
@@ -41,19 +47,16 @@ bool getDateTime( struct tm *currentTime )
 
 bool getCurrentDate( void )
 {
-    
     while ( !RTCC_TimeGet( &appData.current_time ) )
     {
         Nop( );
     }
     
     return true;
-    
 }
 
 void calibrateCurrentDate( void )
 {
-   
     if ( APP_I2CRTC_DateTime_get( ) )
     {
         setDateTime( appData.i2c_current_time.year_s, 

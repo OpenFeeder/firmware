@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include "rtcc.h"
 
+extern uint16_t current_millis; // global variable for current milliseconde capture
 
 bool setDateTime( int, int, int, int, int, int );
 void printCurrentDate( );
@@ -21,8 +22,8 @@ bool getDateTime( struct tm * );
 bool getCurrentDate( void );
 void calibrateCurrentDate( void );
 
-#endif /* _APP_DATETIME_HEADER_H */
 
+#endif /* _APP_DATETIME_HEADER_H */
 
 /*******************************************************************************
  End of File

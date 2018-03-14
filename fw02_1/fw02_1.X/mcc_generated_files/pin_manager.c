@@ -15,7 +15,7 @@
   @Description:
     This source file provides implementations for MPLAB(c) Code Configurator interrupts.
     Generation Information : 
-        Product Revision  :  MPLAB(c) Code Configurator - 4.15.3
+        Product Revision  :  MPLAB(c) Code Configurator - 4.15.5
         Device            :  PIC24FJ256GB406
     The generated drivers are tested against the following:
         Compiler          :  XC16 1.31
@@ -116,11 +116,11 @@ void PIN_MANAGER_Initialize(void)
      * Setting the Analog/Digital Configuration SFR(s)
      ***************************************************************************/
     ANSA = 0xC6ED;
-    ANSB = 0x03DC;
+    ANSB = 0x01DC;
     ANSC = 0x001E;
     ANSD = 0xF000;
     ANSE = 0x0300;
-    ANSF = 0x313C;
+    ANSF = 0x3134;
     ANSG = 0xF243;
     ANSH = 0x001F;
 
@@ -132,7 +132,7 @@ void PIN_MANAGER_Initialize(void)
     RPINR0bits.INT1R = 0x0019;   //RD4->EXT_INT:INT1;
     RPINR18bits.U1RXR = 0x000E;   //RB14->UART1:U1RX;
     RPINR1bits.INT3R = 0x0018;   //RD1->EXT_INT:INT3;
-    RPINR1bits.INT2R = 0x0014;   //RD5->EXT_INT:INT2;
+    RPINR1bits.INT2R = 0x0010;   //RF3->EXT_INT:INT2;
     RPINR2bits.INT4R = 0x0017;   //RD2->EXT_INT:INT4;
     RPOR14bits.RP29R = 0x0003;   //RB15->UART1:U1TX;
 

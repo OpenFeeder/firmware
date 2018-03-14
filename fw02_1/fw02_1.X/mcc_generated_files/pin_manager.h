@@ -15,7 +15,7 @@
   @Description:
     This source file provides implementations for MPLAB(c) Code Configurator interrupts.
     Generation Information :
-        Product Revision  :  MPLAB(c) Code Configurator - 4.15.3
+        Product Revision  :  MPLAB(c) Code Configurator - 4.15.5
         Device            :  PIC24FJ256GB406
     The generated drivers are tested against the following:
         Compiler          :  XC16 1.31
@@ -3703,6 +3703,152 @@
 
 */
 #define CMD_VCC_SERVO_SetDigitalOutput() _TRISF1 = 0
+/**
+  @Summary
+    Sets the GPIO pin, RF3, high using LATF3.
+
+  @Description
+    Sets the GPIO pin, RF3, high using LATF3.
+
+  @Preconditions
+    The RF3 must be set to an output.
+
+  @Returns
+    None.
+
+  @Param
+    None.
+
+  @Example
+    <code>
+    // Set RF3 high (1)
+    RTCC_SEC_IN_SetHigh();
+    </code>
+
+*/
+#define RTCC_SEC_IN_SetHigh()          _LATF3 = 1
+/**
+  @Summary
+    Sets the GPIO pin, RF3, low using LATF3.
+
+  @Description
+    Sets the GPIO pin, RF3, low using LATF3.
+
+  @Preconditions
+    The RF3 must be set to an output.
+
+  @Returns
+    None.
+
+  @Param
+    None.
+
+  @Example
+    <code>
+    // Set RF3 low (0)
+    RTCC_SEC_IN_SetLow();
+    </code>
+
+*/
+#define RTCC_SEC_IN_SetLow()           _LATF3 = 0
+/**
+  @Summary
+    Toggles the GPIO pin, RF3, using LATF3.
+
+  @Description
+    Toggles the GPIO pin, RF3, using LATF3.
+
+  @Preconditions
+    The RF3 must be set to an output.
+
+  @Returns
+    None.
+
+  @Param
+    None.
+
+  @Example
+    <code>
+    // Toggle RF3
+    RTCC_SEC_IN_Toggle();
+    </code>
+
+*/
+#define RTCC_SEC_IN_Toggle()           _LATF3 ^= 1
+/**
+  @Summary
+    Reads the value of the GPIO pin, RF3.
+
+  @Description
+    Reads the value of the GPIO pin, RF3.
+
+  @Preconditions
+    None.
+
+  @Returns
+    None.
+
+  @Param
+    None.
+
+  @Example
+    <code>
+    uint16_t portValue;
+
+    // Read RF3
+    postValue = RTCC_SEC_IN_GetValue();
+    </code>
+
+*/
+#define RTCC_SEC_IN_GetValue()         _RF3
+/**
+  @Summary
+    Configures the GPIO pin, RF3, as an input.
+
+  @Description
+    Configures the GPIO pin, RF3, as an input.
+
+  @Preconditions
+    None.
+
+  @Returns
+    None.
+
+  @Param
+    None.
+
+  @Example
+    <code>
+    // Sets the RF3 as an input
+    RTCC_SEC_IN_SetDigitalInput();
+    </code>
+
+*/
+#define RTCC_SEC_IN_SetDigitalInput()  _TRISF3 = 1
+/**
+  @Summary
+    Configures the GPIO pin, RF3, as an output.
+
+  @Description
+    Configures the GPIO pin, RF3, as an output.
+
+  @Preconditions
+    None.
+
+  @Returns
+    None.
+
+  @Param
+    None.
+
+  @Example
+    <code>
+    // Sets the RF3 as an output
+    RTCC_SEC_IN_SetDigitalOutput();
+    </code>
+
+*/
+#define RTCC_SEC_IN_SetDigitalOutput() _TRISF3 = 0
 
 /**
     Section: Function Prototypes

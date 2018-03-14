@@ -56,10 +56,12 @@ void __attribute__ ( ( interrupt, no_auto_psv ) ) _INT1Interrupt(void)
 */
 void __attribute__ ( ( interrupt, no_auto_psv ) ) _INT2Interrupt(void)
 {
-    //***User Area Begin->code: INT1 - External Interrupt 1***
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_IR)
+    //***User Area Begin->code: INT2 - External Interrupt 2***
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC_SEC_IN)
         printf( "_INT2Interrupt()\n" );    
 #endif 
+    /* Event on RF3 "RTCC_SEC_IN" for detect of RTCC_OUT signal for ms reset. */
+    TMR1_Counter16BitSet( 0 );
 
     //***User Area End->code: INT2 - External Interrupt 2***
     EX_INT2_InterruptFlagClear();
@@ -151,7 +153,8 @@ void EXT_INT_Initialize(void)
      * Enable the interrupt, if enabled in the UI. 
      ********/
     EX_INT2_InterruptFlagClear();   
-    EX_INT2_NegativeEdgeSet();
+    EX_INT2_PositiveEdgeSet();
+    EX_INT2_InterruptEnable();
     /*******
      * INT0
      * Clear the interrupt flag

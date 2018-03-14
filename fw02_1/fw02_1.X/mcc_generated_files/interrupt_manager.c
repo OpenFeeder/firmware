@@ -50,84 +50,37 @@
 /**
     void INTERRUPT_Initialize (void)
 */
-
 void INTERRUPT_Initialize (void)
 {
     //    RTCI: RTCC - Real-Time Clock and Calendar
-    //    Priority: 3
+    //    Priority: 5
         IPC15bits.RTCIP = 5;
     //    UERI: U1E - UART1 Error
-    //    Priority: 6
+    //    Priority: 2
         IPC16bits.U1ERIP = 2;
     //    UTXI: U1TX - UART1 Transmitter
-    //    Priority: 6
+    //    Priority: 2
         IPC3bits.U1TXIP = 2;
     //    URXI: U1RX - UART1 Receiver
-    //    Priority: 6
+    //    Priority: 2
         IPC2bits.U1RXIP = 2;
-    //    INT0I: INT0 - External Interrupt 0
-    //    Priority: 4
-        IPC0bits.INT0IP = 6;
-    //    INT3I: INT3 - External Interrupt 3
-    //    Priority: 3
-        IPC13bits.INT3IP = 7;
-    //    INT4I: INT4 - External Interrupt 4
-    //    Priority: 1
-        IPC13bits.INT4IP = 7;
+    //    INT2I: INT2 - External Interrupt 2
+    //    Priority: 6
+        IPC7bits.INT2IP = 6;
     //    MICI: MI2C1 - I2C1 Master Events
-    //    Priority: 5
-        IPC4bits.MI2C1IP = 1;
+    //    Priority: 2
+        IPC4bits.MI2C1IP = 2;
     //    SICI: SI2C1 - I2C1 Slave Events
-    //    Priority: 5
-        IPC4bits.SI2C1IP = 1;
+    //    Priority: 2
+        IPC4bits.SI2C1IP = 2;
     //    TI: T4 - Timer4
     //    Priority: 2
-        IPC6bits.T4IP = 5;
+        IPC6bits.T4IP = 2;
     //    TI: T3 - Timer3
-    //    Priority: 3
+    //    Priority: 4
         IPC2bits.T3IP = 4;
     //    TI: T2 - Timer2
-    //    Priority: 3
-        IPC1bits.T2IP = 3;
+    //    Priority: 4
+        IPC1bits.T2IP = 4;
 
 }
-//void INTERRUPT_Initialize (void)
-//{
-//    //    RTCI: RTCC - Real-Time Clock and Calendar
-//    //    Priority: 3
-//        IPC15bits.RTCIP = 3;
-//    //    UERI: U1E - UART1 Error
-//    //    Priority: 6
-//        IPC16bits.U1ERIP = 6;
-//    //    UTXI: U1TX - UART1 Transmitter
-//    //    Priority: 6
-//        IPC3bits.U1TXIP = 6;
-//    //    URXI: U1RX - UART1 Receiver
-//    //    Priority: 6
-//        IPC2bits.U1RXIP = 6;
-//    //    INT0I: INT0 - External Interrupt 0
-//    //    Priority: 4
-//        IPC0bits.INT0IP = 4;
-//    //    INT3I: INT3 - External Interrupt 3
-//    //    Priority: 3
-//        IPC13bits.INT3IP = 3;
-//    //    INT4I: INT4 - External Interrupt 4
-//    //    Priority: 1
-//        IPC13bits.INT4IP = 1;
-//    //    MICI: MI2C1 - I2C1 Master Events
-//    //    Priority: 5
-//        IPC4bits.MI2C1IP = 5;
-//    //    SICI: SI2C1 - I2C1 Slave Events
-//    //    Priority: 5
-//        IPC4bits.SI2C1IP = 5;
-//    //    TI: T4 - Timer4
-//    //    Priority: 2
-//        IPC6bits.T4IP = 2;
-//    //    TI: T3 - Timer3
-//    //    Priority: 3
-//        IPC2bits.T3IP = 3;
-//    //    TI: T2 - Timer2
-//    //    Priority: 3
-//        IPC1bits.T2IP = 3;
-//
-//}

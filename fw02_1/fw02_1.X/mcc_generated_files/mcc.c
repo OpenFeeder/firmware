@@ -78,7 +78,7 @@
 
 // FPOR
 #pragma config BOREN = ON    // Brown-out Reset Enable bits->Brown-out Reset Enable
-#pragma config LPCFG = OFF // ON    // Low power regulator control->Disabled
+#pragma config LPCFG = OFF    // Low power regulator control->Disabled
 
 // FICD
 #pragma config ICS = PGx1    // Emulator Pin Placement Select bits->Emulator functions are shared with PGEC1/PGED1
@@ -94,7 +94,7 @@
 
 // FDEVOPT1
 #pragma config ALTCMPI = DISABLE    // Alternate Comparator Input Enable bit->C1INC, C2INC, and C3INC are on their standard pin locations
-#pragma config TMPRPIN = OFF    // Tamper Pin Enable bit->TMPRN pin function is disabled
+#pragma config TMPRPIN = ON    // Tamper Pin Enable bit->TMPRN pin function is enabled
 #pragma config TMPRWIPE = OFF    // RAM Based Entryption Key Wipe Enable bit->Cryptographic Engine Key RAM is not erased onTMPR pin events
 #pragma config ALTVREF = ALTVREFEN    // Alternate VREF location Enable->VREF is on an alternate pin (VREF+ on RB0 and VREF- on RB1)
 
@@ -118,6 +118,7 @@ void SYSTEM_Initialize(void)
     ADC1_Initialize();
     TMR3_Initialize();
     RTCC_Initialize();
+    TMR1_Initialize();
 }
 
 void OSCILLATOR_Initialize(void)

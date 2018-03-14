@@ -74,8 +74,7 @@ void OC5_Initialize (void)
     OC5CON2 = 0x000D;
     // OC5RS 0; 
     OC5RS = 0x0000;
-    // OC5R 2500; 
-//    OC5R = 0x09C4;
+    // OC5R 0; 
 	OC5R = 0x0000;
     
     gOC5Mode = OC5CON1bits.OCM;

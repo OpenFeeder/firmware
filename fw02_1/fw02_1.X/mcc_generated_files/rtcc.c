@@ -70,11 +70,10 @@ static uint8_t ConvertBCDToHex(uint8_t bcdvalue);
 void RTCC_Initialize(void)
 {
 
-    // Clear WRLOCK to modify RTCC as needed
-    __builtin_write_RTCC_WRLOCK();
+   RTCCON1Lbits.RTCEN = 0; // Disable RTCC
+   
+    __builtin_write_RTCC_WRLOCK(); // Clear WRLOCK to modify RTCC as needed
     
-    // Disable RTCC
-    RTCCON1Lbits.RTCEN = 0;
 
    if(!RTCCTimeInitialized())
     {
@@ -103,14 +102,12 @@ void RTCC_Initialize(void)
     // PWCSTAB 0; PWCSAMP 0; 
     RTCCON3L = 0x0000;
 
-    // RTCEN enabled; OUTSEL Seconds Clock; PWCPOE disabled; TSBEN disabled; PWCEN disabled; WRLOCK enabled; PWCPOL disabled; TSAEN disabled; RTCOE enabled; 
-    RTCCON1L = 0x8B90; 
+   // RTCEN enabled; OUTSEL Seconds Clock; PWCPOE disabled; TSBEN disabled; PWCEN disabled; WRLOCK enabled; PWCPOL disabled; TSAEN enabled; RTCOE enabled; 
+   RTCCON1L = 0x8B91; 
     
-IEC3bits.RTCIE = 1;
-
    RTCC_Lock();
 
-    
+   IEC3bits.RTCIE = 1;
 }
 
 static void RTCC_Lock(void)
@@ -131,6 +128,9 @@ bool RTCC_TimeGet(struct tm *currentTime)
         return false;
     }
 
+ 
+    __builtin_write_RTCC_WRLOCK();
+ 
     register_value = DATEH;
     currentTime->tm_year = ConvertBCDToHex((register_value & 0xFF00) >> 8);
     currentTime->tm_mon = ConvertBCDToHex(register_value & 0x00FF);
@@ -145,6 +145,8 @@ bool RTCC_TimeGet(struct tm *currentTime)
 
     register_value = TIMEL;
     currentTime->tm_sec = ConvertBCDToHex((register_value & 0xFF00) >> 8);
+
+    RTCC_Lock();
 
     return true;
 }
@@ -162,23 +164,21 @@ void RTCC_TimeSet(struct tm *initialTime)
     IFS3bits.RTCIF = false;
     IEC3bits.RTCIE = 0;
 
-    // Set RTCC initial time
+   // set RTCC initial time
     DATEH = (ConvertHexToBCD(initialTime->tm_year) << 8) | ConvertHexToBCD(initialTime->tm_mon) ;  // YEAR/MONTH-1
     DATEL = (ConvertHexToBCD(initialTime->tm_mday) << 8) | ConvertHexToBCD(initialTime->tm_wday) ;  // /DAY-1/WEEKDAY
     TIMEH = (ConvertHexToBCD(initialTime->tm_hour) << 8)  | ConvertHexToBCD(initialTime->tm_min); // /HOURS/MINUTES
     TIMEL = (ConvertHexToBCD(initialTime->tm_sec) << 8) ;   // SECOND
 
-    // Enable RTCC        
+   // Enable RTCC, clear RTCWREN         
     RTCCON1Lbits.RTCEN = 1;
-    // Enable RTCC interrupt
-    IEC3bits.RTCIE = 1;
-    
+
     // Lock the RTCC registers
-    RTCCON1Lbits.WRLOCK = 1; 
-    
+    //RTCCON1Lbits.WRLOCK = 1; 
     RTCC_Lock();
     
-    
+   //Enable RTCC interrupt
+   IEC3bits.RTCIE = 1;
 }
 
 bool RTCC_BCDTimeGet(bcdTime_t *currentTime)
@@ -188,6 +188,9 @@ bool RTCC_BCDTimeGet(bcdTime_t *currentTime)
         return false;
     }
 
+
+    __builtin_write_RTCC_WRLOCK();
+   
     register_value = DATEH;
     currentTime->tm_year = (register_value & 0xFF00) >> 8;
     currentTime->tm_mon = register_value & 0x00FF;
@@ -202,6 +205,8 @@ bool RTCC_BCDTimeGet(bcdTime_t *currentTime)
 
     register_value = TIMEL;
     currentTime->tm_sec = (register_value & 0xFF00) >> 8;
+
+    RTCC_Lock();
 
     return true;
 }
@@ -393,7 +398,7 @@ static uint8_t ConvertBCDToHex(uint8_t bcdvalue)
     This is the interrupt service routine for the RTCC peripheral. Add in code if 
     required in the ISR. 
  */
-void __attribute__( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
+void __attribute__ ( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
 {
     if ( true == appData.flags.bit_value.systemInit )
     {
