@@ -243,6 +243,9 @@ void APP_Tasks( void )
 
             if ( true == appData.flags.bit_value.systemInit )
             {
+                
+                srand(appData.current_time.tm_mon+appData.current_time.tm_mday+appData.current_time.tm_min+appData.current_time.tm_sec);
+                
                 /* Check all status LEDs */
                 checkLedsStatus( );
 
@@ -373,8 +376,7 @@ void APP_Tasks( void )
                         while (!RTCC_TimeGet(&appData.current_time))
                         {
                             Nop();
-                        }
-                        srand(appData.current_time.tm_mon+appData.current_time.tm_mday+appData.current_time.tm_sec);
+                        }                        
                     }                
 
                     if ( GO_NO_GO == appData.scenario_number )
