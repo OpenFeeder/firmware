@@ -921,7 +921,6 @@ void APP_Tasks( void )
                         break;
                         
                     case DOOR_HABITUATION:
-                    case RISK_AVERSION:
                         /* No PIT tag denied */
                         appDataPitTag.didPitTagMatched = true;
                         appDataLog.is_pit_tag_denied = false;
@@ -1061,7 +1060,20 @@ void APP_Tasks( void )
                             }
                         }
                         break;
+                    
+                    case RISK_AVERSION:
                         
+                        findPitTagInList( );
+                        if ( false == appDataPitTag.didPitTagMatched )
+                        {
+                            appDataLog.is_pit_tag_denied = true;
+                        }
+                        else
+                        {                                                
+                            /* Check if PIT tag is denied */
+                            appDataLog.is_pit_tag_denied = isPitTagDenied( );
+                        }
+                        break;   
                 }
 
                 RFID_Disable( );
@@ -1778,7 +1790,6 @@ void APP_Tasks( void )
                             break;
 
                         case DOOR_HABITUATION:
-                        case RISK_AVERSION:
                             /* No PIT tag denied */
                             appDataLog.is_pit_tag_denied = false;
                             break;
@@ -1806,6 +1817,11 @@ void APP_Tasks( void )
                             {
                                 appDataLog.is_pit_tag_denied = true;
                             }
+                            break;
+                            
+                        case RISK_AVERSION:
+                            /* Check if PIT tag is denied */
+                            appDataLog.is_pit_tag_denied = isPitTagDenied( );
                             break;
                     }
                     
@@ -2394,22 +2410,18 @@ void APP_Initialize( void )
     TMR4_Stop( );
     TMR2_Stop( );
 
-    /* Attractive LEDs initialize */
+    /* Attractive LEDs */
     setAttractiveLedsOff( );
     appDataAttractiveLeds.current_color_index = 0;
     appDataAttractiveLeds.alt_sec_elapsed = 0;
-
-    /* Initialize color */
     appDataAttractiveLeds.red[0] = 0;
-    appDataAttractiveLeds.red[1] = 0;
-
     appDataAttractiveLeds.green[0] = 0;
-    appDataAttractiveLeds.green[1] = 0;
-
     appDataAttractiveLeds.blue[0] = 0;
+    appDataAttractiveLeds.red[1] = 0;
+    appDataAttractiveLeds.green[1] = 0;
     appDataAttractiveLeds.blue[1] = 0;
 
-    /* APP state task initialize */
+    /* APP state task */
     appData.state = APP_STATE_INITIALIZE;
     appData.previous_state = APP_STATE_ERROR;
 
@@ -2487,7 +2499,6 @@ void APP_Initialize( void )
     
     appData.test_rfid = false;
     
-//    memset( appData.siteid, '\0', 5 );
     for (i=0;i<4;i++)
     {
         appData.siteid[i] = 'X';

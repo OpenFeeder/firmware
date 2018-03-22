@@ -167,10 +167,20 @@ void manageResetSituation( void )
             
         case 2101:
             store_event(OF_RESET_POR);
+//#if defined (USE_UART1_SERIAL_INTERFACE) 
+//    printf( "\tWait %dms before stating application", DELAY_AFTER_POWERUP);
+//#endif 
+            setDelayMs( DELAY_AFTER_POWERUP );
+            while ( 0 == isDelayMsEnding( ) ); 
             break;
             
         case 2107:
             store_event(OF_RESET_VBAT);
+//#if defined (USE_UART1_SERIAL_INTERFACE) 
+//    printf( "\tWait %dms before stating application", DELAY_AFTER_POWERUP);
+//#endif 
+            setDelayMs( DELAY_AFTER_POWERUP );
+            while ( 0 == isDelayMsEnding( ) ); 
             break;
             
         case 2176:
