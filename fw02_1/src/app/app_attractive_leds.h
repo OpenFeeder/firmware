@@ -43,7 +43,8 @@ typedef struct
     uint8_t pattern_one_led_current; // index on the OF
     uint8_t pattern_one_led_groups[3];
     
-    double pattern_percent;
+//    double pattern_percent;
+    uint8_t pattern_percent;
     
 //    uint8_t hours[MAX_NUMBER_OF_PATTERN];
 //    uint8_t minutes[MAX_NUMBER_OF_PATTERN];

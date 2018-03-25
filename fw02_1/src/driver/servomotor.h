@@ -52,7 +52,7 @@ typedef struct
 
     DOOR_STATUS reward_door_status;
     
-    double reward_probability;
+    uint8_t reward_probability;
     
     uint8_t habituation_percent;
     

@@ -88,7 +88,8 @@ typedef enum
     OF_GO_NO_GO_ONE_3,
     OF_GO_NO_GO_ONE_4,
     OF_CAL_A,
-    OF_CAL_B
+    OF_CAL_B,
+    OF_READ_REWARD_PROBABILITIES
         
 } APP_EVENT;
 

@@ -627,8 +627,7 @@ void APP_Tasks( void )
 
                 if ( RTCC_ALARM_ALT_ATTRACTIVE_LEDS == appData.rtcc_alarm_action )
                 {
-                    double t = rand( );
-                    if ( ( t / RAND_MAX ) > 0.5 )
+                    if ( rand( ) > (RAND_MAX/2) ) // t / RAND_MAX ) > 0.5
                     {
                         appDataAttractiveLeds.current_color_index = !appDataAttractiveLeds.current_color_index;
                         setAttractiveLedsColor( );
@@ -647,7 +646,7 @@ void APP_Tasks( void )
                 }
                 if ( RTCC_ALARM_ALT_ATTRACTIVE_LEDS_PATTERN == appData.rtcc_alarm_action )
                 {
-                    double t = rand( );
+                    int randomInteger = rand( );
                     
                     if (ONE_LED == appDataAttractiveLeds.pattern_number)
                     {
@@ -656,7 +655,7 @@ void APP_Tasks( void )
                            appDataAttractiveLeds.pattern[i] = 1; 
                         }
                         
-                        if ( ( t / RAND_MAX ) > 0.75 )
+                        if ( randomInteger > (RAND_MAX/4*3) )
                         {
                             appDataAttractiveLeds.pattern_one_led_current = 0;
                             if ( true == appDataLog.log_events )
@@ -664,7 +663,7 @@ void APP_Tasks( void )
                                 store_event( OF_GO_NO_GO_ONE_1 );
                             }
                         }                            
-                        else if ( ( t / RAND_MAX ) > 0.5 )
+                        else if ( randomInteger > (RAND_MAX/2) )
                         {
                             appDataAttractiveLeds.pattern_one_led_current = 1;
                             if ( true == appDataLog.log_events )
@@ -672,7 +671,7 @@ void APP_Tasks( void )
                                 store_event( OF_GO_NO_GO_ONE_2 );
                             }
                         }
-                        else if ( ( t / RAND_MAX ) > 0.25 )
+                        else if ( randomInteger > (RAND_MAX/4) )
                         {
                             appDataAttractiveLeds.pattern_one_led_current = 2; 
                             if ( true == appDataLog.log_events )
@@ -695,7 +694,7 @@ void APP_Tasks( void )
                     }
                     else if (ALL_LEDS == appDataAttractiveLeds.pattern_number)
                     {
-                        if ( ( t / RAND_MAX ) > appDataAttractiveLeds.pattern_percent )
+                        if ( randomInteger > (RAND_MAX/100*appDataAttractiveLeds.pattern_percent) )
                         {
                             for (i=0;i<4;i++)
                             {
@@ -704,7 +703,7 @@ void APP_Tasks( void )
                             appDataAttractiveLeds.pattern_idx = !appDataAttractiveLeds.pattern_idx;
                             setAttractiveLedsPattern( );
                             
-                            appDataAttractiveLeds.pattern_percent = 1-appDataAttractiveLeds.pattern_percent;
+                            appDataAttractiveLeds.pattern_percent = 100-appDataAttractiveLeds.pattern_percent;
                             
                             if ( true == appDataLog.log_events )
                             {
@@ -721,7 +720,7 @@ void APP_Tasks( void )
                     }
                     else
                     {
-                        if ( ( t / RAND_MAX ) > 0.5 )
+                        if ( randomInteger > (RAND_MAX/2) )
                         {
                             for (i=0;i<4;i++)
                             {
@@ -1073,7 +1072,26 @@ void APP_Tasks( void )
                             /* Check if PIT tag is denied */
                             appDataLog.is_pit_tag_denied = isPitTagDenied( );
                         }
-                        break;   
+                        break;  
+                        
+                    case PATCH_PROBABILITY:
+
+                        findPitTagInList( );
+                        if ( false == appDataPitTag.didPitTagMatched )
+                        {
+                            appDataLog.is_pit_tag_denied = true;
+                        }
+                        else
+                        {                                                
+                            /* Check if PIT tag is denied */
+                            appDataLog.is_pit_tag_denied = isPitTagDenied( );
+                        }                        
+                        if ( false == appDataLog.is_pit_tag_denied )
+                        {
+                            appDataDoor.reward_probability = appDataPitTag.reward_probability[appDataPitTag.pitTagIndexInList];
+                        }                        
+                        break; 
+                        
                 }
 
                 RFID_Disable( );
@@ -1153,16 +1171,17 @@ void APP_Tasks( void )
                 {
                    store_event(OF_STATE_OPENING_DOOR); 
                 }
-                
+                                
                 /* Reward probability */
-                if ( appDataDoor.reward_probability < 1.0 )
+                if ( appDataDoor.reward_probability < 100 )
                 {
-                    double t = rand( ) / (double)RAND_MAX;
-                    if ( t > appDataDoor.reward_probability )
+                    int randomInteger = rand( );
+
+                    if ( randomInteger > (RAND_MAX/100*appDataDoor.reward_probability) )
                     {
                         setAttractiveLedsNoColor( );
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_REWARD_PROBABILITY)
-                        printf( "\t%.3f > %.3f (reward prob.) => consider as denied.\n", t, appDataDoor.reward_probability);
+                        printf( "\t%.0f > %u (reward prob.) => consider as denied.\n", 100*((double)randomInteger/(double)RAND_MAX), appDataDoor.reward_probability);
 #endif
                         /* Delay before reactivate attractiveLEDs */
                         setDelayMs( appData.punishment_delay );
@@ -1177,7 +1196,7 @@ void APP_Tasks( void )
                     else
                     {
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_REWARD_PROBABILITY)
-                        printf( "\t%.3f <= %.3f (reward prob.) => accepted.\n", t, appDataDoor.reward_probability);
+                        printf( "\t%.0f <= %u (reward prob.) => accepted.\n", 100*((double)randomInteger/(double)RAND_MAX), appDataDoor.reward_probability);
 #endif
                     }
                 }

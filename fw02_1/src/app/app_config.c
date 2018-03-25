@@ -62,8 +62,77 @@ bool config_set( void )
             store_event(OF_READ_PIT_TAGS);
         }
     }
+    
+    if ( PATCH_PROBABILITY == appData.scenario_number )
+    {
+        if ( FILEIO_RESULT_FAILURE == read_reward_probabilities( ) )
+        {
+            return false;
+        }
+        
+        if ( true == appDataLog.log_events )
+        {
+            store_event(OF_READ_REWARD_PROBABILITIES);
+        }
+    }
 
     return true;
+}
+
+FILEIO_RESULT read_reward_probabilities( void )
+{
+    
+    FILEIO_OBJECT file;
+    FILEIO_ERROR_TYPE errF;
+    char buf[4]; 
+    int i;
+    
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+    printf( "Read reward probabilities file\n" );
+#endif 
+    
+    if ( appDataPitTag.numPitTagAcceptedOrColorB > 0 )
+    {
+
+        if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "PROBA.TXT", FILEIO_OPEN_READ ) )
+        {
+            errF = FILEIO_ErrorGet( 'A' );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+            printf( "unable to open reward probabilities file (%u)", errF );
+#endif 
+            sprintf( appError.message, "Unable to open reward probabilities file (%u)", errF );
+            appError.currentLineNumber = __LINE__;
+            sprintf( appError.currentFileName, "%s", __FILE__ );
+            FILEIO_ErrorClear( 'A' );
+            appError.number = ERROR_REWARD_PROBABILITIES_FILE_OPEN;
+            return FILEIO_RESULT_FAILURE;
+        }
+
+        buf[4] = '\0';
+        
+        for ( i = 0; i < appDataPitTag.numPitTagAcceptedOrColorB; i++ )
+        {
+            FILEIO_Read( buf, 1, 3, &file );
+            appDataPitTag.reward_probability[i + appDataPitTag.numPitTagDeniedOrColorA] = atoi(buf); 
+        }
+
+        if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
+        {
+            errF = FILEIO_ErrorGet( 'A' );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+            printf( "unable to close reward probabilities file (%u)", errF );
+#endif 
+            sprintf( appError.message, "Unable to close reward probabilities file (%u)", errF );
+            appError.currentLineNumber = __LINE__;
+            sprintf( appError.currentFileName, "%s", __FILE__ );
+            FILEIO_ErrorClear( 'A' );
+            appError.number = ERROR_REWARD_PROBABILITIES_FILE_CLOSE;
+            return FILEIO_RESULT_FAILURE;
+        }
+    }
+
+    return FILEIO_RESULT_SUCCESS;
+
 }
 
 
@@ -793,11 +862,24 @@ INI_READ_STATE config_read_ini( void )
             if ( ALL_LEDS == appDataAttractiveLeds.pattern_number )
             {
                 
-                ini_gets( "attractiveleds", "pattern_percent", "1.0", str, sizearray( str ), "CONFIG.INI" );
-                appDataAttractiveLeds.pattern_percent = atof(str);
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
-                printf( "\t\tAttractive LEDs pattern percent... READ\n" );
-#endif
+                read_parameter = ini_getl( "attractiveleds", "pattern_percent", -1, "CONFIG.INI" );
+                if ( read_parameter == -1 )
+                {
+                    return INI_PB_ATTRACTIVE_LEDS_PATTERN_PERCENT;
+                }
+                else
+                {
+                    appDataAttractiveLeds.pattern_percent = ( uint8_t ) read_parameter;
+    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+                    printf( "\t\tAttractive LEDs pattern percent... READ\n" );
+    #endif
+                }
+            
+//                ini_gets( "attractiveleds", "pattern_percent", "1.0", str, sizearray( str ), "CONFIG.INI" );
+//                appDataAttractiveLeds.pattern_percent = atof(str);
+//#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+//                printf( "\t\tAttractive LEDs pattern percent... READ\n" );
+//#endif
             }
 
         }
@@ -1191,7 +1273,7 @@ INI_READ_STATE config_read_ini( void )
     appDataDoor.close_time.tm_sec = 0;
 
     /* Logs */
-    /* Check if "reward" section is present in the INI file */ 
+    /* Check if "logs" section is present in the INI file */ 
     flag = false;
     for (s = 0; ini_getsection(s, str, 20, "CONFIG.INI") > 0; s++)
     {
@@ -1310,13 +1392,13 @@ INI_READ_STATE config_read_ini( void )
          read_parameter = ini_getl( "reward", "timeout", -1, "CONFIG.INI" );
          if ( -1 == read_parameter )
          {
-             return INI_PB_TIMEOUTS_REWARD;
+             return INI_PB_REWARD_TIMEOUT;
          }
          else
          {
              appData.timeout_taking_reward = ( uint16_t ) read_parameter * 1000;
      #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
-             printf( "\t\tTimeout reward... READ\n" );
+             printf( "\t\tReward timeout... READ\n" );
      #endif
          }
      }
@@ -1327,16 +1409,23 @@ INI_READ_STATE config_read_ini( void )
 
     if ( appData.scenario_number > DOOR_HABITUATION )
     {
-        /* Reward probability */
-        ini_gets( "reward", "probability", "1.0", str, sizearray( str ), "CONFIG.INI" );
-        appDataDoor.reward_probability = atof(str);       
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
-        printf( "\t\tReward probability... READ\n" );
-#endif
+        /* Reward probability */ 
+        read_parameter = ini_getl( "reward", "probability", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_REWARD_PROBABILITY;
+        }
+        else
+        {
+            appDataDoor.reward_probability = ( uint8_t ) read_parameter;
+    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tReward probability... READ\n" );
+    #endif
+        }
     }
     else
     {
-       appDataDoor.reward_probability = 1.0; 
+       appDataDoor.reward_probability = 100; 
     }
             
     /* Timeout before standby. */
@@ -1441,6 +1530,9 @@ void config_print( void )
             break;
         case RISK_AVERSION:
             printf( " risk aversion\n" );
+            break;
+        case PATCH_PROBABILITY:
+            printf( " patch probability\n" );
             break;
     }
 
@@ -1582,12 +1674,7 @@ void config_print( void )
     printf( "\t\tClose time: %02d:%02d\n",
             appDataDoor.close_time.tm_hour,
             appDataDoor.close_time.tm_min );
-
-    if (appData.scenario_number > DOOR_HABITUATION)
-    {
-        printf( "\t\tReward probability: %.3f\n", appDataDoor.reward_probability );
-    }
-    
+   
     if (DOOR_HABITUATION == appData.scenario_number)
     {
         printf( "\t\tDoor habituation: %d%%\n", appDataDoor.habituation_percent );
@@ -1616,6 +1703,11 @@ void config_print( void )
     }
     printf( "\t\tTimeout: %us\n", appData.timeout_taking_reward / 1000 );
     
+    if (appData.scenario_number > DOOR_HABITUATION && PATCH_PROBABILITY != appData.scenario_number )
+    {
+        printf( "\t\tProbability: %u%%\n", appDataDoor.reward_probability );
+    }
+    
     printf( "\tTimeouts\n" );
 //    printf( "\t\tSleep: %us\n", appData.timeout_standby / 1000 );
 //    printf( "\t\tPIR: %us\n", appData.timeout_pir / 1000 );    
@@ -1627,7 +1719,6 @@ void config_print( void )
         printf( "\t\tDelay: %us\n", appData.punishment_delay / 1000 );
     }
       
-//    if ( appData.scenario_number > DOOR_HABITUATION && appData.scenario_number < RISK_AVERSION )
     if ( appData.scenario_number > DOOR_HABITUATION )
     {
         
@@ -1646,17 +1737,39 @@ void config_print( void )
                 {
                     for (j=0;j<appDataAttractiveLeds.pattern_one_led_groups[0];j++)
                     {
-                        printf( "\t\tSN%02d: %s\n", j + 1, appDataPitTag.pit_tags_list[j] );
+                        printf( "\t\t%03d: %s\n", j + 1, appDataPitTag.pit_tags_list[j] );
                     }
                 }
                 else
                 {
                    for (j=appDataAttractiveLeds.pattern_one_led_groups[i-1];j<appDataAttractiveLeds.pattern_one_led_groups[i];j++)
                     {
-                        printf( "\t\tSN%02d: %s\n", j + 1, appDataPitTag.pit_tags_list[j] );
+                        printf( "\t\t%03d: %s\n", j + 1, appDataPitTag.pit_tags_list[j] );
                     } 
                 }
             }
+            
+        }
+        else if ( PATCH_PROBABILITY == appData.scenario_number)
+        {
+
+            printf( "\tPIT tags denied\n" );
+            if ( appDataPitTag.numPitTagDeniedOrColorA > 0 )
+            {
+                for ( i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; ++i )
+                {
+                    printf( "\t\t%03d: %s\n", i + 1, appDataPitTag.pit_tags_list[i] );
+                }
+            }
+            
+            printf( "\tPIT tags accepted and associated reward probability\n" );
+            if ( appDataPitTag.numPitTagAcceptedOrColorB > 0 )
+            {
+                for ( i = appDataPitTag.numPitTagDeniedOrColorA; i < ( appDataPitTag.numPitTagDeniedOrColorA + appDataPitTag.numPitTagAcceptedOrColorB ); ++i )
+                {
+                    printf( "\t\t%03d: %s - %u%%\n", i + 1 - appDataPitTag.numPitTagDeniedOrColorA, appDataPitTag.pit_tags_list[i], appDataPitTag.reward_probability[i] );
+                }
+            } 
             
         }
         else
@@ -1689,7 +1802,7 @@ void config_print( void )
             {
                 for ( i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; ++i )
                 {
-                    printf( "\t\tSN%02d: %s\n", i + 1, appDataPitTag.pit_tags_list[i] );
+                    printf( "\t\t%03d: %s\n", i + 1, appDataPitTag.pit_tags_list[i] );
                 }
             }
 
@@ -1721,7 +1834,7 @@ void config_print( void )
             {
                 for ( i = appDataPitTag.numPitTagDeniedOrColorA; i < ( appDataPitTag.numPitTagDeniedOrColorA + appDataPitTag.numPitTagAcceptedOrColorB ); ++i )
                 {
-                    printf( "\t\tSN%02d: %s\n", i + 1 - appDataPitTag.numPitTagDeniedOrColorA, appDataPitTag.pit_tags_list[i] );
+                    printf( "\t\t%03d: %s\n", i + 1 - appDataPitTag.numPitTagDeniedOrColorA, appDataPitTag.pit_tags_list[i] );
                 }
             }
         }
@@ -1809,10 +1922,10 @@ void getIniPbChar( INI_READ_STATE state, char *buf, uint8_t n )
             break;
         case INI_PB_ATTRACTIVE_LEDS_PATTERN:
             snprintf( buf, n, "Attractive LEDs: pattern" );
-            break;      
-        case INI_PB_ATTRACTIVE_LEDS_PATTERN_4_NUM:
-            snprintf( buf, n, "Attractive LEDs: pattern LED number" );
-            break;
+            break;    
+        case INI_PB_ATTRACTIVE_LEDS_PATTERN_PERCENT:
+            snprintf( buf, n, "Attractive LEDs: pattern percent" );
+            break; 
         case INI_PB_PIT_TAG_LEFT:
             snprintf( buf, n, "PIT tags: left LEDs" );
             break;
@@ -1882,27 +1995,28 @@ void getIniPbChar( INI_READ_STATE state, char *buf, uint8_t n )
         case INI_PB_DOOR_CLOSE_MINUTE:
             snprintf( buf, n, "Door: close minute" );
             break;
-        case INI_PB_TIMEOUTS_SLEEP:
-            snprintf( buf, n, "Timeouts: sleep" );
+        case INI_PB_DOOR_HABITUATION:
+            snprintf( buf, n, "Door: habituation" );
             break;
         case INI_PB_REWARD_ENABLE:
             snprintf( buf, n, "Reward: enable" );
             break;
-        case INI_PB_TIMEOUTS_PIR:
-            snprintf( buf, n, "Timeouts: pir" );
-            break;
-        case INI_PB_TIMEOUTS_REWARD:
+        case INI_PB_REWARD_TIMEOUT:
             snprintf( buf, n, "Timeouts: reward" );
             break;
-        case INI_PB_TIMEOUTS_GUILLOTINE:
-            snprintf( buf, n, "Timeouts: guillotine" );
+        case INI_PB_REWARD_PROBABILITY:
+            snprintf( buf, n, "Timeouts: probability" );
             break;
+        case INI_PB_TIMEOUTS_SLEEP:
+            snprintf( buf, n, "Timeouts: sleep" );
+            break;
+        case INI_PB_TIMEOUTS_PIR:
+            snprintf( buf, n, "Timeouts: pir" );
+            break;      
         case INI_PB_PUNISHMENT_DELAY:
             snprintf( buf, n, "New bird: delay" );
             break;
-        case INI_PB_DOOR_HABITUATION:
-            snprintf( buf, n, "Door: habituation" );
-            break;     
+     
         default:
             snprintf( buf, n, "Error not listed" );
             break;

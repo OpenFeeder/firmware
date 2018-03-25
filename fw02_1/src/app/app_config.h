@@ -45,8 +45,8 @@ typedef enum
     INI_PB_ATTRACTIVE_LEDS_OFF_MINUTE, // 17
 
     INI_PB_ATTRACTIVE_LEDS_PATTERN, // 18
-            
-    INI_PB_ATTRACTIVE_LEDS_PATTERN_4_NUM, // 19
+        
+    INI_PB_ATTRACTIVE_LEDS_PATTERN_PERCENT,
             
     INI_PB_DOOR_CLOSE_POSITION, // 20
     INI_PB_DOOR_OPEN_POSITION, // 21
@@ -67,11 +67,11 @@ typedef enum
     INI_PB_DOOR_CLOSE_MINUTE, // 31
 
     INI_PB_REWARD_ENABLE, // 32
+    INI_PB_REWARD_TIMEOUT,  
+    INI_PB_REWARD_PROBABILITY,
         
     INI_PB_TIMEOUTS_SLEEP, // 33
     INI_PB_TIMEOUTS_PIR, // 34
-    INI_PB_TIMEOUTS_REWARD, // 35
-    INI_PB_TIMEOUTS_GUILLOTINE, // 36
         
     INI_PB_PIT_TAG_DENIED, // 37
     INI_PB_PIT_TAG_ACCEPTED, // 38
@@ -108,6 +108,7 @@ INI_READ_STATE config_read_ini( void );
 void config_print( void );
 void getIniPbChar( INI_READ_STATE, char *, uint8_t );
 FILEIO_RESULT read_PIT_tags( void );
+FILEIO_RESULT read_reward_probabilities( void );
 
 #endif /* _APP_CONFIG_HEADER_H */
 

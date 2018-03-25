@@ -91,6 +91,8 @@ typedef enum
     ERROR_EVENT_BIN_FILE_CLOSE,
     ERROR_EVENT_BIN_FILE_SET_NAME,
     ERROR_ATTRACTIVE_LED_INIT,
+    ERROR_REWARD_PROBABILITIES_FILE_OPEN,
+    ERROR_REWARD_PROBABILITIES_FILE_CLOSE,
         
     ERROR_TOO_MANY_SOFTWARE_RESET = 100
 
@@ -101,8 +103,6 @@ typedef struct
     char message[200]; // Error message buffer
     char currentFileName[200];
     uint16_t currentLineNumber;
-    //    uint8_t priority; // Message priority: 0 => high priority
-    //                      //                   1 => low priority 
 
     LED_STATUS ledColor_1;
     LED_STATUS ledColor_2;

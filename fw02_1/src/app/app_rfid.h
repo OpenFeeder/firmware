@@ -36,6 +36,8 @@ typedef struct
     
     /* List of PIT tags denied */
     char pit_tags_list[MAX_PIT_TAGS_LIST_NUMBER][11];
+    
+    uint8_t reward_probability[MAX_PIT_TAGS_LIST_NUMBER];
 
     uint16_t numPitTagStored;
     
