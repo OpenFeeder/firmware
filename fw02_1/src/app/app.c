@@ -504,7 +504,8 @@ void APP_Tasks( void )
                 if ( DOOR_HABITUATION == appData.scenario_number || 
                      LONG_TERM_SPATIAL_MEMORY == appData.scenario_number || 
                      WORKING_SPATIAL_MEMORY == appData.scenario_number ||
-                     RISK_AVERSION == appData.scenario_number)
+                     RISK_AVERSION == appData.scenario_number ||
+                     PATCH_PROBABILITY == appData.scenario_number)
                 {
                     appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_A;
                     setAttractiveLedsColor( );
