@@ -1407,7 +1407,7 @@ INI_READ_STATE config_read_ini( void )
          appData.timeout_taking_reward = 0;    
      }
 
-    if ( appData.scenario_number > DOOR_HABITUATION )
+    if ( appData.scenario_number > DOOR_HABITUATION && appData.scenario_number != PATCH_PROBABILITY )
     {
         /* Reward probability */ 
         read_parameter = ini_getl( "reward", "probability", -1, "CONFIG.INI" );
@@ -1476,6 +1476,58 @@ INI_READ_STATE config_read_ini( void )
             printf( "\t\tPunishment delay... READ\n" );
 #endif
         }
+        
+        if ( PATCH_PROBABILITY == appData.scenario_number )
+        {
+            /* Punishment probability treshold */ 
+            read_parameter = ini_getl( "punishment", "proba_threshold", -1, "CONFIG.INI" );
+            if ( -1 == read_parameter )
+            {
+                return INI_PB_PUNISHMENT_PROBA_THRESH;
+            }
+            else
+            {
+                appData.punishment_proba_thresh = ( uint8_t ) read_parameter;
+        #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+                printf( "\t\tPunishment probability threshold... READ\n" );
+        #endif
+            }
+        }
+        else
+        {
+           appData.punishment_proba_thresh = 0; 
+        }
+    }
+    
+    /* Check */
+    /* Check if "check" section is present in the INI file */ 
+    flag = false;
+    for (s = 0; ini_getsection(s, str, 20, "CONFIG.INI") > 0; s++)
+    {
+        if ( 0 == strcmp( str, "check" ) )
+        {
+            flag = true;
+        }
+    }
+    
+    if (flag)
+    {
+        read_parameter = ini_getl( "check", "food_level", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_CHECK_FOOD_LEVEL;
+        }
+        else
+        {
+            appData.chk_food_level = ( bool ) read_parameter;
+    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tCheck food level... READ\n" );
+    #endif
+        } 
+    }    
+    else
+    {
+        appData.chk_food_level = false;
     }
 
     return INI_READ_OK;
@@ -1610,6 +1662,17 @@ void config_print( void )
     {
         printf( "\t\tEvents: disable\n");
     }
+    
+    printf( "\tChecks\n" );
+    if ( true == appData.chk_food_level )
+    {
+        printf( "\t\tFood level: enable\n" );   
+    }
+    else
+    {
+        printf( "\t\tFood level: disable\n");
+    }
+    
     if (true == appData.flags.bit_value.attractive_leds_status)
     {
 
@@ -1717,6 +1780,11 @@ void config_print( void )
     {
         printf( "\tPunishment\n" );
         printf( "\t\tDelay: %us\n", appData.punishment_delay / 1000 );
+        
+        if ( PATCH_PROBABILITY == appData.scenario_number ) 
+        {
+          printf( "\t\tProbability threshold: %u%%\n", appData.punishment_proba_thresh );  
+        }
     }
       
     if ( appData.scenario_number > DOOR_HABITUATION )
@@ -2014,9 +2082,15 @@ void getIniPbChar( INI_READ_STATE state, char *buf, uint8_t n )
             snprintf( buf, n, "Timeouts: pir" );
             break;      
         case INI_PB_PUNISHMENT_DELAY:
-            snprintf( buf, n, "New bird: delay" );
+            snprintf( buf, n, "Punishment: delay" );
             break;
-     
+        case INI_PB_PUNISHMENT_PROBA_THRESH:
+            snprintf( buf, n, "Punishment: probability threshold" );
+            break;   
+        case INI_PB_CHECK_FOOD_LEVEL:
+            snprintf( buf, n, "Check: food level" );
+            break;    
+  
         default:
             snprintf( buf, n, "Error not listed" );
             break;

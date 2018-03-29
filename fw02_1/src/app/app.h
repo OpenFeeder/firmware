@@ -329,6 +329,7 @@ typedef struct
     APP_STATES rc_previous_state;
 
     uint16_t punishment_delay;
+    uint8_t punishment_proba_thresh;
     
     bool need_to_reconfigure;
     
@@ -348,6 +349,8 @@ typedef struct
     {
         uint32_t words[5];
     } udid ;
+    
+    bool chk_food_level;
     
 } APP_DATA;
 

@@ -43,20 +43,24 @@ APP_CHECK checkImportantParameters(void)
 #endif
 
     /* Check food level. */
+    
+    if ( true == appData.chk_food_level )
+    {
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
     printf("\tFood level: ");
 #endif
-    if (false == isEnoughFood())
-    {
+        if (false == isEnoughFood())
+        {
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
         printf("pb\n");
 #endif
-        return APP_CHECK_FOOD_LEVEL_PB;
-    }
+            return APP_CHECK_FOOD_LEVEL_PB;
+        }
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
     printf("ok\n");
 #endif
-
+    }
+    
     /* Check RFID frequency. */
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
     printf("\tRFID frequency: ");

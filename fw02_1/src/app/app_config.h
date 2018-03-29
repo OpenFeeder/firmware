@@ -90,7 +90,8 @@ typedef enum
     INI_PB_PIT_TAG_LED_4,
             
     INI_PB_PUNISHMENT_DELAY, // 39
-
+    INI_PB_PUNISHMENT_PROBA_THRESH,
+        
     INI_PB_DOOR_HABITUATION, // 40
        
     INI_PB_LOGS_BIRDS,
@@ -98,7 +99,9 @@ typedef enum
     INI_PB_LOGS_EVENTS,
     INI_PB_LOGS_ERRORS,
     INI_PB_LOGS_BATTERY,
-    INI_PB_LOGS_RFID
+    INI_PB_LOGS_RFID,
+        
+    INI_PB_CHECK_FOOD_LEVEL
             
 } INI_READ_STATE;
 

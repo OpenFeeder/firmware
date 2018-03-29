@@ -812,7 +812,7 @@ void APP_Tasks( void )
                         break;
                     }
                 }
-                if ( RTCC_FOOD_LEVEL_CHECK == appData.rtcc_alarm_action )
+                if ( RTCC_FOOD_LEVEL_CHECK == appData.rtcc_alarm_action && true == appData.chk_food_level )
                 {
                     flag = isEnoughFood( );
                     if ( false == flag )
@@ -1090,6 +1090,14 @@ void APP_Tasks( void )
                         if ( false == appDataLog.is_pit_tag_denied )
                         {
                             appDataDoor.reward_probability = appDataPitTag.reward_probability[appDataPitTag.pitTagIndexInList];
+                            
+//                            if ( appDataDoor.reward_probability < appData.punishment_proba_thresh )
+//                            {
+//#if defined (USE_UART1_SERIAL_INTERFACE) 
+//                                printf( "\tReward proba. (%u) below threshold (%u) => punishment.\n", appDataDoor.reward_probability, appData.punishment_proba_thresh );  
+//#endif
+//                                appDataDoor.reward_probability = 0;
+//                            }
                         }                        
                         break; 
                         
@@ -1174,7 +1182,23 @@ void APP_Tasks( void )
                 }
                                 
                 /* Reward probability */
-                if ( appDataDoor.reward_probability < 100 )
+                if ( 0 == appDataDoor.reward_probability )
+                {
+                    setAttractiveLedsNoColor( );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_REWARD_PROBABILITY)
+                    printf( "\tReward probability set to 0 => consider as denied.\n" );
+#endif
+                    /* Delay before reactivate attractiveLEDs */
+                    setDelayMs( appData.punishment_delay );
+                    while ( false == isDelayMsEnding( ) )
+                    {
+                        Nop( );
+                    }
+                    appDataLog.is_pit_tag_denied = true; 
+                    appData.state = APP_STATE_DATA_LOG;
+                    break;  
+                }
+                else if ( appDataDoor.reward_probability < 100 )
                 {
                     int randomInteger = rand( );
 
@@ -2530,6 +2554,8 @@ void APP_Initialize( void )
     clear_bird_sensor_detected( );
     
     appDataEvent.file_type = EVENT_FILE_BINARY;
+    
+    appData.chk_food_level = false;
     
 }
 
