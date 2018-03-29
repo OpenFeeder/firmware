@@ -1090,14 +1090,6 @@ void APP_Tasks( void )
                         if ( false == appDataLog.is_pit_tag_denied )
                         {
                             appDataDoor.reward_probability = appDataPitTag.reward_probability[appDataPitTag.pitTagIndexInList];
-                            
-//                            if ( appDataDoor.reward_probability < appData.punishment_proba_thresh )
-//                            {
-//#if defined (USE_UART1_SERIAL_INTERFACE) 
-//                                printf( "\tReward proba. (%u) below threshold (%u) => punishment.\n", appDataDoor.reward_probability, appData.punishment_proba_thresh );  
-//#endif
-//                                appDataDoor.reward_probability = 0;
-//                            }
                         }                        
                         break; 
                         
@@ -1186,7 +1178,7 @@ void APP_Tasks( void )
                 {
                     setAttractiveLedsNoColor( );
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_REWARD_PROBABILITY)
-                    printf( "\tReward probability set to 0 => consider as denied.\n" );
+                    printf( "\tReward probability is 0%% => denied.\n" );
 #endif
                     /* Delay before reactivate attractiveLEDs */
                     setDelayMs( appData.punishment_delay );
@@ -1198,32 +1190,68 @@ void APP_Tasks( void )
                     appData.state = APP_STATE_DATA_LOG;
                     break;  
                 }
-                else if ( appDataDoor.reward_probability < 100 )
+                else if ( 100 == appDataDoor.reward_probability ) 
+                    {
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_REWARD_PROBABILITY)
+                        printf( "\tReward probability is 100%% => accepted.\n" );
+#endif
+                    }
+                else 
                 {
                     int randomInteger = rand( );
 
                     if ( randomInteger > (RAND_MAX/100*appDataDoor.reward_probability) )
                     {
-                        setAttractiveLedsNoColor( );
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_REWARD_PROBABILITY)
-                        printf( "\t%.0f > %u (reward prob.) => consider as denied.\n", 100*((double)randomInteger/(double)RAND_MAX), appDataDoor.reward_probability);
-#endif
-                        /* Delay before reactivate attractiveLEDs */
-                        setDelayMs( appData.punishment_delay );
-                        while ( false == isDelayMsEnding( ) )
+                        if ( PATCH_PROBABILITY != appData.scenario_number )
                         {
-                            Nop( );
+                            setAttractiveLedsNoColor( );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_REWARD_PROBABILITY)
+                            printf( "\t%.0f > %u (reward prob.) => denied.\n", 100*((double)randomInteger/(double)RAND_MAX), appDataDoor.reward_probability);
+#endif
+                            /* Delay before reactivate attractiveLEDs */
+                            setDelayMs( appData.punishment_delay );
+                            while ( false == isDelayMsEnding( ) )
+                            {
+                                Nop( );
+                            }
+                            appDataLog.is_pit_tag_denied = true; 
+                            appData.state = APP_STATE_DATA_LOG;
+                            break;
                         }
-                        appDataLog.is_pit_tag_denied = true; 
-                        appData.state = APP_STATE_DATA_LOG;
-                        break;
+                        else if ( appDataDoor.reward_probability < appData.punishment_proba_thresh )
+                        {
+                            setAttractiveLedsNoColor( );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_REWARD_PROBABILITY)
+                            printf( "\t%.0f > %u (reward prob.) => denied.\n", 100*((double)randomInteger/(double)RAND_MAX), appDataDoor.reward_probability);
+#endif
+                            /* Delay before reactivate attractiveLEDs */
+                            setDelayMs( appData.punishment_delay );
+                            while ( false == isDelayMsEnding( ) )
+                            {
+                                Nop( );
+                            }
+                            appDataLog.is_pit_tag_denied = true; 
+                            appData.state = APP_STATE_DATA_LOG;
+                            break;
+                        }
+                        else
+                        {
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_REWARD_PROBABILITY)
+                            printf( "\t%.0f > %u (reward prob.) => denied\n\tBut %u (reward prob.) > %u (prob. thresh.) => no punishment.\n", 100*((double)randomInteger/(double)RAND_MAX), appDataDoor.reward_probability, appDataDoor.reward_probability, appData.punishment_proba_thresh);
+#endif 
+                            appDataLog.is_pit_tag_denied = true; 
+                            appData.state = APP_STATE_DATA_LOG;
+                            break;
+                        }
+
                     }
                     else
                     {
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_REWARD_PROBABILITY)
-                        printf( "\t%.0f <= %u (reward prob.) => accepted.\n", 100*((double)randomInteger/(double)RAND_MAX), appDataDoor.reward_probability);
-#endif
+                        printf( "\t%.0f < %u (reward prob.) => accepted.\n", 100*((double)randomInteger/(double)RAND_MAX), appDataDoor.reward_probability);
+#endif 
                     }
+                    
                 }
                 
                 if ( 1 == appData.reward_enable )
