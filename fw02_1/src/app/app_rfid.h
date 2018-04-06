@@ -38,6 +38,7 @@ typedef struct
     char pit_tags_list[MAX_PIT_TAGS_LIST_NUMBER][11];
     
     char previous_pit_tags[11];
+    struct tm previous_arrived_time;
     
     uint8_t reward_probability[MAX_PIT_TAGS_LIST_NUMBER];
 

@@ -264,18 +264,64 @@ void clearPitTagBuffers( void )
 
 bool isItANewPitTag(void)
 {
+    double seconds;
+    time_t t1, t2;
+    struct tm tm1;
+    struct tm tm2;
+    
     if ( 0 == strcmp( appDataLog.bird_pit_tag_str, appDataPitTag.previous_pit_tags ) )
     {
+        
+//        printf( "%02u/%02u/20%02u %02u:%02u:%02u ",
+//            appDataPitTag.previous_arrived_time.tm_mday,
+//            appDataPitTag.previous_arrived_time.tm_mon,
+//            appDataPitTag.previous_arrived_time.tm_year,
+//            appDataPitTag.previous_arrived_time.tm_hour,
+//            appDataPitTag.previous_arrived_time.tm_min,
+//            appDataPitTag.previous_arrived_time.tm_sec );
+//        printf( "%02u/%02u/20%02u %02u:%02u:%02u\n",
+//            appDataLog.bird_arrived_time.tm_mday,
+//            appDataLog.bird_arrived_time.tm_mon,
+//            appDataLog.bird_arrived_time.tm_year,
+//            appDataLog.bird_arrived_time.tm_hour,
+//            appDataLog.bird_arrived_time.tm_min,
+//            appDataLog.bird_arrived_time.tm_sec );
+
+        tm1 = appDataLog.bird_arrived_time;
+        tm1.tm_year += 100;
+        tm1.tm_mon -= 1;
+        tm2 = appDataPitTag.previous_arrived_time;
+        tm2.tm_year += 100;
+        tm2.tm_mon -= 1;
+        
+        t1 = mktime(&tm1);
+        t2 = mktime(&tm2);
+        
+        seconds = difftime(t1,t2);
+
+//        printf("%d %d %f\n", (int)t1, (int)t2, seconds);
+//        
+//        t1 = mktime(&appDataLog.bird_arrived_time);
+//        t2 = mktime(&appDataPitTag.previous_arrived_time);
+//        
+//        printf("%d %d\n", (int)t1, (int)t2);
+        
+//        seconds = difftime(mktime(&appDataLog.bird_arrived_time),mktime(&appDataPitTag.previous_arrived_time));
+        
 #if defined( USE_UART1_SERIAL_INTERFACE )
-        printf( "\tSame PIT tag as previously %s <=> %s\n", appDataLog.bird_pit_tag_str, appDataPitTag.previous_pit_tags );
+//        printf( "\tSame PIT tag %.0fs - %s <=> %s\n", seconds, appDataLog.bird_pit_tag_str, appDataPitTag.previous_pit_tags );
+        printf( "\tSame PIT tag as %.0fs ago.\n", seconds );
 #endif  
-        return true;
+        appDataPitTag.previous_arrived_time = appDataLog.bird_arrived_time;
+        return false;
     }
     else
     {
         strcpy(appDataPitTag.previous_pit_tags, appDataLog.bird_pit_tag_str);
-        return false;
+        appDataPitTag.previous_arrived_time = appDataLog.bird_arrived_time;
+        return true;
     }
+    
 }
 
 
