@@ -51,6 +51,8 @@ typedef struct
     uint16_t pitTagIndexInList;
 
     uint8_t number_of_valid_pit_tag;
+    
+    uint8_t timeout_unique_visit;
 
 } APP_DATA_PIT_TAG;
 

@@ -911,9 +911,7 @@ void APP_Tasks( void )
             
             if ( appData.flags.bit_value.NewValidPitTag )
             {
-                
-                isItANewPitTag();
-                
+
                 switch ( appData.scenario_number )
                 {
                     case NO_SCENARIO:
@@ -1097,11 +1095,21 @@ void APP_Tasks( void )
                         break; 
                         
                 }
-
+                
                 RFID_Disable( );
 
                 clear_bird_sensor_detected( );
 
+                if ( PATCH_PROBABILITY == appData.scenario_number && false == isItANewPitTag())
+                {
+                    appData.rfid_signal_detected = false;
+                    appDataLog.is_reward_taken = false;
+                    appDataLog.is_pit_tag_denied = false;
+                    clearPitTagBuffers( );
+                    appData.state = APP_STATE_IDLE;
+                    break;
+                }
+                
                 if ( true == appDataLog.is_pit_tag_denied )
                 {
 #if defined (USE_UART1_SERIAL_INTERFACE) 
@@ -2558,6 +2566,8 @@ void APP_Initialize( void )
     }
     appDataPitTag.previous_pit_tags[10] = '\0';
 
+    appDataPitTag.timeout_unique_visit = 0;
+        
     appDataLog.numBatteryLevelStored = 0;
     appDataLog.numRfidFreqStored = 0;
 

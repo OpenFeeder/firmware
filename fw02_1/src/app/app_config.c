@@ -1432,6 +1432,23 @@ INI_READ_STATE config_read_ini( void )
      appData.timeout_standby = 0;
      appData.timeout_pir = 0;
      
+     if ( appData.scenario_number == PATCH_PROBABILITY )
+     {
+         /* Reward probability */ 
+        read_parameter = ini_getl( "timeouts", "unique_visit", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_TIMEOUTS_UNIQUE_VISIT;
+        }
+        else
+        {
+            appDataPitTag.timeout_unique_visit = ( uint8_t ) read_parameter;
+    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\t\tTimeout unique visit... READ\n" );
+    #endif
+        }
+     }
+         
 //    read_parameter = ini_getl( "timeouts", "sleep", -1, "CONFIG.INI" );
 //    if ( -1 == read_parameter )
 //    {
@@ -2080,7 +2097,10 @@ void getIniPbChar( INI_READ_STATE state, char *buf, uint8_t n )
             break;
         case INI_PB_TIMEOUTS_PIR:
             snprintf( buf, n, "Timeouts: pir" );
-            break;      
+            break;   
+        case INI_PB_TIMEOUTS_UNIQUE_VISIT:
+            snprintf( buf, n, "Timeouts: unique visit" );
+            break;         
         case INI_PB_PUNISHMENT_DELAY:
             snprintf( buf, n, "Punishment: delay" );
             break;

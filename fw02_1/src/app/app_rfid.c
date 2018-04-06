@@ -307,13 +307,23 @@ bool isItANewPitTag(void)
 //        printf("%d %d\n", (int)t1, (int)t2);
         
 //        seconds = difftime(mktime(&appDataLog.bird_arrived_time),mktime(&appDataPitTag.previous_arrived_time));
+
         
+        if ( seconds > appDataPitTag.timeout_unique_visit)
+        {
 #if defined( USE_UART1_SERIAL_INTERFACE )
-//        printf( "\tSame PIT tag %.0fs - %s <=> %s\n", seconds, appDataLog.bird_pit_tag_str, appDataPitTag.previous_pit_tags );
-        printf( "\tSame PIT tag as %.0fs ago.\n", seconds );
+            printf( "\tSame PIT tag. %.0fs > %us => OK.\n", seconds, appDataPitTag.timeout_unique_visit );
 #endif  
-        appDataPitTag.previous_arrived_time = appDataLog.bird_arrived_time;
-        return false;
+            appDataPitTag.previous_arrived_time = appDataLog.bird_arrived_time;
+            return true;    
+        }
+        else
+        {
+#if defined( USE_UART1_SERIAL_INTERFACE )
+            printf( "\tSame PIT tag. %.0fs <= %us => No way.\n", seconds, appDataPitTag.timeout_unique_visit );
+#endif  
+            return false;    
+        }
     }
     else
     {
