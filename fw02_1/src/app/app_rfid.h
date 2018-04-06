@@ -34,8 +34,10 @@ typedef struct
 
     uint16_t numPitTagGroup[4];    
     
-    /* List of PIT tags denied */
+    /* List of PIT tags */
     char pit_tags_list[MAX_PIT_TAGS_LIST_NUMBER][11];
+    
+    char previous_pit_tags[11];
     
     uint8_t reward_probability[MAX_PIT_TAGS_LIST_NUMBER];
 
@@ -87,6 +89,7 @@ extern volatile uint8_t g_timeout_reading_pit_tag;
 
 void APP_Rfid_Init( void );
 bool APP_Rfid_Task( void );
+bool isItANewPitTag(void);
 void findPitTagInList( void );
 bool isPitTagDenied( void );
 void clearPitTagBuffers( void );

@@ -262,6 +262,23 @@ void clearPitTagBuffers( void )
 }
 
 
+bool isItANewPitTag(void)
+{
+    if ( 0 == strcmp( appDataLog.bird_pit_tag_str, appDataPitTag.previous_pit_tags ) )
+    {
+#if defined( USE_UART1_SERIAL_INTERFACE )
+        printf( "\tSame PIT tag as previously %s <=> %s\n", appDataLog.bird_pit_tag_str, appDataPitTag.previous_pit_tags );
+#endif  
+        return true;
+    }
+    else
+    {
+        strcpy(appDataPitTag.previous_pit_tags, appDataLog.bird_pit_tag_str);
+        return false;
+    }
+}
+
+
 void findPitTagInList( void )
 {
 

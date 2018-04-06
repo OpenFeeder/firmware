@@ -911,6 +911,9 @@ void APP_Tasks( void )
             
             if ( appData.flags.bit_value.NewValidPitTag )
             {
+                
+                isItANewPitTag();
+                
                 switch ( appData.scenario_number )
                 {
                     case NO_SCENARIO:
@@ -2548,6 +2551,12 @@ void APP_Initialize( void )
     {
         appDataPitTag.isPitTagdeniedOrColorA[i] = false;
     }
+    
+    for ( i = 0; i < 10; ++i )
+    {
+        appDataPitTag.previous_pit_tags[i] = 'X';
+    }
+    appDataPitTag.previous_pit_tags[10] = '\0';
 
     appDataLog.numBatteryLevelStored = 0;
     appDataLog.numRfidFreqStored = 0;
