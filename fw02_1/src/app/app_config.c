@@ -1793,6 +1793,11 @@ void config_print( void )
 //    printf( "\t\tPIR: %us\n", appData.timeout_pir / 1000 );    
     printf( "\t\tGuillotine: %.3fs\n", (float)appData.timeout_guillotine * 0.001 ); 
     
+    if ( appData.scenario_number == PATCH_PROBABILITY )
+    {
+        printf( "\t\tUnique visit: %ds\n", appDataPitTag.timeout_unique_visit );  
+    }                
+                
     if (true == appData.flags.bit_value.attractive_leds_status)
     {
         printf( "\tPunishment\n" );

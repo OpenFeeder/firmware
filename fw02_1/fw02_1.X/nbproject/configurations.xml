@@ -537,7 +537,7 @@
         <makeCustomizationPreStepEnabled>true</makeCustomizationPreStepEnabled>
         <makeCustomizationPreStep>C:\Users\jerome\Anaconda3\python ${ProjectDir}\..\python\OF_fw_version.py ${ProjectDir}</makeCustomizationPreStep>
         <makeCustomizationPostStepEnabled>true</makeCustomizationPostStepEnabled>
-        <makeCustomizationPostStep>copy /Y /B ${ProjectDir}\${ImagePath} /B ${ProjectDir}\..\hex\fw02_1.hex</makeCustomizationPostStep>
+        <makeCustomizationPostStep>copy /Y /B ${ProjectDir}\${ImagePath} /B ${ProjectDir}\..\hex\fw02_1.hex &amp;&amp; C:\Users\jerome\Anaconda3\python ${ProjectDir}\..\python\OF_fw_zip_hex.py ${ProjectDir}</makeCustomizationPostStep>
         <makeCustomizationPutChecksumInUserID>false</makeCustomizationPutChecksumInUserID>
         <makeCustomizationEnableLongLines>false</makeCustomizationEnableLongLines>
         <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
@@ -788,7 +788,7 @@
         <makeCustomizationPreStepEnabled>true</makeCustomizationPreStepEnabled>
         <makeCustomizationPreStep>C:\Users\Asus-Home\Anaconda3\python ${ProjectDir}\..\python\OF_fw_version.py ${ProjectDir}</makeCustomizationPreStep>
         <makeCustomizationPostStepEnabled>true</makeCustomizationPostStepEnabled>
-        <makeCustomizationPostStep>copy /Y /B ${ProjectDir}\${ImagePath} /B ${ProjectDir}\..\hex\fw02_1.hex</makeCustomizationPostStep>
+        <makeCustomizationPostStep>copy /Y /B ${ProjectDir}\${ImagePath} /B ${ProjectDir}\..\hex\fw02_1.hex &amp;&amp; C:\Users\Asus-Home\Anaconda3\python ${ProjectDir}\..\python\OF_fw_zip_hex.py ${ProjectDir}</makeCustomizationPostStep>
         <makeCustomizationPutChecksumInUserID>false</makeCustomizationPutChecksumInUserID>
         <makeCustomizationEnableLongLines>false</makeCustomizationEnableLongLines>
         <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>

@@ -5,7 +5,7 @@
 Ceci est un script temporaire.
 """
 
-from tkinter import Tk, Frame, Label, Button, N, S, W, E, DISABLED, NORMAL
+from tkinter import Tk, Frame, Label, Button, W, E, DISABLED, NORMAL
 import sys
 import os
 from functools import partial

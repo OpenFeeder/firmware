@@ -102,8 +102,8 @@ ifneq ($(INFORMATION_MESSAGE), )
 endif
 	${MAKE}  -f nbproject/Makefile-OF_fw_2_1_brd_3_0_ver_jerome.mk dist/${CND_CONF}/${IMAGE_TYPE}/fw02_1.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
 	@echo "--------------------------------------"
-	@echo "User defined post-build step: [copy /Y /B ${ProjectDir}\${ImagePath} /B ${ProjectDir}\..\hex\fw02_1.hex]"
-	@copy /Y /B ${ProjectDir}\${ImagePath} /B ${ProjectDir}\..\hex\fw02_1.hex
+	@echo "User defined post-build step: [copy /Y /B ${ProjectDir}\${ImagePath} /B ${ProjectDir}\..\hex\fw02_1.hex && C:\Users\jerome\Anaconda3\python ${ProjectDir}\..\python\OF_fw_zip_hex.py ${ProjectDir}]"
+	@copy /Y /B ${ProjectDir}\${ImagePath} /B ${ProjectDir}\..\hex\fw02_1.hex && C:\Users\jerome\Anaconda3\python ${ProjectDir}\..\python\OF_fw_zip_hex.py ${ProjectDir}
 	@echo "--------------------------------------"
 
 MP_PROCESSOR_OPTION=24FJ256GB406
