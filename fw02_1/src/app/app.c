@@ -1492,7 +1492,7 @@ void APP_Tasks( void )
                 while ( DOOR_MOVED != appDataDoor.reward_door_status )
                 {
                     /* Check if the bird puts its head in during door close */
-                    if ( PATCH_PROBABILITY == appData.scenario_number && 1 == appData.reward_enable && 1 == BAR_IR1_OUT_GetValue( ) )
+                    if ( PATCH_PROBABILITY != appData.scenario_number && 1 == appData.reward_enable && 1 == BAR_IR1_OUT_GetValue( ) )
                     {
                         appDataDoor.reward_door_status = DOOR_MOVED;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_INFO)
