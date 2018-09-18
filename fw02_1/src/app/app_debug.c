@@ -487,10 +487,461 @@ void APP_SerialDebugTasks( void )
 
             case 'j':
             case 'J':
+            {
+                FILEIO_SEARCH_RECORD searchRecord;
+                int8_t result;
+                FILEIO_OBJECT file;
+                char buf[65];
+                FILEIO_ERROR_TYPE errF;
+                int ch;   
+                uint8_t user_choice;
+
+                printf( "Files I/O:\n" );
+                printf( "\tC: display CSV files\n" );
+                printf( "\tE: display errors file\n" );
+                printf( "\tI: display CONFIG.INI\n" );
+                printf( "\tL: list files\n" );
+                printf( "\tX: export files\n" );
+                
+                while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
+                user_choice = UART1_Read( );
+
+                switch ( user_choice )
+                {
+                    
+                    case 'C':
+                    case 'c':
+                        
+                        usbMountDrive( );
+
+                        result = FILEIO_Find( "*.CSV", FILEIO_ATTRIBUTE_ARCHIVE, &searchRecord, true );
+
+                        if (FILEIO_RESULT_SUCCESS == result) {
+
+                            if (strcmp(searchRecord.shortFileName, "ERRORS.CSV")) {
+
+                                printf("%s\n", searchRecord.shortFileName);
+
+                                result = FILEIO_Open(&file, searchRecord.shortFileName, FILEIO_OPEN_READ);
+
+                                if (FILEIO_RESULT_SUCCESS == result) {
+
+                                    while(1) {
+
+                                        if (true == FILEIO_Eof(&file)) {
+                                            break;
+                                        }
+
+                                        for (i=0;i<64;i++) {
+                                            ch = FILEIO_GetChar(&file);
+                                            if (FILEIO_RESULT_FAILURE ==  ch) {
+                                                break;
+                                            }
+                                            else {
+                                                buf[i] = ch;
+                                            }
+                                        }
+                                        buf[i] = '\0';
+                                        printf("%s", buf);
+
+                                    }
+                                }
+                                else {
+                                    errF = FILEIO_ErrorGet('A');
+                                    printf("Unable to open log file (%u)\n", errF);
+                                }
+
+                                FILEIO_Close(&file);
+                                
+                            }
+
+                            while (FILEIO_RESULT_SUCCESS == FILEIO_Find( "*.CSV", FILEIO_ATTRIBUTE_ARCHIVE, &searchRecord, false )) {
+
+                                if (strcmp(searchRecord.shortFileName, "ERRORS.CSV")) {
+                                    
+                                    printf("%s\n", searchRecord.shortFileName);
+
+                                    result = FILEIO_Open(&file, searchRecord.shortFileName, FILEIO_OPEN_READ);
+
+                                    if (FILEIO_RESULT_SUCCESS == result) {
+
+                                        while(1) {
+
+                                            if (true == FILEIO_Eof(&file)) {
+                                                break;
+                                            }
+
+                                            for (i=0;i<64;i++) {
+                                                ch = FILEIO_GetChar(&file);
+                                                if (FILEIO_RESULT_FAILURE ==  ch) {
+                                                    break;
+                                                }
+                                                else {
+                                                    buf[i] = ch;
+                                                }
+                                            }
+                                            buf[i] = '\0';
+                                            printf("%s", buf);
+
+                                        }
+                                    }
+                                    else {
+                                        errF = FILEIO_ErrorGet('A');
+                                        printf("Unable to open log file (%u)\n", errF);
+                                    }
+                                    
+                                    FILEIO_Close(&file);
+                                }
+                            }
+
+                        }
+                        else {
+                            switch (result) {
+
+                                case FILEIO_ERROR_INVALID_ARGUMENT:
+                                    printf("The path could not be resolved.\n");
+                                    break;
+
+                                    case FILEIO_ERROR_INVALID_FILENAME:
+                                        printf("The file name is invalid.\n");
+                                        break;
+
+                                    case FILEIO_ERROR_BAD_CACHE_READ:
+                                        printf("There was an error searching directory entries.\n");
+                                        break;
+
+                                    case FILEIO_ERROR_DONE:
+                                        printf("File not found.\n");
+                                        break;
+                            }
+                        }
+
+                        usbUnmountDrive( );
+                        
+                        break;
+                        
+                    case 'e':
+                    case 'E':
+                        
+                        usbMountDrive( );
+
+                        result = FILEIO_Find( "ERRORS.CSV", FILEIO_ATTRIBUTE_ARCHIVE, &searchRecord, true );
+
+                        if (FILEIO_RESULT_SUCCESS == result) {
+
+                            printf("%s\n", searchRecord.shortFileName);
+
+                            result = FILEIO_Open(&file, searchRecord.shortFileName, FILEIO_OPEN_READ);
+
+                            if (FILEIO_RESULT_SUCCESS == result) {
+
+                                while(1) {
+
+                                    if (true == FILEIO_Eof(&file)) {
+                                        break;
+                                    }
+
+                                    for (i=0;i<64;i++) {
+                                        ch = FILEIO_GetChar(&file);
+                                        if (FILEIO_RESULT_FAILURE ==  ch) {
+                                            break;
+                                        }
+                                        else {
+                                            buf[i] = ch;
+                                        }
+                                    }
+                                    buf[i] = '\0';
+                                    printf("%s", buf);
+
+                                }
+                            }
+                            else {
+                                errF = FILEIO_ErrorGet('A');
+                                printf("Unable to open log file (%u)\n", errF);
+                            }
+
+                            FILEIO_Close(&file);
+
+                        }
+                        else {
+                            switch (result) {
+
+                                case FILEIO_ERROR_INVALID_ARGUMENT:
+                                    printf("The path could not be resolved.\n");
+                                    break;
+
+                                    case FILEIO_ERROR_INVALID_FILENAME:
+                                        printf("The file name is invalid.\n");
+                                        break;
+
+                                    case FILEIO_ERROR_BAD_CACHE_READ:
+                                        printf("There was an error searching directory entries.\n");
+                                        break;
+
+                                    case FILEIO_ERROR_DONE:
+                                        printf("File not found.\n");
+                                        break;
+                            }
+                        }
+
+                        usbUnmountDrive( );
+                        
+                        break;
+                        
+                    case 'i':
+                    case 'I':
+                        
+                        usbMountDrive( );
+
+                        result = FILEIO_Find( "CONFIG.INI", FILEIO_ATTRIBUTE_ARCHIVE, &searchRecord, true );
+
+                        if (FILEIO_RESULT_SUCCESS == result) {
+
+                            printf("%s\n", searchRecord.shortFileName);
+
+                            result = FILEIO_Open(&file, searchRecord.shortFileName, FILEIO_OPEN_READ);
+
+                            if (FILEIO_RESULT_SUCCESS == result) {
+
+                                while(1) {
+
+                                    if (true == FILEIO_Eof(&file)) {
+                                        break;
+                                    }
+
+                                    for (i=0;i<64;i++) {
+                                        ch = FILEIO_GetChar(&file);
+                                        if (FILEIO_RESULT_FAILURE ==  ch) {
+                                            break;
+                                        }
+                                        else {
+                                            buf[i] = ch;
+                                        }
+                                    }
+                                    buf[i] = '\0';
+                                    printf("%s", buf);
+
+                                }
+                            }
+                            else {
+                                errF = FILEIO_ErrorGet('A');
+                                printf("Unable to open log file (%u)\n", errF);
+                            }
+
+                            FILEIO_Close(&file);
+
+                        }
+                        else {
+                            switch (result) {
+
+                                case FILEIO_ERROR_INVALID_ARGUMENT:
+                                    printf("The path could not be resolved.\n");
+                                    break;
+
+                                    case FILEIO_ERROR_INVALID_FILENAME:
+                                        printf("The file name is invalid.\n");
+                                        break;
+
+                                    case FILEIO_ERROR_BAD_CACHE_READ:
+                                        printf("There was an error searching directory entries.\n");
+                                        break;
+
+                                    case FILEIO_ERROR_DONE:
+                                        printf("File not found.\n");
+                                        break;
+                            }
+                        }
+
+                        usbUnmountDrive( );
+                        
+                        break;
+                        
+                    case 'L':
+                    case 'l':
+                        
+                        usbMountDrive( );
+                        
+                        result = FILEIO_Find( "*.*", FILEIO_ATTRIBUTE_ARCHIVE, &searchRecord, true );
+                        
+                        if (FILEIO_RESULT_SUCCESS == result) {
+                            
+                            printf("%s (%ld bytes)\n", searchRecord.shortFileName, searchRecord.fileSize);
+                            
+                            while (FILEIO_RESULT_SUCCESS == FILEIO_Find( "*.*", FILEIO_ATTRIBUTE_ARCHIVE, &searchRecord, false )) {
+                                printf("%s (%ld bytes)\n", searchRecord.shortFileName, searchRecord.fileSize);
+                            }
+                            
+                        }
+                        else {
+                            switch (result) {
+
+                                case FILEIO_ERROR_INVALID_ARGUMENT:
+                                    printf("The path could not be resolved.\n");
+                                    break;
+
+                                    case FILEIO_ERROR_INVALID_FILENAME:
+                                        printf("The file name is invalid.\n");
+                                        break;
+
+                                    case FILEIO_ERROR_BAD_CACHE_READ:
+                                        printf("There was an error searching directory entries.\n");
+                                        break;
+
+                                    case FILEIO_ERROR_DONE:
+                                        printf("File not found.\n");
+                                        break;
+                            }
+                        }
+                            
+                        usbUnmountDrive( );
+                        
+                        break;
+                        
+                    case 'x':
+                    case 'X':
+                    {
+                        uint8_t stx = 0x2;
+                        uint8_t etx = 0x3;
+                        uint8_t enq = 0x5;
+                        uint8_t ack = 0x6;
+                        uint8_t dc4 = 0x14;
+                        uint8_t nack = 0x15;
+                        
+                        uint16_t num = 0;
+                        uint32_t q;
+                        
+                        usbMountDrive( );
+                        
+                        printf("%c", stx);
+                        
+                        result = FILEIO_Find( "*.CSV", FILEIO_ATTRIBUTE_ARCHIVE, &searchRecord, true );
+                        
+                        if (FILEIO_RESULT_SUCCESS == result) {                            
+
+                            printf("%c", ack);
+                            
+                            printf("%c%s%c%ld", enq, searchRecord.shortFileName, enq, searchRecord.fileSize);
+                            
+                            printf("%c", dc4);
+                            
+                            result = FILEIO_Open(&file, searchRecord.shortFileName, FILEIO_OPEN_READ);
+
+                            if (FILEIO_RESULT_SUCCESS == result) {
+                                
+                                printf("%c", enq);
+
+                                for (q=0;q<searchRecord.fileSize;q++) {
+
+                                    if (true == FILEIO_Eof(&file)) {
+                                        break;
+                                    }
+
+                                    ch = FILEIO_GetChar(&file);
+                                    if (FILEIO_RESULT_FAILURE ==  ch) {
+                                        break;
+                                    }
+                                    else {
+                                        num += 1;
+                                        printf("%c", ch);
+                                    }          
+                                    
+                                    if (num>500) {
+                                        printf("%c", dc4);
+                                        num = 0;
+                                    }
+                                }
+                            }
+                            else {
+                                printf("%c", nack);
+                                errF = FILEIO_ErrorGet('A');
+                                printf("Unable to open log file (%u)\n", errF);
+                            }
+
+                            FILEIO_Close(&file);                            
+                            
+                            while (FILEIO_RESULT_SUCCESS == FILEIO_Find( "*.CSV", FILEIO_ATTRIBUTE_ARCHIVE, &searchRecord, false )) {
+                                
+                                printf("%c%s%c%ld", enq, searchRecord.shortFileName, enq, searchRecord.fileSize);
+                                
+                                printf("%c", dc4);
+                                
+                                result = FILEIO_Open(&file, searchRecord.shortFileName, FILEIO_OPEN_READ);
+
+                                if (FILEIO_RESULT_SUCCESS == result) {
+                                    
+                                    printf("%c", enq);
+                                    
+                                    for (q=0;q<searchRecord.fileSize;q++) {
+
+                                        if (true == FILEIO_Eof(&file)) {
+                                            break;
+                                        }
+
+                                        ch = FILEIO_GetChar(&file);
+                                        if (FILEIO_RESULT_FAILURE ==  ch) {
+                                            break;
+                                        }
+                                        else {
+                                            num += 1;
+                                            printf("%c", ch);
+                                        }          
+
+                                        if (num>500) {
+                                            printf("%c", dc4);
+                                            num = 0;
+                                        }
+                                    }
+                                }
+                                else {
+                                    printf("%c", nack);
+                                    errF = FILEIO_ErrorGet('A');
+                                    printf("Unable to open log file (%u)\n", errF);
+                                }
+
+                                FILEIO_Close(&file); 
+                            }
    
-                display_events();
-//                printf( "\t<NOT AFFECTED>\n" );
+                        }
+                        else {
+                            
+                            printf("%c", nack);
+                            
+                            switch (result) {
+
+                                case FILEIO_ERROR_INVALID_ARGUMENT:
+                                    printf("The path could not be resolved.");
+                                    break;
+
+                                    case FILEIO_ERROR_INVALID_FILENAME:
+                                        printf("The file name is invalid.");
+                                        break;
+
+                                    case FILEIO_ERROR_BAD_CACHE_READ:
+                                        printf("There was an error searching directory entries.");
+                                        break;
+
+                                    case FILEIO_ERROR_DONE:
+                                        printf("File not found.");
+                                        break;
+                            }
+                        }
+                            
+                        printf("%c%c", etx, enq);
+                        
+                        printf("%c", dc4);
+                        
+                        usbUnmountDrive( );
+                        
+                        break;
+                    }
+                        
+                    default:
+                        break;
+                        
+                }
+                
                 break;
+            }
                 /* -------------------------------------------------------------- */
 
             case 'k':
