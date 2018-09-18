@@ -113,14 +113,14 @@ void getVBatLevel( void )
         ADC1_Tasks( );
     }
 
-    appData.vbat_level = ADC1_ConversionResultGet( ) * 2;
+    appData.vbat_level = ADC1_ConversionResultGet( );
 }
 
 
 void printVBatLevel( void )
 {
 #if defined (USE_UART1_SERIAL_INTERFACE) 
-    printf( "VBat level: %2.3f V (%u)\n", appData.vbat_level * VBAT_VOLTAGE_FACTOR, appData.vbat_level );
+    printf( "VBat level: %2.3f V (%u)\n", 2.0 * appData.vbat_level * VBAT_VOLTAGE_FACTOR, appData.vbat_level );
 #endif 
 }
 

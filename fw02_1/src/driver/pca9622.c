@@ -37,7 +37,7 @@ I2C1_MESSAGE_STATUS I2C1_PCA9622_SoftwareReset( void )
         Nop( ); // without pull-up resistor program will be blocked here
     }
 
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_PCA9622_STATUS)
     printf( "\tPCA9622 SWRST.\n" );
 #endif
 

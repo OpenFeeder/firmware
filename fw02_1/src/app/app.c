@@ -324,7 +324,7 @@ void APP_Tasks( void )
                 /* Reset PCA9622 device */
                 i2c_status = I2C1_PCA9622_SoftwareReset( );
                 
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_I2C_STATUS)
                     print_I2C_message_status( i2c_status ); // I2C1_MESSAGE_STATUS
                     printf( "\n" );
 #endif
@@ -333,7 +333,7 @@ void APP_Tasks( void )
                 {
                     if ( initAttractiveLeds( ) )
                     {
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CHECK_INFO)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LEDS_STATUS)
                         printf( "\tAttractive LEDs: ok\n" ); 
 #endif
                         setAttractiveLedsOn();

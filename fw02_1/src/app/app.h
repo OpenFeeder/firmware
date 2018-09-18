@@ -32,9 +32,11 @@
 #define DISPLAY_INI_READ_DATA
 //#define DISPLAY_USB_INFO          // uncomment to display USB information
 //#define DISPLAY_LOG_INFO 
-//#define DISPLAY_CHECK_INFO 
+#define DISPLAY_CHECK_INFO 
 //#define DISPLAY_EVENT_INFO
-
+//#define DISPLAY_I2C_STATUS
+//#define DISPLAY_LEDS_STATUS
+//#define DISPLAY_PCA9622_STATUS
 //#define DISPLAY_ISR_RTCC          // uncomment to display interruption event
 //#define DISPLAY_ISR_IR              // uncomment to display interruption event
 //#define DISPLAY_ISR_PIR           // uncomment to display interruption event
