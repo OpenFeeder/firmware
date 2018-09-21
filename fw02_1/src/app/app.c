@@ -510,6 +510,10 @@ void APP_Tasks( void )
                     appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_A;
                     setAttractiveLedsColor( );
                 }
+                else if ( GO_NO_GO == appData.scenario_number)
+                {
+                    setAttractiveLedsPattern( );
+                }
 
             }
 
