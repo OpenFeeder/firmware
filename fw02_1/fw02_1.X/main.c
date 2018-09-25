@@ -335,6 +335,8 @@ int main( void )
             appError.number = ERROR_ATTRACTIVE_LED_INIT;
             appData.state = APP_STATE_ERROR;
         }
+        
+        TMR3_Start( ); 
 
         while ( 1 )
         {
