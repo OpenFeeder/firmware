@@ -146,22 +146,38 @@ void APP_Tasks( void )
             
             }
 
-            if ( APP_I2CRTC_DateTime_get( ) )
-            {
-                
-                getCurrentDate( );
-                
-                if ( appData.current_time.tm_mday != appData.i2c_current_time.mday ||
-                    appData.current_time.tm_mon != appData.i2c_current_time.mon ||
-                    appData.current_time.tm_year != appData.i2c_current_time.year_s ||
-                    appData.current_time.tm_hour != appData.i2c_current_time.hour ||
-                    appData.current_time.tm_min != appData.i2c_current_time.min ||
-                    appData.current_time.tm_sec  != appData.i2c_current_time.sec )
-                {
-                    calibrateCurrentDate( );
-                }
- 
-            }
+            calibrateCurrentDate( );
+            
+//            if ( APP_I2CRTC_DateTime_get( ) )
+//            {
+//                if (0==appData.i2c_current_time.year_s && 1==appData.i2c_current_time.mon && 1==appData.i2c_current_time.mday) {
+//                    if ( true == appDataLog.log_events )
+//                    {
+//                       store_event(OF_CALIBRATE_TIME_FAIL); 
+//                    }
+//                }
+//                else {
+//                
+//                    getCurrentDate( );
+//
+//                    if ( appData.current_time.tm_mday != appData.i2c_current_time.mday ||
+//                        appData.current_time.tm_mon != appData.i2c_current_time.mon ||
+//                        appData.current_time.tm_year != appData.i2c_current_time.year_s ||
+//                        appData.current_time.tm_hour != appData.i2c_current_time.hour ||
+//                        appData.current_time.tm_min != appData.i2c_current_time.min ||
+//                        appData.current_time.tm_sec  != appData.i2c_current_time.sec )
+//                    {
+//                        calibrateCurrentDate( );
+//                    }
+//                } 
+//            }
+//            else
+//            {
+//                if ( true == appDataLog.log_events )
+//                {
+//                   store_event(OF_CALIBRATE_TIME_FAIL); 
+//                }
+//            }
             
             /* Power PIR sensor early in the code because of starting delay before usable */
             powerPIREnable( );

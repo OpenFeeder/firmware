@@ -57,18 +57,48 @@ bool getCurrentDate( void )
 
 void calibrateCurrentDate( void )
 {
-    if ( APP_I2CRTC_DateTime_get( ) )
+    
+    if (0 == APP_I2CMasterSeeksSlaveDevice(DS3231_I2C_ADDR, DS3231_I2C_ADDR))
     {
-        setDateTime( appData.i2c_current_time.year_s, 
-                     appData.i2c_current_time.mon, 
-                     appData.i2c_current_time.mday, 
-                     appData.i2c_current_time.hour, 
-                     appData.i2c_current_time.min, 
-                     appData.i2c_current_time.sec );
-       
+        #if defined (USE_UART1_SERIAL_INTERFACE)
+            printf( "\tDS3231 (external RTC) not found.\n");
+        #endif
+
         if ( true == appDataLog.log_events )
         {
-           store_event(OF_CALIBRATE_TIME); 
+           store_event(OF_DS3231_NOT_FOUND); 
+        }
+    }
+    else 
+    {
+        if ( APP_I2CRTC_DateTime_get( ) )
+        {
+            if (0==appData.i2c_current_time.year_s && 1==appData.i2c_current_time.mon && 1==appData.i2c_current_time.mday) {
+                if ( true == appDataLog.log_events )
+                {
+                   store_event(OF_CALIBRATE_TIME_FAIL); 
+                }
+            }
+            else {
+                setDateTime( appData.i2c_current_time.year_s, 
+                             appData.i2c_current_time.mon, 
+                             appData.i2c_current_time.mday, 
+                             appData.i2c_current_time.hour, 
+                             appData.i2c_current_time.min, 
+                             appData.i2c_current_time.sec );
+
+                if ( true == appDataLog.log_events )
+                {
+                   store_event(OF_CALIBRATE_TIME); 
+                }
+            }       
+        }
+        else
+        {
+            if ( true == appDataLog.log_events )
+            {
+               store_event(OF_CALIBRATE_TIME_FAIL); 
+            }
         }
     }
 }

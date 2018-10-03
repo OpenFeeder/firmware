@@ -61,7 +61,7 @@ uint8_t APP_I2CMasterSeeksSlaveDevice( uint16_t addr7bits_start, uint16_t addr7b
     uint8_t device_found = 0;
     uint8_t device_lost = 0;
 
-#if defined (USE_UART1_SERIAL_INTERFACE)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_I2C_SCANNER)
     printf( "Scan for 128 I2C bus address from 0x00, 0x02 ... to 0x7F\n" );
 #endif
     memset( appData.i2c_add_found, 0, MAX_OF_UNKNOWN_I2C_8_BIT_SLAVE_ADD ); // clear i2c_add_found tab
@@ -81,20 +81,22 @@ uint8_t APP_I2CMasterSeeksSlaveDevice( uint16_t addr7bits_start, uint16_t addr7b
         {
             uint8_t addr8bits = addr7bits << 1; // convert 7-bits address to 8-bits format (Byte format)
             appData.i2c_add_found[device_found] = addr8bits;
-#if defined (USE_UART1_SERIAL_INTERFACE)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_I2C_SCANNER)
             printf( "\r\nFound 8 bit Add: 0x%c%c (hex)", bin2ascii_tab[addr8bits >> 4], bin2ascii_tab[addr8bits & 0x0F] ); // print address in hexa format
 #endif
             ++device_found; // inc. device_found +1
         }
         else
         {
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_I2C_SCANNER)
             //printf( "." ); // or
             putchar( '.' );
+#endif
             ++device_lost;
         }
         ++addr7bits; // inc. device addr +1
     }
-#if defined (USE_UART1_SERIAL_INTERFACE)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_I2C_SCANNER)
     printf( "\r\nSearch done.\r\n\n" );
 
     if ( device_found )

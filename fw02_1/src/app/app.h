@@ -35,6 +35,7 @@
 #define DISPLAY_CHECK_INFO 
 //#define DISPLAY_EVENT_INFO
 //#define DISPLAY_I2C_STATUS
+//#define DISPLAY_I2C_SCANNER
 //#define DISPLAY_LEDS_STATUS
 //#define DISPLAY_PCA9622_STATUS
 //#define DISPLAY_ISR_RTCC          // uncomment to display interruption event

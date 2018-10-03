@@ -216,7 +216,7 @@ void APP_SerialDebugTasks( void )
                 printf( " g or G: set green color value of RGB attractive LEDs\n" );
                 printf( " h or H: toggle door remain open parameter\n" );
                 printf( " i or I: toggle IR barriers power\n" );
-                printf( " j or J: NOT AFFECTED\n" );
+                printf( " j or J: files I/O on USB device\n" );
                 printf( " k or K: display IR1 and IR2 state\n" );
                 printf( " l or L: call i2cScanner( ) to found I2C devices attached.\n" ); //  --> 0x02, 0x06 and 0xE0
                 printf( " m or M: menu to control PCA9622 device\n" );
