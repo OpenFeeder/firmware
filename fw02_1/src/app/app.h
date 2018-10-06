@@ -355,6 +355,8 @@ typedef struct
     
     bool chk_food_level;
     
+    bool secu_bird_reward_reopen;
+    
 } APP_DATA;
 
 // *****************************************************************************

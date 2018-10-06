@@ -1516,6 +1516,37 @@ INI_READ_STATE config_read_ini( void )
         }
     }
     
+    /* Security */
+    /* Check if "security" section is present in the INI file */ 
+    flag = false;
+    for (s = 0; ini_getsection(s, str, 20, "CONFIG.INI") > 0; s++)
+    {
+        if ( 0 == strcmp( str, "security" ) )
+        {
+            flag = true;
+        }
+    }
+    
+    if (flag)
+    {
+        read_parameter = ini_getl( "security", "bird_reward_reopen", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_SECURITY_BIRD_REWARD_REOPEN;
+        }
+        else
+        {
+            appData.secu_bird_reward_reopen = ( bool ) read_parameter;
+    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\tSecurity bird reward reopen... read.\n" );
+    #endif
+        } 
+    }
+    else
+    {
+        appData.secu_bird_reward_reopen = true;
+    }
+    
     /* Check */
     /* Check if "check" section is present in the INI file */ 
     flag = false;
@@ -2115,7 +2146,10 @@ void getIniPbChar( INI_READ_STATE state, char *buf, uint8_t n )
         case INI_PB_CHECK_FOOD_LEVEL:
             snprintf( buf, n, "Check: food level" );
             break;    
-  
+        case INI_PB_SECURITY_BIRD_REWARD_REOPEN:
+            snprintf( buf, n, "Security: reopen x10" );
+            break; 
+            
         default:
             snprintf( buf, n, "Error not listed" );
             break;

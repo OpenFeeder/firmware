@@ -1409,6 +1409,11 @@ void APP_Tasks( void )
                 EX_INT1_InterruptFlagClear( );
                 clear_ir1_sensor( );
 
+                if ( true == appDataLog.log_events )
+                {
+                   store_event(OF_REWARD_TAKEN); 
+                }
+                
                 appData.bird_is_taking_reward = false;
                 appDataLog.is_reward_taken = true;
                 appData.state = APP_STATE_CLOSING_DOOR;
@@ -1421,6 +1426,11 @@ void APP_Tasks( void )
             
                 if ( false == appData.bird_is_taking_reward )
                 {
+                    if ( true == appDataLog.log_events )
+                    {
+                       store_event(OF_REWARD_TIMEOUT); 
+                    }
+                    
 #if defined (USE_UART1_SERIAL_INTERFACE)
                     printf( "\tReward timeout.\n" );
 #endif
@@ -1434,6 +1444,11 @@ void APP_Tasks( void )
                 else
                 {
                     ++num_timeout_reward;
+                    
+                    if ( true == appDataLog.log_events )
+                    {
+                       store_event(OF_REWARD_TIMEOUT_WRONG); 
+                    }
                     
 #if defined (USE_UART1_SERIAL_INTERFACE)
                     printf( "\tReward timeout but something wrong (%d/%d).\n", num_timeout_reward, MAX_NUM_REWARD_TIMEOUT );
@@ -1512,18 +1527,40 @@ void APP_Tasks( void )
                 while ( DOOR_MOVED != appDataDoor.reward_door_status )
                 {
                     /* Check if the bird puts its head in during door close */
-                    if ( PATCH_PROBABILITY != appData.scenario_number && 1 == appData.reward_enable && 1 == BAR_IR1_OUT_GetValue( ) )
+                    if ( PATCH_PROBABILITY != appData.scenario_number && 
+                            1 == appData.reward_enable && 1 == BAR_IR1_OUT_GetValue( ))
                     {
-                        appDataDoor.reward_door_status = DOOR_MOVED;
+                        if (true == appData.secu_bird_reward_reopen)
+                        {
+                            appDataDoor.reward_door_status = DOOR_MOVED;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_INFO)
             printf("\tBird puts its head in during door close => reopen\n");
 #endif  
-                        appData.state = APP_STATE_REOPEN_DOOR;
-                        break;
+                            if ( true == appDataLog.log_events )
+                            {
+                               store_event(OF_BIRD_X_REWARD_REOPEN); 
+                            }
+                            appData.state = APP_STATE_REOPEN_DOOR;
+                            break;
+                        }
+                        else
+                        {
+                            if ( true == appDataLog.log_events )
+                            {
+                               store_event(OF_BIRD_X_REWARD_NO_REOPEN); 
+                            }
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_INFO)
+            printf("\tBird puts its head in during door close but reopen security disable\n");
+#endif  
+                        }
                     }
                     /* Check if door take too much time to close */
                     if ( true == isDelayMsEndingStandBy() )
                     {
+                        if ( true == appDataLog.log_events )
+                        {
+                           store_event(OF_DOOR_CLOSE_SLOW_REOPEN); 
+                        }
                         appDataDoor.reward_door_status = DOOR_MOVED;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_INFO)
             printf("\tDoor take too much time to close => reopen\n");
@@ -1545,6 +1582,10 @@ void APP_Tasks( void )
 
             if ( pos > appDataServo.ton_goal && (pos - appDataServo.ton_goal) > 150)
             {
+                if ( true == appDataLog.log_events )
+                {
+                   store_event(OF_SERVO_FAR_CLOSE_POS_REOPEN); 
+                }
                 appDataDoor.reward_door_status = DOOR_MOVED;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_INFO)
             printf("\tServo too far from goal position (%u to %u) => reopen\n", pos, appDataServo.ton_goal);

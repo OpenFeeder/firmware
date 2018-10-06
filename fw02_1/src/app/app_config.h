@@ -102,7 +102,9 @@ typedef enum
     INI_PB_LOGS_BATTERY,
     INI_PB_LOGS_RFID,
         
-    INI_PB_CHECK_FOOD_LEVEL
+    INI_PB_CHECK_FOOD_LEVEL,
+        
+    INI_PB_SECURITY_BIRD_REWARD_REOPEN
             
 } INI_READ_STATE;
 
