@@ -15,6 +15,11 @@ bool initAttractiveLeds( void )
     I2C1_MESSAGE_STATUS i2c_status = I2C1_MESSAGE_COMPLETE; // the status of write data on I2C bus
     uint8_t writeBuffer[5]; // data to transmit
 
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_ATTRACTIVE_LEDS_OFF); 
+    }
+    
     /* Initialize PCA9622 device in Normal mode. */
     writeBuffer[0] = CTRLREG_MODE1;
     writeBuffer[1] = NORMAL_MODE;
@@ -91,6 +96,11 @@ bool setAttractiveLedsIndex( void )
         return false;
     }
     
+    if ( true == appDataLog.log_events )
+    {
+        store_event(OF_FIND_UDID_LEDS);
+    } 
+    
     if ( FILEIO_RESULT_FAILURE == FILEIO_Find( "UDIDLEDS.TXT", FILEIO_ATTRIBUTE_ARCHIVE, &sR, true ) )
     {
         errF = FILEIO_ErrorGet( 'A' );
@@ -104,6 +114,10 @@ bool setAttractiveLedsIndex( void )
 
     udid[4] = '\0';
     
+    if ( true == appDataLog.log_events )
+    {
+        store_event(OF_READ_UDID_LEDS);
+    } 
     if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "UDIDLEDS.TXT", FILEIO_OPEN_READ ) )
     {
         errF = FILEIO_ErrorGet( 'A' );
@@ -167,32 +181,39 @@ bool setAttractiveLedsIndex( void )
 
 void setAttractiveLedsOff( void )
 {
-    /* Disable PCA9622 device */
-    PCA9622_OE_SetHigh( );
-
-    appDataAttractiveLeds.status = ATTRACTIVE_LEDS_OFF;
     if ( true == appDataLog.log_events )
     {
        store_event(OF_ATTRACTIVE_LEDS_OFF); 
     }
+    
+    /* Disable PCA9622 device */
+    PCA9622_OE_SetHigh( );
+
+    appDataAttractiveLeds.status = ATTRACTIVE_LEDS_OFF;
 }
 
 /* Set attractive LEDs color. */
 void setAttractiveLedsOn( void )
 {
-    /* Enable PCA9622 device in Normal mode */
-    PCA9622_OE_SetLow( ); // output enable pin is active LOW
-
-    appDataAttractiveLeds.status = ATTRACTIVE_LEDS_ON;
     if ( true == appDataLog.log_events )
     {
        store_event(OF_ATTRACTIVE_LEDS_ON); 
     }
+    
+    /* Enable PCA9622 device in Normal mode */
+    PCA9622_OE_SetLow( ); // output enable pin is active LOW
+
+    appDataAttractiveLeds.status = ATTRACTIVE_LEDS_ON;
 }
 
 /* Set all color for attractive LEDs. */
 void setAttractiveLedsNoColor( void )
 {
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_ATTRACTIVE_LEDS_NO_COLOR); 
+    }
+    
     /* Set color for red attractive LEDs. */
     setAttractiveRedLedsColor( 0 );
 
@@ -203,10 +224,6 @@ void setAttractiveLedsNoColor( void )
     setAttractiveBlueLedsColor( 0 );
 
     appDataAttractiveLeds.status = ATTRACTIVE_LEDS_ON;
-    if ( true == appDataLog.log_events )
-    {
-       store_event(OF_ATTRACTIVE_LEDS_NO_COLOR); 
-    }
 }
 
 /* Set all color for attractive LEDs. */
@@ -422,6 +439,11 @@ void testAttractiveLeds( void )
     uint8_t writeBuffer[2]; // data to transmit
     uint16_t delay = 500;
 
+    if ( true == appDataLog.log_events )
+    {
+        store_event(OF_ATTRACTIVE_LEDS_TEST);
+    }
+    
     writeBuffer[0] = CTRLREG_PWM0;
     writeBuffer[1] = 55; // PWM0 Individual Duty Cycle for LED_RGB1_R
     i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
@@ -478,10 +500,6 @@ void testAttractiveLeds( void )
     
     appDataAttractiveLeds.status = ATTRACTIVE_LEDS_OFF;
     
-    if ( true == appDataLog.log_events )
-    {
-        store_event(OF_ATTRACTIVE_LEDS_TEST);
-    }
     
 }
 /*******************************************************************************

@@ -373,6 +373,12 @@ void APP_Tasks( void )
                     {
                         setAttractiveLedsOn();
                         setAttractiveLedsNoColor();
+                        
+                        if ( true == appDataLog.log_events )
+                        {
+                            store_event(OF_ATTRACTIVE_LEDS_CHECK_INDEX);
+                        }
+                        
                         for (i=0;i<4;i++)
                         {
                             setOneAttractiveLedColor( appDataAttractiveLeds.leds_index[i], 0, 35, 0);
@@ -1132,18 +1138,32 @@ void APP_Tasks( void )
                 
                 if ( true == appDataLog.is_pit_tag_denied )
                 {
-#if defined (USE_UART1_SERIAL_INTERFACE) 
                     if ( true == appDataPitTag.didPitTagMatched )
                     {
+                        if ( true == appDataLog.log_events )
+                        {
+                           store_event(OF_PIT_TAG_DENIED); 
+                        }
+#if defined (USE_UART1_SERIAL_INTERFACE) 
                         printf( "\tPIT tag %s denied.\n", appDataLog.bird_pit_tag_str );
+#endif
                     }
                     else
                     {
+                        if ( true == appDataLog.log_events )
+                        {
+                           store_event(OF_PIT_TAG_NOT_LISTED_DENIED); 
+                        }
+#if defined (USE_UART1_SERIAL_INTERFACE) 
                         printf( "\tPIT tag %s not listed => consider as denied.\n", appDataLog.bird_pit_tag_str ); 
-                    }
 #endif
+                    }
                     if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number || GO_NO_GO == appData.scenario_number )
                     {
+                        if ( true == appDataLog.log_events )
+                        {
+                           store_event(OF_ATTRACTIVE_LEDS_PUNISHMENT); 
+                        }
                         setAttractiveLedsNoColor( );
                         /* Delay before reactivate attractiveLEDs */
                         setDelayMs( appData.punishment_delay );
@@ -1167,6 +1187,11 @@ void APP_Tasks( void )
             /* Test if delay detect PIT Tags in ending. (Xx 160 ms) */
             if ( 0 == g_timeout_reading_pit_tag ) // && (Timeout_Detecting_RFID_Tag != 0)
             {
+                if ( true == appDataLog.log_events )
+                {
+                   store_event(OF_RFID_TIMEOUT); 
+                }
+                
                 RFID_Disable( );
 
                 clear_bird_sensor_detected( );

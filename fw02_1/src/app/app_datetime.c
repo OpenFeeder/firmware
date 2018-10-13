@@ -60,14 +60,14 @@ void calibrateCurrentDate( void )
     
     if (0 == APP_I2CMasterSeeksSlaveDevice(DS3231_I2C_ADDR, DS3231_I2C_ADDR))
     {
-        #if defined (USE_UART1_SERIAL_INTERFACE)
-            printf( "\tDS3231 (external RTC) not found.\n");
-        #endif
-
         if ( true == appDataLog.log_events )
         {
            store_event(OF_DS3231_NOT_FOUND); 
         }
+        
+        #if defined (USE_UART1_SERIAL_INTERFACE)
+            printf( "\tDS3231 (external RTC) not found.\n");
+        #endif
     }
     else 
     {

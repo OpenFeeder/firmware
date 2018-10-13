@@ -15,7 +15,7 @@ bool config_set( void )
     INI_READ_STATE read_ini_status;
     char buf[50];
 
-    /* Search for the CONFIG.INI file. */
+    /* Search for the CONFIG.INI file. */    
     if ( FILEIO_RESULT_FAILURE == config_find_ini( ) )
     {
         strcpy( appError.message, "CONFIG.INI not found" );
@@ -25,12 +25,7 @@ bool config_set( void )
         return false;
     }
     
-    if ( true == appDataLog.log_events )
-    {
-        store_event(OF_FIND_INI);
-    }
-
-    /* Read the CONFIG.INI file. */
+    /* Read the CONFIG.INI file. */    
     read_ini_status = config_read_ini( );
 
     if ( INI_READ_OK != read_ini_status )
@@ -44,23 +39,13 @@ bool config_set( void )
         appError.number = ERROR_INI_FILE_READ;
         return false;
     }
-
-    if ( true == appDataLog.log_events )
-    {
-        store_event(OF_READ_INI);
-    }
     
     if ( ( GO_NO_GO == appData.scenario_number && appDataAttractiveLeds.pattern_number > ALL_LEDS) || appData.scenario_number > GO_NO_GO )
     {
         if ( FILEIO_RESULT_FAILURE == read_PIT_tags( ) )
         {
             return false;
-        }
-        
-        if ( true == appDataLog.log_events )
-        {
-            store_event(OF_READ_PIT_TAGS);
-        }
+        }        
     }
     
     if ( PATCH_PROBABILITY == appData.scenario_number )
@@ -68,12 +53,7 @@ bool config_set( void )
         if ( FILEIO_RESULT_FAILURE == read_reward_probabilities( ) )
         {
             return false;
-        }
-        
-        if ( true == appDataLog.log_events )
-        {
-            store_event(OF_READ_REWARD_PROBABILITIES);
-        }
+        }        
     }
 
     return true;
@@ -86,6 +66,11 @@ FILEIO_RESULT read_reward_probabilities( void )
     FILEIO_ERROR_TYPE errF;
     char buf[4]; 
     int i;
+    
+    if ( true == appDataLog.log_events )
+    {
+        store_event(OF_READ_REWARD_PROBABILITIES);
+    }
     
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
     printf( "Read reward probabilities file\n" );
@@ -144,11 +129,15 @@ FILEIO_RESULT read_PIT_tags( void )
     uint16_t i, j, s;
     char buf[13];
 
+    if ( true == appDataLog.log_events )
+    {
+        store_event(OF_READ_PIT_TAGS);
+    }
+    
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
     printf( "Read PIT tags files\n" );
 #endif 
 
-    
     appDataPitTag.numPitTagStored = 0;
 
     if ( GO_NO_GO == appData.scenario_number )
@@ -591,6 +580,11 @@ FILEIO_RESULT config_find_ini( void )
 
     FILEIO_SEARCH_RECORD searchRecord;
 
+    if ( true == appDataLog.log_events )
+    {
+        store_event(OF_FIND_INI);
+    }
+    
     return FILEIO_Find( "CONFIG.INI", FILEIO_ATTRIBUTE_ARCHIVE, &searchRecord, true );
 }
 
@@ -602,6 +596,11 @@ INI_READ_STATE config_read_ini( void )
     int s, i;
     char str[20];
     bool flag = false;
+    
+    if ( true == appDataLog.log_events )
+    {
+        store_event(OF_READ_INI);
+    }
     
     /* Scenario number */
     read_parameter = ini_getl( "scenario", "num", -1, "CONFIG.INI" );

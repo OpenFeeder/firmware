@@ -53,6 +53,10 @@ bool usbMountDrive( void )
 
     if ( USB_DEVICE_SUSPENDED == USBHostDeviceStatus( appDataUsb.deviceAddress ) )
     {
+        if ( true == appDataLog.log_events )
+        {
+           store_event(OF_RESUME_USB_DRIVE); 
+        }  
         // http://www.microchip.com/forums/m582058.aspx
         // help_mla_usb.pdf => 1.4.2.1.1.14 USBHostResumeDevice Function            
         success = USBHostResumeDevice( appDataUsb.deviceAddress );
@@ -78,13 +82,13 @@ bool usbMountDrive( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
             printf( "\tUSB device resumed\n" );
 #endif 
-            if ( true == appDataLog.log_events )
-            {
-               store_event(OF_RESUME_USB_DRIVE); 
-            }  
         }
     }
     
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_MOUNT_USB_DRIVE); 
+    }
     /* Attempt to mount the drive described by gUSBDrive as drive 'A'
      * The deviceAddress parameter describes the USB address of the device;
      * it is initialized by the application in the USB_ApplicationEventHandler
@@ -106,11 +110,6 @@ bool usbMountDrive( void )
     }
     
     appDataUsb.usbDriveStatus = USB_DRIVE_MOUNTED;
-    
-    if ( true == appDataLog.log_events )
-    {
-       store_event(OF_MOUNT_USB_DRIVE); 
-    }
     
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
     printf( "\tUSB drive mounted\n" );        
@@ -137,6 +136,10 @@ bool usbUnmountDrive( void )
         return appDataUsb.usbDriveStatus;
     }
 
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_UNMOUNT_USB_DRIVE); 
+    }
     /* Unmount the drive since it is no longer in use. */
     if ( FILEIO_RESULT_FAILURE == FILEIO_DriveUnmount( 'A' ) )
     {
@@ -156,9 +159,8 @@ bool usbUnmountDrive( void )
 
     if ( true == appDataLog.log_events )
     {
-       store_event(OF_UNMOUNT_USB_DRIVE); 
-    }
-    
+       store_event(OF_SUSPEND_USB_DRIVE); 
+    } 
     // http://www.microchip.com/forums/m582058.aspx
     // help_mla_usb.pdf => 1.4.2.1.1.18 USBHostSuspendDevice Function            
     success = USBHostSuspendDevice( appDataUsb.deviceAddress ); /* now no interrupt occur */
@@ -182,10 +184,6 @@ bool usbUnmountDrive( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
         printf( "\tUSB device suspended\n" );
 #endif 
-        if ( true == appDataLog.log_events )
-        {
-           store_event(OF_SUSPEND_USB_DRIVE); 
-        } 
     }
 
     return appDataUsb.usbDriveStatus;
