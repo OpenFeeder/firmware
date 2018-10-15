@@ -40,6 +40,8 @@ typedef struct
     bool bird_pir_sensor_status;
     bool is_pit_tag_denied;
     bool is_reward_taken;
+    
+    bool did_door_open;
 
     /* Attractive LEDs color*/
     uint8_t attractive_leds_current_color_index;

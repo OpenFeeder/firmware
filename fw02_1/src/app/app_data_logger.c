@@ -29,11 +29,13 @@ static int populateLogBuffer(void)
     if (0 == strcmp(appDataLog.bird_pit_tag_str, "XXXXXXXXXX"))
     {
         appDataLog.is_reward_taken = false;
+        appDataLog.did_door_open = false;
     }
 
     if (true == appDataLog.is_pit_tag_denied)
     {
         appDataLog.is_reward_taken = false;
+        appDataLog.did_door_open = false;
     }
 
     /* Durée stationnement oiseau en secondes */
@@ -69,6 +71,8 @@ static int populateLogBuffer(void)
                    /* separator                     */ "%s"
                    /* door_status_when_bird_arrived */ "%d"
                    /* separator                     */ "%s"
+                   /* did_door_open                 */ "%d"
+                   /* separator                     */ "%s"
                    /* delayS                        */ "%lu\n",
                    appDataLog.bird_arrived_time.tm_mday,
                    appDataLog.bird_arrived_time.tm_mon,
@@ -99,6 +103,8 @@ static int populateLogBuffer(void)
                    appDataAttractiveLeds.blue[appDataLog.attractive_leds_current_color_index],
                    appDataLog.separator,
                    appDataLog.door_status_when_bird_arrived,
+                   appDataLog.separator,
+                   appDataLog.did_door_open,
                    appDataLog.separator,
                    delayS);
 

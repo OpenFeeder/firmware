@@ -439,10 +439,10 @@ void APP_Tasks( void )
                         else // ONE_LED
                         {
                             
-                            appDataAttractiveLeds.pattern[0] = 0;
-                            appDataAttractiveLeds.pattern[1] = 0;
-                            appDataAttractiveLeds.pattern[2] = 0;
-                            appDataAttractiveLeds.pattern[3] = 0;
+                            appDataAttractiveLeds.pattern[0] = 1;
+                            appDataAttractiveLeds.pattern[1] = 1;
+                            appDataAttractiveLeds.pattern[2] = 1;
+                            appDataAttractiveLeds.pattern[3] = 1;
 
                             if ( true == appDataLog.log_events )
                             {
@@ -578,6 +578,7 @@ void APP_Tasks( void )
                 /* Initialised global variable datalogging. */
                 clear_bird_sensor_detected( );
                 appDataLog.is_reward_taken = false;
+                appDataLog.did_door_open = false;
 
                 appDataLog.attractive_leds_current_color_index = appDataAttractiveLeds.current_color_index;
 
@@ -1130,6 +1131,7 @@ void APP_Tasks( void )
                 {
                     appData.rfid_signal_detected = false;
                     appDataLog.is_reward_taken = false;
+                    appDataLog.did_door_open = false;
                     appDataLog.is_pit_tag_denied = false;
                     clearPitTagBuffers( );
                     appData.state = APP_STATE_IDLE;
@@ -1207,6 +1209,7 @@ void APP_Tasks( void )
 
                 appData.rfid_signal_detected = false;
                 appDataLog.is_reward_taken = false;
+                appDataLog.did_door_open = false;
                 appDataLog.is_pit_tag_denied = false;
                 clearPitTagBuffers( );
                 appData.state = APP_STATE_DATA_LOG;
@@ -1326,6 +1329,7 @@ void APP_Tasks( void )
                 /* Skip opening door if the "remain open" flag is set */
                 if ( 1 == appDataDoor.remain_open )
                 {
+                    appDataLog.did_door_open = true;
                     appData.state = APP_STATE_WAITING_CATCH_REWARD;
                     break;
                 }
@@ -1361,6 +1365,8 @@ void APP_Tasks( void )
             /* Servomotor power command disable. */
             servomotorPowerDisable( );
 
+            appDataLog.did_door_open = true;
+            
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_SERVO_INFO)
             printf( "\tDoor opened\n");
 #endif
@@ -1751,7 +1757,7 @@ void APP_Tasks( void )
                 printf( "> APP_STATE_REMOVE_USB_DEVICE\n" );
 #endif
 #if defined (USE_UART1_SERIAL_INTERFACE)
-                printf( "\tUSB device can be removed\n");
+                printf( "\tUSB device can be safely removed\n");
 #endif
                 
                 setDelayMsStandBy(60000);
@@ -1785,6 +1791,10 @@ void APP_Tasks( void )
                 {
                    store_event(OF_STATE_FLUSH_DATA_TO_USB); 
                 }
+                
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined(DISPLAY_CURRENT_STATE)
+                printf( "\t/!\\ Don't remove the USB device yet.\n" );
+#endif
                 
                 setLedsStatusColor( LED_USB_ACCESS );
                 
@@ -2628,7 +2638,9 @@ void APP_Initialize( void )
     appDataLog.log_battery = false;
     appDataLog.log_rfid = false;
     
-    appData.bird_is_taking_reward = false;
+    appDataLog.did_door_open = false;
+    
+    appData.bird_is_taking_reward = false;    
 
     /* USB host */
     appDataUsb.usbDriveStatus = USB_DRIVE_NOT_MOUNTED;
