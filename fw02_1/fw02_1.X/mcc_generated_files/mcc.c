@@ -87,9 +87,9 @@
 
 // FDS
 #pragma config DSWDTPS = DSWDTPS1F    // Deep Sleep Watchdog Timer Postscale Select bits->1:68,719,476,736 (25.7 days)
-#pragma config DSWDTOSC = LPRC //SOSC    // DSWDT Reference Clock Select bit->DSWDT uses Low Power RC Oscillator (LPRC)
-#pragma config DSBOREN = OFF //ON    // Deep Sleep Zero-Power BOR Enable bit->Deep Sleep BOR enabled in Deep Sleep
-#pragma config DSWDTEN = OFF //on    // Deep Sleep Watchdog Timer Enable bit->DSWDT enabled
+#pragma config DSWDTOSC = LPRC    // DSWDT Reference Clock Select bit->DSWDT uses Low Power RC Oscillator (LPRC)
+#pragma config DSBOREN = OFF    // Deep Sleep Zero-Power BOR Enable bit->Deep Sleep BOR disabled in Deep Sleep
+#pragma config DSWDTEN = OFF    // Deep Sleep Watchdog Timer Enable bit->DSWDT disabled
 #pragma config DSSWEN = ON    // Deep Sleep Software Control Select Bit->Deep Sleep enabled and controlled by the DSEN bit
 
 // FDEVOPT1
@@ -117,8 +117,8 @@ void SYSTEM_Initialize(void)
     I2C1_Initialize();
     ADC1_Initialize();
     TMR3_Initialize();
-    RTCC_Initialize();
     TMR1_Initialize();
+    RTCC_Initialize();
 }
 
 void OSCILLATOR_Initialize(void)
@@ -135,8 +135,6 @@ void OSCILLATOR_Initialize(void)
     REFOCONH = 0x0000;
     // ROTRIM 0; 
     REFOTRIML = 0x0000;
-    // WDTO disabled; TRAPR disabled; SLEEP disabled; BOR disabled; DPSLP disabled; CM disabled; SWR disabled; SWDTEN disabled; EXTR disabled; POR disabled; SBOREN disabled; IDLE disabled; IOPUWR disabled; VREGS disabled; 
-    RCON = 0x0000;
 }
 
 /**

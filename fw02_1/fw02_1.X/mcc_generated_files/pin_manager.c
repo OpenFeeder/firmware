@@ -15,7 +15,7 @@
   @Description:
     This source file provides implementations for MPLAB(c) Code Configurator interrupts.
     Generation Information : 
-        Product Revision  :  MPLAB(c) Code Configurator - 4.15.5
+        Product Revision  :  MPLAB(c) Code Configurator - 4.15.7
         Device            :  PIC24FJ256GB406
     The generated drivers are tested against the following:
         Compiler          :  XC16 1.31
@@ -69,7 +69,6 @@ void PIN_MANAGER_Initialize(void)
     /****************************************************************************
      * Setting the GPIO Direction SFR(s)
      ***************************************************************************/
-//    TRISB = 0x47DF;
     TRISB = 0x47FF;
     TRISC = 0x1000;
     TRISD = 0x0E37;
