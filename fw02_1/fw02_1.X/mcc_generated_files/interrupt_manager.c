@@ -64,6 +64,21 @@ void INTERRUPT_Initialize (void)
     //    URXI: U1RX - UART1 Receiver
     //    Priority: 2
         IPC2bits.U1RXIP = 2;
+    //    INT0I: INT0 - External Interrupt 0
+    //    Priority: 6
+        IPC0bits.INT0IP = 6;
+    //    INT3I: INT3 - External Interrupt 3
+    //    Priority: 7
+        IPC13bits.INT3IP = 7;
+    //    INT4I: INT4 - External Interrupt 4
+    //    Priority: 7
+        IPC13bits.INT4IP = 7;
+    //    INT1I: INT1 - External Interrupt 1
+    //    Priority: 5
+        IPC5bits.INT1IP = 5;
+    //    INT2I: INT2 - External Interrupt 2
+    //    Priority: 6
+        IPC7bits.INT2IP = 6;
     //    MICI: MI2C1 - I2C1 Master Events
     //    Priority: 2
         IPC4bits.MI2C1IP = 2;
