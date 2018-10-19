@@ -113,12 +113,13 @@ void SYSTEM_Initialize(void)
     TMR4_Initialize();
     TMR2_Initialize();
     EXT_INT_Initialize();
+    UART2_Initialize();
     OC5_Initialize();
     I2C1_Initialize();
     ADC1_Initialize();
     TMR3_Initialize();
-    RTCC_Initialize();
     TMR1_Initialize();
+    RTCC_Initialize();
 }
 
 void OSCILLATOR_Initialize(void)

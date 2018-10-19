@@ -1401,8 +1401,20 @@ void APP_Tasks( void )
                 
                 if ( 0 == appData.reward_enable )
                 {
-                    printf("\tReward disabled, waiting reward timemout to end.\n");
-                    while (false == isDelayMsEnding( ));
+                    if ( appData.timeout_taking_reward > 0 )
+                    {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                        printf("\tReward disabled, waiting reward timeout to end.\n");
+#endif 
+                        while (false == isDelayMsEnding( ));
+                    }
+                    else
+                    {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                        printf("\tReward disabled. No timeout reward.\n");
+#endif 
+                    }
+                    
                     EX_INT1_InterruptDisable( );
                     EX_INT1_PositiveEdgeSet( );
                     EX_INT1_InterruptFlagClear( );
