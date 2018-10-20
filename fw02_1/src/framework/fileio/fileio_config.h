@@ -60,11 +60,11 @@
 //#define FILEIO_CONFIG_WRITE_DISABLE
 
 // Define FILEIO_CONFIG_FUNCTION_FORMAT to disable the function used to format drives.
-//#define FILEIO_CONFIG_FORMAT_DISABLE
+#define FILEIO_CONFIG_FORMAT_DISABLE
 
 // Define FILEIO_CONFIG_FUNCTION_DIRECTORY to disable use of directories on your drive.  Disabling this feature will
 // limit you to performing all file operations in the root directory.
-//#define FILEIO_CONFIG_DIRECTORY_DISABLE
+#define FILEIO_CONFIG_DIRECTORY_DISABLE
 
 // Define FILEIO_CONFIG_FUNCTION_DRIVE_PROPERTIES to disable the FILEIO_DrivePropertiesGet function.  This function
 // will determine the properties of your device, including unused memory.
