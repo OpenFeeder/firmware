@@ -120,7 +120,10 @@ void APP_Tasks( void )
     I2C1_MESSAGE_STATUS i2c_status;
     int i;
     static bool enter_default_state = false;
-
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
+    FILEIO_DRIVE_PROPERTIES drive_properties;
+#endif
+    
     static int num_timeout_reward;
     
     /* Check the Application State. */
@@ -193,6 +196,46 @@ void APP_Tasks( void )
                     appData.state = APP_STATE_ERROR;
                     break;
                 }
+                
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
+                drive_properties.new_request = true;
+                do
+                {
+                    FILEIO_DrivePropertiesGet(&drive_properties, 'A');
+                } while (drive_properties.properties_status == FILEIO_GET_PROPERTIES_STILL_WORKING);
+                
+                if (FILEIO_GET_PROPERTIES_NO_ERRORS == drive_properties.properties_status)
+                {
+                    printf("\tUSB device properties\n");
+                    if (1 == drive_properties.results.disk_format)
+                    {
+                        printf("\t\tDrive format: FAT12\n");
+                    }
+                    else if (2 == drive_properties.results.disk_format)
+                    {
+                        printf("\t\tDrive format: FAT16\n");
+                    }                        
+                    else if (3 == drive_properties.results.disk_format)
+                    {
+                        printf("\t\tDrive format: FAT32\n");
+                    }
+                    else
+                    {
+                        printf("\t\tDrive format: unknown (%d)\n", drive_properties.results.disk_format);
+                    }
+                    printf("\t\tSector size: %u\n", drive_properties.results.sector_size);
+                    printf("\t\tSector per cluster: %u\n", drive_properties.results.sectors_per_cluster);
+                    printf("\t\tTotal clusters: %lu\n", drive_properties.results.total_clusters);
+                    printf("\t\tFree clusters: %lu\n", drive_properties.results.free_clusters);                    
+                    printf("\t\tTotal space: %lu MB\n", drive_properties.results.total_clusters*drive_properties.results.sectors_per_cluster*drive_properties.results.sector_size/1024/1024);
+                    printf("\t\tFree space: %lu MB\n\n", drive_properties.results.free_clusters*drive_properties.results.sectors_per_cluster*drive_properties.results.sector_size/1024/1024);
+                }
+                else
+                {
+                    printf("\tUSB device properties\n\t\tGet properties failed (%d)\n\n", drive_properties.properties_status);
+                }
+#endif 
+                
             }
             else
             {

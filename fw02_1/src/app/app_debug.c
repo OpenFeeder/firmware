@@ -194,6 +194,7 @@ void APP_SerialDebugTasks( void )
     uint16_t dc_pwm;
     int i;
     bool flag;
+    FILEIO_DRIVE_PROPERTIES drive_properties;
 
     if ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) )
     {
@@ -207,11 +208,11 @@ void APP_SerialDebugTasks( void )
                 /* Interface firmware terminal (Debug) */
                 printf( "Key mapping:\n" );
                 printf( " !: displaying the build date and time\n" );
-                printf( " a or A: analog measure of the servomotor position, battery voltage and VBAT voltage\n" );
+                printf( " a or A: measure servomotor position, battery level, VBAT level, RFID, frequency\n" );
                 printf( " b or B: set blue color value of RGB attractive LEDs\n" );
                 printf( " c or C: close door\n" );
                 printf( " d or D: display internal buffers\n" );
-                printf( " e or E: measuring RDY/CLK period of EM4095\n" );
+                printf( " e or E: get USB device properties\n" );
                 printf( " f or F: display configuration parameters (CONFIG.INI)\n" );
                 printf( " g or G: set green color value of RGB attractive LEDs\n" );
                 printf( " h or H: toggle door remain open parameter\n" );
@@ -223,7 +224,7 @@ void APP_SerialDebugTasks( void )
                 printf( "\t> 1: initialize the PCA9622 device\n" );
                 printf( "\t> 2: Toggle Output Enable (OE) pin\n" );
                 printf( "\t> 3: Toggle LED D16 color green or red\n" );
-                printf( " n or N: Test display battery level\n"); // NOT AFFECTED
+                printf( " n or N: NOT USED\n");
                 printf( " o or O: open door\n" );
                 printf( " p or P: change servomotor position\n" );
                 printf( " q or Q: check status LEDs\n" );
@@ -231,11 +232,11 @@ void APP_SerialDebugTasks( void )
                 printf( " s or S: set RTCC module date and time value\n" );
                 printf( " t or T: display date and time from RTCC module\n" );
                 printf( " u or U: reconfigure the system (USB key read)\n" );
-                printf( " v or V: set status of servomotor power command\n" );
-                printf( " w or W: toggle power command (CMD_ACC_PIR)\n" );
-                printf( " x or X: display external interrupt and timers states\n" );
+                printf( " v or V: toggle servomotor power\n" );
+                printf( " w or W: toggle CMD_ACC_PIR power\n" );
+                printf( " x or X: toggle CMD_VDD_APP_V_USB power\n" );
                 printf( " y or Y: display all commands values\n" );
-                printf( " z or Z: check important parameters\n" );
+                printf( " z or Z: NOT USED\n" );
                 break;
 
             case '!':
@@ -274,6 +275,17 @@ void APP_SerialDebugTasks( void )
                 analog_measure = getADC1value( ADC1_CHANNEL_CTMU_TEMPERATURE_SENSOR_INPUT );
                 printf( "CTMU temperature sensor: (%u)\n", analog_measure );
 
+                /* Measuring RDY/CLK period of EM4095 */
+                flag = measureRfidFreq( );
+                if ( flag )
+                {
+                    displayRfidFreq( );
+                }
+                else
+                {
+                    printf( "\tTimeout reached during RFID mesure.\n" );
+                }
+                
                 break;
             }
                 /* -------------------------------------------------------------- */
@@ -397,16 +409,52 @@ void APP_SerialDebugTasks( void )
 
             case 'e':
             case 'E':
-                /* Measuring RDY/CLK period of EM4095 */
-                flag = measureRfidFreq( );
-                if ( flag )
+                
+                /* Get USB device properties */
+                
+                printf("\tPlease wait, process is slow (approx. 7s per GB of drive space)\n");
+                
+                usbMountDrive( );
+                
+                drive_properties.new_request = true;
+                do
                 {
-                    displayRfidFreq( );
+                    FILEIO_DrivePropertiesGet(&drive_properties, 'A');
+                } while (drive_properties.properties_status == FILEIO_GET_PROPERTIES_STILL_WORKING);
+                
+                if (FILEIO_GET_PROPERTIES_NO_ERRORS == drive_properties.properties_status)
+                {
+                    printf("\tUSB device properties\n");
+                    if (1 == drive_properties.results.disk_format)
+                    {
+                        printf("\t\tDrive format: FAT12\n");
+                    }
+                    else if (2 == drive_properties.results.disk_format)
+                    {
+                        printf("\t\tDrive format: FAT16\n");
+                    }                        
+                    else if (3 == drive_properties.results.disk_format)
+                    {
+                        printf("\t\tDrive format: FAT32\n");
+                    }
+                    else
+                    {
+                        printf("\t\tDrive format: unknown (%d)\n", drive_properties.results.disk_format);
+                    }
+                    printf("\t\tSector size: %u\n", drive_properties.results.sector_size);
+                    printf("\t\tSector per cluster: %u\n", drive_properties.results.sectors_per_cluster);
+                    printf("\t\tTotal clusters: %lu\n", drive_properties.results.total_clusters);
+                    printf("\t\tFree clusters: %lu\n", drive_properties.results.free_clusters);                    
+                    printf("\t\tTotal space: %lu MB\n", drive_properties.results.total_clusters*drive_properties.results.sectors_per_cluster*drive_properties.results.sector_size/1024/1024);
+                    printf("\t\tFree space: %lu MB\n\n", drive_properties.results.free_clusters*drive_properties.results.sectors_per_cluster*drive_properties.results.sector_size/1024/1024);
                 }
                 else
                 {
-                    printf( "\tTimeout reached during RFID mesure.\n" );
+                    printf("\tUSB device properties\n\t\tGet properties failed (%d)\n\n", drive_properties.properties_status);
                 }
+                
+                usbUnmountDrive( );
+                
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -1069,40 +1117,7 @@ void APP_SerialDebugTasks( void )
             case 'n':
             case 'N':
             {
-                /* Toggle LED D16 on PCA9622 */
-                static bool led_d16_state = false;
-                I2C1_MESSAGE_STATUS i2c_status = I2C1_MESSAGE_COMPLETE; // the status of write data on I2C bus
-                uint8_t writeBuffer[2]; // data to transmit
-
-                /* Write I2C demo */
-                if ( false == led_d16_state )
-                {
-                    /* Set Red LED low on D16 */
-                    writeBuffer[0] = CTRLREG_PWM12;
-                    writeBuffer[1] = 0x00;
-                    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
-                    /* Set Green LED high on D16 */
-                    writeBuffer[0] = CTRLREG_PWM13;
-                    writeBuffer[1] = 0xFF;
-                    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
-
-                    led_d16_state = true;
-                    printf( "LED D16 Green.\n" );
-                }
-                else
-                {
-                    /* Set Red LED high on D16 */
-                    writeBuffer[0] = CTRLREG_PWM12;
-                    writeBuffer[1] = 0xFF;
-                    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
-                    /* Set Green LED low on D16 */
-                    writeBuffer[0] = CTRLREG_PWM13;
-                    writeBuffer[1] = 0x00;
-                    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
-
-                    led_d16_state = false;
-                    printf( "LED D16 Red.\n" );
-                }
+                /* Not used */
                 break;
             }
                 /* -------------------------------------------------------------- */
@@ -1606,40 +1621,7 @@ void APP_SerialDebugTasks( void )
 
             case 'z':
             case 'Z':
-                /* Check important parameters */
-                printf( "Important parameters\n" );
-                if ( true == isPowerBatteryGood( ) )
-                {
-                    printf( "\tBattery OK\n" );
-                }
-                else
-                {
-                    printf( "\tBattery PB\n" );
-                }
-                if ( true == isPowerVbatGood( ) )
-                {
-                    printf( "\tVbat OK\n" );
-                }
-                else
-                {
-                    printf( "\tVbat PB\n" );
-                }
-                if ( true == isEnoughFood( ) )
-                {
-                    printf( "\tFood OK\n" );
-                }
-                else
-                {
-                    printf( "\tFood PB\n" );
-                }
-                if ( true == isRfidFreqGood( ) )
-                {
-                    printf( "\tRFID OK\n" );
-                }
-                else
-                {
-                    printf( "\tRFID PB\n" );
-                }
+                /* Not used */                
                 break;
                 /* -------------------------------------------------------------- */
             default:
