@@ -380,11 +380,15 @@ bool USB_ApplicationEventHandler( uint8_t address, USB_EVENT event, void *data, 
                 {
                     if ( USB_UNKNOWN_DEVICE == success )
                     {
-                        printf( "\tUnable to suspend drive: USB unknown device\n" );
+                        #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
+                            printf( "\tUnable to suspend drive: USB unknown device\n" );
+                        #endif 
                     }
                     else /* USB_ILLEGAL_REQUEST */
                     {
-                        printf( "\tCannot suspend unless device is in normal run mode\n" );
+                        #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
+                            printf( "\tCannot suspend unless device is in normal run mode\n" );
+                        #endif 
                     }
                 }
                 else
