@@ -62,11 +62,12 @@ void i2cScanner( void )
 {
     uint16_t addr7bits = 0; // variable 7-bits slave address for scan I2C bus
     uint8_t device_found = 0; // number of I2C device found on the bus
-    uint8_t device_lost = 0; // count number of I2C device not found on the bus
+//    uint8_t device_lost = 0; // count number of I2C device not found on the bus
     I2C1_MESSAGE_STATUS status; // generic I2C status return of MCC functions
     uint8_t writeBuffer[2];
-    //writeBuffer[0] = data2transmit...; // no data to transmit
 
+    printf("\tI2C bus scan started. 7 bit address used.\n");
+        
     // main loop to scan address from 0x00, 0x02 ... to 0x7F
     while ( addr7bits < 0x80 )
     {
@@ -81,29 +82,31 @@ void i2cScanner( void )
         if ( status == I2C1_MESSAGE_COMPLETE )
         {
             uint8_t addr8bits = addr7bits << 1; // convert 7-bits address to 8-bits format (Byte format)
-            //sprintf(string_char, "\r\nFound 8 bit Add: %d (dec)", addr); // print in decemal format
+            
             // print address in hexa format :
-            printf( "\nFound 8 bit Add: 0x%c%c (hex)\n", hex2digit[addr8bits >> 4], hex2digit[addr8bits & 0x0F] );
+            printf("\t\tSlave found. 7 bit address = 0x%02X; 8 bit address = 0x%02X\n", addr7bits, addr8bits);
+
             ++device_found; // inc. device_found +1
         }
-        else
-        {
-            printf( "." );
-            ++device_lost;
-        }
+//        else
+//        {
+////            printf( "." );
+//            ++device_lost;
+//        }
         ++addr7bits; // inc. device addr +1
     }
 
-    printf( "\nDone!\n\n" );
+    printf("\tI2C bus scan finished\n");
+//    printf( "\nDone!\n\n" );
 
-    if ( device_found )
-    {
-        printf( "%d I2C device found, and %d not match.\n\n", device_found, device_lost );
-    }
-    else
-    {
-        printf( "No I2C device found!\n\n" );
-    }
+//    if ( device_found )
+//    {
+//        printf( "\t%d I2C device found, and %d not match.\n\n", device_found, device_lost );
+//    }
+//    else
+//    {
+//        printf( "\tNo I2C device found!\n\n" );
+//    }
 }
 
 
