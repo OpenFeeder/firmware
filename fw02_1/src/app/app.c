@@ -530,7 +530,7 @@ void APP_Tasks( void )
                 EX_INT0_InterruptEnable( );
 
                 clearPitTagBuffers( );
-                appDataPitTag.number_of_valid_pit_tag = 0;
+                clearPitTagSringBuffers( );
                 
                 appData.test_rfid = false;
                 clear_bird_sensor_detected( );
@@ -2676,17 +2676,13 @@ void APP_Initialize( void )
     appDataPitTag. numPitTagDeniedOrColorA = 0;
     appDataPitTag.numPitTagAcceptedOrColorB = 0;
     appDataPitTag.pitTagIndexInList = 0;
+    clearPitTagBuffers( );
+    clearPitTagSringBuffers( );
 
     for ( i = 0; i < MAX_PIT_TAGS_LIST_NUMBER; ++i )
     {
         appDataPitTag.isPitTagdeniedOrColorA[i] = false;
     }
-    
-    for ( i = 0; i < 10; ++i )
-    {
-        appDataPitTag.previous_pit_tags[i] = 'X';
-    }
-    appDataPitTag.previous_pit_tags[10] = '\0';
 
     appDataPitTag.timeout_unique_visit = 0;
         

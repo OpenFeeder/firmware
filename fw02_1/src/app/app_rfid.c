@@ -250,17 +250,24 @@ bool APP_Rfid_Task( void )
 
 void clearPitTagBuffers( void )
 {
-    int i;
-
-    for ( i = 0; i < 10; ++i )
-    {
-        g_pit_tag_tab[i] = 0;
-        g_previous_pit_tag_tab[i] = 0;
-    }
-
+    
     appDataPitTag.number_of_valid_pit_tag = 0;
+    
+    memset(g_pit_tag_tab, 0, 10);
+    memset(g_previous_pit_tag_tab, 0, 10);
+
 }
 
+void clearPitTagSringBuffers( void )
+{
+    
+    memset(appDataLog.bird_pit_tag_str, 'J', sizeof(appDataLog.bird_pit_tag_str));
+    appDataLog.bird_pit_tag_str[10] = '\0';
+       
+    memset(appDataPitTag.previous_pit_tags_str, 'K', sizeof(appDataPitTag.previous_pit_tags_str));
+    appDataPitTag.previous_pit_tags_str[10] = '\0';
+    
+}
 
 bool isItANewPitTag(void)
 {
@@ -269,7 +276,7 @@ bool isItANewPitTag(void)
     struct tm tm1;
     struct tm tm2;
     
-    if ( 0 == strcmp( appDataLog.bird_pit_tag_str, appDataPitTag.previous_pit_tags ) )
+    if ( 0 == strcmp( appDataLog.bird_pit_tag_str, appDataPitTag.previous_pit_tags_str ) )
     {
         
 //        printf( "%02u/%02u/20%02u %02u:%02u:%02u ",
@@ -327,7 +334,7 @@ bool isItANewPitTag(void)
     }
     else
     {
-        strcpy(appDataPitTag.previous_pit_tags, appDataLog.bird_pit_tag_str);
+        strcpy(appDataPitTag.previous_pit_tags_str, appDataLog.bird_pit_tag_str);
         appDataPitTag.previous_arrived_time = appDataLog.bird_arrived_time;
         return true;
     }

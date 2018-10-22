@@ -37,7 +37,7 @@ typedef struct
     /* List of PIT tags */
     char pit_tags_list[MAX_PIT_TAGS_LIST_NUMBER][11];
     
-    char previous_pit_tags[11];
+    char previous_pit_tags_str[11];
     struct tm previous_arrived_time;
     
     uint8_t reward_probability[MAX_PIT_TAGS_LIST_NUMBER];
@@ -96,6 +96,7 @@ bool isItANewPitTag(void);
 void findPitTagInList( void );
 bool isPitTagDenied( void );
 void clearPitTagBuffers( void );
+void clearPitTagSringBuffers( void );
 bool measureRfidFreq( void );
 void displayRfidFreq( void );
 
