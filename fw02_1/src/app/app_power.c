@@ -120,7 +120,7 @@ void getVBatLevel( void )
 void printVBatLevel( void )
 {
 #if defined (USE_UART1_SERIAL_INTERFACE) 
-    printf( "VBat level: %2.3f V (%u)\n", 2.0 * appData.vbat_level * VBAT_VOLTAGE_FACTOR, appData.vbat_level );
+    printf( "\tVBat level: %2.3f V (%u)\n", 2.0 * appData.vbat_level * VBAT_VOLTAGE_FACTOR, appData.vbat_level );
 #endif 
 }
 
@@ -147,7 +147,7 @@ void getBatteryLevel( void )
 void printBatteryLevel( void )
 {
 #if defined (USE_UART1_SERIAL_INTERFACE) 
-    printf( "Battery level: %2.3f V (%u)\n", appData.battery_level * BATTERY_VOLTAGE_FACTOR, appData.battery_level );
+    printf( "\tBattery level: %2.3f V (%u)\n", appData.battery_level * BATTERY_VOLTAGE_FACTOR, appData.battery_level );
 #endif 
 
 }

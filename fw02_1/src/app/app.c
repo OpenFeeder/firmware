@@ -254,7 +254,7 @@ void APP_Tasks( void )
                 break;
             }
 
-            setLedsStatusColor( LED_BLUE );
+            setLedsStatusColor( LED_USB_ACCESS );
 
             if ( true == appDataLog.log_events )
             {
@@ -1942,9 +1942,12 @@ void APP_Tasks( void )
                 printf( "> APP_STATE_TEST_RFID\n" );
 #endif
 #if defined (USE_UART1_SERIAL_INTERFACE) 
-                printf( "\tDebug not available\n\tPress the user button to stop RFID\n" );
+                printf( "\t/!\\ Debug not available in RFID test mode.\n\tRFID test is launched for 60s.\n\tPress the user button to stop the test.\n" );
 #endif
                 
+                initAttractiveLeds();
+                setAttractiveLedsOn();
+                    
                 if ( true == appDataLog.log_events )
                 {
                    store_event(OF_STATE_TEST_RFID); 
@@ -1958,15 +1961,15 @@ void APP_Tasks( void )
                 
                 button_user_state = BUTTON_NOT_PRESSED;
 
-                for (i=0;i<3;i++)
-                {
-                    setLedsStatusColor( LEDS_ON );
-                    setDelayMs( 500 );
-                    while ( 0 == isDelayMsEnding( ) ); 
-                    setLedsStatusColor( LEDS_OFF );
-                    setDelayMs( 500 );
-                    while ( 0 == isDelayMsEnding( ) ); 
-                }
+//                for (i=0;i<3;i++)
+//                {
+//                    setLedsStatusColor( LEDS_ON );
+//                    setDelayMs( 500 );
+//                    while ( 0 == isDelayMsEnding( ) ); 
+//                    setLedsStatusColor( LEDS_OFF );
+//                    setDelayMs( 500 );
+//                    while ( 0 == isDelayMsEnding( ) ); 
+//                }
                 
                 appData.test_rfid = true;
                 
@@ -2030,16 +2033,22 @@ void APP_Tasks( void )
                     
                     if (true == appDataLog.is_pit_tag_denied)
                     {
-                        setLedsStatusColor( LED_PITTAG_DENIED );
+//                        setLedsStatusColor( LED_PITTAG_DENIED );
+                        setOneAttractiveLedColor( 1, 0, 0, 0 );
+                        setOneAttractiveLedColor( 2, 35, 0, 0 );
                     }
                     else
                     {
-                        setLedsStatusColor( LED_PITTAG_ACCEPTED );
+//                        setLedsStatusColor( LED_PITTAG_ACCEPTED );
+                        setOneAttractiveLedColor( 1, 0, 0, 0 );
+                        setOneAttractiveLedColor( 2, 0, 35, 0 );
                     }
                 }
                 else
                 {
-                    setLedsStatusColor(LED_BLUE);
+//                    setLedsStatusColor(LED_BLUE);
+                    setOneAttractiveLedColor( 1, 0, 0, 35 );
+                    setOneAttractiveLedColor( 2, 0, 0, 0 );
                 }
 
                 appData.rfid_signal_detected = false;
@@ -2047,13 +2056,19 @@ void APP_Tasks( void )
             }
             else
             {
-               setLedsStatusColor( LEDS_OFF ); 
+//               setLedsStatusColor( LEDS_OFF ); 
+               setOneAttractiveLedColor( 1, 0, 0, 0 );
+               setOneAttractiveLedColor( 2, 0, 0, 0 );
             }
             
             button_user_state = USER_BUTTON_GetValue( );
 
             if ( BUTTON_PRESSED == button_user_state || true == isDelayMsEndingStandBy() )
             {
+                
+#if defined (USE_UART1_SERIAL_INTERFACE) 
+                printf( "\tQuit RFID test mode => back to normal mode in 3s.\n" );
+#endif
                 RFID_Disable( );
                 
                 appData.test_rfid = false;

@@ -384,7 +384,7 @@ bool isPitTagDenied( void )
 void displayRfidFreq( void )
 {
 #if defined (USE_UART1_SERIAL_INTERFACE)
-    printf( "RDY/CLK signal frequency: %u (x10Hz)\n", appData.rfid_rdyclk );
+    printf( "\tRDY/CLK signal frequency: %u (x10Hz)\n", appData.rfid_rdyclk );
 #endif
 }
 

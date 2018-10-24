@@ -17,7 +17,6 @@
 /* Current date to a C string (page 244)) */
 const uint8_t BUILD_DATE[] = { __DATE__ };
 const uint8_t BUILD_TIME[] = { __TIME__ };
-//const uint8_t REV[] = { "01" }; // TODO: Increment REV number each time the code was modified!
 
 uint8_t getCompletScenarioNumber( void )
 {
@@ -62,15 +61,26 @@ void getDeviceId( void )
 
 void displayDeviceId( void )
 {
-    printf("*** Individual Device Identifier ***\n");
-    printf("* Family ID: %u\n", appData.id.family);
-    printf("* Individual ID: %u\n" , appData.id.device);
-    printf("* Revision: %u\n", appData.id.revision);
-    printf("***************************************************\n"); 
+    /* DS30010089D-page 482 */
+    
+    if (appData.id.family == 97 && appData.id.device == 20)
+    {
+        printf("\tMicrocontroler:\n\t\tPIC24FJ256GB406\n");
+    }
+    else
+    {
+        printf("\tMicrocontroler:\n\t\tunknown\n");
+    }
+    printf("\tIndividual Device Identifier\n");
+    printf("\t\tFamily ID: %u\n", appData.id.family);
+    printf("\t\tIndividual ID: %u\n" , appData.id.device);
+    printf("\t\tRevision: %u\n\n", appData.id.revision);
 }
 
 void getUniqueDeviceId( void )
 {
+    /* DS30010089D-page 74 */
+    
     int tblpageReg, addrOffset;
     
     uint32_t readDataL, readDataH;
@@ -148,8 +158,6 @@ void displayFirmwareVersion( void )
 void displayBootMessage( void )
 {
     printf( "\n\n================ OpenFeeder ================\n\t" );
-//    printf( "      Firmware: %s v%d.%d.%d\n", FW_NAME, FW_VERSION_MAJOR, FW_VERSION_MINOR, FW_VERSION_PATCH);
-//    printf( "      Built on %s, %s\n", BUILD_DATE, BUILD_TIME );
     displayFirmwareVersion();
     printf( "\t" );
     displayBuildDateTime();
@@ -207,156 +215,170 @@ void APP_SerialDebugTasks( void )
             case '?':
                 /* Interface firmware terminal (Debug) */
                 printf( "Key mapping:\n" );
-                printf( " !: displaying the build date and time\n" );
-                printf( " a or A: measure servomotor position, battery level, VBAT level, RFID, frequency\n" );
-                printf( " b or B: set blue color value of RGB attractive LEDs\n" );
-                printf( " c or C: close door\n" );
-                printf( " d or D: display internal buffers\n" );
-                printf( " e or E: get USB device properties\n" );
-                printf( " f or F: display configuration parameters (CONFIG.INI)\n" );
-                printf( " g or G: set green color value of RGB attractive LEDs\n" );
-                printf( " h or H: toggle door remain open parameter\n" );
-                printf( " i or I: toggle IR barriers power\n" );
+//                printf( " !: displaying the build date and time\n" );
+                printf( " a or A: attractive LEDs\n" );
+                printf( "   - b or B: set blue component\n" );
+                printf( "   - g or G: set green component\n" );
+                printf( "   - i or I: initialize LEDs command\n" );
+                printf( "   - r or R: set red component\n" );
+                printf( "   - t or T: test LEDs\n" );                
+                printf( " b or B: data buffers\n" );
+                printf( " c or C: manage configuration\n" );
+                printf( "   - d or D: display configuration parameters\n" );
+                printf( "   - r or R: reconfigure the system\n" );
+                printf( " d or D: door\n" );
+                printf( "   - c or C: close door\n" );
+                printf( "   - o or O: open door\n" );
+                printf( "   - p or P: set door position\n" );
+                printf( "   - r or R: toggle remain open parameter\n" );
+//                printf( "> e or E: NOT USED\n" );
+                printf( " f or F: firmware\n" );
+//                printf( "> g or G: NOT USED\n" );
+                printf( " h or H: hardware\n" );
+                printf( " i or I: IR barriers\n" );
+                printf( "   - p or P: toggle IR barriers power\n" );
+                printf( "   - s or S: get IR barriers status\n" );
                 printf( " j or J: files I/O on USB device\n" );
-                printf( " k or K: display IR1 and IR2 state\n" );
-                printf( " l or L: call i2cScanner( ) to found I2C devices attached.\n" ); //  --> 0x02, 0x06 and 0xE0
-                printf( " m or M: menu to control PCA9622 device\n" );
-                printf( "\t> 1: initialize the PCA9622 device\n" );
-                printf( "\t> 2: Toggle Output Enable (OE) pin\n" );
-                printf( "\t> 3: Toggle LED D16 color green or red\n" );
-                printf( " n or N: NOT USED\n");
-                printf( " o or O: open door\n" );
-                printf( " p or P: change servomotor position\n" );
+                printf( "   - c or C: display CSV files\n" );
+                printf( "   - e or E: display errors file\n" );
+                printf( "   - i or I: display CONFIG.INI\n" );
+                printf( "   - l or L: list files\n" );
+                printf( "   - x or X: export files\n" );
+                printf( " k or K: USB device properties\n" );
+                printf( " l or L: scan I2C bus\n" ); //  --> 0x02, 0x06 and 0xE0
+                printf( " m or M: measure\n" );
+                printf( "   - b or B: battery level\n" );
+                printf( "   - c or C: CTMU\n" );
+                printf( "   - d or D: servomotor position\n" );
+                printf( "   - r or R: RFID frequency\n" );
+                printf( "   - v or V: VBat level\n" );
+//                printf( "> n or N: NOT USED\n" );
+//                printf( "> o or O: NOT USED\n" );                
+                printf( " p or P: power\n" );             
+                printf( "   - 1: toggle servomotor power\n" );
+                printf( "   - 2: toggle CMD_ACC_PIR power\n" );
+                printf( "   - 3: toggle CMD_VDD_APP_V_USB power\n" );
+                printf( "   - 4: toggle IR barriers power\n" );               
                 printf( " q or Q: check status LEDs\n" );
-                printf( " r or R: set red color value of RGB attractive LEDs\n" );
-                printf( " s or S: set RTCC module date and time value\n" );
-                printf( " t or T: display date and time from RTCC module\n" );
-                printf( " u or U: reconfigure the system (USB key read)\n" );
-                printf( " v or V: toggle servomotor power\n" );
-                printf( " w or W: toggle CMD_ACC_PIR power\n" );
-                printf( " x or X: toggle CMD_VDD_APP_V_USB power\n" );
-                printf( " y or Y: display all commands values\n" );
-                printf( " z or Z: NOT USED\n" );
+//                printf( "> r or R: NOT USED\n" );
+                printf( " s     : set date and time (string)\n" );
+                printf( " S     : set date and time (numerical)\n" );
+                printf( " t     : get date and time (string)\n" );
+                printf( " T     : get date and time (numerical)\n" );
+                printf( " u or U: Unique Device Id (UDID)\n" );
+//                printf( " v or V: NOT USED\n" );
+//                printf( "> w or W: NOT USED\n" );
+//                printf( "> x or X: NOT USED\n" );
+                printf( " y or Y: display reset registers\n" );
+                printf( " z or Z: test RFID\n" );
                 break;
 
-            case '!':
-                displayBuildDateTime( );
-                break;
+//            case '!':
+//                displayBuildDateTime( );
+//                break;
 
             case 'a':
             case 'A':
             {
-                /* Analogic measures */
-                uint16_t analog_measure;
-
-                /* Position of the servomotor. */
-
-                if ( false == isPowerServoEnable( ) )
-                {
-                    servomotorPowerEnable( );
-                    analog_measure = servomotorGetDoorPosition( );
-                    servomotorPowerDisable( );
-                }
-                else
-                {
-                    analog_measure = servomotorGetDoorPosition( );
-                }
-                printf( "Servo position: %u\n", analog_measure );
-
-                /* Battery level */
-                appData.battery_level = getADC1value( ADC1_CHANNEL_MA_12V );
-                printBatteryLevel( );
-
-                /* VBat level */
-                appData.vbat_level = getADC1value( ADC1_CHANNEL_VBAT_2 );
-                printVBatLevel( );
-
-                /* CTMU */
-                analog_measure = getADC1value( ADC1_CHANNEL_CTMU_TEMPERATURE_SENSOR_INPUT );
-                printf( "CTMU temperature sensor: (%u)\n", analog_measure );
-
-                /* Measuring RDY/CLK period of EM4095 */
-                flag = measureRfidFreq( );
-                if ( flag )
-                {
-                    displayRfidFreq( );
-                }
-                else
-                {
-                    printf( "\tTimeout reached during RFID mesure.\n" );
-                }
+                uint8_t user_choice;
                 
-                break;
+//                printf( "Attractive LEDs :\n" );
+//                printf( "\tb or B: set blue component\n" );
+//                printf( "\tg or G: set green component\n" );
+//                printf( "\ti or I: initialize LEDs command\n" );
+//                printf( "\tr or R: set red component\n" );
+//                printf( "\tt or T: test LEDs\n" );
+                
+                while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
+                user_choice = UART1_Read( );
+
+                switch ( user_choice )
+                {
+                    case 'b':
+                    case 'B':
+                    {
+                        /* Set blue color value of attractive LEDs. */
+                        setLedsStatusColor( LED_BLUE );
+                        printf( "Set Blue LED, enter a value from 0 to 255:\n" );
+
+                        /* Read uint16_t from terminal. */
+                        dc_pwm = readIntFromUart1( );
+                        if ( dc_pwm > 255 )
+                        {
+                            dc_pwm = 255;
+                        }
+                        printf( "Duty cycle PWM3: %u/255\n", dc_pwm ); /* Check received data. */
+
+                        /* Set DC of PWM3. */
+                        setAttractiveBlueLedsColor( dc_pwm );
+                        setAttractiveLedsOn( );
+                        break;
+                    }
+                    case 'g':
+                    case 'G':
+                    {
+                        
+                        /* Set green color value of attractive LEDs. */
+                        setLedsStatusColor( LED_GREEN );
+                        printf( "Set Green LED, enter a value from 0 to 255:\n" );
+
+                        /* Read uint16_t from terminal. */
+                        dc_pwm = readIntFromUart1( );
+                        if ( dc_pwm > 255 )
+                        {
+                            dc_pwm = 255;
+                        }
+                        printf( "Duty cycle PWM2: %u/255\n", dc_pwm ); /* Check received data. */
+
+                        /* Set DC of PWM2. */
+                        setAttractiveGreenLedsColor( dc_pwm );
+                        setAttractiveLedsOn( );
+                        break;
+                    }
+                    case 'i':
+                    case 'I':
+                    {
+                        initAttractiveLeds( );
+                        break;
+                    }
+                    case 'r':
+                    case 'R':
+                    {
+                        /* Set red color value of attractive LEDs. */
+                        setLedsStatusColor( LED_RED );
+                        printf( "Set color of Red LED, enter a value from 0 to 255:\n" );
+
+                        /* Read uint16_t from terminal. */
+                        dc_pwm = readIntFromUart1( );
+                        if ( dc_pwm > 255 )
+                        {
+                            dc_pwm = 255;
+                        }
+                        printf( "Duty cycle PWM1: %u/255\n", dc_pwm ); /* Check received data. */
+
+                        /* Set DC of PWM1. */
+                        setAttractiveRedLedsColor( dc_pwm );
+                        setAttractiveLedsOn( );
+                        break;
+                    }
+                    case 't':
+                    case 'T':
+                    {
+                        setAttractiveLedsOn();
+                        setAttractiveLedsNoColor();
+                        testAttractiveLeds();
+                        setAttractiveLedsNoColor();
+                        setAttractiveLedsOff();
+                        break;
+                    }
+                    
+                }
             }
+                break;
                 /* -------------------------------------------------------------- */
 
             case 'b':
             case 'B':
-                /* Set blue color value of attractive LEDs. */
-                setLedsStatusColor( LED_BLUE );
-                printf( "Set Blue LED, enter a value from 0 to 255:\n" );
-
-                /* Read uint16_t from terminal. */
-                dc_pwm = readIntFromUart1( );
-                if ( dc_pwm > 255 )
-                {
-                    dc_pwm = 255;
-                }
-                printf( "Duty cycle PWM3: %u/255\n", dc_pwm ); /* Check received data. */
-
-                /* Set DC of PWM3. */
-                setAttractiveBlueLedsColor( dc_pwm );
-                setAttractiveLedsOn( );
-
-                setLedsStatusColor( LEDS_OFF );
-                break;
-                /* -------------------------------------------------------------- */
-
-            case 'c':
-            case 'C':
-                /* Close reward door */
-                if ( DOOR_CLOSED == appDataDoor.reward_door_status )
-                {
-                    printf( "\tDoor already closed.\n" );
-                    break;
-                }
-
-                if ( 1 == appDataDoor.remain_open )
-                {
-                    appDataDoor.remain_open = 0;
-                    printf( "\tClosing door (remain door open set to off)... " );
-                }
-                else
-                {
-                    printf( "\tClosing door... " );
-                }
-
-                appDataServo.ton_goal = appDataServo.ton_min;
-
-                if ( false == isPowerServoEnable( ) )
-                {
-                    servomotorPowerEnable( );
-                    appDataServo.ton_cmd = servomotorGetDoorPosition( );
-                    appDataDoor.reward_door_status = DOOR_MOVING;
-                    while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                    servomotorPowerDisable( );
-                }
-                else
-                {
-                    appDataServo.ton_cmd = servomotorGetDoorPosition( );
-                    appDataDoor.reward_door_status = DOOR_MOVING;
-                    while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                }
-
-                appDataDoor.reward_door_status = DOOR_CLOSED;
-
-                printf( "Door closed\n" );
-
-                break;
-                /* -------------------------------------------------------------- */
-
-            case 'd':
-            case 'D':
                 /* Display datalogger buffers. */
                 printf( "Data logger buffer:\n" );
                 if ( appDataLog.nCharBuffer > 0 )
@@ -402,134 +424,423 @@ void APP_SerialDebugTasks( void )
                                     appDataLog.rfid_freq[i][1],
                                     ( long ) appDataLog.rfid_freq[i][2]*10 );
                     }               
-                }
+                }    
+                break;
+                /* -------------------------------------------------------------- */
 
+            case 'c':
+            case 'C':
+            {
+                uint8_t user_choice;
+                
+//                printf( "Configuration (CONFIG.INI):\n" );
+//                printf( "\td or D: display configuration parameters\n" );
+//                printf( "\tr or R: reconfigure the system\n" );
+                
+                while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
+                user_choice = UART1_Read( );
+
+                switch ( user_choice )
+                {
+                    case 'd':
+                    case 'D':
+                    {
+
+                        /* Display configuration parameters (CONFIG.INI) */
+                        if ( false == appData.flags.bit_value.systemInit )
+                        {
+                            printf( "/!\\ SYSTEM NOT CORRECTLY CONFIGURED.\n" );
+                            config_print( );
+                            printf( "/!\\ SYSTEM NOT CORRECTLY CONFIGURED.\n" );
+                        }
+                        else
+                        {
+                            config_print( );
+                        }
+                
+                        break;
+                    }
+                    
+                    case 'r':
+                    case 'R':
+                    {
+
+                        /* Reconfigure the system by reading the USB key again */
+                        appData.need_to_reconfigure = true;
+                        break;
+                    }
+                    
+                }
+            }
+                break;
+                /* -------------------------------------------------------------- */
+                
+            case 'd':
+            case 'D':
+            {
+                uint8_t user_choice;
+                
+//                printf( "Door:\n" );
+//                printf( "\tc or C: close door\n" );
+//                printf( "\to or O: open door\n" );
+//                printf( "\tp or P: set door position\n" );
+//                printf( "\tr or R: toggle remain open parameter\n" );
+                
+                while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
+                user_choice = UART1_Read( );
+
+                switch ( user_choice )
+                {
+                    case 'C':
+                    case 'c':
+                        
+                        /* Close reward door */
+                        if ( DOOR_CLOSED == appDataDoor.reward_door_status )
+                        {
+                            printf( "\tDoor already closed.\n" );
+                            break;
+                        }
+
+                        if ( 1 == appDataDoor.remain_open )
+                        {
+                            appDataDoor.remain_open = 0;
+                            printf( "\tClosing door (remain door open set to off)... " );
+                        }
+                        else
+                        {
+                            printf( "\tClosing door... " );
+                        }
+
+                        appDataServo.ton_goal = appDataServo.ton_min;
+
+                        if ( false == isPowerServoEnable( ) )
+                        {
+                            servomotorPowerEnable( );
+                            appDataServo.ton_cmd = servomotorGetDoorPosition( );
+                            appDataDoor.reward_door_status = DOOR_MOVING;
+                            while ( DOOR_MOVED != appDataDoor.reward_door_status );
+                            servomotorPowerDisable( );
+                        }
+                        else
+                        {
+                            appDataServo.ton_cmd = servomotorGetDoorPosition( );
+                            appDataDoor.reward_door_status = DOOR_MOVING;
+                            while ( DOOR_MOVED != appDataDoor.reward_door_status );
+                        }
+
+                        appDataDoor.reward_door_status = DOOR_CLOSED;
+
+                        printf( "Door closed\n" );
+                
+                        break;
+                        
+                    case 'O':
+                    case 'o':
+                        
+                        /* Open reward door */
+                        if ( DOOR_OPENED == appDataDoor.reward_door_status )
+                        {
+                            printf( "\tDoor already opened.\n" );
+                            break;
+                        }
+
+                        printf( "\tOpening door... " );
+
+                        appDataServo.ton_goal = appDataServo.ton_max;
+
+                        appDataServo.num_step = appDataServo.num_empty_step;
+
+                        if ( false == isPowerServoEnable( ) )
+                        {
+                            servomotorPowerEnable( );
+                            appDataServo.ton_cmd = servomotorGetDoorPosition( );
+                            appDataDoor.reward_door_status = DOOR_MOVING;
+                            while ( DOOR_MOVED != appDataDoor.reward_door_status );
+                            servomotorPowerDisable( );
+                        }
+                        else
+                        {
+                            appDataServo.ton_cmd = servomotorGetDoorPosition( );
+                            appDataDoor.reward_door_status = DOOR_MOVING;
+                            while ( DOOR_MOVED != appDataDoor.reward_door_status );
+                        }
+
+                        appDataDoor.reward_door_status = DOOR_OPENED;
+
+                        printf( "Door opened\n");
+                
+                        break;
+                        
+                    case 'P':
+                    case 'p':
+                        
+                        /* Change servomotor position
+                        * Servomotor:
+                        * HS-322HD: 600 us < servo_position < 2400 us, flexible nylon noise --> Ok
+                        * PARRALAX: 600 us < servo_position < 2400 us (Product ID: 900-00005), sound gear 
+                        */              
+
+                       /* Get current position. */
+                       if ( false == isPowerServoEnable( ) )
+                       {
+                           servomotorPowerEnable( );
+                           appDataServo.ton_cmd = servomotorGetDoorPosition( );
+                           servomotorPowerDisable( );
+                       }
+                       else
+                       {
+                           appDataServo.ton_cmd = servomotorGetDoorPosition( );
+                       }
+
+                       printf( "\tSet servomotor position\n\t                 C    O\n\t\tRange MAX: [%4u %4u]\n\t\tRange INI: [%4u %4u]\n", SERVO_DEFAULT_MIN_POSITION, SERVO_DEFAULT_MAX_POSITION, appDataServo.ton_min_night, appDataServo.ton_max );
+                       if ( DOOR_HABITUATION == appData.scenario_number )
+                       {
+                           printf( "\t\tRange HAB: [%4u %4u] (%u%%)\n", appDataServo.ton_min, appDataServo.ton_max, appDataDoor.habituation_percent );
+                       }
+                       printf( "\t\tCurrent position: %u\n", appDataServo.ton_cmd );
+
+                       /* Read uint16_t from terminal. */
+                       appDataServo.ton_goal = readIntFromUart1( );
+
+                       if ( 0 == appDataServo.ton_goal )
+                       {
+                           printf( "\tWrong value\n" );
+                           break;
+                       }
+
+                       if ( appDataServo.ton_goal > SERVO_DEFAULT_MAX_POSITION )
+                       {
+                           printf( "\tNo move because goal position (%u) is more than maximal position (%u)\n", appDataServo.ton_goal, SERVO_DEFAULT_MAX_POSITION );
+                           break;
+                       }
+                       else if ( appDataServo.ton_goal < SERVO_DEFAULT_MIN_POSITION )
+                       {
+                           printf( "\tNo move because goal position (%u) is less than minimal position (%u)\n", appDataServo.ton_goal, SERVO_DEFAULT_MIN_POSITION );
+                           break;
+                       }
+                       else if ( appDataServo.ton_goal > appDataServo.ton_max )
+                       {
+                           printf( "\tWarning: goal position (%u) is outside range specified in the INI file ([%u %u])\n", appDataServo.ton_goal, appDataServo.ton_min, appDataServo.ton_max );
+                       }
+                       else if ( appDataServo.ton_goal < appDataServo.ton_min )
+                       {
+                           printf( "\tWarning: goal position (%u) is outside range specified in the INI file ([%u %u])\n", appDataServo.ton_goal, appDataServo.ton_min, appDataServo.ton_max );
+                       }
+
+                       if ( appDataServo.ton_cmd == appDataServo.ton_goal )
+                       {
+                           printf( "\tDoor already at goal position.\n" );
+                           break;
+                       }
+
+                       printf( "\tMoving door... " );
+
+                       appDataServo.num_step = appDataServo.num_empty_step;
+
+                       if ( false == isPowerServoEnable( ) )
+                       {
+                           servomotorPowerEnable( );
+                           appDataDoor.reward_door_status = DOOR_MOVING;
+                           while ( DOOR_MOVED != appDataDoor.reward_door_status );
+                           servomotorPowerDisable( );
+                       }
+                       else
+                       {
+                           appDataDoor.reward_door_status = DOOR_MOVING;
+                           while ( DOOR_MOVED != appDataDoor.reward_door_status );
+                       }
+
+                       printf( "Door moved\n");
+                        
+                       break;  
+                       
+                    case 'R':
+                    case 'r':
+                        
+                        if ( 1 == appDataDoor.remain_open )
+                        {
+                            appDataDoor.remain_open = 0;
+                            printf( "\tDoor remain open: off\n" );
+                        }
+                        else
+                        {
+                            appDataDoor.remain_open = 1;
+                            printf( "\tDoor remain open: on\n" );
+                        }
+                        
+                        break;
+                }
+            }
+                
                 break;
                 /* -------------------------------------------------------------- */
 
             case 'e':
             case 'E':
                 
-                /* Get USB device properties */
-                
-                printf("\tPlease wait, process is slow (approx. 7s per GB of drive space)\n");
-                
-                usbMountDrive( );
-                
-                drive_properties.new_request = true;
-                do
-                {
-                    FILEIO_DrivePropertiesGet(&drive_properties, 'A');
-                } while (drive_properties.properties_status == FILEIO_GET_PROPERTIES_STILL_WORKING);
-                
-                if (FILEIO_GET_PROPERTIES_NO_ERRORS == drive_properties.properties_status)
-                {
-                    printf("\tUSB device properties\n");
-                    if (1 == drive_properties.results.disk_format)
-                    {
-                        printf("\t\tDrive format: FAT12\n");
-                    }
-                    else if (2 == drive_properties.results.disk_format)
-                    {
-                        printf("\t\tDrive format: FAT16\n");
-                    }                        
-                    else if (3 == drive_properties.results.disk_format)
-                    {
-                        printf("\t\tDrive format: FAT32\n");
-                    }
-                    else
-                    {
-                        printf("\t\tDrive format: unknown (%d)\n", drive_properties.results.disk_format);
-                    }
-                    printf("\t\tSector size: %u\n", drive_properties.results.sector_size);
-                    printf("\t\tSector per cluster: %u\n", drive_properties.results.sectors_per_cluster);
-                    printf("\t\tTotal clusters: %lu\n", drive_properties.results.total_clusters);
-                    printf("\t\tFree clusters: %lu\n", drive_properties.results.free_clusters);                    
-                    printf("\t\tTotal space: %lu MB\n", drive_properties.results.total_clusters*drive_properties.results.sectors_per_cluster*drive_properties.results.sector_size/1024/1024);
-                    printf("\t\tFree space: %lu MB\n\n", drive_properties.results.free_clusters*drive_properties.results.sectors_per_cluster*drive_properties.results.sector_size/1024/1024);
-                }
-                else
-                {
-                    printf("\tUSB device properties\n\t\tGet properties failed (%d)\n\n", drive_properties.properties_status);
-                }
-                
-                usbUnmountDrive( );
-                
+                /* Not used */                
                 break;
                 /* -------------------------------------------------------------- */
 
             case 'f':
             case 'F':
-                /* Display configuration parameters (CONFIG.INI) */
-
-                if ( false == appData.flags.bit_value.systemInit )
-                {
-                    printf( "/!\\ SYSTEM NOT CORRECTLY CONFIGURED.\n" );
-                    config_print( );
-                    printf( "/!\\ SYSTEM NOT CORRECTLY CONFIGURED.\n" );
-                }
-                else
-                {
-                    config_print( );
-                }
+                
+                /* Firmware information */
+                putchar( '\t' );
+                displayFirmwareVersion();
+                putchar( '\t' );
+                displayBuildDateTime();
+                putchar( '\n' );
+                
                 break;
                 /* -------------------------------------------------------------- */
 
             case 'g':
             case 'G':
-                /* Set green color value of attractive LEDs. */
-                setLedsStatusColor( LED_GREEN );
-                printf( "Set Green LED, enter a value from 0 to 255:\n" );
-
-                /* Read uint16_t from terminal. */
-                dc_pwm = readIntFromUart1( );
-                if ( dc_pwm > 255 )
-                {
-                    dc_pwm = 255;
-                }
-                printf( "Duty cycle PWM2: %u/255\n", dc_pwm ); /* Check received data. */
-
-                /* Set DC of PWM2. */
-                setAttractiveGreenLedsColor( dc_pwm );
-                setAttractiveLedsOn( );
-
-                setLedsStatusColor( LEDS_OFF );
+                /* Not used. */
                 break;
                 /* -------------------------------------------------------------- */
 
             case 'h':
             case 'H':
-                if ( 1 == appDataDoor.remain_open )
+                
+                /* Hardware */
+                
+                displayDeviceId( );
+                    
+                /* Display external interrupt and timers states */
+                printf( "\tExternal interrupt states\n" );
+                printf( "\t\tINT0: %d\n", IEC0bits.INT0IE );
+                printf( "\t\tINT1: %d\n", IEC1bits.INT1IE );
+                printf( "\t\tINT2: %d\n", IEC1bits.INT2IE );
+                printf( "\t\tINT3: %d\n", IEC3bits.INT3IE );
+                printf( "\t\tINT4: %d\n", IEC3bits.INT4IE );
+
+                printf( "\n\tTimers\n" );
+                printf( "\t\tTimer2: %d\n", T2CONbits.TON );
+                printf( "\t\tTimer3: %d\n", T3CONbits.TON );
+                printf( "\t\tTimer4: %d\n", T4CONbits.TON );
+
+                /* Display all commands values */
+                printf( "\n\tPower commands\n" );
+                if ( CMD_VDD_ACC_PIR_SERVO_GetValue( ) == 1 )
                 {
-                    appDataDoor.remain_open = 0;
-                    printf( "Remain door open: off\n" );
+                    printf( "\t\tCMD_VDD_ACC_PIR: on\n" );
                 }
                 else
                 {
-                    appDataDoor.remain_open = 1;
-                    printf( "Remain door open: on\n" );
+                    printf( "\t\tCMD_VDD_ACC_PIR: off\n" );
                 }
+
+                if ( _TRISF1 )
+                {
+                    printf( "\t\tCMD_VCC_SERVO: off\n" );
+                }
+                else
+                {
+                    printf( "\t\tCMD_VCC_SERVO: on\n\n" );
+                }
+
+                if ( CMD_VDD_APP_V_USB_GetValue( ) == 0 )
+                {
+                    printf( "\t\tCMD_VDD_APP: off\n" );
+                }
+                else
+                {
+                    printf( "\t\tCMD_VDD_APP: on\n" );
+                }
+
+                if ( CMD_VDD_USB_GetValue( ) == 1 )
+                {
+                    printf( "\t\tCMD_VDD_USB: off\n" );
+                }
+                else
+                {
+                    printf( "\t\tCMD_VDD_USB: on\n\n" );
+                }
+                if ( CMD_VCC_IR_GetValue( ) == 1 )
+                {
+                    printf( "\t\tCMD_VCC_IR: off\n" );
+                }
+                else
+                {
+                    printf( "\t\tCMD_VCC_IR: on\n\n" );
+                }
+                if ( CMD_3V3_RF_GetValue( ) == 1 )
+                {
+                    printf( "\t\tCMD_3V3_RF: on\n" );
+                }
+                else
+                {
+                    printf( "\t\tCMD_3V3_RF: off\n" );
+                }
+
+                printf( "\n\tOutput compare\n" );
+                printf( "\t\tOC4: %d\n", OC4CON1bits.OCM );
+                printf( "\t\tOC4R: %d\n", OC4R );
+                printf( "\t\tOC4RS: %d\n\n", OC4RS );
+                printf( "\t\tOC5: %d\n", OC5CON1bits.OCM );
+                printf( "\t\tOC5R: %d\n", OC5R );
+                printf( "\t\tOC5RS: %d\n", OC5RS );
+                
+                /* Display USB device status */
+                printf( "\n\tUSB device status: " );
+                printUSBHostDeviceStatus( );
+                putchar( '\n' );
                 break;
                 /* -------------------------------------------------------------- */
 
             case 'i':
             case 'I':
 
-                /* Toggle IR barriers power */
-                if ( CMD_VCC_IR_GetValue( ) == 1 )
                 {
-                    /* Enable IR */
-                    IRSensorEnable( );
-                    setDelayMs( DELAY_MS_BEFORE_IR_ENABLE ); // TODO: adjust delay according to the datasheet
-                    while ( false == isDelayMsEnding( ) );
-                    printf( "IR command enable (detecting mode).\n" );
-                }
-                else
+                uint8_t user_choice;
+                
+//                printf( "IR barriers:\n" );
+//                printf( "\tp or P: toggle IR barriers power\n" );
+//                printf( "\ts or S: get IR barriers status\n" );
+                
+                while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
+                user_choice = UART1_Read( );
+
+                switch ( user_choice )
                 {
-                    /* Disable IR  */
-                    IRSensorDisable( );
-                    printf( "IR command disable (low power mode).\n" );
+                    case 'p':
+                    case 'P':
+                    {
+                        /* Toggle IR barriers power */
+                        if ( CMD_VCC_IR_GetValue( ) == 1 )
+                        {
+                            /* Enable IR */
+                            IRSensorEnable( );
+                            setDelayMs( DELAY_MS_BEFORE_IR_ENABLE ); // TODO: adjust delay according to the datasheet
+                            while ( false == isDelayMsEnding( ) );
+                            printf( "\tIR enable.\n" );
+                        }
+                        else
+                        {
+                            /* Disable IR  */
+                            IRSensorDisable( );
+                            printf( "\tIR disable.\n" );
+                        } 
+                        
+                        break;
+                    }
+                    
+                    case 's':
+                    case 'S':
+                    {
+                        /* Display IR1 Food status */
+                        printf( "\tIR1 (reward) status: %u\n", BAR_IR1_OUT_GetValue( ) );
+                        /* Display IR2 Food status */
+                        printf( "\tIR2 (food) status: %u\n", BAR_IR2_OUT_GetValue( ) );
+                        
+                        break;
+                    }     
+                    
                 }
+
+            }
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -544,12 +855,12 @@ void APP_SerialDebugTasks( void )
                 int ch;   
                 uint8_t user_choice;
 
-                printf( "Files I/O:\n" );
-                printf( "\tC: display CSV files\n" );
-                printf( "\tE: display errors file\n" );
-                printf( "\tI: display CONFIG.INI\n" );
-                printf( "\tL: list files\n" );
-                printf( "\tX: export files\n" );
+//                printf( "Files I/O:\n" );
+//                printf( "\tc or C: display CSV files\n" );
+//                printf( "\te or E: display errors file\n" );
+//                printf( "\ti or I: display CONFIG.INI\n" );
+//                printf( "\tl or L: list files\n" );
+//                printf( "\tx or X: export files\n" );
                 
                 while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
                 user_choice = UART1_Read( );
@@ -559,6 +870,8 @@ void APP_SerialDebugTasks( void )
                     
                     case 'C':
                     case 'c':
+                        
+                        setLedsStatusColor( LED_USB_ACCESS );
                         
                         usbMountDrive( );
 
@@ -596,7 +909,7 @@ void APP_SerialDebugTasks( void )
                                 }
                                 else {
                                     errF = FILEIO_ErrorGet('A');
-                                    printf("Unable to open log file (%u)\n", errF);
+                                    printf("\tUnable to open log file (%u)\n", errF);
                                 }
 
                                 FILEIO_Close(&file);
@@ -635,7 +948,7 @@ void APP_SerialDebugTasks( void )
                                     }
                                     else {
                                         errF = FILEIO_ErrorGet('A');
-                                        printf("Unable to open log file (%u)\n", errF);
+                                        printf("\tUnable to open log file (%u)\n", errF);
                                     }
                                     
                                     FILEIO_Close(&file);
@@ -644,22 +957,29 @@ void APP_SerialDebugTasks( void )
 
                         }
                         else {
-                            switch (result) {
+                            
+                            errF = FILEIO_ErrorGet('A');
+                            
+                            switch ( errF ) {
 
                                 case FILEIO_ERROR_INVALID_ARGUMENT:
-                                    printf("The path could not be resolved.\n");
+                                    printf("\tThe path could not be resolved.\n");
                                     break;
 
                                     case FILEIO_ERROR_INVALID_FILENAME:
-                                        printf("The file name is invalid.\n");
+                                        printf("\tThe file name is invalid.\n");
                                         break;
 
                                     case FILEIO_ERROR_BAD_CACHE_READ:
-                                        printf("There was an error searching directory entries.\n");
+                                        printf("\tThere was an error searching directory entries.\n");
                                         break;
 
                                     case FILEIO_ERROR_DONE:
-                                        printf("File not found.\n");
+                                        printf("\tFile not found.\n");
+                                        break;
+                                        
+                                    default:
+                                        printf("\tError (%d)\n", errF);
                                         break;
                             }
                         }
@@ -670,6 +990,8 @@ void APP_SerialDebugTasks( void )
                         
                     case 'e':
                     case 'E':
+                        
+                        setLedsStatusColor( LED_USB_ACCESS );
                         
                         usbMountDrive( );
 
@@ -705,30 +1027,36 @@ void APP_SerialDebugTasks( void )
                             }
                             else {
                                 errF = FILEIO_ErrorGet('A');
-                                printf("Unable to open log file (%u)\n", errF);
+                                printf("\tUnable to open error file (%u)\n", errF);
                             }
 
                             FILEIO_Close(&file);
 
                         }
                         else {
-                            switch (result) {
+                            errF = FILEIO_ErrorGet('A');
+                            
+                            switch ( errF ) {
 
                                 case FILEIO_ERROR_INVALID_ARGUMENT:
-                                    printf("The path could not be resolved.\n");
+                                    printf("\tThe path could not be resolved.\n");
                                     break;
 
-                                    case FILEIO_ERROR_INVALID_FILENAME:
-                                        printf("The file name is invalid.\n");
-                                        break;
+                                case FILEIO_ERROR_INVALID_FILENAME:
+                                    printf("\tThe file name is invalid.\n");
+                                    break;
 
-                                    case FILEIO_ERROR_BAD_CACHE_READ:
-                                        printf("There was an error searching directory entries.\n");
-                                        break;
+                                case FILEIO_ERROR_BAD_CACHE_READ:
+                                    printf("\tThere was an error searching directory entries.\n");
+                                    break;
 
-                                    case FILEIO_ERROR_DONE:
-                                        printf("File not found.\n");
-                                        break;
+                                case FILEIO_ERROR_DONE:
+                                    printf("\tFile not found.\n");
+                                    break;
+                                    
+                                default:
+                                    printf("\tError (%d)\n", errF);
+                                    break;
                             }
                         }
 
@@ -739,13 +1067,15 @@ void APP_SerialDebugTasks( void )
                     case 'i':
                     case 'I':
                         
+                        setLedsStatusColor( LED_USB_ACCESS );
+                        
                         usbMountDrive( );
 
                         result = FILEIO_Find( "CONFIG.INI", FILEIO_ATTRIBUTE_ARCHIVE, &searchRecord, true );
 
                         if (FILEIO_RESULT_SUCCESS == result) {
 
-                            printf("%s\n", searchRecord.shortFileName);
+//                            printf("%s\n", searchRecord.shortFileName);
 
                             result = FILEIO_Open(&file, searchRecord.shortFileName, FILEIO_OPEN_READ);
 
@@ -773,30 +1103,36 @@ void APP_SerialDebugTasks( void )
                             }
                             else {
                                 errF = FILEIO_ErrorGet('A');
-                                printf("Unable to open log file (%u)\n", errF);
+                                printf("\tUnable to open ini file (%u)\n", errF);
                             }
 
                             FILEIO_Close(&file);
 
                         }
                         else {
-                            switch (result) {
+                            errF = FILEIO_ErrorGet('A');
+                            
+                            switch ( errF ) {
 
                                 case FILEIO_ERROR_INVALID_ARGUMENT:
-                                    printf("The path could not be resolved.\n");
+                                    printf("\tThe path could not be resolved.\n");
                                     break;
 
-                                    case FILEIO_ERROR_INVALID_FILENAME:
-                                        printf("The file name is invalid.\n");
-                                        break;
+                                case FILEIO_ERROR_INVALID_FILENAME:
+                                    printf("\tThe file name is invalid.\n");
+                                    break;
 
-                                    case FILEIO_ERROR_BAD_CACHE_READ:
-                                        printf("There was an error searching directory entries.\n");
-                                        break;
+                                case FILEIO_ERROR_BAD_CACHE_READ:
+                                    printf("\tThere was an error searching directory entries.\n");
+                                    break;
 
-                                    case FILEIO_ERROR_DONE:
-                                        printf("File not found.\n");
-                                        break;
+                                case FILEIO_ERROR_DONE:
+                                    printf("\tFile not found.\n");
+                                    break;
+                                    
+                                default:
+                                    printf("\tError (%d).\n", errF);
+                                    break;
                             }
                         }
 
@@ -807,37 +1143,45 @@ void APP_SerialDebugTasks( void )
                     case 'L':
                     case 'l':
                         
+                        setLedsStatusColor( LED_USB_ACCESS );
+                        
                         usbMountDrive( );
                         
                         result = FILEIO_Find( "*.*", FILEIO_ATTRIBUTE_ARCHIVE, &searchRecord, true );
                         
                         if (FILEIO_RESULT_SUCCESS == result) {
                             
-                            printf("%s (%ld bytes)\n", searchRecord.shortFileName, searchRecord.fileSize);
+                            printf("\t%s (%ld bytes)\n", searchRecord.shortFileName, searchRecord.fileSize);
                             
                             while (FILEIO_RESULT_SUCCESS == FILEIO_Find( "*.*", FILEIO_ATTRIBUTE_ARCHIVE, &searchRecord, false )) {
-                                printf("%s (%ld bytes)\n", searchRecord.shortFileName, searchRecord.fileSize);
+                                printf("\t%s (%ld bytes)\n", searchRecord.shortFileName, searchRecord.fileSize);
                             }
                             
                         }
                         else {
-                            switch (result) {
+                            errF = FILEIO_ErrorGet('A');
+                            
+                            switch ( errF ) {
 
                                 case FILEIO_ERROR_INVALID_ARGUMENT:
-                                    printf("The path could not be resolved.\n");
+                                    printf("\tThe path could not be resolved.\n");
                                     break;
 
                                     case FILEIO_ERROR_INVALID_FILENAME:
-                                        printf("The file name is invalid.\n");
+                                        printf("\tThe file name is invalid.\n");
                                         break;
 
                                     case FILEIO_ERROR_BAD_CACHE_READ:
-                                        printf("There was an error searching directory entries.\n");
+                                        printf("\tThere was an error searching directory entries.\n");
                                         break;
 
                                     case FILEIO_ERROR_DONE:
-                                        printf("File not found.\n");
+                                        printf("\tFile not found.\n");
                                         break;
+                                        
+                                default:
+                                    printf("\tError (%d).\n", errF);
+                                    break;
                             }
                         }
                             
@@ -857,6 +1201,8 @@ void APP_SerialDebugTasks( void )
                         
                         uint16_t num = 0;
                         uint32_t q;
+                        
+                        setLedsStatusColor( LED_USB_ACCESS );
                         
                         usbMountDrive( );
                         
@@ -902,7 +1248,7 @@ void APP_SerialDebugTasks( void )
                             else {
                                 printf("%c", nack);
                                 errF = FILEIO_ErrorGet('A');
-                                printf("Unable to open log file (%u)\n", errF);
+                                printf("\tUnable to open log file (%u)\n", errF);
                             }
 
                             FILEIO_Close(&file);                            
@@ -943,7 +1289,7 @@ void APP_SerialDebugTasks( void )
                                 else {
                                     printf("%c", nack);
                                     errF = FILEIO_ErrorGet('A');
-                                    printf("Unable to open log file (%u)\n", errF);
+                                    printf("\tUnable to open log file (%u)\n", errF);
                                 }
 
                                 FILEIO_Close(&file); 
@@ -954,23 +1300,29 @@ void APP_SerialDebugTasks( void )
                             
                             printf("%c", nack);
                             
-                            switch (result) {
+                            errF = FILEIO_ErrorGet('A');
+                            
+                            switch ( errF ) {
 
                                 case FILEIO_ERROR_INVALID_ARGUMENT:
-                                    printf("The path could not be resolved.");
+                                    printf("\tThe path could not be resolved.\n");
                                     break;
 
                                     case FILEIO_ERROR_INVALID_FILENAME:
-                                        printf("The file name is invalid.");
+                                        printf("\tThe file name is invalid.\n");
                                         break;
 
                                     case FILEIO_ERROR_BAD_CACHE_READ:
-                                        printf("There was an error searching directory entries.");
+                                        printf("\tThere was an error searching directory entries.\n");
                                         break;
 
                                     case FILEIO_ERROR_DONE:
-                                        printf("File not found.");
+                                        printf("\tFile not found.\n");
                                         break;
+                                        
+                                default:
+                                    printf("\tError (%d).\n", errF);
+                                    break;
                             }
                         }
                             
@@ -994,10 +1346,52 @@ void APP_SerialDebugTasks( void )
 
             case 'k':
             case 'K':
-                /* Display IR1 Food status */
-                printf( "IR1 reward status: %u\n", BAR_IR1_OUT_GetValue( ) );
-                /* Display IR2 Food status */
-                printf( "IR2 Food status: %u\n", BAR_IR2_OUT_GetValue( ) );
+                
+                /* Get USB device properties */                
+                printf("\tPlease wait, process is slow (approx. 7s per GB of drive space)\n");
+                
+                setLedsStatusColor( LED_USB_ACCESS );
+                
+                usbMountDrive( );
+                
+                drive_properties.new_request = true;
+                do
+                {
+                    FILEIO_DrivePropertiesGet(&drive_properties, 'A');
+                } while (drive_properties.properties_status == FILEIO_GET_PROPERTIES_STILL_WORKING);
+                
+                if (FILEIO_GET_PROPERTIES_NO_ERRORS == drive_properties.properties_status)
+                {
+                    printf("\tUSB device properties\n");
+                    if (1 == drive_properties.results.disk_format)
+                    {
+                        printf("\t\tDrive format: FAT12\n");
+                    }
+                    else if (2 == drive_properties.results.disk_format)
+                    {
+                        printf("\t\tDrive format: FAT16\n");
+                    }                        
+                    else if (3 == drive_properties.results.disk_format)
+                    {
+                        printf("\t\tDrive format: FAT32\n");
+                    }
+                    else
+                    {
+                        printf("\t\tDrive format: unknown (%d)\n", drive_properties.results.disk_format);
+                    }
+                    printf("\t\tSector size: %u\n", drive_properties.results.sector_size);
+                    printf("\t\tSector per cluster: %u\n", drive_properties.results.sectors_per_cluster);
+                    printf("\t\tTotal clusters: %lu\n", drive_properties.results.total_clusters);
+                    printf("\t\tFree clusters: %lu\n", drive_properties.results.free_clusters);                    
+                    printf("\t\tTotal space: %lu MB\n", drive_properties.results.total_clusters*drive_properties.results.sectors_per_cluster*drive_properties.results.sector_size/1024/1024);
+                    printf("\t\tFree space: %lu MB\n\n", drive_properties.results.free_clusters*drive_properties.results.sectors_per_cluster*drive_properties.results.sector_size/1024/1024);
+                }
+                else
+                {
+                    printf("\tUSB device properties\n\t\tGet properties failed (%d)\n\n", drive_properties.properties_status);
+                }
+                
+                usbUnmountDrive( );
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -1011,105 +1405,80 @@ void APP_SerialDebugTasks( void )
             case 'm':
             case 'M':
             {
-                /* Toggle PCA9622 device */
-                I2C1_MESSAGE_STATUS i2c_status = I2C1_MESSAGE_COMPLETE; // the status of write data on I2C bus
-                uint8_t writeBuffer[2]; // data to transmit
+                
                 uint8_t user_choice;
-
-                printf( "PCA9622 menu:\n" );
-                printf( "1/ initialize output for D16\n" );
-                printf( "2/ enable/disable OE pin\n" );
-                printf( "3/ toggle LED D16\n" );
-                printf( "Choose a command: " );
+                uint16_t analog_measure;
+                
+//                printf( "Measure:\n" );
+//                printf( "\tb or B: battery level\n" );
+//                printf( "\tc or C: CTMU\n" );
+//                printf( "\td or D: servomotor position\n" );
+//                printf( "\tr or R: RFID frequency\n" );
+                
                 while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
                 user_choice = UART1_Read( );
 
                 switch ( user_choice )
                 {
-                    case '1':
-                        /* Initialize PCA9622 device in Normal mode. */
-                        writeBuffer[0] = CTRLREG_MODE1;
-                        writeBuffer[1] = NORMAL_MODE;
-                        i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
-
-                        writeBuffer[0] = 0x97;
-                        writeBuffer[1] = 0xAA; // CTRLREG PWM on all output for LEDOUT3
-                        i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
-
-                        print_I2C_message_status( i2c_status );
-                        printf( "\n" );
-
-                        printf( "PCA9622 Initialized.\n" );
-                        break;
-
-                    case '2':
-                        /* Toggle Output Enable (OE) pin. */
-                        if ( true == PCA9622_OE_GetValue( ) )
-                        {
-                            //                            PCA9622_OE_SetLow( ); // output enable pin is active LOW
-                            setAttractiveLedsOn( );
-                            printf( "Output RGB LEDs enable.\n" );
-                        }
-                        else
-                        {
-                            //                            PCA9622_OE_SetHigh( );
-                            setAttractiveLedsOff( );
-                            //i2c_status = I2C1_PCA9622_SoftwareReset( ); /* Disable PCA9622 device */
-                            printf( "Output RGB LEDs disable.\n" );
-                        }
-                        break;
-
-                    case '3':
+                    case 'b':
+                    case 'B':
                     {
-                        /* Toggle LED D16 on PCA9622 */
-                        static bool led_d16_state = false;
-                        //                        I2C1_MESSAGE_STATUS i2c_status = I2C1_MESSAGE_COMPLETE; // the status of write data on I2C bus
-                        //                        uint8_t writeBuffer[2]; // data to transmit
-
-                        /* Write I2C demo for  */
-                        if ( false == led_d16_state )
-                        {
-                            /* Set Red LED low on D16 */
-                            writeBuffer[0] = CTRLREG_PWM12;
-                            writeBuffer[1] = 0x00;
-                            i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
-                            /* Set Green LED high on D16 */
-                            writeBuffer[0] = CTRLREG_PWM13;
-                            writeBuffer[1] = 0xFF;
-                            i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
-
-                            led_d16_state = true;
-                            printf( "LED D16 Green.\n" );
-                        }
-                        else
-                        {
-                            /* Set Red LED high on D16 */
-                            writeBuffer[0] = CTRLREG_PWM12;
-                            writeBuffer[1] = 0xFF;
-                            i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
-                            /* Set Green LED low on D16 */
-                            writeBuffer[0] = CTRLREG_PWM13;
-                            writeBuffer[1] = 0x00;
-                            i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
-
-                            led_d16_state = false;
-                            printf( "LED D16 Red.\n" );
-                        }
-
-                        print_I2C_message_status( i2c_status );
-                        printf( "\n" );
+                        /* Battery level */
+                        appData.battery_level = getADC1value( ADC1_CHANNEL_MA_12V );
+                        printBatteryLevel( );
                         break;
                     }
-
-                    default:
-                        putchar( data_from_uart1 ); /* echo RX data if doesn't match */
-                        printf( " is a bad command!\n" );
+                    case 'c':
+                    case 'C':
+                    {
+                        /* CTMU */
+                        analog_measure = getADC1value( ADC1_CHANNEL_CTMU_TEMPERATURE_SENSOR_INPUT );
+                        printf( "\tCTMU temperature sensor: (%u)\n", analog_measure );
                         break;
+                    }
+                    case 'd':
+                    case 'D':
+                    {
+                        /* Position of the servomotor. */
+                        if ( false == isPowerServoEnable( ) )
+                        {
+                            servomotorPowerEnable( );
+                            analog_measure = servomotorGetDoorPosition( );
+                            servomotorPowerDisable( );
+                        }
+                        else
+                        {
+                            analog_measure = servomotorGetDoorPosition( );
+                        }
+                        printf( "\tServo position: %u\n", analog_measure );
+                        break;
+                    }
+                    case 'r':
+                    case 'R':
+                    {
+                        /* Measuring RDY/CLK period of EM4095 */
+                        flag = measureRfidFreq( );
+                        if ( flag )
+                        {
+                            displayRfidFreq( );
+                        }
+                        else
+                        {
+                            printf( "\tTimeout reached during RFID mesure.\n" );
+                        }
+                        break;
+                    }
+                    case 'v':
+                    case 'V':
+                    {
+                        /* VBat level */
+                        appData.vbat_level = getADC1value( ADC1_CHANNEL_VBAT_2 );
+                        printVBatLevel( );
+                        break;
+                    }
+                    
                 }
-
-                // printf( "i2c_status: %d\n", i2c_status );
-                // if ok return 2 = I2C1_MESSAGE_COMPLETE
-                // if pb return 5 = I2C1_DATA_NO_ACK
+                
                 break;
             }
                 /* -------------------------------------------------------------- */
@@ -1124,123 +1493,106 @@ void APP_SerialDebugTasks( void )
 
             case 'o':
             case 'O':
-                /* Open reward door */
 
-                if ( DOOR_OPENED == appDataDoor.reward_door_status )
-                {
-                    printf( "\tDoor already opened.\n" );
-                    break;
-                }
-
-                printf( "\tOpening door... " );
-
-                appDataServo.ton_goal = appDataServo.ton_max;
-
-                appDataServo.num_step = appDataServo.num_empty_step;
-                
-                if ( false == isPowerServoEnable( ) )
-                {
-                    servomotorPowerEnable( );
-                    appDataServo.ton_cmd = servomotorGetDoorPosition( );
-                    appDataDoor.reward_door_status = DOOR_MOVING;
-                    while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                    servomotorPowerDisable( );
-                }
-                else
-                {
-                    appDataServo.ton_cmd = servomotorGetDoorPosition( );
-                    appDataDoor.reward_door_status = DOOR_MOVING;
-                    while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                }
-
-                appDataDoor.reward_door_status = DOOR_OPENED;
-
-                printf( "Door opened\n");
-
+                /* Not used */
                 break;
                 /* -------------------------------------------------------------- */
 
             case 'p':
             case 'P':
-                /* Change servomotor position
-                 * Servomotor:
-                 * HS-322HD: 600 us < servo_position < 2400 us, flexible nylon noise --> Ok
-                 * PARRALAX: 600 us < servo_position < 2400 us (Product ID: 900-00005), sound gear 
-                 */              
+            {
+                uint8_t user_choice;
                 
-                /* Get current position. */
-                if ( false == isPowerServoEnable( ) )
-                {
-                    servomotorPowerEnable( );
-                    appDataServo.ton_cmd = servomotorGetDoorPosition( );
-                    servomotorPowerDisable( );
-                }
-                else
-                {
-                    appDataServo.ton_cmd = servomotorGetDoorPosition( );
-                }
+//                printf( "Power:\n" );               
+//                printf( "\t     1: toggle servomotor power\n" );
+//                printf( "\t     2: toggle CMD_ACC_PIR power\n" );
+//                printf( "\t     3: toggle CMD_VDD_APP_V_USB power\n" );
+//                printf( "\t     4: toggle IR barriers power\n" );
 
-                printf( "\tSet servomotor position\n\t                 C    O\n\t\tRange MAX: [%4u %4u]\n\t\tRange INI: [%4u %4u]\n", SERVO_DEFAULT_MIN_POSITION, SERVO_DEFAULT_MAX_POSITION, appDataServo.ton_min_night, appDataServo.ton_max );
-                if ( DOOR_HABITUATION == appData.scenario_number )
-                {
-                    printf( "\t\tRange HAB: [%4u %4u] (%u%%)\n", appDataServo.ton_min, appDataServo.ton_max, appDataDoor.habituation_percent );
-                }
-                printf( "\t\tCurrent position: %u\n", appDataServo.ton_cmd );
+                while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
+                user_choice = UART1_Read( );
 
-                /* Read uint16_t from terminal. */
-                appDataServo.ton_goal = readIntFromUart1( );
-
-                if ( 0 == appDataServo.ton_goal )
+                switch ( user_choice )
                 {
-                    printf( "\tWrong value\n" );
-                    break;
-                }
-
-                if ( appDataServo.ton_goal > SERVO_DEFAULT_MAX_POSITION )
-                {
-                    printf( "\tNo move because goal position (%u) is more than maximal position (%u)\n", appDataServo.ton_goal, SERVO_DEFAULT_MAX_POSITION );
-                    break;
-                }
-                else if ( appDataServo.ton_goal < SERVO_DEFAULT_MIN_POSITION )
-                {
-                    printf( "\tNo move because goal position (%u) is less than minimal position (%u)\n", appDataServo.ton_goal, SERVO_DEFAULT_MIN_POSITION );
-                    break;
-                }
-                else if ( appDataServo.ton_goal > appDataServo.ton_max )
-                {
-                    printf( "\tWarning: goal position (%u) is outside range specified in the INI file ([%u %u])\n", appDataServo.ton_goal, appDataServo.ton_min, appDataServo.ton_max );
-                }
-                else if ( appDataServo.ton_goal < appDataServo.ton_min )
-                {
-                    printf( "\tWarning: goal position (%u) is outside range specified in the INI file ([%u %u])\n", appDataServo.ton_goal, appDataServo.ton_min, appDataServo.ton_max );
-                }
-
-                if ( appDataServo.ton_cmd == appDataServo.ton_goal )
-                {
-                    printf( "\tDoor already at goal position.\n" );
-                    break;
-                }
-
-                printf( "\tMoving door... " );
-  
-                appDataServo.num_step = appDataServo.num_empty_step;
+                    case '1':
+                        
+                        /* Set status of servomotor power command. */
+                        appDataServo.cmd_vcc_servo_state ^= 1; // Toggle state "CMD_VCC_SERVO"
+                        Nop( );
+                        Nop( );
+                        Nop( );
+                        if ( true == appDataServo.cmd_vcc_servo_state )
+                        {
+                            servomotorPowerEnable( );
+                            printf( "Servomotor power command enable.\n" );
+                        }
+                        else
+                        {
+                            servomotorPowerDisable( );
+                            printf( "Servomotor power command disable.\n" );
+                        }
+                        appDataDoor.reward_door_status = DOOR_IDLE;
+                        break;
+                        
+                    case '2':
+                        
+                        /* toggle power command "CMD_ACC_PIR". */
+                        CMD_VDD_ACC_PIR_SERVO_Toggle( );
+                        Nop( );
+                        Nop( );
+                        Nop( );
+                        if ( true == CMD_VDD_ACC_PIR_SERVO_GetValue( ) )
+                        {
+                            printf( "CMD_ACC_PIR enable.\n" );
+                            appData.pir_sensor_powered = true;
+                        }
+                        else
+                        {
+                            printf( "CMD_ACC_PIR disable.\n" );
+                            appData.pir_sensor_powered = false;
+                        }
+                        break;
+                        
+                    case '3':
+                        
+                        /* toggle power command "CMD_VDD_APP". */
+                        CMD_VDD_APP_V_USB_Toggle( );
+                        Nop( );
+                        Nop( );
+                        Nop( );
+                        if ( true == CMD_VDD_APP_V_USB_GetValue( ) )
+                        {
+                            printf( "CMD_VDD_APP_V_USB enable.\n" );
+                        }
+                        else
+                        {
+                            printf( "CMD_VDD_APP_V_USB disable.\n" );
+                        }
+                        break;
+                        
+                    case '4':
+                        /* Toggle IR barriers power */
+                        if ( CMD_VCC_IR_GetValue( ) == 1 )
+                        {
+                            /* Enable IR */
+                            IRSensorEnable( );
+                            setDelayMs( DELAY_MS_BEFORE_IR_ENABLE ); // TODO: adjust delay according to the datasheet
+                            while ( false == isDelayMsEnding( ) );
+                            printf( "\tIR enable.\n" );
+                        }
+                        else
+                        {
+                            /* Disable IR  */
+                            IRSensorDisable( );
+                            printf( "\tIR disable.\n" );
+                        } 
+                        
+                        break;
                 
-                if ( false == isPowerServoEnable( ) )
-                {
-                    servomotorPowerEnable( );
-                    appDataDoor.reward_door_status = DOOR_MOVING;
-                    while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                    servomotorPowerDisable( );
                 }
-                else
-                {
-                    appDataDoor.reward_door_status = DOOR_MOVING;
-                    while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                }
-  
-                printf( "Door moved\n");
-                
+
                 break;
+            }
                 /* -------------------------------------------------------------- */
 
             case 'q':
@@ -1253,23 +1605,7 @@ void APP_SerialDebugTasks( void )
 
             case 'r':
             case 'R':
-                /* Set red color value of attractive LEDs. */
-                setLedsStatusColor( LED_RED );
-                printf( "Set color of Red LED, enter a value from 0 to 255:\n" );
-
-                /* Read uint16_t from terminal. */
-                dc_pwm = readIntFromUart1( );
-                if ( dc_pwm > 255 )
-                {
-                    dc_pwm = 255;
-                }
-                printf( "Duty cycle PWM1: %u/255\n", dc_pwm ); /* Check received data. */
-
-                /* Set DC of PWM1. */
-                setAttractiveRedLedsColor( dc_pwm );
-                setAttractiveLedsOn( );
-
-                setLedsStatusColor( LEDS_OFF );
+                /* Not used. */
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -1461,175 +1797,153 @@ void APP_SerialDebugTasks( void )
 
             case 'u':
             case 'U':
-                /* Reconfigure the system by reading the USB key again */
-                appData.need_to_reconfigure = true;
+                /* Display the Unique Device Id (UDID) */
+                putchar( '\t' );
+                displayUniqueDeviceId();
                 break;
                 /* -------------------------------------------------------------- */
 
             case 'v':
             case 'V':
-                /* Set status of servomotor power command. */
-                appDataServo.cmd_vcc_servo_state ^= 1; // Toggle state "CMD_VCC_SERVO"
-                Nop( );
-                Nop( );
-                Nop( );
-                if ( true == appDataServo.cmd_vcc_servo_state )
-                {
-                    servomotorPowerEnable( );
-                    printf( "Servomotor power command enable.\n" );
-                }
-                else
-                {
-                    servomotorPowerDisable( );
-                    printf( "Servomotor power command disable.\n" );
-                }
-                appDataDoor.reward_door_status = DOOR_IDLE;
+                /* Not used */
                 break;
                 /* -------------------------------------------------------------- */
 
             case 'w':
             case 'W':
-                /* toggle power command "CMD_ACC_PIR". */
-                CMD_VDD_ACC_PIR_SERVO_Toggle( );
-                Nop( );
-                Nop( );
-                Nop( );
-                if ( true == CMD_VDD_ACC_PIR_SERVO_GetValue( ) )
-                {
-                    printf( "CMD_ACC_PIR enable.\n" );
-                    appData.pir_sensor_powered = true;
-                }
-                else
-                {
-                    printf( "CMD_ACC_PIR disable.\n" );
-                    appData.pir_sensor_powered = false;
-                }
+                /* Not used */
                 break;
                 /* -------------------------------------------------------------- */
 
             case 'x':
             case 'X':
-                /* toggle power command "CMD_VDD_APP". */
-                CMD_VDD_APP_V_USB_Toggle( );
-                Nop( );
-                Nop( );
-                Nop( );
-                if ( true == CMD_VDD_APP_V_USB_GetValue( ) )
-                {
-                    printf( "CMD_VDD_APP_V_USB enable.\n" );
-                }
-                else
-                {
-                    printf( "CMD_VDD_APP_V_USB disable.\n" );
-                }
+                /* Not used */
                 break;
                 /* -------------------------------------------------------------- */
 
             case 'y':
-            case 'Y':
- 
-                displayFirmwareVersion();
-                displayBuildDateTime();
-                putchar( '\n' );
-                displayUniqueDeviceId();
-                
-                /* Display external interrupt and timers states */
-                printf( "\nExternal interrupt states\n" );
-                printf( "\tINT0: %d\n", IEC0bits.INT0IE );
-                printf( "\tINT1: %d\n", IEC1bits.INT1IE );
-                printf( "\tINT2: %d\n", IEC1bits.INT2IE );
-                printf( "\tINT3: %d\n", IEC3bits.INT3IE );
-                printf( "\tINT4: %d\n", IEC3bits.INT4IE );
-
-                printf( "\nTimers\n" );
-                printf( "\tTimer2: %d\n", T2CONbits.TON );
-                printf( "\tTimer3: %d\n", T3CONbits.TON );
-                printf( "\tTimer4: %d\n", T4CONbits.TON );
-
-                /* Display all commands values */
-                printf( "\nPower commands\n" );
-                if ( CMD_VDD_ACC_PIR_SERVO_GetValue( ) == 1 )
-                {
-                    printf( "\tCMD_VDD_ACC_PIR: on\n" );
-                }
-                else
-                {
-                    printf( "\tCMD_VDD_ACC_PIR: off\n" );
-                }
-
-                if ( _TRISF1 )
-                {
-                    printf( "\tCMD_VCC_SERVO: off\n" );
-                }
-                else
-                {
-                    printf( "\tCMD_VCC_SERVO: on\n" );
-                }
-                printf( "\t******\n" );
-                if ( CMD_VDD_APP_V_USB_GetValue( ) == 0 )
-                {
-                    printf( "\tCMD_VDD_APP: off\n" );
-                }
-                else
-                {
-                    printf( "\tCMD_VDD_APP: on\n" );
-                }
-
-                if ( CMD_VDD_USB_GetValue( ) == 1 )
-                {
-                    printf( "\tCMD_VDD_USB: off\n" );
-                }
-                else
-                {
-                    printf( "\tCMD_VDD_USB: on\n" );
-                }
-                printf( "\t******\n" );
-                if ( CMD_VCC_IR_GetValue( ) == 1 )
-                {
-                    printf( "\tCMD_VCC_IR: off\n" );
-                }
-                else
-                {
-                    printf( "\tCMD_VCC_IR: on\n" );
-                }
-                printf( "\t******\n" );
-                if ( CMD_3V3_RF_GetValue( ) == 1 )
-                {
-                    printf( "\tCMD_3V3_RF: on\n" );
-                }
-                else
-                {
-                    printf( "\tCMD_3V3_RF: off\n" );
-                }
-
-                printf( "\nOutput compare\n" );
-                printf( "\tOC4: %d\n", OC4CON1bits.OCM );
-                printf( "\tOC4R: %d\n", OC4R );
-                printf( "\tOC4RS: %d\n", OC4RS );
-                printf( "\t******\n" );
-                printf( "\tOC5: %d\n", OC5CON1bits.OCM );
-                printf( "\tOC5R: %d\n", OC5R );
-                printf( "\tOC5RS: %d\n", OC5RS );
-                
-                /* Display USB device status */
-                printf( "\nUSB device status: " );
-                printUSBHostDeviceStatus( );
-                putchar( '\n' );
-
+            case 'Y':                
+                /* Display reset registers */
+                displayResetRegisters( );
                 break;
                 /* -------------------------------------------------------------- */
 
             case 'z':
-            case 'Z':
-                /* Not used */                
+            case 'Z':                
+                /* Test RFID. */  
+                appData.state = APP_STATE_TEST_RFID;
                 break;
                 /* -------------------------------------------------------------- */
+                
             default:
                 putchar( data_from_uart1 ); /* echo RX data if doesn't match */
                 break;
         }
     } /* end of if ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) */
 }
+
+//                /* Toggle PCA9622 device */
+//                I2C1_MESSAGE_STATUS i2c_status = I2C1_MESSAGE_COMPLETE; // the status of write data on I2C bus
+//                uint8_t writeBuffer[2]; // data to transmit
+//                uint8_t user_choice;
+//
+//                printf( "PCA9622 menu:\n" );
+//                printf( "1/ initialize output for D16\n" );
+//                printf( "2/ enable/disable OE pin\n" );
+//                printf( "3/ toggle LED D16\n" );
+//                printf( "Choose a command: " );
+//                while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
+//                user_choice = UART1_Read( );
+//
+//                switch ( user_choice )
+//                {
+//                    case '1':
+//                        /* Initialize PCA9622 device in Normal mode. */
+//                        writeBuffer[0] = CTRLREG_MODE1;
+//                        writeBuffer[1] = NORMAL_MODE;
+//                        i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+//
+//                        writeBuffer[0] = 0x97;
+//                        writeBuffer[1] = 0xAA; // CTRLREG PWM on all output for LEDOUT3
+//                        i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+//
+//                        print_I2C_message_status( i2c_status );
+//                        printf( "\n" );
+//
+//                        printf( "PCA9622 Initialized.\n" );
+//                        break;
+//
+//                    case '2':
+//                        /* Toggle Output Enable (OE) pin. */
+//                        if ( true == PCA9622_OE_GetValue( ) )
+//                        {
+//                            //                            PCA9622_OE_SetLow( ); // output enable pin is active LOW
+//                            setAttractiveLedsOn( );
+//                            printf( "Output RGB LEDs enable.\n" );
+//                        }
+//                        else
+//                        {
+//                            //                            PCA9622_OE_SetHigh( );
+//                            setAttractiveLedsOff( );
+//                            //i2c_status = I2C1_PCA9622_SoftwareReset( ); /* Disable PCA9622 device */
+//                            printf( "Output RGB LEDs disable.\n" );
+//                        }
+//                        break;
+//
+//                    case '3':
+//                    {
+//                        /* Toggle LED D16 on PCA9622 */
+//                        static bool led_d16_state = false;
+//                        //                        I2C1_MESSAGE_STATUS i2c_status = I2C1_MESSAGE_COMPLETE; // the status of write data on I2C bus
+//                        //                        uint8_t writeBuffer[2]; // data to transmit
+//
+//                        /* Write I2C demo for  */
+//                        if ( false == led_d16_state )
+//                        {
+//                            /* Set Red LED low on D16 */
+//                            writeBuffer[0] = CTRLREG_PWM12;
+//                            writeBuffer[1] = 0x00;
+//                            i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+//                            /* Set Green LED high on D16 */
+//                            writeBuffer[0] = CTRLREG_PWM13;
+//                            writeBuffer[1] = 0xFF;
+//                            i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+//
+//                            led_d16_state = true;
+//                            printf( "LED D16 Green.\n" );
+//                        }
+//                        else
+//                        {
+//                            /* Set Red LED high on D16 */
+//                            writeBuffer[0] = CTRLREG_PWM12;
+//                            writeBuffer[1] = 0xFF;
+//                            i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+//                            /* Set Green LED low on D16 */
+//                            writeBuffer[0] = CTRLREG_PWM13;
+//                            writeBuffer[1] = 0x00;
+//                            i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+//
+//                            led_d16_state = false;
+//                            printf( "LED D16 Red.\n" );
+//                        }
+//
+//                        print_I2C_message_status( i2c_status );
+//                        printf( "\n" );
+//                        break;
+//                    }
+//
+//                    default:
+//                        putchar( data_from_uart1 ); /* echo RX data if doesn't match */
+//                        printf( " is a bad command!\n" );
+//                        break;
+//                }
+//
+//                // printf( "i2c_status: %d\n", i2c_status );
+//                // if ok return 2 = I2C1_MESSAGE_COMPLETE
+//                // if pb return 5 = I2C1_DATA_NO_ACK
+                
+                
+                
 
 uint16_t readIntFromUart1( void )
 {
