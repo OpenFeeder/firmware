@@ -1701,7 +1701,20 @@ void APP_SerialDebugTasks( void )
             case 't':
                 /* Display date and time from RTCC module. */
                 getCurrentDate( );
-                APP_I2CRTC_DateTime_get( );
+                if (0 == APP_I2CMasterSeeksSlaveDevice(DS3231_I2C_ADDR, DS3231_I2C_ADDR))
+                {
+                    appData.i2c_current_time.year = 0;
+                    appData.i2c_current_time.year_s = 0;
+                    appData.i2c_current_time.mon = 0;
+                    appData.i2c_current_time.mday = 0;
+                    appData.i2c_current_time.hour = 0;
+                    appData.i2c_current_time.min = 0;
+                    appData.i2c_current_time.sec = 0;
+                }
+                else
+                {                    
+                    APP_I2CRTC_DateTime_get( );
+                }
                 
                 printf( "PIC: " );
                 printCurrentDate( );
@@ -1729,14 +1742,17 @@ void APP_SerialDebugTasks( void )
                 date[4] = (uint8_t)date_time.tm_min;
                 date[5] = (uint8_t)date_time.tm_sec;
 
-                if ( I2C1_MESSAGE_COMPLETE == I2C1_MasterReadDS3231_get( &appData.i2c_current_time ))
+                if (0 < APP_I2CMasterSeeksSlaveDevice(DS3231_I2C_ADDR, DS3231_I2C_ADDR))
                 {
-                    date[6] = (uint8_t)appData.i2c_current_time.year_s;
-                    date[7] = (uint8_t)appData.i2c_current_time.mon;
-                    date[8] = (uint8_t)appData.i2c_current_time.mday;
-                    date[9] = (uint8_t)appData.i2c_current_time.hour;
-                    date[10] = (uint8_t)appData.i2c_current_time.min;
-                    date[11] = (uint8_t)appData.i2c_current_time.sec;
+                    if ( I2C1_MESSAGE_COMPLETE == I2C1_MasterReadDS3231_get( &appData.i2c_current_time ))
+                    {
+                        date[6] = (uint8_t)appData.i2c_current_time.year_s;
+                        date[7] = (uint8_t)appData.i2c_current_time.mon;
+                        date[8] = (uint8_t)appData.i2c_current_time.mday;
+                        date[9] = (uint8_t)appData.i2c_current_time.hour;
+                        date[10] = (uint8_t)appData.i2c_current_time.min;
+                        date[11] = (uint8_t)appData.i2c_current_time.sec;
+                    }
                 }
 
                 UART1_WriteBuffer(date, 12);
