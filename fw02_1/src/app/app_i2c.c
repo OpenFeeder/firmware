@@ -353,7 +353,41 @@ I2C1_MESSAGE_STATUS APP_ScanningPushButtonTasks( void )
 bool APP_I2CRTC_DateTime_get( void )
 {
     I2C1_MESSAGE_STATUS status;
+    int seconds;
+    
     status = I2C1_MasterReadDS3231_get( &appData.i2c_current_time );
+    
+    if ( status == I2C1_MESSAGE_FAIL )
+    {
+        appData.i2c_current_time.year = 0;
+        appData.i2c_current_time.year_s = 0;
+        appData.i2c_current_time.mon = 0;
+        appData.i2c_current_time.mday = 0;
+        appData.i2c_current_time.hour = 0;
+        appData.i2c_current_time.min = 0;
+        appData.i2c_current_time.sec = 0;
+
+        return false;
+    }
+    
+    seconds = appData.i2c_current_time.sec;
+    
+    while ( seconds == appData.i2c_current_time.sec )
+    {
+        status = I2C1_MasterReadDS3231_get( &appData.i2c_current_time ); 
+        if ( status == I2C1_MESSAGE_FAIL )
+        {
+            appData.i2c_current_time.year = 0;
+            appData.i2c_current_time.year_s = 0;
+            appData.i2c_current_time.mon = 0;
+            appData.i2c_current_time.mday = 0;
+            appData.i2c_current_time.hour = 0;
+            appData.i2c_current_time.min = 0;
+            appData.i2c_current_time.sec = 0;
+
+            return false;
+        }
+    }
 
     if ( status == I2C1_MESSAGE_COMPLETE )
     {

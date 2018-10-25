@@ -65,37 +65,40 @@ I2C1_MESSAGE_STATUS I2C1_MasterReadDS3231_get( struct ts *t )
             Nop( ); // without pull-up resistor program will be blocked here
         }
 
-        for ( i = 0; i <= 6; i++ )
+        if (status != I2C1_MESSAGE_FAIL)
         {
-            n = register_value[i];
-            if ( i == 5 )
+            for ( i = 0; i <= 6; i++ )
             {
-                TimeDate[5] = bcdtodec( n & 0x1F );
-                century = ( n & 0x80 ) >> 7;
+                n = register_value[i];
+                if ( i == 5 )
+                {
+                    TimeDate[5] = bcdtodec( n & 0x1F );
+                    century = ( n & 0x80 ) >> 7;
+                }
+                else
+                {
+                    TimeDate[i] = bcdtodec( n );
+                }
+            }
+
+            if ( century == 1 )
+            {
+                year_full = 2000 + TimeDate[6];
             }
             else
             {
-                TimeDate[i] = bcdtodec( n );
+                year_full = 1900 + TimeDate[6];
             }
-        }
 
-        if ( century == 1 )
-        {
-            year_full = 2000 + TimeDate[6];
+            t->sec = TimeDate[0];
+            t->min = TimeDate[1];
+            t->hour = TimeDate[2];
+            t->mday = TimeDate[4];
+            t->mon = TimeDate[5];
+            t->year = year_full;
+            t->wday = TimeDate[3];
+            t->year_s = TimeDate[6];
         }
-        else
-        {
-            year_full = 1900 + TimeDate[6];
-        }
-
-        t->sec = TimeDate[0];
-        t->min = TimeDate[1];
-        t->hour = TimeDate[2];
-        t->mday = TimeDate[4];
-        t->mon = TimeDate[5];
-        t->year = year_full;
-        t->wday = TimeDate[3];
-        t->year_s = TimeDate[6];
     }
 
     return status;
