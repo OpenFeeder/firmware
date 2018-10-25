@@ -1678,72 +1678,22 @@ void APP_SerialDebugTasks( void )
             {
                 /* Set RTCC module date and time value. */
                 char date[6];
-                uint8_t numBytes;
-                uint16_t delay = 1000;
-                bool flag = false;
-                
-                setDelayMs(delay);
-                  
-                numBytes = 0; /* initialized numBytes */
-                
-                while (false == isDelayMsEnding())
-                {
-                    while ( numBytes < 6 )
-                    {
-                        if ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) )
-                        {
-                            date[numBytes] = UART1_Read( );
+                uint8_t numBytes = 0;
 
-                            ++numBytes;
-                        }
-                    }
-                }
-                
-                delay /= 1000;
-                    
-                if ( date[5] > (60 - delay - 1) )
+                while ( numBytes < 6 )
                 {
-                    date[5] += delay - 60;
-                    date[4] += 1;
-                    if ( date[4] > 60)
+                    if ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) )
                     {
-                       date[4] = 0;
-                       date[3] += 1;
+                        date[numBytes] = UART1_Read( );
+
+                        ++numBytes;
                     }
-                }
-                else
-                {
-                    date[5] += delay;
-                }
-    
-                setDelayMs(delay);
-                
-                while ( false == isDelayMsEnding() )
-                {
-                    if ( false == flag )
-                    {
-                        flag = setDateTime( date[0], date[1], date[2], date[3], date[4], date[5] ); /* Set date and time. */ 
-                    }
-                    
-                }
-                
-                if ( date[5] > (60 - delay - 1) )
-                {
-                    date[5] += delay - 60;
-                    date[4] += 1;
-                    if ( date[4] > 60)
-                    {
-                       date[4] = 0;
-                       date[3] += 1;
-                    }
-                }
-                else
-                {
-                    date[5] += delay;
                 }
                 
                 APP_I2CRTC_DateTime_set( date[0], date[1], date[2], date[3], date[4], date[5] );
 
+                calibrateCurrentDate( );
+                    
                 break;
             }
                 /* -------------------------------------------------------------- */
