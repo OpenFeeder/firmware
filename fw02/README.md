@@ -1,4 +1,4 @@
-# Firmware 02
+# Firmware v02
 
 This firmware is obsolete. The current development branch is [firmware fw02.1](https://github.com/OpenFeeder/firmware/tree/master/fw02_1).
 
@@ -8,3 +8,6 @@ This firmware is obsolete. The current development branch is [firmware fw02.1](h
 - [MPLABR XC16 Compiler v1.31](http://www.microchip.com/mplab/compilers)
 - [MPLABR Code Configurator v3.26.2](http://www.microchip.com/mplab/mplab-code-configurator)
 - [Microchip Libraries for Applications v2016-11-07](http://www.microchip.com/mplab/microchip-libraries-for-applications)
+
+## Contact
+[The developers Team](mailto:arnauld.biganzoli@gmail.com,jbtechlab@gmail.com)
