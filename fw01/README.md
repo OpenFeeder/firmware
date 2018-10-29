@@ -1,16 +1,10 @@
-Firmware 01
-===========
-If you're interested in modifying or extending the OpenFeeder software or hardware, we strongly
-suggest discussing your ideas with the developers *before* starting to work on them.
-That way you can coordinate with the OpenFeeder Team and others, giving your work a higher chance
-of being integrated into the official release.
+# Firmware 01
 
-*Contact [Developer Team](mailto:arnauld.biganzoli@gmail.com,jbtechlab@gmail.com)*
+This firmware is obsolete. The current development branch is [firmware fw02.1](https://github.com/OpenFeeder/firmware/tree/master/fw02_1).
 
+## Development environment version used
 
-Development environment version used
-------------------------------------
-- [MPLAB® X IDE v3.40](http://www.microchip.com/mplab/mplab-x-ide)
-- [MPLAB® XC16 Compiler v1.26](http://www.microchip.com/mplab/compilers)
-- [MPLAB® Code Configurator v3.16](http://www.microchip.com/mplab/mplab-code-configurator)
+- [MPLABÂ® X IDE v3.40](http://www.microchip.com/mplab/mplab-x-ide)
+- [MPLABÂ® XC16 Compiler v1.26](http://www.microchip.com/mplab/compilers)
+- [MPLABÂ® Code Configurator v3.16](http://www.microchip.com/mplab/mplab-code-configurator)
 - [Microchip Libraries for Applications v2015-08-10](http://www.microchip.com/mplab/microchip-libraries-for-applications)
