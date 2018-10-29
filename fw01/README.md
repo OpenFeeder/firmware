@@ -2,7 +2,7 @@
 
 This firmware is obsolete. The current development branch is [firmware fw02.1](https://github.com/OpenFeeder/firmware/tree/master/fw02_1).
 
-## Development environment version used
+## Development tools
 
 - [MPLAB® X IDE v3.40](http://www.microchip.com/mplab/mplab-x-ide)
 - [MPLAB® XC16 Compiler v1.26](http://www.microchip.com/mplab/compilers)
