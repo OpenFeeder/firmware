@@ -357,6 +357,8 @@ typedef struct
     
     bool secu_bird_reward_reopen;
     
+    float ext_temperature;
+    
 } APP_DATA;
 
 // *****************************************************************************

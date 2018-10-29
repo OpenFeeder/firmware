@@ -32,20 +32,7 @@ bool setDateTime( int year, int month, int day, int hour, int minute, int second
     return true;
 }
 
-bool getDateTime( struct tm *currentTime )
-{
-    current_millis = TMR1_Counter16BitGet( ); // lecture des milliseconds
-    
-    /* Get Date and Time. */
-    while ( !RTCC_TimeGet( currentTime ) )
-    {
-        Nop( );
-    }
-    
-    return true;
-}
-
-bool getCurrentDate( void )
+bool getDateTime( void )
 {
     while ( !RTCC_TimeGet( &appData.current_time ) )
     {
@@ -55,7 +42,7 @@ bool getCurrentDate( void )
     return true;
 }
 
-void calibrateCurrentDate( void )
+void calibrateDateTime( void )
 {
     
     if (0 == APP_I2CMasterSeeksSlaveDevice(DS3231_I2C_ADDR, DS3231_I2C_ADDR))
@@ -71,7 +58,7 @@ void calibrateCurrentDate( void )
     }
     else 
     {
-        if ( APP_I2CRTC_DateTime_get( ) )
+        if ( getExtDateTime( ) )
         {
             if (0==appData.i2c_current_time.year_s && 1==appData.i2c_current_time.mon && 1==appData.i2c_current_time.mday) {
                 if ( true == appDataLog.log_events )
@@ -103,7 +90,7 @@ void calibrateCurrentDate( void )
     }
 }
 
-void printCurrentDate( void )
+void printDateTime( void )
 {
     // Print date and time on serial terminal (PC)
     

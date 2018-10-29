@@ -251,6 +251,7 @@ void APP_SerialDebugTasks( void )
                 printf( "   - c or C: CTMU\n" );
                 printf( "   - d or D: servomotor position\n" );
                 printf( "   - r or R: RFID frequency\n" );
+                printf( "   - t or T: external temperature\n" );
                 printf( "   - v or V: VBat level\n" );
 //                printf( "> n or N: NOT USED\n" );
 //                printf( "> o or O: NOT USED\n" );                
@@ -281,13 +282,6 @@ void APP_SerialDebugTasks( void )
             case 'A':
             {
                 uint8_t user_choice;
-                
-//                printf( "Attractive LEDs :\n" );
-//                printf( "\tb or B: set blue component\n" );
-//                printf( "\tg or G: set green component\n" );
-//                printf( "\ti or I: initialize LEDs command\n" );
-//                printf( "\tr or R: set red component\n" );
-//                printf( "\tt or T: test LEDs\n" );
                 
                 while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
                 user_choice = UART1_Read( );
@@ -387,14 +381,14 @@ void APP_SerialDebugTasks( void )
                 }
                 else
                 {
-                    printf( "<empty buffer>\n" );
+                    printf( "\t<empty buffer>\n" );
                 }
                 /* Display battery level buffer  */
                 printf( "\nBattery level buffer:\n" );
                 
                 if ( appDataLog.numBatteryLevelStored == 0)
                 {
-                    printf( "<empty buffer>\n" );
+                    printf( "\t<empty buffer>\n" );
                 }
                 else
                 {     
@@ -412,19 +406,37 @@ void APP_SerialDebugTasks( void )
                 
                 if ( appDataLog.numRfidFreqStored == 0)
                 {
-                    printf( "<empty buffer>\n" );
+                    printf( "\t<empty buffer>\n" );
                 }
                 else
                 {
                      for ( i = 0; i < appDataLog.numRfidFreqStored; i++ )
-                    {
-                         
-                        printf( "\t%02d - %02d - %06ld\n",
+                    {                         
+                        printf( "\t%02d:%02d - %06ld\n",
                                     appDataLog.rfid_freq[i][0],
                                     appDataLog.rfid_freq[i][1],
                                     ( long ) appDataLog.rfid_freq[i][2]*10 );
                     }               
                 }    
+                
+                /* Display DS3231 temperature  */
+                printf( "\nTemperature buffer:\n" );
+                
+                if ( appDataLog.numDs3231TempStored == 0)
+                {
+                    printf( "\t<empty buffer>\n" );
+                }
+                else
+                {
+                     for ( i = 0; i < appDataLog.numDs3231TempStored; i++ )
+                    {
+                         printf( "\t%02d:%02d - %.2f\n", 
+                                (int)appDataLog.ds3231_temp[i][0], 
+                                (int)appDataLog.ds3231_temp[i][1], 
+                                appDataLog.ds3231_temp[i][2] );
+                    }               
+                }    
+                
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -432,10 +444,6 @@ void APP_SerialDebugTasks( void )
             case 'C':
             {
                 uint8_t user_choice;
-                
-//                printf( "Configuration (CONFIG.INI):\n" );
-//                printf( "\td or D: display configuration parameters\n" );
-//                printf( "\tr or R: reconfigure the system\n" );
                 
                 while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
                 user_choice = UART1_Read( );
@@ -479,12 +487,6 @@ void APP_SerialDebugTasks( void )
             case 'D':
             {
                 uint8_t user_choice;
-                
-//                printf( "Door:\n" );
-//                printf( "\tc or C: close door\n" );
-//                printf( "\to or O: open door\n" );
-//                printf( "\tp or P: set door position\n" );
-//                printf( "\tr or R: toggle remain open parameter\n" );
                 
                 while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
                 user_choice = UART1_Read( );
@@ -796,10 +798,6 @@ void APP_SerialDebugTasks( void )
                 {
                 uint8_t user_choice;
                 
-//                printf( "IR barriers:\n" );
-//                printf( "\tp or P: toggle IR barriers power\n" );
-//                printf( "\ts or S: get IR barriers status\n" );
-                
                 while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
                 user_choice = UART1_Read( );
 
@@ -854,13 +852,6 @@ void APP_SerialDebugTasks( void )
                 FILEIO_ERROR_TYPE errF;
                 int ch;   
                 uint8_t user_choice;
-
-//                printf( "Files I/O:\n" );
-//                printf( "\tc or C: display CSV files\n" );
-//                printf( "\te or E: display errors file\n" );
-//                printf( "\ti or I: display CONFIG.INI\n" );
-//                printf( "\tl or L: list files\n" );
-//                printf( "\tx or X: export files\n" );
                 
                 while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
                 user_choice = UART1_Read( );
@@ -879,7 +870,7 @@ void APP_SerialDebugTasks( void )
 
                         if (FILEIO_RESULT_SUCCESS == result) {
 
-                            if (strcmp(searchRecord.shortFileName, "ERRORS.CSV")) {
+                            if (strcmp(searchRecord.shortFileName, ERRORS_LOG_FILE)) {
 
                                 printf("%s\n", searchRecord.shortFileName);
 
@@ -918,7 +909,7 @@ void APP_SerialDebugTasks( void )
 
                             while (FILEIO_RESULT_SUCCESS == FILEIO_Find( "*.CSV", FILEIO_ATTRIBUTE_ARCHIVE, &searchRecord, false )) {
 
-                                if (strcmp(searchRecord.shortFileName, "ERRORS.CSV")) {
+                                if (strcmp(searchRecord.shortFileName, ERRORS_LOG_FILE)) {
                                     
                                     printf("%s\n", searchRecord.shortFileName);
 
@@ -995,7 +986,7 @@ void APP_SerialDebugTasks( void )
                         
                         usbMountDrive( );
 
-                        result = FILEIO_Find( "ERRORS.CSV", FILEIO_ATTRIBUTE_ARCHIVE, &searchRecord, true );
+                        result = FILEIO_Find( ERRORS_LOG_FILE, FILEIO_ATTRIBUTE_ARCHIVE, &searchRecord, true );
 
                         if (FILEIO_RESULT_SUCCESS == result) {
 
@@ -1348,7 +1339,7 @@ void APP_SerialDebugTasks( void )
             case 'K':
                 
                 /* Get USB device properties */                
-                printf("\tPlease wait, process is slow (approx. 7s per GB of drive space)\n");
+                printf("\tPlease wait, process is slow\n\t(approx. 7s per GB of drive space)\n");
                 
                 setLedsStatusColor( LED_USB_ACCESS );
                 
@@ -1409,12 +1400,6 @@ void APP_SerialDebugTasks( void )
                 uint8_t user_choice;
                 uint16_t analog_measure;
                 
-//                printf( "Measure:\n" );
-//                printf( "\tb or B: battery level\n" );
-//                printf( "\tc or C: CTMU\n" );
-//                printf( "\td or D: servomotor position\n" );
-//                printf( "\tr or R: RFID frequency\n" );
-                
                 while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
                 user_choice = UART1_Read( );
 
@@ -1468,6 +1453,22 @@ void APP_SerialDebugTasks( void )
                         }
                         break;
                     }
+                    
+                    case 't':
+                    case 'T':
+                        /* DS3231 temperature*/
+                        
+                        if (0 < APP_I2CMasterSeeksSlaveDevice(DS3231_I2C_ADDR, DS3231_I2C_ADDR))
+                        {
+                            DS3231_temperature_get();                            
+                            printf("\tTemperature: %.2f C\n", appData.ext_temperature);                            
+                        }
+                        else
+                        {
+                           printf("\tDS3231 not found.\n");  
+                        }
+                        break;
+                        
                     case 'v':
                     case 'V':
                     {
@@ -1502,12 +1503,6 @@ void APP_SerialDebugTasks( void )
             case 'P':
             {
                 uint8_t user_choice;
-                
-//                printf( "Power:\n" );               
-//                printf( "\t     1: toggle servomotor power\n" );
-//                printf( "\t     2: toggle CMD_ACC_PIR power\n" );
-//                printf( "\t     3: toggle CMD_VDD_APP_V_USB power\n" );
-//                printf( "\t     4: toggle IR barriers power\n" );
 
                 while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
                 user_choice = UART1_Read( );
@@ -1661,7 +1656,7 @@ void APP_SerialDebugTasks( void )
                 /* Dynamic configuration date, example 22/08/2016 and time to 15:59:30 */
                 // setDateTime( 16, 8, 22, 15, 59, 30 ); /* Set date and time. */
                 setDateTime( year, mon, mday, hour, min, sec ); /* Set date and time. */
-                if ( APP_I2CRTC_DateTime_set( year, mon, mday, hour, min, sec ) )
+                if ( setExtDateTime( year, mon, mday, hour, min, sec ) )
                 {
                     printf( "\nEXT RTC done.\n" );
                 }
@@ -1690,37 +1685,25 @@ void APP_SerialDebugTasks( void )
                     }
                 }
                 
-                APP_I2CRTC_DateTime_set( date[0], date[1], date[2], date[3], date[4], date[5] );
+                setExtDateTime( date[0], date[1], date[2], date[3], date[4], date[5] );
 
-                calibrateCurrentDate( );
+                calibrateDateTime( );
                     
                 break;
             }
                 /* -------------------------------------------------------------- */
 
             case 't':
-                /* Display date and time from RTCC module. */
-                getCurrentDate( );
-                if (0 == APP_I2CMasterSeeksSlaveDevice(DS3231_I2C_ADDR, DS3231_I2C_ADDR))
-                {
-                    appData.i2c_current_time.year = 0;
-                    appData.i2c_current_time.year_s = 0;
-                    appData.i2c_current_time.mon = 0;
-                    appData.i2c_current_time.mday = 0;
-                    appData.i2c_current_time.hour = 0;
-                    appData.i2c_current_time.min = 0;
-                    appData.i2c_current_time.sec = 0;
-                }
-                else
-                {                    
-                    APP_I2CRTC_DateTime_get( );
-                }
                 
+                /* Display date and time from RTCC module. */
+                getDateTime( );
+                getExtDateTime( );
+
                 printf( "PIC: " );
-                printCurrentDate( );
+                printDateTime( );
                 putchar( '\n' );
                 printf( "EXT: ");                 
-                APP_I2CRTC_DateTime_print( );
+                printExtDateTime( );
                 putchar( '\n' );
                 break;
                 /* -------------------------------------------------------------- */
@@ -1728,23 +1711,19 @@ void APP_SerialDebugTasks( void )
             case 'T':
             {
                 uint8_t date[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};                
-                struct tm date_time;
                 
-                while ( !RTCC_TimeGet( &date_time ) )
-                {
-                    Nop( );
-                }
+                getDateTime( );
                 
-                date[0] = (uint8_t)date_time.tm_year;
-                date[1] = (uint8_t)date_time.tm_mon;
-                date[2] = (uint8_t)date_time.tm_mday;
-                date[3] = (uint8_t)date_time.tm_hour;
-                date[4] = (uint8_t)date_time.tm_min;
-                date[5] = (uint8_t)date_time.tm_sec;
+                date[0] = (uint8_t)appData.current_time.tm_year;
+                date[1] = (uint8_t)appData.current_time.tm_mon;
+                date[2] = (uint8_t)appData.current_time.tm_mday;
+                date[3] = (uint8_t)appData.current_time.tm_hour;
+                date[4] = (uint8_t)appData.current_time.tm_min;
+                date[5] = (uint8_t)appData.current_time.tm_sec;
 
                 if (0 < APP_I2CMasterSeeksSlaveDevice(DS3231_I2C_ADDR, DS3231_I2C_ADDR))
                 {
-                    if ( I2C1_MESSAGE_COMPLETE == I2C1_MasterReadDS3231_get( &appData.i2c_current_time ))
+                    if ( I2C1_MESSAGE_COMPLETE == DS3231_time_get( &appData.i2c_current_time ))
                     {
                         date[6] = (uint8_t)appData.i2c_current_time.year_s;
                         date[7] = (uint8_t)appData.i2c_current_time.mon;
@@ -1783,7 +1762,7 @@ void APP_SerialDebugTasks( void )
 
             case 'x':
             case 'X':
-                /* Not used */
+                /* Not used */                   
                 break;
                 /* -------------------------------------------------------------- */
 

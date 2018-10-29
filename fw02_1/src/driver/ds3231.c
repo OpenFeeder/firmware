@@ -19,8 +19,7 @@
 
 #include <xc.h>
 #include <stdio.h>
-//#include <time.h>
-//#include "i2c1.h"
+#include "app.h"
 #include "ds3231.h"
 
 /* control register 0Eh/8Eh
@@ -34,7 +33,7 @@ bit1 A2IE   Alarm2 interrupt enable (1 to enable)
 bit0 A1IE   Alarm1 interrupt enable (1 to enable)
  */
 
-I2C1_MESSAGE_STATUS I2C1_MasterReadDS3231_get( struct ts *t )
+I2C1_MESSAGE_STATUS DS3231_time_get( struct ts *t )
 {
     I2C1_MESSAGE_STATUS status;
     uint8_t register_value[7];
@@ -102,9 +101,9 @@ I2C1_MESSAGE_STATUS I2C1_MasterReadDS3231_get( struct ts *t )
     }
 
     return status;
-} /* End of I2C1_MasterReadDS3231_get( ) */
+} /* End of DS3231_time_get( ) */
 
-I2C1_MESSAGE_STATUS I2C1_MasterReadDS3231_set( struct ts *t )
+I2C1_MESSAGE_STATUS DS3231_time_set( struct ts *t )
 {
     I2C1_MESSAGE_STATUS status;
     uint8_t century;
@@ -122,7 +121,6 @@ I2C1_MESSAGE_STATUS I2C1_MasterReadDS3231_set( struct ts *t )
     TimeDate[7] = dectobcd( t->year_s );
 
     I2C1_MasterWrite( TimeDate, 8, DS3231_I2C_ADDR, &status );
-
     // wait for the message to be sent or status has changed.
     while ( status == I2C1_MESSAGE_PENDING )
     {
@@ -130,7 +128,92 @@ I2C1_MESSAGE_STATUS I2C1_MasterReadDS3231_set( struct ts *t )
     }
 
     return status;
-} /* End of I2C1_MasterReadDS3231_set( ) */
+} /* End of DS3231_time_set( ) */
+
+I2C1_MESSAGE_STATUS DS3231_temperature_get( )
+{
+    I2C1_MESSAGE_STATUS status;
+    uint8_t write_buffer[2] = {0, 0};
+    uint8_t register_value[7] = {0, 0, 0, 0, 0, 0, 0};
+    uint8_t *p_data_read;
+        
+    // write the register address before reading it
+    write_buffer[0] = DS3231_CONTROL_ADDR;
+    I2C1_MasterWrite( write_buffer, 1, DS3231_I2C_ADDR, &status );    
+    // wait for the message to be sent or status has changed.
+    while ( status == I2C1_MESSAGE_PENDING )
+    {
+        Nop( ); // without pull-up resistor program will be blocked here
+    }
+    if ( status != I2C1_MESSAGE_COMPLETE )
+    {
+        return status;
+    }
+    
+    p_data_read = register_value;
+    I2C1_MasterRead( p_data_read, 1, DS3231_I2C_ADDR, &status );
+    // wait for the message to be sent or status has changed.
+    while ( status == I2C1_MESSAGE_PENDING )
+    {
+        Nop( ); // without pull-up resistor program will be blocked here
+    }
+    if ( status != I2C1_MESSAGE_COMPLETE )
+    {
+        return status;
+    }
+    
+    write_buffer[0] = DS3231_CONTROL_ADDR;
+    write_buffer[1] = register_value[0] | 0x01<<5;
+    
+    I2C1_MasterWrite( write_buffer, 2, DS3231_I2C_ADDR, &status );
+    // wait for the message to be sent or status has changed.
+    while ( status == I2C1_MESSAGE_PENDING )
+    {
+        Nop( ); // without pull-up resistor program will be blocked here
+    }
+    if ( status != I2C1_MESSAGE_COMPLETE )
+    {
+        return status;
+    }
+    
+    write_buffer[0] = DS3231_TEMPERATURE_ADDR;
+    I2C1_MasterWrite( write_buffer, 1, DS3231_I2C_ADDR, &status );
+    // wait for the message to be sent or status has changed.
+    while ( status == I2C1_MESSAGE_PENDING )
+    {
+        Nop( ); // without pull-up resistor program will be blocked here
+    }
+    if ( status != I2C1_MESSAGE_COMPLETE )
+    {
+        return status;
+    }
+    
+    memset(register_value, 0, 7);
+    
+    p_data_read = register_value;
+    I2C1_MasterRead( p_data_read, 2, DS3231_I2C_ADDR, &status );
+    // wait for the message to be sent or status has changed.
+    while ( status == I2C1_MESSAGE_PENDING )
+    {
+        Nop( ); // without pull-up resistor program will be blocked here
+    }
+    if ( status != I2C1_MESSAGE_COMPLETE )
+    {
+        return status;
+    }
+   
+    if (register_value[0]>>7)
+    {
+        appData.ext_temperature = -1.0*((float)((register_value[0]-1)^255)-(float)(register_value[1]>>7)*0.5-(float)(register_value[1]>>6 & 0x01)*0.25);
+    }
+    else
+    {
+        appData.ext_temperature = (float)register_value[0] + (float)(register_value[1]>>7)*0.5 + (float)(register_value[1]>>6 & 0x01)*0.25;
+    }
+
+    return status;
+    
+} /* End of DS3231_temperature_get( ) */
 
 /* Helpers */
 

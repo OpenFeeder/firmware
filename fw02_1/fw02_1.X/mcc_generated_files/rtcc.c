@@ -417,7 +417,8 @@ void __attribute__ ( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
         }
         else
         {
-            getCurrentDate( );
+//            getCurrentDate( );
+            getDateTime( );
 
             if ( appData.current_time.tm_hour >= appDataAlarmSleep.time.tm_hour &&
                  appData.current_time.tm_min >= appDataAlarmSleep.time.tm_min )
@@ -462,6 +463,20 @@ void __attribute__ ( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
                     printf( "- RFID check\n" );
 #endif 
                     appData.rtcc_alarm_action = RTCC_RFID_FREQ_CHECK;
+                    IFS3bits.RTCIF = false;
+                    return;
+                }
+                
+                /* DS3231 temperature */
+                if (( appData.current_time.tm_min == 4 || 
+                     appData.current_time.tm_min == 19 || 
+                     appData.current_time.tm_min == 34 || 
+                     appData.current_time.tm_min == 49) && appData.current_time.tm_sec == 15 )
+                {
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
+                    printf( "- DS3231 temperature\n" );
+#endif 
+                    appData.rtcc_alarm_action = RTCC_DS3231_TEMPERATURE;
                     IFS3bits.RTCIF = false;
                     return;
                 }
@@ -546,25 +561,34 @@ void __attribute__ ( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
                          ( appData.current_time.tm_hour * 60 + appData.current_time.tm_min )< ( appDataDoor.close_time.tm_hour * 60 + appDataDoor.close_time.tm_min ) )
 
                     {
+                        if ( DOOR_OPENED != appDataDoor.reward_door_status )
+                        {
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
-                        printf( "- Door open\n" );
+                            printf( "- Door open\n" );
 #endif 
-                        appData.rtcc_alarm_action = RTCC_ALARM_OPEN_DOOR;
-                        IFS3bits.RTCIF = false;
-                        return;
+                            appData.rtcc_alarm_action = RTCC_ALARM_OPEN_DOOR;
+                            IFS3bits.RTCIF = false;
+                            return;
+                        }
                     }
                     else
                     {
+                        if ( DOOR_CLOSED != appDataDoor.reward_door_status )
+                        {
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
-                        printf( "- Door close\n" );
+                            printf( "- Door close\n" );
 #endif 
-                        appData.rtcc_alarm_action = RTCC_ALARM_CLOSE_DOOR;
-                        IFS3bits.RTCIF = false;
-                        return;
+                            appData.rtcc_alarm_action = RTCC_ALARM_CLOSE_DOOR;
+                            IFS3bits.RTCIF = false;
+                            return;
+                        }
                     }
                 }
             }
         }
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
+        printf( "- None\n" );
+#endif 
     }
 
     IFS3bits.RTCIF = false; /* Clear interrupt flag. */

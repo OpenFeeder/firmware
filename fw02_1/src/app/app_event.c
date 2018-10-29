@@ -11,13 +11,13 @@
 
 void store_event(APP_EVENT ev) 
 {
-    struct tm currentTime;
-    getDateTime(&currentTime);
+
+    getDateTime( );
    
     appDataEvent.numbers[appDataEvent.num_events_stored] = ev;    
-    appDataEvent.hours[appDataEvent.num_events_stored] = currentTime.tm_hour;
-    appDataEvent.minutes[appDataEvent.num_events_stored] = currentTime.tm_min;
-    appDataEvent.seconds[appDataEvent.num_events_stored] = currentTime.tm_sec;
+    appDataEvent.hours[appDataEvent.num_events_stored] = appData.current_time.tm_hour;
+    appDataEvent.minutes[appDataEvent.num_events_stored] = appData.current_time.tm_min;
+    appDataEvent.seconds[appDataEvent.num_events_stored] = appData.current_time.tm_sec;
     
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_EVENT_INFO )
     printf("\t\tEvent %03d - %02d:%02d:%02d %03d\n", appDataEvent.num_events_stored, 
@@ -37,12 +37,9 @@ FILEIO_RESULT logEvents(void)
     FILEIO_ERROR_TYPE errF;
     char buf[35];
     uint8_t ibuf[4];
-    struct tm currentTime;
     int flag, i;
     size_t numDataWritten;
     bool needToUnmount;
-    
-    getDateTime(&currentTime);
 
     if ( true == appDataLog.log_events )
     {
@@ -192,10 +189,7 @@ bool setEventFileName(void)
     memset(appDataEvent.binfilename, 0, sizeof (appDataEvent.binfilename));
 
     /* Get current date */
-    while (!RTCC_TimeGet(&appData.current_time))
-    {
-        Nop();
-    }
+    getDateTime( );
 
     if (EVENT_FILE_TEXT == appDataEvent.file_type || EVENT_FILE_BINARY_AND_TEXT == appDataEvent.file_type )
     {

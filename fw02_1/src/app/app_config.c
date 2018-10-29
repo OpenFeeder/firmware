@@ -1301,7 +1301,8 @@ INI_READ_STATE config_read_ini( void )
         read_parameter = ini_getl( "logs", "udid", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
         {
-            return INI_PB_LOGS_UDID;
+            appDataLog.log_udid = true;
+//            return INI_PB_LOGS_UDID;
         }
         else
         {
@@ -1313,7 +1314,8 @@ INI_READ_STATE config_read_ini( void )
         read_parameter = ini_getl( "logs", "events", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
         {
-            return INI_PB_LOGS_EVENTS;
+            appDataLog.log_events = true;
+//            return INI_PB_LOGS_EVENTS;
         }
         else
         {
@@ -1325,7 +1327,8 @@ INI_READ_STATE config_read_ini( void )
         read_parameter = ini_getl( "logs", "errors", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
         {
-            return INI_PB_LOGS_ERRORS;
+            appDataLog.log_errors = true;
+//            return INI_PB_LOGS_ERRORS;
         }
         else
         {
@@ -1337,7 +1340,8 @@ INI_READ_STATE config_read_ini( void )
         read_parameter = ini_getl( "logs", "battery", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
         {
-            return INI_PB_LOGS_BATTERY;
+            appDataLog.log_battery = true;
+//            return INI_PB_LOGS_BATTERY;
         }
         else
         {
@@ -1349,13 +1353,27 @@ INI_READ_STATE config_read_ini( void )
         read_parameter = ini_getl( "logs", "rfid", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
         {
-            return INI_PB_LOGS_RFID;
+            appDataLog.log_rfid = true;
+//            return INI_PB_LOGS_RFID;
         }
         else
         {
             appDataLog.log_rfid = ( bool ) read_parameter;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
             printf( "\tLogs RFID... read.\n" );
+#endif
+        }
+        read_parameter = ini_getl( "logs", "temperature", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+//            return INI_PB_LOGS_RFID;
+            appDataLog.log_temp = true;
+        }
+        else
+        {
+            appDataLog.log_temp = ( bool ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\tLogs temperature... read.\n" );
 #endif
         }
     }
@@ -1369,6 +1387,7 @@ INI_READ_STATE config_read_ini( void )
         appDataLog.log_errors = true;
         appDataLog.log_battery = true;
         appDataLog.log_rfid = true;
+        appDataLog.log_temp = true;
     }
     
     /* Reward. */
@@ -1660,7 +1679,7 @@ void config_print( void )
     }
     if ( true == appDataLog.log_battery)
     {
-        printf( "\t\tBattery: enable - %s\n", "BATTERY.CSV" );   
+        printf( "\t\tBattery: enable - %s\n", BATTERY_LOG_FILE );   
     }
     else
     {
@@ -1668,15 +1687,23 @@ void config_print( void )
     }  
     if ( true == appDataLog.log_rfid)
     {
-        printf( "\t\tRfid: enable - %s\n", "RFID.CSV" );   
+        printf( "\t\tRfid: enable - %s\n", RFID_LOG_FILE );   
     }
     else
     {
         printf( "\t\tRfid: disable\n");
     }
+    if ( true == appDataLog.log_temp)
+    {
+        printf( "\t\tTemperature: enable - %s\n", EXT_TEMP_LOG_FILE );   
+    }
+    else
+    {
+        printf( "\t\tTemperature: disable\n");
+    }
     if ( true == appDataLog.log_udid)
     {
-        printf( "\t\tUdid: enable - %s\n", "UDID.CSV" );   
+        printf( "\t\tUdid: enable - %s\n", UDID_LOG_FILE );   
     }
     else
     {
@@ -1684,7 +1711,7 @@ void config_print( void )
     }
     if ( true == appDataLog.log_errors)
     {
-        printf( "\t\tErrors: enable - %s\n", "ERRORS.CSV" );   
+        printf( "\t\tErrors: enable - %s\n", ERRORS_LOG_FILE );   
     }
     else
     {

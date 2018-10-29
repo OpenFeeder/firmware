@@ -15,12 +15,11 @@ FILEIO_RESULT logError(void)
     FILEIO_OBJECT file;
     FILEIO_ERROR_TYPE errF;
     char buf[250];
-    struct tm currentTime;
     int flag;
     size_t numDataWritten;
     bool needToUnmount;
-
-    getDateTime(&currentTime);
+    
+    getDateTime( );
 
     if ( USB_DRIVE_MOUNTED == appDataUsb.usbDriveStatus )
     {
@@ -40,7 +39,7 @@ FILEIO_RESULT logError(void)
        store_event(OF_WRITE_ERRORS_LOG); 
     }
     
-    if (FILEIO_RESULT_FAILURE == FILEIO_Open(&file, "ERRORS.CSV", FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND))
+    if (FILEIO_RESULT_FAILURE == FILEIO_Open(&file, ERRORS_LOG_FILE, FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND))
     {
         errF = FILEIO_ErrorGet('A');
         sprintf(appError.message, "Unable to open error log file (%u)", errF);
@@ -52,23 +51,31 @@ FILEIO_RESULT logError(void)
     }
 
     memset(buf, '\0', sizeof ( buf));
-
-    flag = sprintf(buf, "%c%c,OF%c%c,%u,%02d/%02d/%02d,%02d:%02d:%02d,%u,\"%s\",%s,%u\n",
-                   appData.siteid[0],
-                   appData.siteid[1],
-                   appData.siteid[2],
-                   appData.siteid[3],
-                   getCompletScenarioNumber(),
-                   currentTime.tm_mday,
-                   currentTime.tm_mon,
-                   currentTime.tm_year,
-                   currentTime.tm_hour,
-                   currentTime.tm_min,
-                   currentTime.tm_sec,                   
-                   appError.number,
-                   appError.message,
-                   appError.currentFileName,
-                   appError.currentLineNumber);
+    
+    flag = sprintf(buf, "%c%c%sOF%c%c%s%u%s%02d/%02d/%02d%s%02d:%02d:%02d%s%u%s\"%s\"%s%s%s%u\n",
+                    appData.siteid[0],
+                    appData.siteid[1],
+                    appDataLog.separator,
+                    appData.siteid[2],
+                    appData.siteid[3],
+                    appDataLog.separator,
+                    getCompletScenarioNumber(),
+                    appDataLog.separator,
+                    appData.current_time.tm_mday,
+                    appData.current_time.tm_mon,
+                    appData.current_time.tm_year,
+                    appDataLog.separator,
+                    appData.current_time.tm_hour,
+                    appData.current_time.tm_min,
+                    appData.current_time.tm_sec,
+                    appDataLog.separator,                   
+                    appError.number,
+                    appDataLog.separator,
+                    appError.message,
+                    appDataLog.separator,
+                    appError.currentFileName,
+                    appDataLog.separator,
+                    appError.currentLineNumber);
 
     if (flag > 0)
     {
@@ -126,7 +133,7 @@ void printError(void)
     
     if ( appError.currentLineNumber > 0 )
     {
-        printf( " ERROR %03d\n\t%s\n\tIn %s at line %d\n", appError.number, appError.message, appError.currentFileName, appError.currentLineNumber);
+        printf( "\tERROR %03d\n\t%s\n\tIn %s at line %d\n", appError.number, appError.message, appError.currentFileName, appError.currentLineNumber);
     }
     else
     {

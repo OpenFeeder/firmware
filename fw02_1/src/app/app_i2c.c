@@ -350,12 +350,25 @@ I2C1_MESSAGE_STATUS APP_ScanningPushButtonTasks( void )
     return status;
 } /* End of APP_ScanningPushButtonTasks() */
 
-bool APP_I2CRTC_DateTime_get( void )
+bool getExtDateTime( void )
 {
     I2C1_MESSAGE_STATUS status;
     int seconds;
     
-    status = I2C1_MasterReadDS3231_get( &appData.i2c_current_time );
+    if (0 == APP_I2CMasterSeeksSlaveDevice(DS3231_I2C_ADDR, DS3231_I2C_ADDR))
+    {
+        appData.i2c_current_time.year = 0;
+        appData.i2c_current_time.year_s = 0;
+        appData.i2c_current_time.mon = 0;
+        appData.i2c_current_time.mday = 0;
+        appData.i2c_current_time.hour = 0;
+        appData.i2c_current_time.min = 0;
+        appData.i2c_current_time.sec = 0;
+
+        return false;
+    }
+    
+    status = DS3231_time_get( &appData.i2c_current_time );
     
     if ( status == I2C1_MESSAGE_FAIL )
     {
@@ -374,7 +387,7 @@ bool APP_I2CRTC_DateTime_get( void )
     
     while ( seconds == appData.i2c_current_time.sec )
     {
-        status = I2C1_MasterReadDS3231_get( &appData.i2c_current_time ); 
+        status = DS3231_time_get( &appData.i2c_current_time ); 
         if ( status == I2C1_MESSAGE_FAIL )
         {
             appData.i2c_current_time.year = 0;
@@ -407,7 +420,7 @@ bool APP_I2CRTC_DateTime_get( void )
     }
 }
 
-void APP_I2CRTC_DateTime_print( void )
+void printExtDateTime( void )
 {
     
     if (0 == appData.i2c_current_time.mday && 0 == appData.i2c_current_time.mon && 0 == appData.i2c_current_time.year_s)
@@ -430,7 +443,7 @@ void APP_I2CRTC_DateTime_print( void )
 /* Dynamic configuration date, example 22/08/2016 and time to 15:59:30 */
 // setDateTime( 16, 8, 22, 15, 59, 30 ); /* Set date and time. */
 
-bool APP_I2CRTC_DateTime_set( uint8_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second ) /* Set date and time. */
+bool setExtDateTime( uint8_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second ) /* Set date and time. */
 {
     struct ts t;
 
@@ -441,9 +454,9 @@ bool APP_I2CRTC_DateTime_set( uint8_t year, uint8_t month, uint8_t day, uint8_t 
     t.min = minute;
     t.sec = second;
 
-    if ( I2C1_MESSAGE_COMPLETE == I2C1_MasterReadDS3231_set( &t ) )
+    if ( I2C1_MESSAGE_COMPLETE == DS3231_time_set( &t ) )
     {
-        APP_I2CRTC_DateTime_get( );
+        getExtDateTime( );
         return true;
     }
     else

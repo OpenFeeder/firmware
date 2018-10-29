@@ -149,7 +149,7 @@ void APP_Tasks( void )
             
             }
 
-            calibrateCurrentDate( );
+            calibrateDateTime( );
             
             /* Power PIR sensor early in the code because of starting delay before usable */
             powerPIREnable( );
@@ -298,7 +298,7 @@ void APP_Tasks( void )
 
                 if ( true == appDataLog.log_udid )
                 {
-                    logUDID();
+                    logUdid();
                 }
                 
                 setLedsStatusColor( LED_YELLOW );
@@ -407,10 +407,7 @@ void APP_Tasks( void )
 
                     if ( GO_NO_GO == appData.scenario_number || COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number)
                     {
-                        while (!RTCC_TimeGet(&appData.current_time))
-                        {
-                            Nop();
-                        }                        
+                        getDateTime( );                    
                     }                
 
                     if ( GO_NO_GO == appData.scenario_number )
@@ -474,10 +471,8 @@ void APP_Tasks( void )
                         }
                     }
                     
-                    while ( !RTCC_TimeGet( &appData.current_time ) )
-                    {
-                        Nop( );
-                    }
+                    getDateTime( );
+
                     if ( ( appData.current_time.tm_hour * 60 + appData.current_time.tm_min ) >= ( appDataAttractiveLeds.wake_up_time.tm_hour * 60 + appDataAttractiveLeds.wake_up_time.tm_min ) &&
                          ( appData.current_time.tm_hour * 60 + appData.current_time.tm_min )< ( appDataAttractiveLeds.sleep_time.tm_hour * 60 + appDataAttractiveLeds.sleep_time.tm_min ) )
                     {
@@ -646,7 +641,25 @@ void APP_Tasks( void )
                 
                 if ( RTCC_RTC_CALIBRATION == appData.rtcc_alarm_action )
                 {
-                    calibrateCurrentDate( );
+                    calibrateDateTime( );
+                }
+                
+                if ( RTCC_DS3231_TEMPERATURE == appData.rtcc_alarm_action )
+                {
+                    if (0 < APP_I2CMasterSeeksSlaveDevice(DS3231_I2C_ADDR, DS3231_I2C_ADDR))
+                    {
+                        if ( true == appDataLog.log_events )
+                        {
+                           store_event(OF_DS3231_GET_TEMPERATURE); 
+                        }
+                                
+                        getDateTime( );
+                        DS3231_temperature_get( );
+                        appDataLog.ds3231_temp[appDataLog.numDs3231TempStored][0] = (float)appData.current_time.tm_hour;
+                        appDataLog.ds3231_temp[appDataLog.numDs3231TempStored][1] = (float)appData.current_time.tm_min;
+                        appDataLog.ds3231_temp[appDataLog.numDs3231TempStored][2] = appData.ext_temperature;
+                        ++appDataLog.numDs3231TempStored;
+                    }
                 }
                 
                 if ( RTCC_ALARM_SET_ATTRACTIVE_LEDS_OFF == appData.rtcc_alarm_action )
@@ -1825,7 +1838,8 @@ void APP_Tasks( void )
                 if ( appDataLog.numDataStored > 0 || 
                      appDataLog.numBatteryLevelStored > 0 || 
                      appDataLog.numRfidFreqStored > 0  ||
-                     appDataEvent.num_events_stored > 0)
+                     appDataEvent.num_events_stored > 0 ||
+                     appDataLog.numDs3231TempStored > 0)
                 {
                     /* Log data on USB device */
                     appDataUsb.key_is_nedded = true;
@@ -1858,7 +1872,9 @@ void APP_Tasks( void )
                 
                 if ( appDataLog.numDataStored > 0 )
                 {
-                    
+#if defined (USE_UART1_SERIAL_INTERFACE) 
+                    printf("\tFlush birds data.\n");
+#endif
                     /* Force data to be written on the USB device */
                     appDataLog.numDataStored = MAX_NUM_DATA_TO_STORE;
                     if ( false == dataLog( false ) )
@@ -1873,6 +1889,9 @@ void APP_Tasks( void )
 
                 if ( true == appDataLog.log_battery && appDataLog.numBatteryLevelStored > 0 )
                 {
+#if defined (USE_UART1_SERIAL_INTERFACE) 
+                    printf("\tFlush battery data.\n");
+#endif
                     if ( FILEIO_RESULT_FAILURE == logBatteryLevel( ) )
                     {
                         appDataUsb.key_is_nedded = false;
@@ -1885,7 +1904,25 @@ void APP_Tasks( void )
                 
                 if ( true == appDataLog.log_rfid && appDataLog.numRfidFreqStored > 0 )
                 {
+#if defined (USE_UART1_SERIAL_INTERFACE) 
+                    printf("\tFlush RFID data.\n");
+#endif
                     if ( FILEIO_RESULT_FAILURE == logRfidFreq( ) )
+                    {
+                        appDataUsb.key_is_nedded = false;
+                        appData.state = APP_STATE_ERROR;
+                        break;
+                    }
+                }
+                
+                setLedsStatusColor( LED_USB_ACCESS );
+                
+                if ( true == appDataLog.log_temp && appDataLog.numDs3231TempStored > 0 )
+                {
+#if defined (USE_UART1_SERIAL_INTERFACE) 
+                    printf("\tFlush temperature data.\n");
+#endif
+                    if ( FILEIO_RESULT_FAILURE == logDs3231Temp( ) )
                     {
                         appDataUsb.key_is_nedded = false;
                         appData.state = APP_STATE_ERROR;
@@ -1897,6 +1934,9 @@ void APP_Tasks( void )
                 
                 if ( true == appDataLog.log_events && appDataEvent.num_events_stored > 0 )
                 {
+#if defined (USE_UART1_SERIAL_INTERFACE) 
+                    printf("\tFlush events data.\n");
+#endif
                     if ( FILEIO_RESULT_FAILURE == logEvents( ) )
                     {
                         appDataUsb.key_is_nedded = false;
@@ -2606,8 +2646,8 @@ void APP_Tasks( void )
                 printf( "> DEFAULT_STATE\n" );
 #endif
 #if defined (USE_UART1_SERIAL_INTERFACE) 
-                getCurrentDate( );
-                printCurrentDate( ); 
+                getDateTime( );
+                printDateTime( ); 
 #endif
 
                 enter_default_state = true;
@@ -2667,8 +2707,6 @@ void APP_Initialize( void )
     appDataLog.numDataStored = 0;
     appDataLog.attractive_leds_current_color_index = 0;
 
-    appDataLog.numBatteryLevelStored = 0;
-
     appDataLog.data_flush_before_error = false;
     appDataLog.log_birds = true;
     appDataLog.log_udid = false;
@@ -2676,6 +2714,7 @@ void APP_Initialize( void )
     appDataLog.log_errors = false;
     appDataLog.log_battery = false;
     appDataLog.log_rfid = false;
+    appDataLog.log_temp = false;
     
     appDataLog.did_door_open = false;
     
@@ -2703,7 +2742,8 @@ void APP_Initialize( void )
         
     appDataLog.numBatteryLevelStored = 0;
     appDataLog.numRfidFreqStored = 0;
-
+    appDataLog.numDs3231TempStored = 0;
+        
     appError.ledColor_1 = LEDS_ERROR;
     appError.number = ERROR_NONE;
 
@@ -2736,6 +2776,8 @@ void APP_Initialize( void )
     appDataEvent.file_type = EVENT_FILE_BINARY;
     
     appData.chk_food_level = false;
+    
+    appData.ext_temperature = 0.0;
     
 }
 

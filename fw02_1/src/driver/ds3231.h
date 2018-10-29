@@ -15,6 +15,7 @@
 #ifndef _DS3231_HEADER_H
 #define _DS3231_HEADER_H
 
+#include <string.h>
 #include <stdint.h>
 #include <time.h>
 #include "i2c1.h"
@@ -61,8 +62,9 @@ struct ts
 };
 
 /* Main functions */
-I2C1_MESSAGE_STATUS I2C1_MasterReadDS3231_get( struct ts *t );
-I2C1_MESSAGE_STATUS I2C1_MasterReadDS3231_set( struct ts *t );
+I2C1_MESSAGE_STATUS DS3231_time_get( struct ts *t );
+I2C1_MESSAGE_STATUS DS3231_time_set( struct ts *t );
+I2C1_MESSAGE_STATUS DS3231_temperature_get( void );
 
 
 /* Helpers */
