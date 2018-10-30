@@ -420,26 +420,6 @@ bool getExtDateTime( void )
     }
 }
 
-void printExtDateTime( void )
-{
-    
-    if (0 == appData.i2c_current_time.mday && 0 == appData.i2c_current_time.mon && 0 == appData.i2c_current_time.year_s)
-    {
-        printf( "--/--/---- --:--:--" );
-    }
-    else
-    {
-        printf( "%02u/%02u/20%02u %02u:%02u:%02u", 
-           appData.i2c_current_time.mday, 
-           appData.i2c_current_time.mon, 
-           appData.i2c_current_time.year_s, 
-           appData.i2c_current_time.hour, 
-           appData.i2c_current_time.min, 
-           appData.i2c_current_time.sec ); // I2C RTC
-    }
-
-}
-
 /* Dynamic configuration date, example 22/08/2016 and time to 15:59:30 */
 // setDateTime( 16, 8, 22, 15, 59, 30 ); /* Set date and time. */
 
@@ -447,6 +427,19 @@ bool setExtDateTime( uint8_t year, uint8_t month, uint8_t day, uint8_t hour, uin
 {
     struct ts t;
 
+    if (0 == APP_I2CMasterSeeksSlaveDevice(DS3231_I2C_ADDR, DS3231_I2C_ADDR))
+    {
+        appData.i2c_current_time.year = 0;
+        appData.i2c_current_time.year_s = 0;
+        appData.i2c_current_time.mon = 0;
+        appData.i2c_current_time.mday = 0;
+        appData.i2c_current_time.hour = 0;
+        appData.i2c_current_time.min = 0;
+        appData.i2c_current_time.sec = 0;
+
+        return false;
+    }
+    
     t.year = year;
     t.mon = month;
     t.mday = day;
@@ -466,6 +459,29 @@ bool setExtDateTime( uint8_t year, uint8_t month, uint8_t day, uint8_t hour, uin
    
 }
 
+void printExtDateTime( void )
+{
+    
+    if (0 == APP_I2CMasterSeeksSlaveDevice(DS3231_I2C_ADDR, DS3231_I2C_ADDR))
+    {
+        printf( "--/--/---- --:--:--" );
+    }
+    else if (0 == appData.i2c_current_time.mday && 0 == appData.i2c_current_time.mon && 0 == appData.i2c_current_time.year_s)
+    {
+        printf( "--/--/---- --:--:--" );
+    }
+    else
+    {
+        printf( "%02u/%02u/20%02u %02u:%02u:%02u", 
+           appData.i2c_current_time.mday, 
+           appData.i2c_current_time.mon, 
+           appData.i2c_current_time.year_s, 
+           appData.i2c_current_time.hour, 
+           appData.i2c_current_time.min, 
+           appData.i2c_current_time.sec ); // I2C RTC
+    }
+
+}
 
 /*******************************************************************************
  End of File

@@ -1685,9 +1685,14 @@ void APP_SerialDebugTasks( void )
                     }
                 }
                 
-                setExtDateTime( date[0], date[1], date[2], date[3], date[4], date[5] );
-
-                calibrateDateTime( );
+                if ( setExtDateTime( date[0], date[1], date[2], date[3], date[4], date[5] ) )
+                {
+                    calibrateDateTime( );
+                }
+                else
+                {
+                    setDateTime( date[0], date[1], date[2], date[3], date[4], date[5] );
+                }
                     
                 break;
             }
@@ -1721,17 +1726,14 @@ void APP_SerialDebugTasks( void )
                 date[4] = (uint8_t)appData.current_time.tm_min;
                 date[5] = (uint8_t)appData.current_time.tm_sec;
 
-                if (0 < APP_I2CMasterSeeksSlaveDevice(DS3231_I2C_ADDR, DS3231_I2C_ADDR))
+                if ( getExtDateTime() )
                 {
-                    if ( I2C1_MESSAGE_COMPLETE == DS3231_time_get( &appData.i2c_current_time ))
-                    {
-                        date[6] = (uint8_t)appData.i2c_current_time.year_s;
-                        date[7] = (uint8_t)appData.i2c_current_time.mon;
-                        date[8] = (uint8_t)appData.i2c_current_time.mday;
-                        date[9] = (uint8_t)appData.i2c_current_time.hour;
-                        date[10] = (uint8_t)appData.i2c_current_time.min;
-                        date[11] = (uint8_t)appData.i2c_current_time.sec;
-                    }
+                    date[6] = (uint8_t)appData.i2c_current_time.year_s;
+                    date[7] = (uint8_t)appData.i2c_current_time.mon;
+                    date[8] = (uint8_t)appData.i2c_current_time.mday;
+                    date[9] = (uint8_t)appData.i2c_current_time.hour;
+                    date[10] = (uint8_t)appData.i2c_current_time.min;
+                    date[11] = (uint8_t)appData.i2c_current_time.sec;
                 }
 
                 UART1_WriteBuffer(date, 12);
