@@ -60,10 +60,11 @@ void calibrateDateTime( void )
     {
         if ( getExtDateTime( ) )
         {
-            if (0==appData.i2c_current_time.year_s && 1==appData.i2c_current_time.mon && 1==appData.i2c_current_time.mday) {
+//            if (0==appData.i2c_current_time.year_s && 1==appData.i2c_current_time.mon && 1==appData.i2c_current_time.mday) {
+            if ( 18 > appData.i2c_current_time.year_s ) {
                 if ( true == appDataLog.log_events )
                 {
-                   store_event(OF_CALIBRATE_TIME_FAIL); 
+                   store_event(OF_CALIBRATE_TIME_WRONG); 
                 }
             }
             else {
