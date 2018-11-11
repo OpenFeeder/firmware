@@ -420,6 +420,23 @@ void APP_SerialDebugTasks( void )
                 }    
                 
                 /* Display DS3231 temperature  */
+                printf( "\nCalibration buffer:\n" );
+                if ( appDataLog.numTimeCalibStored == 0)
+                {
+                    printf( "\t<empty buffer>\n" );
+                }
+                else
+                {
+                     for ( i = 0; i < appDataLog.numTimeCalibStored; i++ )
+                    {
+                         printf( "\t%02d:%02d - %.2f\n", 
+                                (int)appDataLog.time_calibration[i][0], 
+                                (int)appDataLog.time_calibration[i][1], 
+                                appDataLog.time_calibration[i][2] );
+                    }               
+                } 
+                
+                /* Display DS3231 temperature  */
                 printf( "\nTemperature buffer:\n" );
                 
                 if ( appDataLog.numDs3231TempStored == 0)
@@ -1264,7 +1281,7 @@ void APP_SerialDebugTasks( void )
                 getExtDateTime( );
 
                 printf( "PIC: " );
-                printDateTime( );
+                printDateTime( appData.current_time );
                 putchar( '\n' );
                 printf( "EXT: ");                 
                 printExtDateTime( );

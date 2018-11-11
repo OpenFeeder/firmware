@@ -17,7 +17,7 @@
 extern uint16_t current_millis; // global variable for current milliseconde capture
 
 bool setDateTime( int, int, int, int, int, int );
-void printDateTime( );
+void printDateTime( struct tm );
 bool getDateTime( void );
 void calibrateDateTime( void );
 

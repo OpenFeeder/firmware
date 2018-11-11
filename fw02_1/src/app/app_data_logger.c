@@ -267,6 +267,11 @@ void clearExtTemperatureBuffer(void)
     appDataLog.numDs3231TempStored = 0;
 }
 
+void clearCalibrationBuffer(void)
+{   
+    appDataLog.numTimeCalibStored = 0;
+}
+
 void clearBatteryBuffer(void)
 {
     appDataLog.numBatteryLevelStored = 0;
@@ -630,7 +635,7 @@ FILEIO_RESULT logDs3231Temp(void)
 
     if ( true == appDataLog.log_events )
     {
-       store_event(OF_WRITE_RFID_LOG); 
+       store_event(OF_WRITE_EXT_TEMP_LOG); 
     }
     
     if (FILEIO_RESULT_FAILURE == FILEIO_Open(&file, EXT_TEMP_LOG_FILE, FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND))
@@ -707,6 +712,113 @@ FILEIO_RESULT logDs3231Temp(void)
 #endif 
 
     clearExtTemperatureBuffer( );
+    
+    return FILEIO_RESULT_SUCCESS;
+}
+
+FILEIO_RESULT logCalibration(void)
+{
+    FILEIO_OBJECT file;
+    FILEIO_ERROR_TYPE errF;
+    char buf[35];
+    int flag, i;
+    size_t numDataWritten;
+    bool needToUnmount;
+    
+    getDateTime( );
+    
+    if ( USB_DRIVE_MOUNTED == appDataUsb.usbDriveStatus )
+    {
+        needToUnmount = false;
+    }
+    else
+    {
+        if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
+        {
+            return FILEIO_RESULT_FAILURE;
+        }
+        needToUnmount = true;
+    }
+
+    if ( true == appDataLog.log_events )
+    {
+       store_event(OF_WRITE_CALIB_LOG); 
+    }
+    
+    if (FILEIO_RESULT_FAILURE == FILEIO_Open(&file, CALIBRATION_LOG_FILE, FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND))
+    {
+        errF = FILEIO_ErrorGet('A');
+        sprintf(appError.message, "Unable to open calibration log file (%u)", errF);
+        appError.currentLineNumber = __LINE__;
+        sprintf(appError.currentFileName, "%s", __FILE__);
+        FILEIO_ErrorClear('A');
+        appError.number = ERROR_CALIB_FILE_OPEN;
+        return FILEIO_RESULT_FAILURE;
+    }
+
+    memset(buf, '\0', sizeof ( buf));
+        
+    for (i = 0; i < appDataLog.numTimeCalibStored; i++)
+    {
+        flag = sprintf(buf, "%c%c%sOF%c%c%s%u%s%02d/%02d/%02d%s%02d:%02d%s%.0f\n",
+                       appData.siteid[0],
+                       appData.siteid[1],
+                       appDataLog.separator,
+                       appData.siteid[2],
+                       appData.siteid[3],
+                       appDataLog.separator,
+                       getCompletScenarioNumber(),
+                       appDataLog.separator,
+                       appData.current_time.tm_mday,
+                       appData.current_time.tm_mon,
+                       appData.current_time.tm_year,
+                       appDataLog.separator,
+                       (int)appDataLog.time_calibration[i][0],
+                       (int)appDataLog.time_calibration[i][1],
+                       appDataLog.separator,
+                       appDataLog.time_calibration[i][2]);  
+
+        if (flag > 0)
+        {
+            numDataWritten = FILEIO_Write(buf, 1, flag, &file);
+
+            if (numDataWritten < flag)
+            {
+                errF = FILEIO_ErrorGet('A');
+                sprintf(appError.message, "Unable to write calibration in log file (%u)", errF);
+                appError.currentLineNumber = __LINE__;
+                sprintf(appError.currentFileName, "%s", __FILE__);
+                FILEIO_ErrorClear('A');
+                appError.number = ERROR_CALIB_FILE_WRITE;
+                return FILEIO_RESULT_FAILURE;
+            }
+        }
+    }
+
+    if (FILEIO_RESULT_FAILURE == FILEIO_Close(&file))
+    {
+        errF = FILEIO_ErrorGet('A');
+        sprintf(appError.message, "Unable to close calibration file (%u)", errF);
+        appError.currentLineNumber = __LINE__;
+        sprintf(appError.currentFileName, "%s", __FILE__);
+        FILEIO_ErrorClear('A');
+        appError.number = ERROR_CALIB_FILE_CLOSE;
+        return FILEIO_RESULT_FAILURE;
+    }
+
+    if (true == needToUnmount)
+    {
+        if (USB_DRIVE_MOUNTED == usbUnmountDrive())
+        {
+            return FILEIO_RESULT_FAILURE;
+        }
+    }
+
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+    printf("\tWrite calibration to file success\n");
+#endif 
+
+    clearCalibrationBuffer( );
     
     return FILEIO_RESULT_SUCCESS;
 }

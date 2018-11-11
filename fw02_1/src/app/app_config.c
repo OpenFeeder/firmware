@@ -1376,6 +1376,19 @@ INI_READ_STATE config_read_ini( void )
             printf( "\tLogs temperature... read.\n" );
 #endif
         }
+        read_parameter = ini_getl( "logs", "calibration", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+//            return INI_PB_LOGS_RFID;
+            appDataLog.log_calibration = true;
+        }
+        else
+        {
+            appDataLog.log_calibration = ( bool ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\tLogs calibration... read.\n" );
+#endif
+        }
     }
     else
     {
@@ -1388,6 +1401,7 @@ INI_READ_STATE config_read_ini( void )
         appDataLog.log_battery = true;
         appDataLog.log_rfid = true;
         appDataLog.log_temp = true;
+        appDataLog.log_calibration = true;
     }
     
     /* Reward. */
@@ -1696,6 +1710,14 @@ void config_print( void )
     if ( true == appDataLog.log_temp)
     {
         printf( "\t\tTemperature: enable - %s\n", EXT_TEMP_LOG_FILE );   
+    }
+    else
+    {
+        printf( "\t\tTemperature: disable\n");
+    }
+    if ( true == appDataLog.log_calibration)
+    {
+        printf( "\t\tCalibration: enable - %s\n", CALIBRATION_LOG_FILE );   
     }
     else
     {

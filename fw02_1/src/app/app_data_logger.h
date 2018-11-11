@@ -22,6 +22,7 @@
 #define UDID_LOG_FILE "UDID.CSV"
 #define EXT_TEMP_LOG_FILE "EXTTEMP.CSV"
 #define ERRORS_LOG_FILE "ERRORS.CSV"
+#define CALIBRATION_LOG_FILE "TIMCALIB.CSV"
 
 #define sizearray(a)  (sizeof(a) / sizeof((a)[0]))
 
@@ -60,6 +61,9 @@ typedef struct
     int16_t rfid_freq[96][3];
     uint8_t numRfidFreqStored;
     
+    double  time_calibration[96][3];
+    uint8_t numTimeCalibStored;
+    
     float ds3231_temp[96][3];
     uint8_t numDs3231TempStored;
     
@@ -72,6 +76,7 @@ typedef struct
     bool log_battery;
     bool log_rfid;
     bool log_temp;
+    bool log_calibration;
 
 } APP_DATA_LOG;
 
@@ -83,10 +88,12 @@ void clearLogBuffer( void );
 void clearRfidFreqBuffer( void );
 void clearExtTemperatureBuffer(void);
 void clearBatteryBuffer( void );
+void clearCalibrationBuffer( void );
 
 FILEIO_RESULT logBatteryLevel( void );
 FILEIO_RESULT logRfidFreq( void );
 FILEIO_RESULT logDs3231Temp( void );
+FILEIO_RESULT logCalibration( void );
 FILEIO_RESULT logUdid(void);
 
 #endif /* _APP_DATA_LOGGER_HEADER_H */

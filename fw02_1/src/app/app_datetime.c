@@ -44,6 +44,9 @@ bool getDateTime( void )
 
 void calibrateDateTime( void )
 {
+    time_t t1, t2;
+    struct tm tm1;
+    struct tm tm2;
     
     if (0 == APP_I2CMasterSeeksSlaveDevice(DS3231_I2C_ADDR, DS3231_I2C_ADDR))
     {
@@ -51,16 +54,17 @@ void calibrateDateTime( void )
         {
            store_event(OF_DS3231_NOT_FOUND); 
         }
-        
-        #if defined (USE_UART1_SERIAL_INTERFACE)
-            printf( "\tDS3231 (external RTC) not found.\n");
-        #endif
     }
     else 
     {
+        if ( true == appDataLog.log_calibration)
+        {
+            getDateTime( );
+            tm1 = appData.current_time;
+        }
+        
         if ( getExtDateTime( ) )
         {
-//            if (0==appData.i2c_current_time.year_s && 1==appData.i2c_current_time.mon && 1==appData.i2c_current_time.mday) {
             if ( 18 > appData.i2c_current_time.year_s ) {
                 if ( true == appDataLog.log_events )
                 {
@@ -68,13 +72,38 @@ void calibrateDateTime( void )
                 }
             }
             else {
+                
                 setDateTime( appData.i2c_current_time.year_s, 
                              appData.i2c_current_time.mon, 
                              appData.i2c_current_time.mday, 
                              appData.i2c_current_time.hour, 
                              appData.i2c_current_time.min, 
                              appData.i2c_current_time.sec );
+                
+                if ( true == appDataLog.log_calibration)
+                {
+                    
+                    tm1.tm_year += 100;
+                    tm1.tm_mon -= 1;
+                    tm2.tm_year = appData.i2c_current_time.year_s; 
+                    tm2.tm_mon = appData.i2c_current_time.mon; 
+                    tm2.tm_mday = appData.i2c_current_time.mday; 
+                    tm2.tm_hour = appData.i2c_current_time.hour; 
+                    tm2.tm_min = appData.i2c_current_time.min;
+                    tm2.tm_sec = appData.i2c_current_time.sec;                  
+                    tm2.tm_year += 100;
+                    tm2.tm_mon -= 1;
 
+                    t1 = mktime(&tm1);
+                    t2 = mktime(&tm2);
+
+                    appDataLog.time_calibration[appDataLog.numTimeCalibStored][0] = appData.i2c_current_time.hour;
+                    appDataLog.time_calibration[appDataLog.numTimeCalibStored][1] = appData.i2c_current_time.min;
+                    appDataLog.time_calibration[appDataLog.numTimeCalibStored][2] = difftime(t1,t2);
+                    appDataLog.numTimeCalibStored++;
+       
+                }
+                
                 if ( true == appDataLog.log_events )
                 {
                    store_event(OF_CALIBRATE_TIME); 
@@ -91,17 +120,17 @@ void calibrateDateTime( void )
     }
 }
 
-void printDateTime( void )
+void printDateTime( struct tm time )
 {
     // Print date and time on serial terminal (PC)
     
         printf( "%02u/%02u/20%02u %02u:%02u:%02u",
-            appData.current_time.tm_mday,
-            appData.current_time.tm_mon,
-            appData.current_time.tm_year,
-            appData.current_time.tm_hour,
-            appData.current_time.tm_min,
-            appData.current_time.tm_sec );
+            time.tm_mday,
+            time.tm_mon,
+            time.tm_year,
+            time.tm_hour,
+            time.tm_min,
+            time.tm_sec );
 
 }
 

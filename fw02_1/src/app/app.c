@@ -1917,6 +1917,21 @@ void APP_Tasks( void )
                 
                 setLedsStatusColor( LED_USB_ACCESS );
                 
+                if ( true == appDataLog.log_calibration && appDataLog.numTimeCalibStored > 0 )
+                {
+#if defined (USE_UART1_SERIAL_INTERFACE) 
+                    printf("\tFlush calibration data.\n");
+#endif
+                    if ( FILEIO_RESULT_FAILURE == logCalibration( ) )
+                    {
+                        appDataUsb.key_is_nedded = false;
+                        appData.state = APP_STATE_ERROR;
+                        break;
+                    }
+                }
+                
+                setLedsStatusColor( LED_USB_ACCESS );
+                
                 if ( true == appDataLog.log_temp && appDataLog.numDs3231TempStored > 0 )
                 {
 #if defined (USE_UART1_SERIAL_INTERFACE) 
@@ -2647,7 +2662,7 @@ void APP_Tasks( void )
 #endif
 #if defined (USE_UART1_SERIAL_INTERFACE) 
                 getDateTime( );
-                printDateTime( ); 
+                printDateTime( appData.current_time ); 
 #endif
 
                 enter_default_state = true;
@@ -2743,6 +2758,7 @@ void APP_Initialize( void )
     appDataLog.numBatteryLevelStored = 0;
     appDataLog.numRfidFreqStored = 0;
     appDataLog.numDs3231TempStored = 0;
+    appDataLog.numTimeCalibStored = 0;
         
     appError.ledColor_1 = LEDS_ERROR;
     appError.number = ERROR_NONE;

@@ -173,10 +173,12 @@ void exportAllFiles(){
     exportFile( "20??????.CSV", 'T' );
     exportFile( "EV??????.BIN", 'B' );
     exportFile( "CONFIG.INI", 'T' );
-    exportFile( "BATTERY.CSV", 'T' );
-    exportFile( "ERRORS.CSV", 'T' );
-    exportFile( "RFIDFREQ.CSV", 'T' );
-    exportFile( "UDID.CSV", 'T' );
+    exportFile( BATTERY_LOG_FILE, 'T' );
+    exportFile( ERRORS_LOG_FILE, 'T' );
+    exportFile( RFID_LOG_FILE, 'T' );
+    exportFile( CALIBRATION_LOG_FILE, 'T' );
+    exportFile( UDID_LOG_FILE, 'T' );
+    exportFile( EXT_TEMP_LOG_FILE, 'T' );    
     exportFile( "UDIDLEDS.CSV", 'T' );
     exportFile( "PTLEFT.TXT", 'T' );
     exportFile( "PTRIGHT.TXT", 'T' );
