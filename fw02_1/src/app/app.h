@@ -100,7 +100,7 @@
 #include "app_rfid.h"
 #include "app_timers_callback.h"
 #include "app_usb.h"
-
+#include "app_fileio.h"
 #include "app_version.h"
 
 #include "oc5.h"
