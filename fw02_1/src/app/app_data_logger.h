@@ -44,7 +44,7 @@ typedef struct
     struct tm bird_arrived_time;
     struct tm bird_quit_time;
     char bird_pit_tag_str[11];
-    bool bird_pir_sensor_status;
+//    bool bird_pir_sensor_status;
     bool is_pit_tag_denied;
     bool is_reward_taken;
     

@@ -380,6 +380,7 @@ extern APP_DATA_RC appDataRc; /* Remote control application data. */
 extern APP_DATA_EVENT appDataEvent;
 extern APP_DATA_DOOR appDataDoor;
 
+extern volatile bool is_bird_detected;
 
 //******************************************************************************
 //******************************************************************************
@@ -387,8 +388,8 @@ extern APP_DATA_DOOR appDataDoor;
 //******************************************************************************
 //******************************************************************************
 
-#define is_bird_sensor_detected( ) appDataLog.bird_pir_sensor_status /* Return the value of global variable. */
-#define clear_bird_sensor_detected( ) {appDataLog.bird_pir_sensor_status = 0;} /* Clear the bird detection sensor. */
+//#define is_bird_sensor_detected( ) appDataLog.bird_pir_sensor_status /* Return the value of global variable. */
+//#define clear_bird_sensor_detected( ) {appDataLog.bird_pir_sensor_status = 0;} /* Clear the bird detection sensor. */
 
 
 // *****************************************************************************

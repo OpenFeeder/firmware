@@ -528,7 +528,8 @@ void APP_Tasks( void )
                 clearPitTagSringBuffers( );
                 
                 appData.test_rfid = false;
-                clear_bird_sensor_detected( );
+//                clear_bird_sensor_detected( );
+                is_bird_detected = false;
 
                 if ( DOOR_HABITUATION == appData.scenario_number || 
                      LONG_TERM_SPATIAL_MEMORY == appData.scenario_number || 
@@ -568,7 +569,8 @@ void APP_Tasks( void )
              *  - recording the time of detected of the bird
              *  - if true go to APP_STATE_ERROR
              */
-            if ( is_bird_sensor_detected( ) )
+//            if ( is_bird_sensor_detected( ) )
+            if ( true == is_bird_detected )
             {
 
                 /* Disable PIR sensor interruption for bird detection */
@@ -583,7 +585,8 @@ void APP_Tasks( void )
                 printf( "\tBird detected\n" );
 #endif
                 /* Initialised global variable datalogging. */
-                clear_bird_sensor_detected( );
+//                clear_bird_sensor_detected( );
+                is_bird_detected = false;
                 appDataLog.is_reward_taken = false;
                 appDataLog.did_door_open = false;
 
@@ -1150,7 +1153,8 @@ void APP_Tasks( void )
                 
                 RFID_Disable( );
 
-                clear_bird_sensor_detected( );
+//                clear_bird_sensor_detected( );
+                is_bird_detected = false;
 
                 if ( PATCH_PROBABILITY == appData.scenario_number && false == isItANewPitTag())
                 {
@@ -1221,7 +1225,8 @@ void APP_Tasks( void )
                 
                 RFID_Disable( );
 
-                clear_bird_sensor_detected( );
+//                clear_bird_sensor_detected( );
+                is_bird_detected = false;
 
                 if ( false == appData.rfid_signal_detected )
                 {
@@ -2787,7 +2792,8 @@ void APP_Initialize( void )
     
     appData.scenario_number = 0;
     
-    clear_bird_sensor_detected( );
+//    clear_bird_sensor_detected( );
+    is_bird_detected = false;
     
     appDataEvent.file_type = EVENT_FILE_BINARY;
     

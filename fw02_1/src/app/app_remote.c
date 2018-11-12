@@ -593,7 +593,8 @@ void getCurrentMenuValue( void )
 
         case N4_PIR_DETECT:
 
-            if ( true == appDataLog.bird_pir_sensor_status )
+//            if ( true == appDataLog.bird_pir_sensor_status )
+            if ( true == is_bird_detected )
             {
                 strncpy( currentMenuValue, "truE ", 5 );
             }

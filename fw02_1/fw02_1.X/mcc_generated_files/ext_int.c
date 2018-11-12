@@ -30,6 +30,7 @@
 #include "app.h"
 
 volatile uint16_t counter_positive_edge_rdyclk = 0;
+volatile bool is_bird_detected = false;
 
 //***User Area End->code: Add External Interrupt handler specific headers
 
@@ -76,7 +77,8 @@ void __attribute__ ( ( interrupt, no_auto_psv ) ) _INT0Interrupt(void)
     printf( "_INT0Interrupt()\n" );
 #endif 
     /* PIR sensor event. */
-    appDataLog.bird_pir_sensor_status = true;
+    is_bird_detected = true;
+//    appDataLog.bird_pir_sensor_status = true;
 
     //***User Area End->code: INT0 - External Interrupt 0***
     EX_INT0_InterruptFlagClear();
