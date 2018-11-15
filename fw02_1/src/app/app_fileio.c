@@ -20,7 +20,7 @@ void listFilesOnUsbDevice() {
     
     FILEIO_SEARCH_RECORD searchRecord;
     int8_t result;
-                
+
     setLedsStatusColor( LED_USB_ACCESS );
    
     usbMountDrive( );
@@ -28,7 +28,7 @@ void listFilesOnUsbDevice() {
     result = FILEIO_Find( "*.*", FILEIO_ATTRIBUTE_ARCHIVE, &searchRecord, true );
 
     if (FILEIO_RESULT_SUCCESS == result) {
-
+        
         sprintf(ch, "\t%s", searchRecord.shortFileName);
         daves_putU1(ch, strlen(ch));
         sprintf(ch, " (%ld bytes)\r\n", searchRecord.fileSize);
@@ -45,12 +45,14 @@ void listFilesOnUsbDevice() {
 
     }
     else {
-        
+
         displayFileErr( searchRecord.shortFileName, false );
         
     }
 
     usbUnmountDrive( );
+    
+    setLedsStatusColor( LEDS_OFF );
     
 }
 
@@ -70,7 +72,7 @@ void exportFile(const char * filename, bool fileType)
         
         sprintf(ch, "%c%c%s%c", ack, enq, searchRecord.shortFileName, dc4);
         daves_putU1(ch, strlen(ch));
-        sprintf(ch, "%c%c%c%c", ack, enq, 'T', dc4);
+        sprintf(ch, "%c%c%c%c", ack, enq, fileType, dc4);
         daves_putU1(ch, strlen(ch));
         sprintf(ch, "%c%c%ld%c", ack, enq, searchRecord.fileSize, dc4);
         daves_putU1(ch, strlen(ch));
@@ -115,7 +117,7 @@ void exportFile(const char * filename, bool fileType)
             sprintf(ch, "%c%c%s%c", ack, enq, searchRecord.shortFileName, dc4);
             daves_putU1(ch, strlen(ch));
 
-            sprintf(ch, "%c%c%c%c", ack, enq, 'T', dc4);
+            sprintf(ch, "%c%c%c%c", ack, enq, fileType, dc4);
             daves_putU1(ch, strlen(ch));
             
             sprintf(ch, "%c%c%ld%c", ack, enq, searchRecord.fileSize, dc4);
@@ -198,6 +200,8 @@ void exportAllFiles(){
     daves_putU1(ch, strlen(ch));
     
     usbUnmountDrive( );
+    
+    setLedsStatusColor( LEDS_OFF );
 }
 
 void displayFileErr(const char * filename, bool export) {
@@ -282,6 +286,8 @@ void displayCsvFiles() {
 
             }
             FILEIO_Close(&file);
+            sprintf(ch, "\r\n");
+            daves_putU1(ch, strlen(ch));
         }
         else {
             
@@ -308,6 +314,8 @@ void displayCsvFiles() {
                     
                 }
                 FILEIO_Close(&file);
+                sprintf(ch, "\r\n");
+                daves_putU1(ch, strlen(ch));
             }
             else {
 
@@ -325,6 +333,8 @@ void displayCsvFiles() {
     }
 
     usbUnmountDrive( );
+    
+    setLedsStatusColor( LEDS_OFF );
 }
 
 void displayIniFile() {
@@ -362,6 +372,8 @@ void displayIniFile() {
             }
             
             FILEIO_Close(&file);
+            sprintf(ch, "\r\n");
+            daves_putU1(ch, strlen(ch));
             
         }
         else {
@@ -378,6 +390,8 @@ void displayIniFile() {
     }
 
     usbUnmountDrive( );
+    
+    setLedsStatusColor( LEDS_OFF );
                         
 }
 
@@ -417,6 +431,8 @@ void displayErrorsFile() {
             }
             
             FILEIO_Close(&file);
+            sprintf(ch, "\r\n");
+            daves_putU1(ch, strlen(ch));
             
         }
         else {
@@ -433,6 +449,8 @@ void displayErrorsFile() {
     }
 
     usbUnmountDrive( );
+    
+    setLedsStatusColor( LEDS_OFF );
     
 }
 

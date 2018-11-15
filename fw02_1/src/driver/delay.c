@@ -109,6 +109,30 @@ bool isDelayMsEndingLEDsStatus( void )
     }
 }
 
+void setDelayPunishmentMs( uint16_t timeout_ms )
+{
+    if ( timeout_ms < 20 )
+    {
+        g_timeout_punishment_x20ms = 1;
+    }
+    else
+    {
+        g_timeout_punishment_x20ms = timeout_ms / 20;
+    }
+}
+
+bool isDelayPunishmentMsEnding( void )
+{
+    if ( g_timeout_punishment_x20ms == 0 )
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 
 /*******************************************************************************
  End of File

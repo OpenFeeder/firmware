@@ -269,7 +269,7 @@ void APP_SerialDebugTasks( void )
                 printf( " u or U: Unique Device Id (UDID)\n" );
 //                printf( " v or V: NOT USED\n" );
 //                printf( "> w or W: NOT USED\n" );
-//                printf( "> x or X: NOT USED\n" );
+                printf( "> x or X: system reset\n" );
                 printf( " y or Y: display reset registers\n" );
                 printf( " z or Z: test RFID\n" );
                 break;
@@ -1340,8 +1340,34 @@ void APP_SerialDebugTasks( void )
 
             case 'x':
             case 'X':
-                /* Not used */                   
+            {
+                uint8_t user_choice;
+                
+                printf( "Do you really want to reset the system? (y/n)\r\n" );
+                
+                while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
+                user_choice = UART1_Read( );
+
+                switch ( user_choice )
+                {
+                    case 'y':
+                    case 'Y':
+                    {
+                        /* Reset */  
+                        appData.dsgpr0.bit_value.num_software_reset = 0;
+                        DSGPR0 = appData.dsgpr0.reg;
+                        DSGPR0 = appData.dsgpr0.reg;
+
+                        __asm__ volatile ( "reset" );                       
+                        break;
+                    }
+                    
+                    default:
+                        break;
+                }
+
                 break;
+            }
                 /* -------------------------------------------------------------- */
 
             case 'y':
@@ -1520,7 +1546,9 @@ uint16_t readIntFromUart1( void )
  */
 void printUSBHostDeviceStatus( void )
 {
-    switch ( USBHostDeviceStatus( appDataUsb.deviceAddress ) )
+    uint8_t status = USBHostDeviceStatus( appDataUsb.deviceAddress );
+    
+    switch ( status )
     {
         case USB_DEVICE_ATTACHED:
             printf( "USB_DEVICE_ATTACHED" );
@@ -1568,7 +1596,7 @@ void printUSBHostDeviceStatus( void )
 
         default:
             /* If nothing else matches, do the default. */
-            printf( "Device is holding in an error state!" );
+            printf( "Device is holding in an error state! (%d)", status );
             break;
     }
 } /* End of printUSBHostDeviceStatus( ) */

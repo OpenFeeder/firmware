@@ -281,12 +281,18 @@ int main( void )
 
         /* Main loop. */
         while ( 1 )
-        {
+        {            
             /* Maintain Device Drivers. */
             USBTasks( );
 
             /* Maintain the application's state machine. */
-            APP_Tasks( ); /* application specific tasks */   
+            APP_Tasks( ); /* application specific tasks */ 
+            
+#if defined (USE_UART1_SERIAL_INTERFACE)
+            /* Get interaction with the serial terminal. */
+            APP_SerialDebugTasks( );
+#endif
+            
         }
     }
     else

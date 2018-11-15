@@ -20,6 +20,8 @@ void setDelayMsEM4095( uint16_t );
 bool isDelayMsEndingEM4095( void );
 void setDelayMsLEDsStatus( uint16_t );
 bool isDelayMsEndingLEDsStatus( void );
+void setDelayPunishmentMs( uint16_t );
+bool isDelayPunishmentMsEnding( void );
 
 #endif	/* _DELAY_HEADER_H */
 

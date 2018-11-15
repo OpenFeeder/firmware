@@ -894,10 +894,10 @@ void APP_Tasks( void )
                 appData.rtcc_alarm_action = RTCC_ALARM_IDLE;
             }
 
-#if defined (USE_UART1_SERIAL_INTERFACE)
-            /* Get interaction with the serial terminal. */
-            APP_SerialDebugTasks( );
-#endif
+//#if defined (USE_UART1_SERIAL_INTERFACE)
+//            /* Get interaction with the serial terminal. */
+//            APP_SerialDebugTasks( );
+//#endif
             /* Check USER BUTTON detected. */
             button_user_state = USER_BUTTON_GetValue( );
 
@@ -2686,7 +2686,7 @@ void APP_Initialize( void )
     OC4_Stop( );
     OC5_Stop( );
     TMR4_Stop( );
-    TMR2_Stop( );
+    TMR2_Stop( );  
 
     /* Attractive LEDs */
     setAttractiveLedsOff( );
