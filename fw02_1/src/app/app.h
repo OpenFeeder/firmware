@@ -359,6 +359,8 @@ typedef struct
     
     float ext_temperature;
     
+    bool punishment_state;
+    
 } APP_DATA;
 
 // *****************************************************************************

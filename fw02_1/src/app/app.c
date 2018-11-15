@@ -507,12 +507,7 @@ void APP_Tasks( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
                 printf( "> APP_STATE_IDLE\n" );
 #endif              
-//                if ( appData.timeout_standby > 0 )
-//                {
-//                    /* Timeout before going to standby mode */
-//                    setDelayMsStandBy( appData.timeout_standby );
-//                }
-                
+
                 if ( true == appDataLog.log_events )
                 {
                     store_event(OF_STATE_IDLE);
@@ -528,21 +523,23 @@ void APP_Tasks( void )
                 clearPitTagSringBuffers( );
                 
                 appData.test_rfid = false;
-//                clear_bird_sensor_detected( );
                 is_bird_detected = false;
 
-                if ( DOOR_HABITUATION == appData.scenario_number || 
-                     LONG_TERM_SPATIAL_MEMORY == appData.scenario_number || 
-                     WORKING_SPATIAL_MEMORY == appData.scenario_number ||
-                     RISK_AVERSION == appData.scenario_number ||
-                     PATCH_PROBABILITY == appData.scenario_number)
+                if ( false == appData.punishment_state )
                 {
-                    appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_A;
-                    setAttractiveLedsColor( );
-                }
-                else if ( GO_NO_GO == appData.scenario_number)
-                {
-                    setAttractiveLedsPattern( );
+                    if ( DOOR_HABITUATION == appData.scenario_number || 
+                         LONG_TERM_SPATIAL_MEMORY == appData.scenario_number || 
+                         WORKING_SPATIAL_MEMORY == appData.scenario_number ||
+                         RISK_AVERSION == appData.scenario_number ||
+                         PATCH_PROBABILITY == appData.scenario_number)
+                    {
+                        appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_A;
+                        setAttractiveLedsColor( );
+                    }
+                    else if ( GO_NO_GO == appData.scenario_number)
+                    {
+                        setAttractiveLedsPattern( );
+                    }    
                 }
 
             }
@@ -583,9 +580,8 @@ void APP_Tasks( void )
                 }
 #if defined (USE_UART1_SERIAL_INTERFACE)
                 printf( "\tBird detected\n" );
-#endif
+#endif                                
                 /* Initialised global variable datalogging. */
-//                clear_bird_sensor_detected( );
                 is_bird_detected = false;
                 appDataLog.is_reward_taken = false;
                 appDataLog.did_door_open = false;
@@ -605,19 +601,16 @@ void APP_Tasks( void )
                 appData.state = APP_STATE_RFID_READING_PIT_TAG;
                 break;
             }
-
-            /* Check TIMEOUT IDLE MODE ending.
-             *  - if false go to APP_STATE_STANDBY
-             */
-//            if ( false == appData.flags.bit_value.attractive_leds_status )
-//            {
-//                if ( appData.timeout_standby > 0 && isDelayMsEndingStandBy( ) )
-//                {
-//                    appData.state = APP_STATE_STANDBY;
-//                    break;
-//                }
-//            }
- 
+            
+            if ( true == appData.punishment_state && true == isDelayPunishmentMsEnding( ) )
+            {
+                appData.punishment_state = false;
+                if ( true == appDataLog.log_events )
+                {
+                   store_event(OF_PUNISHMENT_STOP); 
+                }
+            }
+             
             if ( true == appDataLog.log_events && appDataEvent.num_events_stored >= MAX_NUM_EVENT_BEFORE_SAVE )
             {
                 if ( FILEIO_RESULT_FAILURE == logEvents( ) )
@@ -681,7 +674,7 @@ void APP_Tasks( void )
                     }
                 }
 
-                if ( RTCC_ALARM_ALT_ATTRACTIVE_LEDS == appData.rtcc_alarm_action )
+                if ( RTCC_ALARM_ALT_ATTRACTIVE_LEDS == appData.rtcc_alarm_action && false == appData.punishment_state )
                 {
                     if ( rand( ) > (RAND_MAX/2) ) // t / RAND_MAX ) > 0.5
                     {
@@ -700,7 +693,7 @@ void APP_Tasks( void )
                         }  
                     }                                
                 }
-                if ( RTCC_ALARM_ALT_ATTRACTIVE_LEDS_PATTERN == appData.rtcc_alarm_action )
+                if ( RTCC_ALARM_ALT_ATTRACTIVE_LEDS_PATTERN == appData.rtcc_alarm_action && false == appData.punishment_state )
                 {
                     int randomInteger = rand( );
                     
@@ -985,11 +978,11 @@ void APP_Tasks( void )
                     case GO_NO_GO:
 
                         appDataLog.is_pit_tag_denied = false;
-                        
+
                         if ( ALL_LEDS == appDataAttractiveLeds.pattern_number )
                         {
                             appDataPitTag.didPitTagMatched = true;
-                            
+
                             if ( 1 == appDataAttractiveLeds.pattern_idx )
                             {                                
                                 appDataLog.is_pit_tag_denied = true;
@@ -998,7 +991,7 @@ void APP_Tasks( void )
                         else if ( ONE_LED == appDataAttractiveLeds.pattern_number )
                         {
                             appDataLog.is_pit_tag_denied = false;
-                            
+
                             findPitTagInList( );
                             if ( false == appDataPitTag.didPitTagMatched )
                             {
@@ -1062,6 +1055,11 @@ void APP_Tasks( void )
                                 }
                             }
                         }
+                        
+                        if ( true == appData.punishment_state )
+                        {
+                            appDataLog.is_pit_tag_denied = true; 
+                        }
 
                         break;
                         
@@ -1096,7 +1094,7 @@ void APP_Tasks( void )
                         break;
 
                     case COLOR_ASSOCIATIVE_LEARNING:
-                        
+
                         findPitTagInList( );
                         if ( false == appDataPitTag.didPitTagMatched )
                         {
@@ -1115,6 +1113,12 @@ void APP_Tasks( void )
                                 appDataLog.is_pit_tag_denied = true;
                             }
                         }
+                        
+                        if ( true == appData.punishment_state )
+                        {
+                            appDataLog.is_pit_tag_denied = true; 
+                        }
+                        
                         break;
                     
                     case RISK_AVERSION:
@@ -1153,7 +1157,6 @@ void APP_Tasks( void )
                 
                 RFID_Disable( );
 
-//                clear_bird_sensor_detected( );
                 is_bird_detected = false;
 
                 if ( PATCH_PROBABILITY == appData.scenario_number && false == isItANewPitTag())
@@ -1196,12 +1199,26 @@ void APP_Tasks( void )
                            store_event(OF_ATTRACTIVE_LEDS_PUNISHMENT); 
                         }
                         setAttractiveLedsNoColor( );
-                        /* Delay before reactivate attractiveLEDs */
-                        setDelayMs( appData.punishment_delay );
-                        while ( false == isDelayMsEnding( ) )
+
+                        setDelayPunishmentMs( appData.punishment_delay );
+                        
+                        if (false == appData.punishment_state)
                         {
-                            Nop( );
+                            if ( true == appDataLog.log_events )
+                            {
+                               store_event(OF_PUNISHMENT_START); 
+                            }
                         }
+                        else
+                        {
+                            if ( true == appDataLog.log_events )
+                            {
+                               store_event(OF_PUNISHMENT_RESTART); 
+                            }
+                        }
+                        
+                        appData.punishment_state = true;
+
                     }
                     appData.state = APP_STATE_DATA_LOG;
                 }
@@ -1225,16 +1242,23 @@ void APP_Tasks( void )
                 
                 RFID_Disable( );
 
-//                clear_bird_sensor_detected( );
                 is_bird_detected = false;
 
                 if ( false == appData.rfid_signal_detected )
                 {
                     snprintf( appDataLog.bird_pit_tag_str, 11, "XXXXXXXXXX" );
+                    if ( true == appDataLog.log_events )
+                    {
+                       store_event(OF_PIT_TAG_X); 
+                    }
                 }
                 else
                 {
                     snprintf( appDataLog.bird_pit_tag_str, 11, "??????????" );
+                    if ( true == appDataLog.log_events )
+                    {
+                       store_event(OF_PIT_TAG_U); 
+                    }
                 }
 
                 appData.rfid_signal_detected = false;
@@ -2093,21 +2117,24 @@ void APP_Tasks( void )
                     
                     if (true == appDataLog.is_pit_tag_denied)
                     {
-//                        setLedsStatusColor( LED_PITTAG_DENIED );
+                        // LED 1 off
                         setOneAttractiveLedColor( 1, 0, 0, 0 );
+                        // LED 2 off red
                         setOneAttractiveLedColor( 2, 35, 0, 0 );
                     }
                     else
                     {
-//                        setLedsStatusColor( LED_PITTAG_ACCEPTED );
+                        // LED 1 off
                         setOneAttractiveLedColor( 1, 0, 0, 0 );
+                        // LED 2 green
                         setOneAttractiveLedColor( 2, 0, 35, 0 );
                     }
                 }
                 else
                 {
-//                    setLedsStatusColor(LED_BLUE);
+                    // LED 1 blue
                     setOneAttractiveLedColor( 1, 0, 0, 35 );
+                    // LED 2 off
                     setOneAttractiveLedColor( 2, 0, 0, 0 );
                 }
 
@@ -2116,9 +2143,10 @@ void APP_Tasks( void )
             }
             else
             {
-//               setLedsStatusColor( LEDS_OFF ); 
-               setOneAttractiveLedColor( 1, 0, 0, 0 );
-               setOneAttractiveLedColor( 2, 0, 0, 0 );
+                // LED 1 off
+                setOneAttractiveLedColor( 1, 0, 0, 0 );
+                // LED 2 off
+                setOneAttractiveLedColor( 2, 0, 0, 0 );
             }
             
             button_user_state = USER_BUTTON_GetValue( );
@@ -2146,21 +2174,6 @@ void APP_Tasks( void )
             }
 
             break;
-            /* -------------------------------------------------------------- */
-            
-//        case APP_STATE_STANDBY:
-//            if ( appData.state != appData.previous_state )
-//            {
-//                appData.previous_state = appData.state;
-//#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_CURRENT_STATE)
-//                printf( "> APP_STATE_STANDBY\n" );
-//#endif
-//            }
-//
-////            Sleep( );
-//
-//            appData.state = APP_STATE_IDLE;
-//            break;
             /* -------------------------------------------------------------- */
 
         case APP_STATE_SLEEP:
@@ -2791,8 +2804,7 @@ void APP_Initialize( void )
     appData.siteid[4] = '\0';
     
     appData.scenario_number = 0;
-    
-//    clear_bird_sensor_detected( );
+
     is_bird_detected = false;
     
     appDataEvent.file_type = EVENT_FILE_BINARY;
@@ -2800,6 +2812,8 @@ void APP_Initialize( void )
     appData.chk_food_level = false;
     
     appData.ext_temperature = 0.0;
+    
+    appData.punishment_state = false;
     
 }
 
