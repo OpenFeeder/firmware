@@ -14,6 +14,12 @@
 #define ATTRACTIVE_LEDS_COLOR_A 0
 #define ATTRACTIVE_LEDS_COLOR_B 1
 
+#define ATTRACTIVE_LEDS_PATTERN_A 0
+#define ATTRACTIVE_LEDS_PATTERN_B 1
+
+#define ATTRACTIVE_LEDS_PATTERN_ON 0
+#define ATTRACTIVE_LEDS_PATTERN_OFF 1
+
 //#define MAX_NUMBER_OF_PATTERN 100
 //#define MAX_NUM_PATTERN_BEFORE_SAVE 50
 
@@ -82,6 +88,8 @@ void testAttractiveLeds( void );
 bool setAttractiveLedsIndex( void );
 
 void storeAttractiveLedsPattern( void );
+
+void testAttractiveLedsOrder( void );
 
 #endif /* _APP_ATTRACTIVE_LEDS_HEADER_H */
 

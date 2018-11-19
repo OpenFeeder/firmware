@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="62">
+<configurationDescriptor version="65">
   <logicalFolder name="root" displayName="root" projectFiles="true">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
@@ -23,6 +23,8 @@
         <itemPath>../src/app/app_usb.h</itemPath>
         <itemPath>../src/app/app_version.h</itemPath>
         <itemPath>../src/app/app_fileio.h</itemPath>
+        <itemPath>../src/app/app_scenario.h</itemPath>
+        <itemPath>../src/app/app_rtc_action.h</itemPath>
       </logicalFolder>
       <logicalFolder name="driver" displayName="driver" projectFiles="true">
         <itemPath>../src/driver/buttons.h</itemPath>
@@ -108,6 +110,8 @@
         <itemPath>../src/app/app_timers_callback.c</itemPath>
         <itemPath>../src/app/app_usb.c</itemPath>
         <itemPath>../src/app/app_fileio.c</itemPath>
+        <itemPath>../src/app/app_scenario.c</itemPath>
+        <itemPath>../src/app/app_rtc_action.c</itemPath>
       </logicalFolder>
       <logicalFolder name="driver" displayName="driver" projectFiles="true">
         <itemPath>../src/driver/delay.c</itemPath>
@@ -182,6 +186,9 @@
         <languageToolchainVersion>1.35</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
+      <packs>
+        <pack name="PIC24F-GA-GB_DFP" vendor="Microchip" version="1.0.28"/>
+      </packs>
       <compileType>
         <linkerTool>
           <linkerLibItems>
@@ -522,6 +529,9 @@
         <languageToolchainVersion>1.35</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
+      <packs>
+        <pack name="PIC24F-GA-GB_DFP" vendor="Microchip" version="1.0.28"/>
+      </packs>
       <compileType>
         <linkerTool>
           <linkerLibItems>
@@ -862,6 +872,9 @@
         <languageToolchainVersion>1.35</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
+      <packs>
+        <pack name="PIC24F-GA-GB_DFP" vendor="Microchip" version="1.0.28"/>
+      </packs>
       <compileType>
         <linkerTool>
           <linkerLibItems>

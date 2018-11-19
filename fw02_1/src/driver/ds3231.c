@@ -130,7 +130,7 @@ I2C1_MESSAGE_STATUS DS3231_time_set( struct ts *t )
     return status;
 } /* End of DS3231_time_set( ) */
 
-I2C1_MESSAGE_STATUS DS3231_temperature_get( )
+I2C1_MESSAGE_STATUS getDS3231Temperature( )
 {
     I2C1_MESSAGE_STATUS status;
     uint8_t write_buffer[2] = {0, 0};

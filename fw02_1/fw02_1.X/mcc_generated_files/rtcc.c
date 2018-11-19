@@ -400,7 +400,7 @@ static uint8_t ConvertBCDToHex(uint8_t bcdvalue)
  */
 void __attribute__ ( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
 {
-    if ( true == appData.flags.bit_value.systemInit )
+    if ( true == appData.flags.bit_value.system_init )
     {
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_ISR_RTCC)
         printf( "_RTCCInterrupt() " );

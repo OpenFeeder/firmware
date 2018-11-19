@@ -99,6 +99,7 @@ typedef enum
     ERROR_CALIB_FILE_OPEN,
     ERROR_CALIB_FILE_WRITE,
     ERROR_CALIB_FILE_CLOSE,
+    ERROR_ATTRACTIVE_LED_DRIVER_RESET,
         
     ERROR_TOO_MANY_SOFTWARE_RESET = 100
 
@@ -107,11 +108,11 @@ typedef enum
 typedef struct
 {
     char message[200]; // Error message buffer
-    char currentFileName[200];
-    uint16_t currentLineNumber;
+    char current_file_name[200];
+    uint16_t current_line_number;
 
-    LED_STATUS ledColor_1;
-    LED_STATUS ledColor_2;
+    LED_STATUS led_color_1;
+    LED_STATUS led_color_2;
 
     ERROR_NUMBER number;
     

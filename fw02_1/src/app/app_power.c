@@ -19,6 +19,7 @@ bool isPowerServoEnable( void )
 
 void powerPIREnable( void )
 {
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
        store_event(OF_POWER_PIR_ON); 
@@ -35,6 +36,7 @@ void powerPIREnable( void )
 
 void powerPIRDisable( void )
 {
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
        store_event(OF_POWER_PIR_OFF); 
@@ -52,6 +54,7 @@ void powerPIRDisable( void )
 /* VDD_APP Enable function */
 void powerUsbRfidEnable( void )
 {
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
        store_event(OF_POWER_USB_RFID_ON); 
@@ -68,6 +71,7 @@ void powerUsbRfidEnable( void )
 /* VDD_APP Disable function */
 void powerUsbRfidDisable( void )
 {
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
        store_event(OF_POWER_USB_RFID_OFF); 

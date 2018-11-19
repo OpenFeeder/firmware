@@ -304,37 +304,37 @@ I2C1_MESSAGE_STATUS APP_ScanningPushButtonTasks( void )
     static I2C1_MESSAGE_STATUS last_status = I2C1_MESSAGE_COMPLETE;
     uint8_t readBuffer[1]; // data buffer
 
-    if ( ( appData.buttonPressed == BUTTON_NONE ) || ( appData.buttonPressed == BUTTON_READ ) )
+    if ( ( appData.button_pressed == BUTTON_NONE ) || ( appData.button_pressed == BUTTON_READ ) )
     {
         status = I2C1_MasterReadMCP23017( MCP23017_ADDRESS, MCP23017_GPIOB, readBuffer, 1 );
 
         if ( status == I2C1_MESSAGE_COMPLETE )
         {
             last_status = status;
-            appData.buttonPressed = BUTTON_NONE;
+            appData.button_pressed = BUTTON_NONE;
 
             /* BUTTON_DOWN == BUTTON_PRESSED ? */
             if ( ( readBuffer[0] & BUTTON_DOWN_MASK ) == BUTTON_PRESSED )
             {
-                appData.buttonPressed = BUTTON_DOWN;
+                appData.button_pressed = BUTTON_DOWN;
             }
 
             /* BUTTON_UP == BUTTON_PRESSED ? */
             if ( ( readBuffer[0] & BUTTON_UP_MASK ) == BUTTON_PRESSED )
             {
-                appData.buttonPressed = BUTTON_UP;
+                appData.button_pressed = BUTTON_UP;
             }
 
             /* BUTTON_RIGHT == BUTTON_PRESSED ? */
             if ( ( readBuffer[0] & BUTTON_RIGHT_MASK ) == BUTTON_PRESSED )
             {
-                appData.buttonPressed = BUTTON_RIGHT;
+                appData.button_pressed = BUTTON_RIGHT;
             }
 
             /* BUTTON_LEFT == BUTTON_PRESSED ? */
             if ( ( readBuffer[0] & BUTTON_LEFT_MASK ) == BUTTON_PRESSED )
             {
-                appData.buttonPressed = BUTTON_LEFT;
+                appData.button_pressed = BUTTON_LEFT;
             }
         }
         else

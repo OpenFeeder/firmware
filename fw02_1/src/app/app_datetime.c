@@ -50,6 +50,7 @@ void calibrateDateTime( void )
     
     if (0 == APP_I2CMasterSeeksSlaveDevice(DS3231_I2C_ADDR, DS3231_I2C_ADDR))
     {
+        /* Log event if required */
         if ( true == appDataLog.log_events )
         {
            store_event(OF_DS3231_NOT_FOUND); 
@@ -66,6 +67,7 @@ void calibrateDateTime( void )
         if ( getExtDateTime( ) )
         {
             if ( 18 > appData.i2c_current_time.year_s ) {
+                /* Log event if required */
                 if ( true == appDataLog.log_events )
                 {
                    store_event(OF_CALIBRATE_TIME_WRONG); 
@@ -97,13 +99,14 @@ void calibrateDateTime( void )
                     t1 = mktime(&tm1);
                     t2 = mktime(&tm2);
 
-                    appDataLog.time_calibration[appDataLog.numTimeCalibStored][0] = appData.i2c_current_time.hour;
-                    appDataLog.time_calibration[appDataLog.numTimeCalibStored][1] = appData.i2c_current_time.min;
-                    appDataLog.time_calibration[appDataLog.numTimeCalibStored][2] = difftime(t1,t2);
-                    appDataLog.numTimeCalibStored++;
+                    appDataLog.time_calibration[appDataLog.num_time_calib_stored][0] = appData.i2c_current_time.hour;
+                    appDataLog.time_calibration[appDataLog.num_time_calib_stored][1] = appData.i2c_current_time.min;
+                    appDataLog.time_calibration[appDataLog.num_time_calib_stored][2] = difftime(t1,t2);
+                    appDataLog.num_time_calib_stored++;
        
                 }
                 
+                /* Log event if required */
                 if ( true == appDataLog.log_events )
                 {
                    store_event(OF_CALIBRATE_TIME); 
@@ -112,6 +115,7 @@ void calibrateDateTime( void )
         }
         else
         {
+            /* Log event if required */
             if ( true == appDataLog.log_events )
             {
                store_event(OF_CALIBRATE_TIME_FAIL); 

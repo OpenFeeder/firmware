@@ -38,11 +38,12 @@ bool usbMountDrive( void )
     FILEIO_ERROR_TYPE errF;
              
     /* Drive is already mounted. */
-    if ( USB_DRIVE_MOUNTED == appDataUsb.usbDriveStatus )
+    if ( USB_DRIVE_MOUNTED == appDataUsb.usb_drive_status )
     {
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
         printf( "\tUSB drive already mounted\n" );
 #endif
+        /* Log event if required */
         if ( true == appDataLog.log_events )
         {
            store_event(OF_ALREADY_MOUNTED_USB_DRIVE); 
@@ -51,15 +52,16 @@ bool usbMountDrive( void )
         return USB_DRIVE_MOUNTED;
     }
 
-    if ( USB_DEVICE_SUSPENDED == USBHostDeviceStatus( appDataUsb.deviceAddress ) )
+    if ( USB_DEVICE_SUSPENDED == USBHostDeviceStatus( appDataUsb.device_address ) )
     {
+        /* Log event if required */
         if ( true == appDataLog.log_events )
         {
            store_event(OF_RESUME_USB_DRIVE); 
         }  
         // http://www.microchip.com/forums/m582058.aspx
         // help_mla_usb.pdf => 1.4.2.1.1.14 USBHostResumeDevice Function            
-        success = USBHostResumeDevice( appDataUsb.deviceAddress );
+        success = USBHostResumeDevice( appDataUsb.device_address );
         if ( USB_SUCCESS != success )
         {
             if ( USB_UNKNOWN_DEVICE == success )
@@ -70,12 +72,12 @@ bool usbMountDrive( void )
             {
                 sprintf( appError.message, "Device cannot RESUME unless it is suspended" );
             }
-            appError.currentLineNumber = __LINE__;
-            sprintf( appError.currentFileName, "%s", __FILE__ );
+            appError.current_line_number = __LINE__;
+            sprintf( appError.current_file_name, "%s", __FILE__ );
             appError.number = ERROR_USB_MOUNT_DRIVE;
 
-            appDataUsb.usbDriveStatus = ERROR_USB_RESUME_DEVICE;            
-            return appDataUsb.usbDriveStatus;
+            appDataUsb.usb_drive_status = ERROR_USB_RESUME_DEVICE;            
+            return appDataUsb.usb_drive_status;
         }
         else
         {
@@ -85,6 +87,7 @@ bool usbMountDrive( void )
         }
     }
     
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
        store_event(OF_MOUNT_USB_DRIVE); 
@@ -94,28 +97,28 @@ bool usbMountDrive( void )
      * it is initialized by the application in the USB_ApplicationEventHandler
      * function when a new device is detected.
      */
-    errF = FILEIO_DriveMount( 'A', &gUSBDrive, &appDataUsb.deviceAddress );
+    errF = FILEIO_DriveMount( 'A', &gUSBDrive, &appDataUsb.device_address );
     Nop( );
     Nop( );
     Nop( );
     if ( FILEIO_ERROR_NONE != errF )
     {
         sprintf( appError.message, "Unable to mount drive (%u)", errF );
-        appError.currentLineNumber = __LINE__;
-        sprintf( appError.currentFileName, "%s", __FILE__ );
+        appError.current_line_number = __LINE__;
+        sprintf( appError.current_file_name, "%s", __FILE__ );
         appError.number = ERROR_USB_MOUNT_DRIVE;
         
-        appDataUsb.usbDriveStatus = USB_DRIVE_NOT_MOUNTED;        
-        return appDataUsb.usbDriveStatus;
+        appDataUsb.usb_drive_status = USB_DRIVE_NOT_MOUNTED;        
+        return appDataUsb.usb_drive_status;
     }
     
-    appDataUsb.usbDriveStatus = USB_DRIVE_MOUNTED;
+    appDataUsb.usb_drive_status = USB_DRIVE_MOUNTED;
     
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
     printf( "\tUSB drive mounted\n" );        
 #endif
         
-    return appDataUsb.usbDriveStatus;
+    return appDataUsb.usb_drive_status;
 }
 
 bool usbUnmountDrive( void )
@@ -123,19 +126,21 @@ bool usbUnmountDrive( void )
     uint8_t success;
     
     /* Drive is already not mounted. */
-    if ( USB_DRIVE_NOT_MOUNTED == appDataUsb.usbDriveStatus )
+    if ( USB_DRIVE_NOT_MOUNTED == appDataUsb.usb_drive_status )
     {
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
         printf( "\tUSB drive already unmounted\n" );
 #endif
+        /* Log event if required */
         if ( true == appDataLog.log_events )
         {
            store_event(OF_ALREADY_UNMOUNTED_USB_DRIVE); 
         }
         
-        return appDataUsb.usbDriveStatus;
+        return appDataUsb.usb_drive_status;
     }
 
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
        store_event(OF_UNMOUNT_USB_DRIVE); 
@@ -144,26 +149,27 @@ bool usbUnmountDrive( void )
     if ( FILEIO_RESULT_FAILURE == FILEIO_DriveUnmount( 'A' ) )
     {
         strcpy( appError.message, "Unable to unmount drive" );
-        appError.currentLineNumber = __LINE__;
-        sprintf( appError.currentFileName, "%s", __FILE__ );
+        appError.current_line_number = __LINE__;
+        sprintf( appError.current_file_name, "%s", __FILE__ );
         appError.number = ERROR_USB_UNMOUNT_DRIVE;
         
-        appDataUsb.usbDriveStatus = USB_DRIVE_MOUNTED;
-        return appDataUsb.usbDriveStatus;
+        appDataUsb.usb_drive_status = USB_DRIVE_MOUNTED;
+        return appDataUsb.usb_drive_status;
     }
 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
     printf( "\tUSB drive unmounted\n" );
 #endif    
-    appDataUsb.usbDriveStatus = USB_DRIVE_NOT_MOUNTED;
+    appDataUsb.usb_drive_status = USB_DRIVE_NOT_MOUNTED;
 
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
        store_event(OF_SUSPEND_USB_DRIVE); 
     } 
     // http://www.microchip.com/forums/m582058.aspx
     // help_mla_usb.pdf => 1.4.2.1.1.18 USBHostSuspendDevice Function            
-    success = USBHostSuspendDevice( appDataUsb.deviceAddress ); /* now no interrupt occur */
+    success = USBHostSuspendDevice( appDataUsb.device_address ); /* now no interrupt occur */
     if ( USB_SUCCESS != success )
     {
         if ( USB_UNKNOWN_DEVICE == success )
@@ -174,10 +180,10 @@ bool usbUnmountDrive( void )
         {
             strcpy( appError.message, "Cannot suspend unless device is in normal run mode" );
         }
-        appError.currentLineNumber = __LINE__;
-        sprintf( appError.currentFileName, "%s", __FILE__ );
+        appError.current_line_number = __LINE__;
+        sprintf( appError.current_file_name, "%s", __FILE__ );
         appError.number = ERROR_USB_SUSPEND_DEVICE;
-        appDataUsb.usbDriveStatus = USB_DRIVE_MOUNTED;
+        appDataUsb.usb_drive_status = USB_DRIVE_MOUNTED;
     }
     else
     {
@@ -186,7 +192,7 @@ bool usbUnmountDrive( void )
 #endif 
     }
 
-    return appDataUsb.usbDriveStatus;
+    return appDataUsb.usb_drive_status;
 }
 
 bool USB_ApplicationEventHandler( uint8_t address, USB_EVENT event, void *data, uint32_t size )
@@ -369,12 +375,12 @@ bool USB_ApplicationEventHandler( uint8_t address, USB_EVENT event, void *data, 
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_USB_INFO)
             printf( "\tUSB: EVENT_MSD_ATTACH\n" );
 #endif
-            appDataUsb.getValidDeviceAdress = true;
-            appDataUsb.deviceAddress = address;
+            appDataUsb.is_device_address_available = true;
+            appDataUsb.device_address = address;
 
-            if ( false == appDataUsb.key_is_nedded )
+            if ( false == appDataUsb.is_device_needed )
             {
-                success = USBHostSuspendDevice( appDataUsb.deviceAddress );
+                success = USBHostSuspendDevice( appDataUsb.device_address );
                     
                 if ( USB_SUCCESS != success )
                 {

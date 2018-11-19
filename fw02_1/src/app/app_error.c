@@ -9,7 +9,7 @@
 #include "app.h"
 #include "app_error.h"
 
-FILEIO_RESULT logError(void)
+FILEIO_RESULT logError( void )
 {
     
     FILEIO_OBJECT file;
@@ -21,38 +21,39 @@ FILEIO_RESULT logError(void)
     
     getDateTime( );
 
-    if ( USB_DRIVE_MOUNTED == appDataUsb.usbDriveStatus )
+    if ( USB_DRIVE_MOUNTED == appDataUsb.usb_drive_status )
     {
         needToUnmount = false;
     }
     else
     {
-        if (USB_DRIVE_NOT_MOUNTED == usbMountDrive())
+        if (USB_DRIVE_NOT_MOUNTED == usbMountDrive( ) )
         {
             return FILEIO_RESULT_FAILURE;
         }
         needToUnmount = true;
     }
 
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
-       store_event(OF_WRITE_ERRORS_LOG); 
+       store_event( OF_WRITE_ERRORS_LOG ); 
     }
     
-    if (FILEIO_RESULT_FAILURE == FILEIO_Open(&file, ERRORS_LOG_FILE, FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND))
+    if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, ERRORS_LOG_FILE, FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND ) )
     {
-        errF = FILEIO_ErrorGet('A');
-        sprintf(appError.message, "Unable to open error log file (%u)", errF);
-        appError.currentLineNumber = __LINE__;
-        sprintf(appError.currentFileName, "%s", __FILE__);
-        FILEIO_ErrorClear('A');
+        errF = FILEIO_ErrorGet( 'A' );
+        sprintf( appError.message, "Unable to open error log file (%u)", errF );
+        appError.current_line_number = __LINE__;
+        sprintf( appError.current_file_name, "%s", __FILE__ );
+        FILEIO_ErrorClear( 'A' );
         appError.number = ERROR_ERROR_FILE_OPEN;
         return FILEIO_RESULT_FAILURE;
     }
 
-    memset(buf, '\0', sizeof ( buf));
+    memset( buf, '\0', sizeof( buf ) );
     
-    flag = sprintf(buf, "%c%c%sOF%c%c%s%u%s%02d/%02d/%02d%s%02d:%02d:%02d%s%u%s\"%s\"%s%s%s%u\n",
+    flag = sprintf( buf, "%c%c%sOF%c%c%s%u%s%02d/%02d/%02d%s%02d:%02d:%02d%s%u%s\"%s\"%s%s%s%u\n",
                     appData.siteid[0],
                     appData.siteid[1],
                     appDataLog.separator,
@@ -73,21 +74,21 @@ FILEIO_RESULT logError(void)
                     appDataLog.separator,
                     appError.message,
                     appDataLog.separator,
-                    appError.currentFileName,
+                    appError.current_file_name,
                     appDataLog.separator,
-                    appError.currentLineNumber);
+                    appError.current_line_number );
 
-    if (flag > 0)
+    if ( flag > 0 )
     {
-        numDataWritten = FILEIO_Write(buf, 1, flag, &file);
+        numDataWritten = FILEIO_Write( buf, 1, flag, &file );
     }
 
-    if (numDataWritten < flag)
+    if ( numDataWritten < flag )
     {
-        errF = FILEIO_ErrorGet('A');
-        sprintf(appError.message, "Unable to write error in log file (%u)", errF);
-        appError.currentLineNumber = __LINE__;
-        sprintf(appError.currentFileName, "%s", __FILE__);
+        errF = FILEIO_ErrorGet( 'A' );
+        sprintf( appError.message, "Unable to write error in log file (%u)", errF );
+        appError.current_line_number = __LINE__;
+        sprintf( appError.current_file_name, "%s", __FILE__ );
         FILEIO_ErrorClear('A');
         appError.number = ERROR_ERROR_FILE_WRITE;
         return FILEIO_RESULT_FAILURE;
@@ -96,17 +97,17 @@ FILEIO_RESULT logError(void)
     if (FILEIO_RESULT_FAILURE == FILEIO_Close(&file))
     {
         errF = FILEIO_ErrorGet('A');
-        sprintf(appError.message, "Unable to close error file (%u)", errF);
-        appError.currentLineNumber = __LINE__;
-        sprintf(appError.currentFileName, "%s", __FILE__);
-        FILEIO_ErrorClear('A');
+        sprintf( appError.message, "Unable to close error file (%u)", errF );
+        appError.current_line_number = __LINE__;
+        sprintf( appError.current_file_name, "%s", __FILE__ );
+        FILEIO_ErrorClear( 'A' );
         appError.number = ERROR_ERROR_FILE_CLOSE;
         return FILEIO_RESULT_FAILURE;
     }
 
     if (true == needToUnmount)
     {
-        if (USB_DRIVE_MOUNTED == usbUnmountDrive())
+        if (USB_DRIVE_MOUNTED == usbUnmountDrive( ) )
         {
             return FILEIO_RESULT_FAILURE;
         }
@@ -131,22 +132,22 @@ void printError(void)
             appError.time.tm_min,
             appError.time.tm_sec );
     
-    if ( appError.currentLineNumber > 0 )
+    if ( appError.current_line_number > 0 )
     {
-        printf( "\tERROR %03d\n\t%s\n\tIn %s at line %d\n", appError.number, appError.message, appError.currentFileName, appError.currentLineNumber);
+        printf( "\tERROR %03d\n\t%s\n\tIn %s at line %d\n", appError.number, appError.message, appError.current_file_name, appError.current_line_number );
     }
     else
     {
-        printf( "\tERROR %03d\n%s\n", appError.number, appError.message);
+        printf( "\tERROR %03d\n%s\n", appError.number, appError.message );
     }
 }
 
 
 void clearError(void)
 {
-    memset(appError.message, '\0', sizeof ( appError.message));
-    memset(appError.currentFileName, '\0', sizeof ( appError.currentFileName));
-    appError.currentLineNumber = 0;
+    memset( appError.message, '\0', sizeof( appError.message ) );
+    memset( appError.current_file_name, '\0', sizeof( appError.current_file_name ) );
+    appError.current_line_number = 0;
 }
 
 

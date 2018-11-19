@@ -28,11 +28,11 @@
 typedef struct
 {
     /* Number of PIT tags denied or associated with color A */
-    uint16_t numPitTagDeniedOrColorA;
+    int16_t num_pit_tag_denied_or_color_A;
     /* Number of PIT tags accepted or associated with color B */
-    uint16_t numPitTagAcceptedOrColorB;
+    int16_t num_pit_tag_accepted_or_color_B;
 
-    uint16_t numPitTagGroup[4];    
+    int16_t num_pit_tag_per_group[4];    
     
     /* List of PIT tags */
     char pit_tags_list[MAX_PIT_TAGS_LIST_NUMBER][11];
@@ -42,13 +42,13 @@ typedef struct
     
     uint8_t reward_probability[MAX_PIT_TAGS_LIST_NUMBER];
 
-    uint16_t numPitTagStored;
+    uint16_t num_pit_tag_stored;
     
-    bool isPitTagdeniedOrColorA[MAX_PIT_TAGS_LIST_NUMBER];
+    bool is_pit_tag_denied_or_color_A[MAX_PIT_TAGS_LIST_NUMBER];
 
-    bool didPitTagMatched;
+    bool pit_tag_found_in_list;
 
-    uint16_t pitTagIndexInList;
+    uint16_t pit_tag_index_in_list;
 
     uint8_t number_of_valid_pit_tag;
     

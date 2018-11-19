@@ -18,15 +18,16 @@
 const uint8_t BUILD_DATE[] = { __DATE__ };
 const uint8_t BUILD_TIME[] = { __TIME__ };
 
+
 uint8_t getCompletScenarioNumber( void )
 {
-    if ( GO_NO_GO != appData.scenario_number)
+    if ( GO_NO_GO != appData.scenario_number )
     {
         return appData.scenario_number;
     }
     else
     {
-       return (30 + appDataAttractiveLeds.pattern_number); 
+        return (30 + appDataAttractiveLeds.pattern_number );
     }
 }
 
@@ -34,113 +35,117 @@ uint8_t getCompletScenarioNumber( void )
 void getDeviceId( void )
 {
     int tblpageReg, addrOffset, readDataL;
-//    int readDataH;
-    
+    //    int readDataH;
+
     // Read 24 bits of data memory from address 0x012340
     // Create 24 bit EA for read by loading TBLPAG
     tblpageReg = TBLPAG;
-    TBLPAG = 0x00FF;   // Load TBLPAG register with read address <23:16>
-    
-    addrOffset = 0x0000;                       // Load offset with read address <15:0>
-    // Read data from program memory
-    readDataL = __builtin_tblrdl(addrOffset);   // readDataL contains lower word data
-//    readDataH = __builtin_tblrdh(addrOffset);   // readDataH contains high byte data
+    TBLPAG = 0x00FF; // Load TBLPAG register with read address <23:16>
 
-    appData.id.family = readDataL>>8;
-    appData.id.device =  readDataL & 0xFF;
+    addrOffset = 0x0000; // Load offset with read address <15:0>
+    // Read data from program memory
+    readDataL = __builtin_tblrdl( addrOffset ); // readDataL contains lower word data
+    //    readDataH = __builtin_tblrdh(addrOffset);   // readDataH contains high byte data
+
+    appData.id.family = readDataL >> 8;
+    appData.id.device = readDataL & 0xFF;
 
     addrOffset = 0x0002;
-    readDataL = __builtin_tblrdl(addrOffset);   // readDataL contains lower word data
-//    readDataH = __builtin_tblrdh(addrOffset);   // readDataH contains high byte data
-    
+    readDataL = __builtin_tblrdl( addrOffset ); // readDataL contains lower word data
+    //    readDataH = __builtin_tblrdh(addrOffset);   // readDataH contains high byte data
+
     appData.id.revision = readDataL;
-    
+
     TBLPAG = tblpageReg;
-    
+
 }
+
 
 void displayDeviceId( void )
 {
     /* DS30010089D-page 482 */
-    
-    if (appData.id.family == 97 && appData.id.device == 20)
+
+    if ( appData.id.family == 97 && appData.id.device == 20 )
     {
-        printf("\tMicrocontroler:\n\t\tPIC24FJ256GB406\n");
+        printf( "\tMicrocontroler:\n\t\tPIC24FJ256GB406\n" );
     }
     else
     {
-        printf("\tMicrocontroler:\n\t\tunknown\n");
+        printf( "\tMicrocontroler:\n\t\tunknown\n" );
     }
-    printf("\tIndividual Device Identifier\n");
-    printf("\t\tFamily ID: %u\n", appData.id.family);
-    printf("\t\tIndividual ID: %u\n" , appData.id.device);
-    printf("\t\tRevision: %u\n\n", appData.id.revision);
+    printf( "\tIndividual Device Identifier\n" );
+    printf( "\t\tFamily ID: %u\n", appData.id.family );
+    printf( "\t\tIndividual ID: %u\n", appData.id.device );
+    printf( "\t\tRevision: %u\n\n", appData.id.revision );
 }
+
 
 void getUniqueDeviceId( void )
 {
     /* DS30010089D-page 74 */
-    
+
     int tblpageReg, addrOffset;
-    
+
     uint32_t readDataL, readDataH;
-    
+
     tblpageReg = TBLPAG;
-    
+
     TBLPAG = tblpageReg;
-    
+
     TBLPAG = 0x0080;
-        
-//    addrOffset = 0x1300; 
-    addrOffset = 0x1308; 
-    readDataL = __builtin_tblrdl(addrOffset);
-    readDataH = __builtin_tblrdh(addrOffset);
 
-    appData.udid.words[0] = (readDataH<<16)+readDataL;
+    //    addrOffset = 0x1300; 
+    addrOffset = 0x1308;
+    readDataL = __builtin_tblrdl( addrOffset );
+    readDataH = __builtin_tblrdh( addrOffset );
 
-//    addrOffset = 0x1302; 
-    addrOffset = 0x130A; 
-    readDataL = __builtin_tblrdl(addrOffset);
-    readDataH = __builtin_tblrdh(addrOffset);
-    
-    appData.udid.words[1] = (readDataH<<16)+readDataL;
+    appData.udid.words[0] = ( readDataH << 16 ) + readDataL;
 
-//    addrOffset = 0x1304; 
-    addrOffset = 0x130C; 
-    readDataL = __builtin_tblrdl(addrOffset);
-    readDataH = __builtin_tblrdh(addrOffset);
-    
-    appData.udid.words[2] = (readDataH<<16)+readDataL;
+    //    addrOffset = 0x1302; 
+    addrOffset = 0x130A;
+    readDataL = __builtin_tblrdl( addrOffset );
+    readDataH = __builtin_tblrdh( addrOffset );
 
-//    addrOffset = 0x1306; 
-    addrOffset = 0x130E; 
-    readDataL = __builtin_tblrdl(addrOffset);
-    readDataH = __builtin_tblrdh(addrOffset);
-    
-    appData.udid.words[3] = (readDataH<<16)+readDataL;
-    
-//    printf(" %u %u\n", readDataL, readDataH);
-    
-//    addrOffset = 0x1308; 
-    addrOffset = 0x1310; 
-    readDataL = __builtin_tblrdl(addrOffset);
-    readDataH = __builtin_tblrdh(addrOffset);
-    
-    appData.udid.words[4] = (readDataH<<16)+readDataL;
-    
+    appData.udid.words[1] = ( readDataH << 16 ) + readDataL;
+
+    //    addrOffset = 0x1304; 
+    addrOffset = 0x130C;
+    readDataL = __builtin_tblrdl( addrOffset );
+    readDataH = __builtin_tblrdh( addrOffset );
+
+    appData.udid.words[2] = ( readDataH << 16 ) + readDataL;
+
+    //    addrOffset = 0x1306; 
+    addrOffset = 0x130E;
+    readDataL = __builtin_tblrdl( addrOffset );
+    readDataH = __builtin_tblrdh( addrOffset );
+
+    appData.udid.words[3] = ( readDataH << 16 ) + readDataL;
+
+    //    printf(" %u %u\n", readDataL, readDataH);
+
+    //    addrOffset = 0x1308; 
+    addrOffset = 0x1310;
+    readDataL = __builtin_tblrdl( addrOffset );
+    readDataH = __builtin_tblrdh( addrOffset );
+
+    appData.udid.words[4] = ( readDataH << 16 ) + readDataL;
+
     TBLPAG = tblpageReg;
 }
+
 
 void displayUniqueDeviceId( void )
 {
-    
-    printf("UDID: %06lX %06lX %06lX %06lX %06lX\n", appData.udid.words[0],
-                                        appData.udid.words[1],
-                                        appData.udid.words[2],
-                                        appData.udid.words[3],
-                                        appData.udid.words[4]);
-    
+
+    printf( "UDID: %06lX %06lX %06lX %06lX %06lX\n", appData.udid.words[0],
+            appData.udid.words[1],
+            appData.udid.words[2],
+            appData.udid.words[3],
+            appData.udid.words[4] );
+
 }
+
 
 /* Display information on serial terminal. */
 void displayBuildDateTime( void )
@@ -149,21 +154,23 @@ void displayBuildDateTime( void )
     printf( "Build on %s, %s\n", BUILD_DATE, BUILD_TIME );
 }
 
+
 void displayFirmwareVersion( void )
 {
     /* Displaying firmware version. */
-    printf( "Firmware: %s v%d.%d.%d\n", FW_NAME, FW_VERSION_MAJOR, FW_VERSION_MINOR, FW_VERSION_PATCH);
+    printf( "Firmware: %s v%d.%d.%d\n", FW_NAME, FW_VERSION_MAJOR, FW_VERSION_MINOR, FW_VERSION_PATCH );
 }
+
 
 void displayBootMessage( void )
 {
     printf( "\n\n================ OpenFeeder ================\n\t" );
-    displayFirmwareVersion();
+    displayFirmwareVersion( );
     printf( "\t" );
-    displayBuildDateTime();
-    printf( "\tFor board v3.0\n");
+    displayBuildDateTime( );
+    printf( "\tFor board v3.0\n" );
     printf( "============================================\n\t" );
-    displayUniqueDeviceId();
+    displayUniqueDeviceId( );
     printf( "============================================\n" );
     printf( "\tWeb page: https://github.com/OpenFeeder\n" );
     printf( "\tMail: contact.openfeeder@gmail.com\n" );
@@ -172,9 +179,10 @@ void displayBootMessage( void )
     printf( "============================================\n\n" );
 }
 
+
 void displayResetRegisters( void )
 {
-    
+
     printf( "\t-----------------------\n" );
     printf( "\t|   RCON1  |   RCON2  |\n" );
     printf( "\t| POR    %u | VBAT   %u |\n", appData.reset_1.bit_value.por, appData.reset_2.bit_value.vbat );
@@ -194,8 +202,9 @@ void displayResetRegisters( void )
     printf( "\t| IOPUWR %u |     -    |\n", appData.reset_1.bit_value.iopuwr );
     printf( "\t| TRAPR  %u |     -    |\n", appData.reset_1.bit_value.trapr );
     printf( "\t-----------------------\n\n" );
-    
+
 }
+
 
 void APP_SerialDebugTasks( void )
 {
@@ -215,13 +224,13 @@ void APP_SerialDebugTasks( void )
             case '?':
                 /* Interface firmware terminal (Debug) */
                 printf( "Key mapping:\n" );
-//                printf( " !: displaying the build date and time\n" );
+                //                printf( " !: displaying the build date and time\n" );
                 printf( " a or A: attractive LEDs\n" );
                 printf( "   - b or B: set blue component\n" );
                 printf( "   - g or G: set green component\n" );
                 printf( "   - i or I: initialize LEDs command\n" );
                 printf( "   - r or R: set red component\n" );
-                printf( "   - t or T: test LEDs\n" );                
+                printf( "   - t or T: test LEDs\n" );
                 printf( " b or B: data buffers\n" );
                 printf( " c or C: manage configuration\n" );
                 printf( "   - d or D: display configuration parameters\n" );
@@ -231,10 +240,10 @@ void APP_SerialDebugTasks( void )
                 printf( "   - o or O: open door\n" );
                 printf( "   - p or P: set door position\n" );
                 printf( "   - r or R: toggle remain open parameter\n" );
-//                printf( "> e or E: NOT USED\n" );
-                printf( " f or F: firmware\n" );
-//                printf( "> g or G: NOT USED\n" );
-                printf( " h or H: hardware\n" );
+                //                printf( "> e or E: NOT USED\n" );
+                printf( " f or F: flush data on USB device\n" );
+                //                printf( "> g or G: NOT USED\n" );
+                printf( " h or H: firmware & hardware information\n" );
                 printf( " i or I: IR barriers\n" );
                 printf( "   - p or P: toggle IR barriers power\n" );
                 printf( "   - s or S: get IR barriers status\n" );
@@ -253,36 +262,32 @@ void APP_SerialDebugTasks( void )
                 printf( "   - r or R: RFID frequency\n" );
                 printf( "   - t or T: external temperature\n" );
                 printf( "   - v or V: VBat level\n" );
-//                printf( "> n or N: NOT USED\n" );
-//                printf( "> o or O: NOT USED\n" );                
-                printf( " p or P: power\n" );             
+                //                printf( "> n or N: NOT USED\n" );
+                //                printf( "> o or O: NOT USED\n" );                
+                printf( " p or P: power\n" );
                 printf( "   - 1: toggle servomotor power\n" );
                 printf( "   - 2: toggle CMD_ACC_PIR power\n" );
                 printf( "   - 3: toggle CMD_VDD_APP_V_USB power\n" );
-                printf( "   - 4: toggle IR barriers power\n" );               
+                printf( "   - 4: toggle IR barriers power\n" );
                 printf( " q or Q: check status LEDs\n" );
-//                printf( "> r or R: NOT USED\n" );
+                //                printf( "> r or R: NOT USED\n" );
                 printf( " s     : set date and time (string)\n" );
                 printf( " S     : set date and time (numerical)\n" );
                 printf( " t     : get date and time (string)\n" );
                 printf( " T     : get date and time (numerical)\n" );
                 printf( " u or U: Unique Device Id (UDID)\n" );
-//                printf( " v or V: NOT USED\n" );
-//                printf( "> w or W: NOT USED\n" );
-                printf( "> x or X: system reset\n" );
+                //                printf( " v or V: NOT USED\n" );
+                //                printf( "> w or W: NOT USED\n" );
+                printf( " x or X: system reset\n" );
                 printf( " y or Y: display reset registers\n" );
                 printf( " z or Z: test RFID\n" );
                 break;
-
-//            case '!':
-//                displayBuildDateTime( );
-//                break;
 
             case 'a':
             case 'A':
             {
                 uint8_t user_choice;
-                
+
                 while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
                 user_choice = UART1_Read( );
 
@@ -311,7 +316,7 @@ void APP_SerialDebugTasks( void )
                     case 'g':
                     case 'G':
                     {
-                        
+
                         /* Set green color value of attractive LEDs. */
                         setLedsStatusColor( LED_GREEN );
                         printf( "Set Green LED, enter a value from 0 to 255:\n" );
@@ -358,14 +363,10 @@ void APP_SerialDebugTasks( void )
                     case 't':
                     case 'T':
                     {
-                        setAttractiveLedsOn();
-                        setAttractiveLedsNoColor();
-                        testAttractiveLeds();
-                        setAttractiveLedsNoColor();
-                        setAttractiveLedsOff();
+                        testAttractiveLeds( );
                         break;
                     }
-                    
+
                 }
             }
                 break;
@@ -375,7 +376,7 @@ void APP_SerialDebugTasks( void )
             case 'B':
                 /* Display datalogger buffers. */
                 printf( "Data logger buffer:\n" );
-                if ( appDataLog.nCharBuffer > 0 )
+                if ( appDataLog.num_char_buffer > 0 )
                 {
                     printf( "%s", appDataLog.buffer );
                 }
@@ -385,75 +386,75 @@ void APP_SerialDebugTasks( void )
                 }
                 /* Display battery level buffer  */
                 printf( "\nBattery level buffer:\n" );
-                
-                if ( appDataLog.numBatteryLevelStored == 0)
+
+                if ( appDataLog.num_battery_level_stored == 0 )
                 {
                     printf( "\t<empty buffer>\n" );
                 }
                 else
-                {     
-                    for ( i = 0; i < appDataLog.numBatteryLevelStored; i++ )
+                {
+                    for ( i = 0; i < appDataLog.num_battery_level_stored; i++ )
                     {
                         printf( "\t%02d - %04d - %2.3f\n",
-                            appDataLog.battery_level[i][0],
-                            appDataLog.battery_level[i][1],
-                            appDataLog.battery_level[i][1] * BATTERY_VOLTAGE_FACTOR );
+                                appDataLog.battery_level[i][0],
+                                appDataLog.battery_level[i][1],
+                                appDataLog.battery_level[i][1] * BATTERY_VOLTAGE_FACTOR );
                     }
                 }
 
                 /* Display RFID frequency buffer  */
                 printf( "\nRFID frequency buffer:\n" );
-                
-                if ( appDataLog.numRfidFreqStored == 0)
+
+                if ( appDataLog.num_rfid_freq_stored == 0 )
                 {
                     printf( "\t<empty buffer>\n" );
                 }
                 else
                 {
-                     for ( i = 0; i < appDataLog.numRfidFreqStored; i++ )
-                    {                         
+                    for ( i = 0; i < appDataLog.num_rfid_freq_stored; i++ )
+                    {
                         printf( "\t%02d:%02d - %06ld\n",
-                                    appDataLog.rfid_freq[i][0],
-                                    appDataLog.rfid_freq[i][1],
-                                    ( long ) appDataLog.rfid_freq[i][2]*10 );
-                    }               
-                }    
-                
+                                appDataLog.rfid_freq[i][0],
+                                appDataLog.rfid_freq[i][1],
+                                ( long ) appDataLog.rfid_freq[i][2]*10 );
+                    }
+                }
+
                 /* Display DS3231 temperature  */
                 printf( "\nCalibration buffer:\n" );
-                if ( appDataLog.numTimeCalibStored == 0)
+                if ( appDataLog.num_time_calib_stored == 0 )
                 {
                     printf( "\t<empty buffer>\n" );
                 }
                 else
                 {
-                     for ( i = 0; i < appDataLog.numTimeCalibStored; i++ )
+                    for ( i = 0; i < appDataLog.num_time_calib_stored; i++ )
                     {
-                         printf( "\t%02d:%02d - %.2f\n", 
-                                (int)appDataLog.time_calibration[i][0], 
-                                (int)appDataLog.time_calibration[i][1], 
+                        printf( "\t%02d:%02d - %.2f\n",
+                                ( int ) appDataLog.time_calibration[i][0],
+                                ( int ) appDataLog.time_calibration[i][1],
                                 appDataLog.time_calibration[i][2] );
-                    }               
-                } 
-                
+                    }
+                }
+
                 /* Display DS3231 temperature  */
                 printf( "\nTemperature buffer:\n" );
-                
-                if ( appDataLog.numDs3231TempStored == 0)
+
+                if ( appDataLog.num_ds3231_temp_stored == 0 )
                 {
                     printf( "\t<empty buffer>\n" );
                 }
                 else
                 {
-                     for ( i = 0; i < appDataLog.numDs3231TempStored; i++ )
+                    for ( i = 0; i < appDataLog.num_ds3231_temp_stored; i++ )
                     {
-                         printf( "\t%02d:%02d - %.2f\n", 
-                                (int)appDataLog.ds3231_temp[i][0], 
-                                (int)appDataLog.ds3231_temp[i][1], 
-                                appDataLog.ds3231_temp[i][2] );
-                    }               
-                }    
-                
+                        printf( "\t%02d:%02d - %.2f\n",
+                                ( int ) appDataLog.ds3231_temp[i][0],
+                                ( int ) appDataLog.ds3231_temp[i][1],
+                                ( double ) appDataLog.ds3231_temp[i][2] );
+                    }
+                }
+
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -461,7 +462,7 @@ void APP_SerialDebugTasks( void )
             case 'C':
             {
                 uint8_t user_choice;
-                
+
                 while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
                 user_choice = UART1_Read( );
 
@@ -472,7 +473,7 @@ void APP_SerialDebugTasks( void )
                     {
 
                         /* Display configuration parameters (CONFIG.INI) */
-                        if ( false == appData.flags.bit_value.systemInit )
+                        if ( false == appData.flags.bit_value.system_init )
                         {
                             printf( "/!\\ SYSTEM NOT CORRECTLY CONFIGURED.\n" );
                             config_print( );
@@ -482,10 +483,10 @@ void APP_SerialDebugTasks( void )
                         {
                             config_print( );
                         }
-                
+
                         break;
                     }
-                    
+
                     case 'r':
                     case 'R':
                     {
@@ -494,17 +495,17 @@ void APP_SerialDebugTasks( void )
                         appData.need_to_reconfigure = true;
                         break;
                     }
-                    
+
                 }
             }
                 break;
                 /* -------------------------------------------------------------- */
-                
+
             case 'd':
             case 'D':
             {
                 uint8_t user_choice;
-                
+
                 while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
                 user_choice = UART1_Read( );
 
@@ -512,7 +513,7 @@ void APP_SerialDebugTasks( void )
                 {
                     case 'C':
                     case 'c':
-                        
+
                         /* Close reward door */
                         if ( DOOR_CLOSED == appDataDoor.reward_door_status )
                         {
@@ -550,12 +551,12 @@ void APP_SerialDebugTasks( void )
                         appDataDoor.reward_door_status = DOOR_CLOSED;
 
                         printf( "Door closed\n" );
-                
+
                         break;
-                        
+
                     case 'O':
                     case 'o':
-                        
+
                         /* Open reward door */
                         if ( DOOR_OPENED == appDataDoor.reward_door_status )
                         {
@@ -586,96 +587,96 @@ void APP_SerialDebugTasks( void )
 
                         appDataDoor.reward_door_status = DOOR_OPENED;
 
-                        printf( "Door opened\n");
-                
+                        printf( "Door opened\n" );
+
                         break;
-                        
+
                     case 'P':
                     case 'p':
-                        
+
                         /* Change servomotor position
-                        * Servomotor:
-                        * HS-322HD: 600 us < servo_position < 2400 us, flexible nylon noise --> Ok
-                        * PARRALAX: 600 us < servo_position < 2400 us (Product ID: 900-00005), sound gear 
-                        */              
+                         * Servomotor:
+                         * HS-322HD: 600 us < servo_position < 2400 us, flexible nylon noise --> Ok
+                         * PARRALAX: 600 us < servo_position < 2400 us (Product ID: 900-00005), sound gear 
+                         */
 
-                       /* Get current position. */
-                       if ( false == isPowerServoEnable( ) )
-                       {
-                           servomotorPowerEnable( );
-                           appDataServo.ton_cmd = servomotorGetDoorPosition( );
-                           servomotorPowerDisable( );
-                       }
-                       else
-                       {
-                           appDataServo.ton_cmd = servomotorGetDoorPosition( );
-                       }
+                        /* Get current position. */
+                        if ( false == isPowerServoEnable( ) )
+                        {
+                            servomotorPowerEnable( );
+                            appDataServo.ton_cmd = servomotorGetDoorPosition( );
+                            servomotorPowerDisable( );
+                        }
+                        else
+                        {
+                            appDataServo.ton_cmd = servomotorGetDoorPosition( );
+                        }
 
-                       printf( "\tSet servomotor position\n\t                 C    O\n\t\tRange MAX: [%4u %4u]\n\t\tRange INI: [%4u %4u]\n", SERVO_DEFAULT_MIN_POSITION, SERVO_DEFAULT_MAX_POSITION, appDataServo.ton_min_night, appDataServo.ton_max );
-                       if ( DOOR_HABITUATION == appData.scenario_number )
-                       {
-                           printf( "\t\tRange HAB: [%4u %4u] (%u%%)\n", appDataServo.ton_min, appDataServo.ton_max, appDataDoor.habituation_percent );
-                       }
-                       printf( "\t\tCurrent position: %u\n", appDataServo.ton_cmd );
+                        printf( "\tSet servomotor position\n\t                 C    O\n\t\tRange MAX: [%4u %4u]\n\t\tRange INI: [%4u %4u]\n", SERVO_DEFAULT_MIN_POSITION, SERVO_DEFAULT_MAX_POSITION, appDataServo.ton_min_night, appDataServo.ton_max );
+                        if ( DOOR_HABITUATION == appData.scenario_number )
+                        {
+                            printf( "\t\tRange HAB: [%4u %4u] (%u%%)\n", appDataServo.ton_min, appDataServo.ton_max, appDataDoor.habituation_percent );
+                        }
+                        printf( "\t\tCurrent position: %u\n", appDataServo.ton_cmd );
 
-                       /* Read uint16_t from terminal. */
-                       appDataServo.ton_goal = readIntFromUart1( );
+                        /* Read uint16_t from terminal. */
+                        appDataServo.ton_goal = readIntFromUart1( );
 
-                       if ( 0 == appDataServo.ton_goal )
-                       {
-                           printf( "\tWrong value\n" );
-                           break;
-                       }
+                        if ( 0 == appDataServo.ton_goal )
+                        {
+                            printf( "\tWrong value\n" );
+                            break;
+                        }
 
-                       if ( appDataServo.ton_goal > SERVO_DEFAULT_MAX_POSITION )
-                       {
-                           printf( "\tNo move because goal position (%u) is more than maximal position (%u)\n", appDataServo.ton_goal, SERVO_DEFAULT_MAX_POSITION );
-                           break;
-                       }
-                       else if ( appDataServo.ton_goal < SERVO_DEFAULT_MIN_POSITION )
-                       {
-                           printf( "\tNo move because goal position (%u) is less than minimal position (%u)\n", appDataServo.ton_goal, SERVO_DEFAULT_MIN_POSITION );
-                           break;
-                       }
-                       else if ( appDataServo.ton_goal > appDataServo.ton_max )
-                       {
-                           printf( "\tWarning: goal position (%u) is outside range specified in the INI file ([%u %u])\n", appDataServo.ton_goal, appDataServo.ton_min, appDataServo.ton_max );
-                       }
-                       else if ( appDataServo.ton_goal < appDataServo.ton_min )
-                       {
-                           printf( "\tWarning: goal position (%u) is outside range specified in the INI file ([%u %u])\n", appDataServo.ton_goal, appDataServo.ton_min, appDataServo.ton_max );
-                       }
+                        if ( appDataServo.ton_goal > SERVO_DEFAULT_MAX_POSITION )
+                        {
+                            printf( "\tNo move because goal position (%u) is more than maximal position (%u)\n", appDataServo.ton_goal, SERVO_DEFAULT_MAX_POSITION );
+                            break;
+                        }
+                        else if ( appDataServo.ton_goal < SERVO_DEFAULT_MIN_POSITION )
+                        {
+                            printf( "\tNo move because goal position (%u) is less than minimal position (%u)\n", appDataServo.ton_goal, SERVO_DEFAULT_MIN_POSITION );
+                            break;
+                        }
+                        else if ( appDataServo.ton_goal > appDataServo.ton_max )
+                        {
+                            printf( "\tWarning: goal position (%u) is outside range specified in the INI file ([%u %u])\n", appDataServo.ton_goal, appDataServo.ton_min, appDataServo.ton_max );
+                        }
+                        else if ( appDataServo.ton_goal < appDataServo.ton_min )
+                        {
+                            printf( "\tWarning: goal position (%u) is outside range specified in the INI file ([%u %u])\n", appDataServo.ton_goal, appDataServo.ton_min, appDataServo.ton_max );
+                        }
 
-                       if ( appDataServo.ton_cmd == appDataServo.ton_goal )
-                       {
-                           printf( "\tDoor already at goal position.\n" );
-                           break;
-                       }
+                        if ( appDataServo.ton_cmd == appDataServo.ton_goal )
+                        {
+                            printf( "\tDoor already at goal position.\n" );
+                            break;
+                        }
 
-                       printf( "\tMoving door... " );
+                        printf( "\tMoving door... " );
 
-                       appDataServo.num_step = appDataServo.num_empty_step;
+                        appDataServo.num_step = appDataServo.num_empty_step;
 
-                       if ( false == isPowerServoEnable( ) )
-                       {
-                           servomotorPowerEnable( );
-                           appDataDoor.reward_door_status = DOOR_MOVING;
-                           while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                           servomotorPowerDisable( );
-                       }
-                       else
-                       {
-                           appDataDoor.reward_door_status = DOOR_MOVING;
-                           while ( DOOR_MOVED != appDataDoor.reward_door_status );
-                       }
+                        if ( false == isPowerServoEnable( ) )
+                        {
+                            servomotorPowerEnable( );
+                            appDataDoor.reward_door_status = DOOR_MOVING;
+                            while ( DOOR_MOVED != appDataDoor.reward_door_status );
+                            servomotorPowerDisable( );
+                        }
+                        else
+                        {
+                            appDataDoor.reward_door_status = DOOR_MOVING;
+                            while ( DOOR_MOVED != appDataDoor.reward_door_status );
+                        }
 
-                       printf( "Door moved\n");
-                        
-                       break;  
-                       
+                        printf( "Door moved\n" );
+
+                        break;
+
                     case 'R':
                     case 'r':
-                        
+
                         if ( 1 == appDataDoor.remain_open )
                         {
                             appDataDoor.remain_open = 0;
@@ -686,31 +687,28 @@ void APP_SerialDebugTasks( void )
                             appDataDoor.remain_open = 1;
                             printf( "\tDoor remain open: on\n" );
                         }
-                        
+
                         break;
                 }
             }
-                
+
                 break;
                 /* -------------------------------------------------------------- */
 
             case 'e':
             case 'E':
-                
-                /* Not used */                
+
+                /* Not used */
                 break;
                 /* -------------------------------------------------------------- */
 
             case 'f':
             case 'F':
-                
-                /* Firmware information */
-                putchar( '\t' );
-                displayFirmwareVersion();
-                putchar( '\t' );
-                displayBuildDateTime();
-                putchar( '\n' );
-                
+
+                /* Flush data on USB device */
+
+                flushDataOnUsbDevice( );
+
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -722,11 +720,19 @@ void APP_SerialDebugTasks( void )
 
             case 'h':
             case 'H':
-                
-                /* Hardware */
-                
+
+                /* Firmware information */
+
+                putchar( '\t' );
+                displayFirmwareVersion( );
+                putchar( '\t' );
+                displayBuildDateTime( );
+                putchar( '\n' );
+
+                /* Hardware information */
+
                 displayDeviceId( );
-                    
+
                 /* Display external interrupt and timers states */
                 printf( "\tExternal interrupt states\n" );
                 printf( "\t\tINT0: %d\n", IEC0bits.INT0IE );
@@ -801,7 +807,7 @@ void APP_SerialDebugTasks( void )
                 printf( "\t\tOC5: %d\n", OC5CON1bits.OCM );
                 printf( "\t\tOC5R: %d\n", OC5R );
                 printf( "\t\tOC5RS: %d\n", OC5RS );
-                
+
                 /* Display USB device status */
                 printf( "\n\tUSB device status: " );
                 printUSBHostDeviceStatus( );
@@ -812,9 +818,9 @@ void APP_SerialDebugTasks( void )
             case 'i':
             case 'I':
 
-                {
+            {
                 uint8_t user_choice;
-                
+
                 while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
                 user_choice = UART1_Read( );
 
@@ -837,22 +843,29 @@ void APP_SerialDebugTasks( void )
                             /* Disable IR  */
                             IRSensorDisable( );
                             printf( "\tIR disable.\n" );
-                        } 
-                        
+                        }
+
                         break;
                     }
-                    
+
                     case 's':
                     case 'S':
                     {
-                        /* Display IR1 Food status */
-                        printf( "\tIR1 (reward) status: %u\n", BAR_IR1_OUT_GetValue( ) );
-                        /* Display IR2 Food status */
-                        printf( "\tIR2 (food) status: %u\n", BAR_IR2_OUT_GetValue( ) );
-                        
+                        if ( CMD_VCC_IR_GetValue( ) == 1 )
+                        {
+                            printf( "\tIR barrier must be powered first\n");
+                        }
+                        else
+                        {                            
+                            /* Display IR1 Food status */
+                            printf( "\tIR1 (reward) status: %u\n", BAR_IR1_OUT_GetValue( ) );
+                            /* Display IR2 Food status */
+                            printf( "\tIR2 (food) status: %u\n", BAR_IR2_OUT_GetValue( ) );
+                        }
+
                         break;
-                    }     
-                    
+                    }
+
                 }
 
             }
@@ -863,101 +876,102 @@ void APP_SerialDebugTasks( void )
             case 'J':
             {
                 /* Files I/O on USB device */
-                
+
                 uint8_t user_choice;
-                
+
                 while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
                 user_choice = UART1_Read( );
 
                 switch ( user_choice )
                 {
-                    
+
                     case 'C':
                     case 'c':
-                        
-                        displayCsvFiles();
+
+                        displayCsvFiles( );
                         break;
-                        
+
                     case 'e':
                     case 'E':
-                        
-                        displayErrorsFile();                        
+
+                        displayErrorsFile( );
                         break;
-                        
+
                     case 'i':
                     case 'I':
-                        
-                        displayIniFile();                        
+
+                        displayIniFile( );
                         break;
-                        
+
                     case 'L':
                     case 'l':
-                        
-                        listFilesOnUsbDevice();                        
+
+                        listFilesOnUsbDevice( );
                         break;
-                        
+
                     case 'x':
                     case 'X':
-                        
-                        exportAllFiles();                        
+
+                        exportAllFiles( );
                         break;
-                        
+
                     default:
                         break;
-                        
+
                 }
-                
+
                 break;
             }
                 /* -------------------------------------------------------------- */
 
             case 'k':
             case 'K':
-                
-                /* Get USB device properties */                
-                printf("\tPlease wait, process is slow\n\t(approx. 7s per GB of drive space)\n");
-                
+
+                /* Get USB device properties */
+                printf( "\tPlease wait, process is slow\n\t(approx. 7s per GB of drive space)\n" );
+
                 setLedsStatusColor( LED_USB_ACCESS );
-                
+
                 usbMountDrive( );
-                
+
                 drive_properties.new_request = true;
                 do
                 {
-                    FILEIO_DrivePropertiesGet(&drive_properties, 'A');
-                } while (drive_properties.properties_status == FILEIO_GET_PROPERTIES_STILL_WORKING);
-                
-                if (FILEIO_GET_PROPERTIES_NO_ERRORS == drive_properties.properties_status)
+                    FILEIO_DrivePropertiesGet( &drive_properties, 'A' );
+                }
+                while ( drive_properties.properties_status == FILEIO_GET_PROPERTIES_STILL_WORKING );
+
+                if ( FILEIO_GET_PROPERTIES_NO_ERRORS == drive_properties.properties_status )
                 {
-                    printf("\tUSB device properties\n");
-                    if (1 == drive_properties.results.disk_format)
+                    printf( "\tUSB device properties\n" );
+                    if ( 1 == drive_properties.results.disk_format )
                     {
-                        printf("\t\tDrive format: FAT12\n");
+                        printf( "\t\tDrive format: FAT12\n" );
                     }
-                    else if (2 == drive_properties.results.disk_format)
+                    else if ( 2 == drive_properties.results.disk_format )
                     {
-                        printf("\t\tDrive format: FAT16\n");
-                    }                        
-                    else if (3 == drive_properties.results.disk_format)
+                        printf( "\t\tDrive format: FAT16\n" );
+                    }
+                    else if ( 3 == drive_properties.results.disk_format )
                     {
-                        printf("\t\tDrive format: FAT32\n");
+                        printf( "\t\tDrive format: FAT32\n" );
                     }
                     else
                     {
-                        printf("\t\tDrive format: unknown (%d)\n", drive_properties.results.disk_format);
+                        printf( "\t\tDrive format: unknown (%d)\n", drive_properties.results.disk_format );
                     }
-                    printf("\t\tSector size: %u\n", drive_properties.results.sector_size);
-                    printf("\t\tSector per cluster: %u\n", drive_properties.results.sectors_per_cluster);
-                    printf("\t\tTotal clusters: %lu\n", drive_properties.results.total_clusters);
-                    printf("\t\tFree clusters: %lu\n", drive_properties.results.free_clusters);                    
-                    printf("\t\tTotal space: %lu MB\n", drive_properties.results.total_clusters*drive_properties.results.sectors_per_cluster*drive_properties.results.sector_size/1024/1024);
-                    printf("\t\tFree space: %lu MB\n\n", drive_properties.results.free_clusters*drive_properties.results.sectors_per_cluster*drive_properties.results.sector_size/1024/1024);
+                    printf( "\t\tSector size: %u\n", drive_properties.results.sector_size );
+                    printf( "\t\tSector per cluster: %u\n", drive_properties.results.sectors_per_cluster );
+                    printf( "\t\tTotal clusters: %lu\n", drive_properties.results.total_clusters );
+                    printf( "\t\tFree clusters: %lu\n", drive_properties.results.free_clusters );
+                    printf( "\t\tTotal space: %lu MB\n", drive_properties.results.total_clusters * drive_properties.results.sectors_per_cluster * drive_properties.results.sector_size / 1024 / 1024 );
+                    printf( "\t\tFree space: %lu MB\n\n", drive_properties.results.free_clusters * drive_properties.results.sectors_per_cluster * drive_properties.results.sector_size / 1024 / 1024 );
                 }
                 else
                 {
-                    printf("\tUSB device properties\n\t\tGet properties failed (%d)\n\n", drive_properties.properties_status);
+                    printf( "\tUSB device properties\n\t\tGet properties failed (%d)\n\n", drive_properties.properties_status );
                 }
-                
+
                 usbUnmountDrive( );
                 break;
                 /* -------------------------------------------------------------- */
@@ -972,10 +986,10 @@ void APP_SerialDebugTasks( void )
             case 'm':
             case 'M':
             {
-                
+
                 uint8_t user_choice;
                 uint16_t analog_measure;
-                
+
                 while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
                 user_choice = UART1_Read( );
 
@@ -1029,22 +1043,22 @@ void APP_SerialDebugTasks( void )
                         }
                         break;
                     }
-                    
+
                     case 't':
                     case 'T':
                         /* DS3231 temperature*/
-                        
-                        if (0 < APP_I2CMasterSeeksSlaveDevice(DS3231_I2C_ADDR, DS3231_I2C_ADDR))
+
+                        if ( 0 < APP_I2CMasterSeeksSlaveDevice( DS3231_I2C_ADDR, DS3231_I2C_ADDR ) )
                         {
-                            DS3231_temperature_get();                            
-                            printf("\tTemperature: %.2f C\n", appData.ext_temperature);                            
+                            getDS3231Temperature( );
+                            printf( "\tTemperature: %.2f C\n", ( double ) appData.ext_temperature );
                         }
                         else
                         {
-                           printf("\tDS3231 not found.\n");  
+                            printf( "\tDS3231 not found.\n" );
                         }
                         break;
-                        
+
                     case 'v':
                     case 'V':
                     {
@@ -1053,9 +1067,9 @@ void APP_SerialDebugTasks( void )
                         printVBatLevel( );
                         break;
                     }
-                    
+
                 }
-                
+
                 break;
             }
                 /* -------------------------------------------------------------- */
@@ -1086,7 +1100,7 @@ void APP_SerialDebugTasks( void )
                 switch ( user_choice )
                 {
                     case '1':
-                        
+
                         /* Set status of servomotor power command. */
                         appDataServo.cmd_vcc_servo_state ^= 1; // Toggle state "CMD_VCC_SERVO"
                         Nop( );
@@ -1104,9 +1118,9 @@ void APP_SerialDebugTasks( void )
                         }
                         appDataDoor.reward_door_status = DOOR_IDLE;
                         break;
-                        
+
                     case '2':
-                        
+
                         /* toggle power command "CMD_ACC_PIR". */
                         CMD_VDD_ACC_PIR_SERVO_Toggle( );
                         Nop( );
@@ -1123,9 +1137,9 @@ void APP_SerialDebugTasks( void )
                             appData.pir_sensor_powered = false;
                         }
                         break;
-                        
+
                     case '3':
-                        
+
                         /* toggle power command "CMD_VDD_APP". */
                         CMD_VDD_APP_V_USB_Toggle( );
                         Nop( );
@@ -1140,7 +1154,7 @@ void APP_SerialDebugTasks( void )
                             printf( "CMD_VDD_APP_V_USB disable.\n" );
                         }
                         break;
-                        
+
                     case '4':
                         /* Toggle IR barriers power */
                         if ( CMD_VCC_IR_GetValue( ) == 1 )
@@ -1156,10 +1170,10 @@ void APP_SerialDebugTasks( void )
                             /* Disable IR  */
                             IRSensorDisable( );
                             printf( "\tIR disable.\n" );
-                        } 
-                        
+                        }
+
                         break;
-                
+
                 }
 
                 break;
@@ -1184,7 +1198,7 @@ void APP_SerialDebugTasks( void )
             {
                 /* Set RTCC module date and time value. */
                 uint8_t mday, mon, year, hour, min, sec;
-                
+
                 printf( "Set date dd/mm/20yy and time hh:mm:ss\n" );
 
                 printf( "Set day (1 to 31):\n" );
@@ -1243,8 +1257,8 @@ void APP_SerialDebugTasks( void )
                 printf( "\nTime set.\n" );
                 break;
             }
-            /* -------------------------------------------------------------- */
-            
+                /* -------------------------------------------------------------- */
+
             case 'S':
             {
                 /* Set RTCC module date and time value. */
@@ -1260,7 +1274,7 @@ void APP_SerialDebugTasks( void )
                         ++numBytes;
                     }
                 }
-                
+
                 if ( setExtDateTime( date[0], date[1], date[2], date[3], date[4], date[5] ) )
                 {
                     calibrateDateTime( );
@@ -1269,13 +1283,13 @@ void APP_SerialDebugTasks( void )
                 {
                     setDateTime( date[0], date[1], date[2], date[3], date[4], date[5] );
                 }
-                    
+
                 break;
             }
                 /* -------------------------------------------------------------- */
 
             case 't':
-                
+
                 /* Display date and time from RTCC module. */
                 getDateTime( );
                 getExtDateTime( );
@@ -1283,36 +1297,36 @@ void APP_SerialDebugTasks( void )
                 printf( "PIC: " );
                 printDateTime( appData.current_time );
                 putchar( '\n' );
-                printf( "EXT: ");                 
+                printf( "EXT: " );
                 printExtDateTime( );
                 putchar( '\n' );
                 break;
                 /* -------------------------------------------------------------- */
-                
+
             case 'T':
             {
-                uint8_t date[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};                
-                
-                getDateTime( );
-                
-                date[0] = (uint8_t)appData.current_time.tm_year;
-                date[1] = (uint8_t)appData.current_time.tm_mon;
-                date[2] = (uint8_t)appData.current_time.tm_mday;
-                date[3] = (uint8_t)appData.current_time.tm_hour;
-                date[4] = (uint8_t)appData.current_time.tm_min;
-                date[5] = (uint8_t)appData.current_time.tm_sec;
+                uint8_t date[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-                if ( getExtDateTime() )
+                getDateTime( );
+
+                date[0] = ( uint8_t ) appData.current_time.tm_year;
+                date[1] = ( uint8_t ) appData.current_time.tm_mon;
+                date[2] = ( uint8_t ) appData.current_time.tm_mday;
+                date[3] = ( uint8_t ) appData.current_time.tm_hour;
+                date[4] = ( uint8_t ) appData.current_time.tm_min;
+                date[5] = ( uint8_t ) appData.current_time.tm_sec;
+
+                if ( getExtDateTime( ) )
                 {
-                    date[6] = (uint8_t)appData.i2c_current_time.year_s;
-                    date[7] = (uint8_t)appData.i2c_current_time.mon;
-                    date[8] = (uint8_t)appData.i2c_current_time.mday;
-                    date[9] = (uint8_t)appData.i2c_current_time.hour;
-                    date[10] = (uint8_t)appData.i2c_current_time.min;
-                    date[11] = (uint8_t)appData.i2c_current_time.sec;
+                    date[6] = ( uint8_t ) appData.i2c_current_time.year_s;
+                    date[7] = ( uint8_t ) appData.i2c_current_time.mon;
+                    date[8] = ( uint8_t ) appData.i2c_current_time.mday;
+                    date[9] = ( uint8_t ) appData.i2c_current_time.hour;
+                    date[10] = ( uint8_t ) appData.i2c_current_time.min;
+                    date[11] = ( uint8_t ) appData.i2c_current_time.sec;
                 }
 
-                UART1_WriteBuffer(date, 12);
+                UART1_WriteBuffer( date, 12 );
 
                 break;
             }
@@ -1322,7 +1336,7 @@ void APP_SerialDebugTasks( void )
             case 'U':
                 /* Display the Unique Device Id (UDID) */
                 putchar( '\t' );
-                displayUniqueDeviceId();
+                displayUniqueDeviceId( );
                 break;
                 /* -------------------------------------------------------------- */
 
@@ -1342,9 +1356,9 @@ void APP_SerialDebugTasks( void )
             case 'X':
             {
                 uint8_t user_choice;
-                
+
                 printf( "Do you really want to reset the system? (y/n)\r\n" );
-                
+
                 while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
                 user_choice = UART1_Read( );
 
@@ -1353,15 +1367,15 @@ void APP_SerialDebugTasks( void )
                     case 'y':
                     case 'Y':
                     {
-                        /* Reset */  
+                        /* Reset */
                         appData.dsgpr0.bit_value.num_software_reset = 0;
                         DSGPR0 = appData.dsgpr0.reg;
                         DSGPR0 = appData.dsgpr0.reg;
 
-                        __asm__ volatile ( "reset" );                       
+                        __asm__ volatile ( "reset" );
                         break;
                     }
-                    
+
                     default:
                         break;
                 }
@@ -1371,19 +1385,19 @@ void APP_SerialDebugTasks( void )
                 /* -------------------------------------------------------------- */
 
             case 'y':
-            case 'Y':                
+            case 'Y':
                 /* Display reset registers */
                 displayResetRegisters( );
                 break;
                 /* -------------------------------------------------------------- */
 
             case 'z':
-            case 'Z':                
-                /* Test RFID. */  
+            case 'Z':
+                /* Test RFID. */
                 appData.state = APP_STATE_TEST_RFID;
                 break;
                 /* -------------------------------------------------------------- */
-                
+
             default:
                 putchar( data_from_uart1 ); /* echo RX data if doesn't match */
                 break;
@@ -1490,9 +1504,7 @@ void APP_SerialDebugTasks( void )
 //                // printf( "i2c_status: %d\n", i2c_status );
 //                // if ok return 2 = I2C1_MESSAGE_COMPLETE
 //                // if pb return 5 = I2C1_DATA_NO_ACK
-                
-                
-                
+
 
 uint16_t readIntFromUart1( void )
 {
@@ -1528,6 +1540,7 @@ uint16_t readIntFromUart1( void )
     return ( int ) strtol( rx_data_buffer, NULL, 10 );
 } /* End of readIntFromUart1( ) */
 
+
 /**
  * Print the status of USBHostDeviceStatus()
  *  USB_DEVICE_ATTACHED                 - Device is attached and running
@@ -1546,8 +1559,8 @@ uint16_t readIntFromUart1( void )
  */
 void printUSBHostDeviceStatus( void )
 {
-    uint8_t status = USBHostDeviceStatus( appDataUsb.deviceAddress );
-    
+    uint8_t status = USBHostDeviceStatus( appDataUsb.device_address );
+
     switch ( status )
     {
         case USB_DEVICE_ATTACHED:

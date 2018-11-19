@@ -55,6 +55,7 @@ void setLedsStatusColor( LED_STATUS status )
             break;
 
         case LED_YELLOW:
+        case LED_SERVO:
             LED_STATUS_R_SetLow( );
             LED_STATUS_G_SetLow( );
             LED_STATUS_B_SetLow( );

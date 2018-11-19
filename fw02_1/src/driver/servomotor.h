@@ -92,6 +92,7 @@ bool servomotorMoveTheDoor(void);
 void servomotorPowerEnable( void );
 void servomotorPowerDisable( void );
 uint16_t servomotorGetDoorPosition( void );
+void testServomotor( void );
 
 #endif	/* _SERVOMOTOR_HEADER_H */
 

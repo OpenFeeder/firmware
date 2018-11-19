@@ -101,6 +101,8 @@
 #include "app_timers_callback.h"
 #include "app_usb.h"
 #include "app_fileio.h"
+#include "app_scenario.h"
+#include "app_rtc_action.h"
 #include "app_version.h"
 
 #include "oc5.h"
@@ -276,10 +278,10 @@ typedef struct
 
         struct
         {
-            unsigned systemInit : 1; /* true if configuration success from "CONFIG.INI" */
+            unsigned system_init : 1; /* true if configuration success from "CONFIG.INI" */
             unsigned attractive_leds_status : 1; /* true if configuration success from "CONFIG.INI" */
-            unsigned RemoteControlConnected : 1; /* true if Remote Control is connected */
-            unsigned NewValidPitTag : 1; /* true if a new PIT Tag is validated. */
+            unsigned remote_control_connected : 1; /* true if Remote Control is connected */
+            unsigned new_valid_pit_tag : 1; /* true if a new PIT Tag is validated. */
             unsigned : 4;
         } bit_value;
     } flags;
@@ -305,7 +307,7 @@ typedef struct
     uint8_t digit[4]; /* binary value to display on each digit */
 
     /* I2C - Status of Buttons */
-    BUTTON buttonPressed;
+    BUTTON button_pressed;
 
     /* Servomotor structure */
     uint16_t timeout_standby;

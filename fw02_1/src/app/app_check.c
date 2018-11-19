@@ -79,120 +79,124 @@ APP_CHECK checkImportantParameters(void)
 }
 
 
-bool isPowerBatteryGood(void)
+bool isPowerBatteryGood( void )
 {
-    bool batteryLevelOK;
+    bool battery_level_ok;
     
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
-       store_event(OF_CHECK_BATTERY); 
+       store_event( OF_CHECK_BATTERY ); 
     }
 
-    getBatteryLevel();
-    batteryLevelOK = appData.battery_level > LOW_BATTERY_LEVEL;
+    getBatteryLevel( );
+    battery_level_ok = appData.battery_level > LOW_BATTERY_LEVEL;
 
-    if (false == batteryLevelOK)
+    if (false == battery_level_ok)
     {
-        strcpy(appError.message, "Low battery level");
-        appError.currentLineNumber = __LINE__;
-        sprintf(appError.currentFileName, "%s", __FILE__);
+        strcpy( appError.message, "Low battery level" );
+        appError.current_line_number = __LINE__;
+        sprintf( appError.current_file_name, "%s", __FILE__ );
         appError.number = ERROR_LOW_BATTERY;
     }
 
-    return (batteryLevelOK);
+    return (battery_level_ok);
 }
 
 
 bool isPowerVbatGood(void)
 {
-    bool vbatLevelOK;
+    bool vbat_level_ok;
     
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
-       store_event(OF_CHECK_VBAT); 
+       store_event( OF_CHECK_VBAT ); 
     }
 
-    getVBatLevel();
-    vbatLevelOK = appData.vbat_level > (LOW_VBAT_LEVEL / 2);
+    getVBatLevel( );
+    vbat_level_ok = appData.vbat_level > ( LOW_VBAT_LEVEL / 2 );
 
-    if (false == vbatLevelOK)
+    if (false == vbat_level_ok)
     {
-        strcpy(appError.message, "Low vbat level");
-        appError.currentLineNumber = __LINE__;
-        sprintf(appError.currentFileName, "%s", __FILE__);
+        strcpy( appError.message, "Low vbat level" );
+        appError.current_line_number = __LINE__;
+        sprintf( appError.current_file_name, "%s", __FILE__ );
         appError.number = ERROR_LOW_VBAT;
     }
 
-    return (vbatLevelOK);
+    return (vbat_level_ok);
 }
 
 
 bool isEnoughFood(void)
 {
-    bool foodLevelOK;
+    bool food_level_ok;
     bool flag = false;
     
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
-       store_event(OF_CHECK_FOOD); 
+       store_event( OF_CHECK_FOOD ); 
     }
 
-    if (CMD_VCC_IR_GetValue() == 1)
+    if ( CMD_VCC_IR_GetValue( ) == 1 )
     {
         flag = true;
-        IRSensorEnable();
-        setDelayMs(DELAY_MS_BEFORE_IR_ENABLE);
-        while (false == isDelayMsEnding());
+        IRSensorEnable( );
+        setDelayMs( DELAY_MS_BEFORE_IR_ENABLE );
+        while ( false == isDelayMsEnding( ) );
     }
 
     /* Check food level */
-    foodLevelOK = (1 == BAR_IR2_OUT_GetValue());
+    food_level_ok = ( 1 == BAR_IR2_OUT_GetValue( ) );
 
-    if (false == foodLevelOK)
+    if (false == food_level_ok)
     {
-        strcpy(appError.message, "Not enough food");
-        appError.currentLineNumber = __LINE__;
-        sprintf(appError.currentFileName, "%s", __FILE__);
+        strcpy( appError.message, "Not enough food" );
+        appError.current_line_number = __LINE__;
+        sprintf( appError.current_file_name, "%s", __FILE__ );
         appError.number = ERROR_LOW_FOOD;
     }
 
-    if (true == flag)
+    if ( true == flag )
     {
-        IRSensorDisable();
+        IRSensorDisable( );
     }
 
-    return foodLevelOK;
+    return food_level_ok;
 }
 
 
-bool isRfidFreqGood(void)
+bool isRfidFreqGood( void )
 {
     bool flag;
 
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
-       store_event(OF_CHECK_RFID); 
+       store_event( OF_CHECK_RFID ); 
     }
 
     /* Check RFID frequency */
-    flag = measureRfidFreq();
+    flag = measureRfidFreq( );
 
     /* RFID measure took too much time */
-    if (false == flag)
+    if ( false == flag )
     {
-        strcpy(appError.message, "Timeout during RFID frequency measure");
-        appError.currentLineNumber = __LINE__;
-        sprintf(appError.currentFileName, "%s", __FILE__);
+        strcpy( appError.message, "Timeout during RFID frequency measure" );
+        appError.current_line_number = __LINE__;
+        sprintf( appError.current_file_name, "%s", __FILE__ );
         appError.number = ERROR_TIMEOUT_RFID_FREQUENCY;
         return false;
     }
 
     /* RFID frequency too low */
-    if (appData.rfid_rdyclk < MIN_RDYCLK_FREQ)
+    if ( appData.rfid_rdyclk < MIN_RDYCLK_FREQ )
     {
-        strcpy(appError.message, "RFID frequency too low");
-        appError.currentLineNumber = __LINE__;
-        sprintf(appError.currentFileName, "%s", __FILE__);
+        strcpy( appError.message, "RFID frequency too low" );
+        appError.current_line_number = __LINE__;
+        sprintf( appError.current_file_name, "%s", __FILE__ );
         appError.number = ERROR_LOW_RFID_FREQUENCY;
         return false;
     }

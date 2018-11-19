@@ -12,6 +12,27 @@
             <asminc-extensions/>
             <sourceEncoding>ISO-8859-1</sourceEncoding>
             <make-dep-projects/>
+            <sourceRootList>
+                <sourceRootElem>../src</sourceRootElem>
+                <sourceRootElem>.</sourceRootElem>
+            </sourceRootList>
+            <confList>
+                <confElem>
+                    <name>OF_fw_2_1_brd_3_0_no_ver</name>
+                    <type>2</type>
+                </confElem>
+                <confElem>
+                    <name>OF_fw_2_1_brd_3_0_ver_jerome</name>
+                    <type>2</type>
+                </confElem>
+                <confElem>
+                    <name>OF_fw_2_1_brd_3_0_ver_arnauld</name>
+                    <type>2</type>
+                </confElem>
+            </confList>
+            <formatting>
+                <project-formatting-style>false</project-formatting-style>
+            </formatting>
         </data>
     </configuration>
 </project>

@@ -64,7 +64,7 @@ struct ts
 /* Main functions */
 I2C1_MESSAGE_STATUS DS3231_time_get( struct ts *t );
 I2C1_MESSAGE_STATUS DS3231_time_set( struct ts *t );
-I2C1_MESSAGE_STATUS DS3231_temperature_get( void );
+I2C1_MESSAGE_STATUS getDS3231Temperature( void );
 
 
 /* Helpers */

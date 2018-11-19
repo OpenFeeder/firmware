@@ -100,6 +100,7 @@ bool servomotorMoveTheDoor( void )
 void servomotorPowerEnable( void )
 {
 
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
        store_event(OF_POWER_SERVO_ON); 
@@ -126,6 +127,7 @@ void servomotorPowerEnable( void )
 void servomotorPowerDisable( void )
 {
 
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
        store_event(OF_POWER_SERVO_OFF); 
@@ -143,6 +145,57 @@ void servomotorPowerDisable( void )
     appDataServo.cmd_vcc_servo_state = false;  
     appData.servo_powered = false;
 
+}
+
+void testServomotor()
+{
+    /* Servomotor power command enable. */
+    servomotorPowerEnable( );
+
+    appDataServo.ton_cmd = servomotorGetDoorPosition( );
+
+    /* Log event if required */
+    if ( true == appDataLog.log_events )
+    {
+        store_event( OF_OPEN_DOOR );
+    }
+
+    /* Open the door */
+    appDataServo.ton_goal = appDataServo.ton_max;
+    if ( appDataServo.ton_cmd != appDataServo.ton_goal )
+    {
+        appDataDoor.reward_door_status = DOOR_MOVING;
+        while ( DOOR_MOVED != appDataDoor.reward_door_status );
+    }
+    appDataDoor.reward_door_status = DOOR_OPENED;
+#if defined ( USE_UART1_SERIAL_INTERFACE ) && defined ( DISPLAY_SERVO_POSITION )
+    servomotorGetDoorPosition( );
+#endif  
+    if ( 0 == appDataDoor.remain_open )
+    {
+        /* Log event if required */
+        if ( true == appDataLog.log_events )
+        {
+            store_event( OF_CLOSE_DOOR );
+        }
+
+        /* Close the door */
+        appDataServo.ton_cmd = servomotorGetDoorPosition( );
+        /* Close the door */
+        appDataServo.ton_goal = appDataServo.ton_min;
+        if ( appDataServo.ton_cmd != appDataServo.ton_goal )
+        {
+            appDataDoor.reward_door_status = DOOR_MOVING;
+            while ( DOOR_MOVED != appDataDoor.reward_door_status );
+        }
+        appDataDoor.reward_door_status = DOOR_CLOSED;
+#if defined ( USE_UART1_SERIAL_INTERFACE ) && defined ( DISPLAY_SERVO_POSITION )
+        servomotorGetDoorPosition( );
+#endif  
+    }
+
+    /* Servomotor power command disable. */
+    servomotorPowerDisable( );
 }
 
 

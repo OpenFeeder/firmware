@@ -53,10 +53,10 @@
 
 typedef struct
 {
-    bool getValidDeviceAdress;
-    uint8_t deviceAddress;
-    bool usbDriveStatus;
-    bool key_is_nedded;
+    bool is_device_address_available;
+    uint8_t device_address;
+    bool usb_drive_status;
+    bool is_device_needed;
 
 } APP_DATA_USB;
 

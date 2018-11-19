@@ -15,6 +15,7 @@ bool initAttractiveLeds( void )
     I2C1_MESSAGE_STATUS i2c_status = I2C1_MESSAGE_COMPLETE; // the status of write data on I2C bus
     uint8_t writeBuffer[5]; // data to transmit
 
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
        store_event(OF_ATTRACTIVE_LEDS_OFF); 
@@ -83,6 +84,7 @@ bool setAttractiveLedsIndex( void )
     appDataAttractiveLeds.leds_index[2] = 3;
     appDataAttractiveLeds.leds_index[3] = 4;
         
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
         store_event(OF_ATTRACTIVE_LEDS_SET_INDEX);
@@ -114,6 +116,7 @@ bool setAttractiveLedsIndex( void )
 
     udid[4] = '\0';
     
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
         store_event(OF_READ_UDID_LEDS);
@@ -152,14 +155,14 @@ bool setAttractiveLedsIndex( void )
         printf( "\tWarning:  unable to match UDID %s in UDIDLEDS.TXT. Use default order for attractive LEDs\n", udid);
 #endif 
     }
-    else
-    {
+//    else
+//    {
 //#if defined (USE_UART1_SERIAL_INTERFACE)
 //        printf( "\tAttractive LEDs order: %u %u %u %u\n", 
 //               appDataAttractiveLeds.leds_order[0], appDataAttractiveLeds.leds_order[1], 
 //               appDataAttractiveLeds.leds_order[2], appDataAttractiveLeds.leds_order[3]);
 //#endif   
-    }
+//    }
     
     if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) ) 
     {
@@ -181,6 +184,7 @@ bool setAttractiveLedsIndex( void )
 
 void setAttractiveLedsOff( void )
 {
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
        store_event(OF_ATTRACTIVE_LEDS_OFF); 
@@ -195,6 +199,7 @@ void setAttractiveLedsOff( void )
 /* Set attractive LEDs color. */
 void setAttractiveLedsOn( void )
 {
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
        store_event(OF_ATTRACTIVE_LEDS_ON); 
@@ -209,6 +214,7 @@ void setAttractiveLedsOn( void )
 /* Set all color for attractive LEDs. */
 void setAttractiveLedsNoColor( void )
 {
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
        store_event(OF_ATTRACTIVE_LEDS_NO_COLOR); 
@@ -439,10 +445,14 @@ void testAttractiveLeds( void )
     uint8_t writeBuffer[2]; // data to transmit
     uint16_t delay = 500;
 
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
         store_event(OF_ATTRACTIVE_LEDS_TEST);
     }
+    
+    setAttractiveLedsOn( );
+    setAttractiveLedsNoColor( );
     
     writeBuffer[0] = CTRLREG_PWM0;
     writeBuffer[1] = 55; // PWM0 Individual Duty Cycle for LED_RGB1_R
@@ -500,7 +510,33 @@ void testAttractiveLeds( void )
     
     appDataAttractiveLeds.status = ATTRACTIVE_LEDS_OFF;
     
+    setAttractiveLedsNoColor( );
+    setAttractiveLedsOff( );
     
+    
+}
+
+void testAttractiveLedsOrder( void )
+{
+    int i;
+    
+    setAttractiveLedsOn( );
+    setAttractiveLedsNoColor( );
+
+    /* Log event if required */
+    if ( true == appDataLog.log_events )
+    {
+        store_event( OF_ATTRACTIVE_LEDS_CHECK_INDEX );
+    }
+
+    for ( i = 0; i < 4; i++ )
+    {
+        setOneAttractiveLedColor( appDataAttractiveLeds.leds_index[i], 0, 35, 0 );
+        setDelayMs( 1000 );
+        while ( 0 == isDelayMsEnding( ) );
+    }
+    setAttractiveLedsNoColor( );
+    setAttractiveLedsOff( );
 }
 /*******************************************************************************
  End of File

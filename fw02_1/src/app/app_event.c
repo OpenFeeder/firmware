@@ -41,14 +41,16 @@ FILEIO_RESULT logEvents(void)
     size_t numDataWritten;
     bool needToUnmount;
 
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
        store_event(OF_WRITE_EVENTS_LOG); 
     }
     
-    if ( USB_DRIVE_MOUNTED == appDataUsb.usbDriveStatus )
+    if ( USB_DRIVE_MOUNTED == appDataUsb.usb_drive_status )
     {
         needToUnmount = false;
+        /* Log event if required */
         if ( true == appDataLog.log_events )
         {
            store_event(OF_ALREADY_MOUNTED_USB_DRIVE); 
@@ -69,8 +71,8 @@ FILEIO_RESULT logEvents(void)
         {
             errF = FILEIO_ErrorGet('A');
             sprintf(appError.message, "Unable to open event log file \"%s\"(%u)", appDataEvent.filename, errF);
-            appError.currentLineNumber = __LINE__;
-            sprintf(appError.currentFileName, "%s", __FILE__);
+            appError.current_line_number = __LINE__;
+            sprintf(appError.current_file_name, "%s", __FILE__);
             FILEIO_ErrorClear('A');
             appError.number = ERROR_EVENT_CSV_FILE_OPEN;
             return FILEIO_RESULT_FAILURE;
@@ -94,8 +96,8 @@ FILEIO_RESULT logEvents(void)
                 {
                     errF = FILEIO_ErrorGet('A');
                     sprintf(appError.message, "Unable to write event in log file \"%s\" (%u)", appDataEvent.filename , errF);
-                    appError.currentLineNumber = __LINE__;
-                    sprintf(appError.currentFileName, "%s", __FILE__);
+                    appError.current_line_number = __LINE__;
+                    sprintf(appError.current_file_name, "%s", __FILE__);
                     FILEIO_ErrorClear('A');
                     appError.number = ERROR_EVENT_CSV_FILE_WRITE;
                     return FILEIO_RESULT_FAILURE;
@@ -107,8 +109,8 @@ FILEIO_RESULT logEvents(void)
         {
             errF = FILEIO_ErrorGet('A');
             sprintf(appError.message, "Unable to close event log file \"%s\" (%u)", appDataEvent.filename , errF);
-            appError.currentLineNumber = __LINE__;
-            sprintf(appError.currentFileName, "%s", __FILE__);
+            appError.current_line_number = __LINE__;
+            sprintf(appError.current_file_name, "%s", __FILE__);
             FILEIO_ErrorClear('A');
             appError.number = ERROR_EVENT_CSV_FILE_CLOSE;
             return FILEIO_RESULT_FAILURE;
@@ -121,8 +123,8 @@ FILEIO_RESULT logEvents(void)
         {
             errF = FILEIO_ErrorGet('A');
             sprintf(appError.message, "Unable to open event log file \"%s\"(%u)", appDataEvent.binfilename, errF);
-            appError.currentLineNumber = __LINE__;
-            sprintf(appError.currentFileName, "%s", __FILE__);
+            appError.current_line_number = __LINE__;
+            sprintf(appError.current_file_name, "%s", __FILE__);
             FILEIO_ErrorClear('A');
             appError.number = ERROR_EVENT_BIN_FILE_OPEN;
             return FILEIO_RESULT_FAILURE;
@@ -143,8 +145,8 @@ FILEIO_RESULT logEvents(void)
             {
                 errF = FILEIO_ErrorGet('A');
                 sprintf(appError.message, "Unable to write event in log file \"%s\" (%u)", appDataEvent.binfilename , errF);
-                appError.currentLineNumber = __LINE__;
-                sprintf(appError.currentFileName, "%s", __FILE__);
+                appError.current_line_number = __LINE__;
+                sprintf(appError.current_file_name, "%s", __FILE__);
                 FILEIO_ErrorClear('A');
                 appError.number = ERROR_EVENT_BIN_FILE_WRITE;
                 return FILEIO_RESULT_FAILURE;
@@ -155,8 +157,8 @@ FILEIO_RESULT logEvents(void)
         {
             errF = FILEIO_ErrorGet('A');
             sprintf(appError.message, "Unable to close event log file \"%s\" (%u)", appDataEvent.binfilename , errF);
-            appError.currentLineNumber = __LINE__;
-            sprintf(appError.currentFileName, "%s", __FILE__);
+            appError.current_line_number = __LINE__;
+            sprintf(appError.current_file_name, "%s", __FILE__);
             FILEIO_ErrorClear('A');
             appError.number = ERROR_EVENT_BIN_FILE_CLOSE;
             return FILEIO_RESULT_FAILURE;
@@ -205,8 +207,8 @@ bool setEventFileName(void)
             printf("Unable to set event file name\n");
     #endif 
             sprintf(appError.message, "Unable to set event file CSV name");
-            appError.currentLineNumber = __LINE__;
-            sprintf(appError.currentFileName, "%s", __FILE__);
+            appError.current_line_number = __LINE__;
+            sprintf(appError.current_file_name, "%s", __FILE__);
             appError.number = ERROR_EVENT_CSV_FILE_SET_NAME;
             return false;
         }
@@ -228,8 +230,8 @@ bool setEventFileName(void)
             printf("Unable to set event file name\n");
     #endif 
             sprintf(appError.message, "Unable to set event file BIN name");
-            appError.currentLineNumber = __LINE__;
-            sprintf(appError.currentFileName, "%s", __FILE__);
+            appError.current_line_number = __LINE__;
+            sprintf(appError.current_file_name, "%s", __FILE__);
             appError.number = ERROR_EVENT_BIN_FILE_SET_NAME;
             return false;
         }

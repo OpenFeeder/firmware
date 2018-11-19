@@ -15,68 +15,70 @@ bool config_set( void )
     INI_READ_STATE read_ini_status;
     char buf[50];
 
-    /* Search for the CONFIG.INI file. */    
+    /* Search for the CONFIG.INI file. */
     if ( FILEIO_RESULT_FAILURE == config_find_ini( ) )
     {
         strcpy( appError.message, "CONFIG.INI not found" );
-        appError.currentLineNumber = __LINE__;
-        sprintf( appError.currentFileName, "%s", __FILE__ );
+        appError.current_line_number = __LINE__;
+        sprintf( appError.current_file_name, "%s", __FILE__ );
         appError.number = ERROR_INI_FILE_NOT_FOUND;
         return false;
     }
-    
-    /* Read the CONFIG.INI file. */    
+
+    /* Read the CONFIG.INI file. */
     read_ini_status = config_read_ini( );
 
     if ( INI_READ_OK != read_ini_status )
     {
-        
-        getIniPbChar( read_ini_status, buf, sizearray( buf ));
+
+        getIniPbChar( read_ini_status, buf, sizearray( buf ) );
 
         sprintf( appError.message, "Wrong parameters in CONFIG.INI: %s (%d)", buf, read_ini_status );
-        appError.currentLineNumber = __LINE__;
-        sprintf( appError.currentFileName, "%s", __FILE__ );
+        appError.current_line_number = __LINE__;
+        sprintf( appError.current_file_name, "%s", __FILE__ );
         appError.number = ERROR_INI_FILE_READ;
         return false;
     }
-    
-    if ( ( GO_NO_GO == appData.scenario_number && appDataAttractiveLeds.pattern_number > ALL_LEDS) || appData.scenario_number > GO_NO_GO )
+
+    if ( ( GO_NO_GO == appData.scenario_number && appDataAttractiveLeds.pattern_number > ALL_LEDS ) || appData.scenario_number > GO_NO_GO )
     {
         if ( FILEIO_RESULT_FAILURE == read_PIT_tags( ) )
         {
             return false;
-        }        
+        }
     }
-    
+
     if ( PATCH_PROBABILITY == appData.scenario_number )
     {
         if ( FILEIO_RESULT_FAILURE == read_reward_probabilities( ) )
         {
             return false;
-        }        
+        }
     }
 
     return true;
 }
 
+
 FILEIO_RESULT read_reward_probabilities( void )
 {
-    
+
     FILEIO_OBJECT file;
     FILEIO_ERROR_TYPE errF;
-    char buf[4]; 
+    char buf[4];
     int i;
-    
+
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
-        store_event(OF_READ_REWARD_PROBABILITIES);
+        store_event( OF_READ_REWARD_PROBABILITIES );
     }
-    
+
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
     printf( "Read reward probabilities file\n" );
 #endif 
-    
-    if ( appDataPitTag.numPitTagAcceptedOrColorB > 0 )
+
+    if ( appDataPitTag.num_pit_tag_accepted_or_color_B > 0 )
     {
 
         if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "PROBA.TXT", FILEIO_OPEN_READ ) )
@@ -86,19 +88,19 @@ FILEIO_RESULT read_reward_probabilities( void )
             printf( "unable to open reward probabilities file (%u)", errF );
 #endif 
             sprintf( appError.message, "Unable to open reward probabilities file (%u)", errF );
-            appError.currentLineNumber = __LINE__;
-            sprintf( appError.currentFileName, "%s", __FILE__ );
+            appError.current_line_number = __LINE__;
+            sprintf( appError.current_file_name, "%s", __FILE__ );
             FILEIO_ErrorClear( 'A' );
             appError.number = ERROR_REWARD_PROBABILITIES_FILE_OPEN;
             return FILEIO_RESULT_FAILURE;
         }
 
         buf[4] = '\0';
-        
-        for ( i = 0; i < appDataPitTag.numPitTagAcceptedOrColorB; i++ )
+
+        for ( i = 0; i < appDataPitTag.num_pit_tag_accepted_or_color_B; i++ )
         {
             FILEIO_Read( buf, 1, 3, &file );
-            appDataPitTag.reward_probability[i + appDataPitTag.numPitTagDeniedOrColorA] = atoi(buf); 
+            appDataPitTag.reward_probability[i + appDataPitTag.num_pit_tag_denied_or_color_A] = atoi( buf );
         }
 
         if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
@@ -108,8 +110,8 @@ FILEIO_RESULT read_reward_probabilities( void )
             printf( "unable to close reward probabilities file (%u)", errF );
 #endif 
             sprintf( appError.message, "Unable to close reward probabilities file (%u)", errF );
-            appError.currentLineNumber = __LINE__;
-            sprintf( appError.currentFileName, "%s", __FILE__ );
+            appError.current_line_number = __LINE__;
+            sprintf( appError.current_file_name, "%s", __FILE__ );
             FILEIO_ErrorClear( 'A' );
             appError.number = ERROR_REWARD_PROBABILITIES_FILE_CLOSE;
             return FILEIO_RESULT_FAILURE;
@@ -126,57 +128,58 @@ FILEIO_RESULT read_PIT_tags( void )
 
     FILEIO_OBJECT file;
     FILEIO_ERROR_TYPE errF;
-    uint16_t i, j, s;
+    uint16_t i, j, cumulative_sum;
     char buf[13];
 
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
-        store_event(OF_READ_PIT_TAGS);
+        store_event( OF_READ_PIT_TAGS );
     }
-    
+
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
     printf( "Read PIT tags files\n" );
 #endif 
 
-    appDataPitTag.numPitTagStored = 0;
+    appDataPitTag.num_pit_tag_stored = 0;
 
     if ( GO_NO_GO == appData.scenario_number )
     {
         if ( LEFT_RIGHT_LEDS == appDataAttractiveLeds.pattern_number )
         {
-           if ( appDataPitTag.numPitTagDeniedOrColorA > 0 )
+            if ( ALL_PIT_TAG_DENIED != appDataPitTag.num_pit_tag_denied_or_color_A && ALL_PIT_TAG_ACCEPTED != appDataPitTag.num_pit_tag_denied_or_color_A )
             {
 
                 if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "PTLEFT.TXT", FILEIO_OPEN_READ ) )
                 {
                     errF = FILEIO_ErrorGet( 'A' );
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
                     printf( "unable to open PIT tags left file (%u)", errF );
-    #endif 
+#endif 
                     sprintf( appError.message, "Unable to open PIT tags left file (%u)", errF );
-                    appError.currentLineNumber = __LINE__;
-                    sprintf( appError.currentFileName, "%s", __FILE__ );
+                    appError.current_line_number = __LINE__;
+                    sprintf( appError.current_file_name, "%s", __FILE__ );
                     FILEIO_ErrorClear( 'A' );
                     appError.number = ERROR_PIT_TAGS_LEFT_FILE_OPEN;
                     return FILEIO_RESULT_FAILURE;
                 }
-                
-                for ( i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; i++ )
+
+                for ( i = 0; i < appDataPitTag.num_pit_tag_denied_or_color_A; i++ )
                 {
                     FILEIO_Read( appDataPitTag.pit_tags_list[i], 1, 10, &file );
                     appDataPitTag.pit_tags_list[i][11] = '\0';
-                    appDataPitTag.numPitTagStored += 1;
+                    appDataPitTag.num_pit_tag_stored += 1;
                 }
-                
+
                 if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
                 {
                     errF = FILEIO_ErrorGet( 'A' );
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
                     printf( "unable to close PIT tags left file (%u)", errF );
-    #endif 
+#endif 
                     sprintf( appError.message, "Unable to close PIT tags left file (%u)", errF );
-                    appError.currentLineNumber = __LINE__;
-                    sprintf( appError.currentFileName, "%s", __FILE__ );
+                    appError.current_line_number = __LINE__;
+                    sprintf( appError.current_file_name, "%s", __FILE__ );
                     FILEIO_ErrorClear( 'A' );
                     appError.number = ERROR_PIT_TAGS_LEFT_FILE_CLOSE;
                     return FILEIO_RESULT_FAILURE;
@@ -184,39 +187,39 @@ FILEIO_RESULT read_PIT_tags( void )
 
             }
 
-            if ( appDataPitTag.numPitTagAcceptedOrColorB > 0 )
+            if ( ALL_PIT_TAG_DENIED != appDataPitTag.num_pit_tag_accepted_or_color_B && ALL_PIT_TAG_ACCEPTED != appDataPitTag.num_pit_tag_accepted_or_color_B )
             {
 
                 if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "PTRIGHT.TXT", FILEIO_OPEN_READ ) )
                 {
                     errF = FILEIO_ErrorGet( 'A' );
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
                     printf( "unable to open PIT tags right file (%u)", errF );
-    #endif 
+#endif 
                     sprintf( appError.message, "Unable to open PIT tags right file (%u)", errF );
-                    appError.currentLineNumber = __LINE__;
-                    sprintf( appError.currentFileName, "%s", __FILE__ );
+                    appError.current_line_number = __LINE__;
+                    sprintf( appError.current_file_name, "%s", __FILE__ );
                     FILEIO_ErrorClear( 'A' );
                     appError.number = ERROR_PIT_TAGS_RIGHT_FILE_OPEN;
                     return FILEIO_RESULT_FAILURE;
                 }
 
-                for ( i = 0; i < appDataPitTag.numPitTagAcceptedOrColorB; i++ )
+                for ( i = 0; i < appDataPitTag.num_pit_tag_accepted_or_color_B; i++ )
                 {
-                    FILEIO_Read( appDataPitTag.pit_tags_list[i + appDataPitTag.numPitTagDeniedOrColorA], 1, 10, &file );
-                    appDataPitTag.pit_tags_list[i + appDataPitTag.numPitTagDeniedOrColorA][11] = '\0';
-                    appDataPitTag.numPitTagStored += 1;
+                    FILEIO_Read( appDataPitTag.pit_tags_list[i + appDataPitTag.num_pit_tag_denied_or_color_A], 1, 10, &file );
+                    appDataPitTag.pit_tags_list[i + appDataPitTag.num_pit_tag_denied_or_color_A][11] = '\0';
+                    appDataPitTag.num_pit_tag_stored += 1;
                 }
 
                 if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
                 {
                     errF = FILEIO_ErrorGet( 'A' );
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
                     printf( "unable to close PIT tags right file (%u)", errF );
-    #endif 
+#endif 
                     sprintf( appError.message, "Unable to close PIT tags right file (%u)", errF );
-                    appError.currentLineNumber = __LINE__;
-                    sprintf( appError.currentFileName, "%s", __FILE__ );
+                    appError.current_line_number = __LINE__;
+                    sprintf( appError.current_file_name, "%s", __FILE__ );
                     FILEIO_ErrorClear( 'A' );
                     appError.number = ERROR_PIT_TAGS_RIGHT_FILE_CLOSE;
                     return FILEIO_RESULT_FAILURE;
@@ -225,39 +228,39 @@ FILEIO_RESULT read_PIT_tags( void )
         }
         else if ( TOP_BOTTOM_LEDS == appDataAttractiveLeds.pattern_number )
         {
-           if ( appDataPitTag.numPitTagDeniedOrColorA > 0 )
+            if ( ALL_PIT_TAG_DENIED != appDataPitTag.num_pit_tag_denied_or_color_A && ALL_PIT_TAG_ACCEPTED != appDataPitTag.num_pit_tag_denied_or_color_A )
             {
 
                 if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "PTTOP.TXT", FILEIO_OPEN_READ ) )
                 {
                     errF = FILEIO_ErrorGet( 'A' );
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
                     printf( "unable to open PIT tags top file (%u)", errF );
-    #endif 
+#endif 
                     sprintf( appError.message, "Unable to open PIT tags top file (%u)", errF );
-                    appError.currentLineNumber = __LINE__;
-                    sprintf( appError.currentFileName, "%s", __FILE__ );
+                    appError.current_line_number = __LINE__;
+                    sprintf( appError.current_file_name, "%s", __FILE__ );
                     FILEIO_ErrorClear( 'A' );
                     appError.number = ERROR_PIT_TAGS_TOP_FILE_OPEN;
                     return FILEIO_RESULT_FAILURE;
                 }
 
-                for ( i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; i++ )
+                for ( i = 0; i < appDataPitTag.num_pit_tag_denied_or_color_A; i++ )
                 {
                     FILEIO_Read( appDataPitTag.pit_tags_list[i], 1, 10, &file );
                     appDataPitTag.pit_tags_list[i][11] = '\0';
-                    appDataPitTag.numPitTagStored += 1;
+                    appDataPitTag.num_pit_tag_stored += 1;
                 }
 
                 if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
                 {
                     errF = FILEIO_ErrorGet( 'A' );
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
                     printf( "unable to close PIT tags top file (%u)", errF );
-    #endif 
+#endif 
                     sprintf( appError.message, "Unable to close PIT tags top file (%u)", errF );
-                    appError.currentLineNumber = __LINE__;
-                    sprintf( appError.currentFileName, "%s", __FILE__ );
+                    appError.current_line_number = __LINE__;
+                    sprintf( appError.current_file_name, "%s", __FILE__ );
                     FILEIO_ErrorClear( 'A' );
                     appError.number = ERROR_PIT_TAGS_TOP_FILE_CLOSE;
                     return FILEIO_RESULT_FAILURE;
@@ -265,88 +268,93 @@ FILEIO_RESULT read_PIT_tags( void )
 
             }
 
-            if ( appDataPitTag.numPitTagAcceptedOrColorB > 0 )
+            if ( ALL_PIT_TAG_DENIED != appDataPitTag.num_pit_tag_accepted_or_color_B && ALL_PIT_TAG_ACCEPTED != appDataPitTag.num_pit_tag_accepted_or_color_B )
             {
 
                 if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "PTBOTTOM.TXT", FILEIO_OPEN_READ ) )
                 {
                     errF = FILEIO_ErrorGet( 'A' );
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
                     printf( "unable to open PIT tags bottom file (%u)", errF );
-    #endif 
+#endif 
                     sprintf( appError.message, "Unable to open PIT tags bottom file (%u)", errF );
-                    appError.currentLineNumber = __LINE__;
-                    sprintf( appError.currentFileName, "%s", __FILE__ );
+                    appError.current_line_number = __LINE__;
+                    sprintf( appError.current_file_name, "%s", __FILE__ );
                     FILEIO_ErrorClear( 'A' );
                     appError.number = ERROR_PIT_TAGS_BOTTOM_FILE_OPEN;
                     return FILEIO_RESULT_FAILURE;
                 }
 
-                for ( i = 0; i < appDataPitTag.numPitTagAcceptedOrColorB; i++ )
+                for ( i = 0; i < appDataPitTag.num_pit_tag_accepted_or_color_B; i++ )
                 {
-                    FILEIO_Read( appDataPitTag.pit_tags_list[i + appDataPitTag.numPitTagDeniedOrColorA], 1, 10, &file );
-                    appDataPitTag.pit_tags_list[i + appDataPitTag.numPitTagDeniedOrColorA][11] = '\0';
-                    appDataPitTag.numPitTagStored += 1;
+                    FILEIO_Read( appDataPitTag.pit_tags_list[i + appDataPitTag.num_pit_tag_denied_or_color_A], 1, 10, &file );
+                    appDataPitTag.pit_tags_list[i + appDataPitTag.num_pit_tag_denied_or_color_A][11] = '\0';
+                    appDataPitTag.num_pit_tag_stored += 1;
                 }
 
                 if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
                 {
                     errF = FILEIO_ErrorGet( 'A' );
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
                     printf( "unable to close PIT tags bottom file (%u)", errF );
-    #endif 
+#endif 
                     sprintf( appError.message, "Unable to close PIT tags bottom file (%u)", errF );
-                    appError.currentLineNumber = __LINE__;
-                    sprintf( appError.currentFileName, "%s", __FILE__ );
+                    appError.current_line_number = __LINE__;
+                    sprintf( appError.current_file_name, "%s", __FILE__ );
                     FILEIO_ErrorClear( 'A' );
                     appError.number = ERROR_PIT_TAGS_BOTTOM_FILE_CLOSE;
                     return FILEIO_RESULT_FAILURE;
                 }
             }
-        }    
+        }
         else if ( ONE_LED == appDataAttractiveLeds.pattern_number )
         {
-            memset(buf, 0, sizeof (buf));
+            memset( buf, 0, sizeof (buf ) );
 
-            for ( j=0; j<4; j++ )
+            /* Cumulative sum of PIT tags per group */
+            for ( j = 0; j < 4; j++ )
             {
-                
-                if (0 == appDataPitTag.numPitTagGroup[j])
+                /* If no PIT tag in the current group, no need to search and read corresponding file => skip the current iteration */
+                if ( 0 == appDataPitTag.num_pit_tag_per_group[j] || ALL_PIT_TAG_DENIED == appDataPitTag.num_pit_tag_per_group[j] || ALL_PIT_TAG_ACCEPTED == appDataPitTag.num_pit_tag_per_group[j] )
                 {
+                    /* If it's the first group*/
                     if ( 0 == j )
                     {
-                        s = 0;
+                        cumulative_sum = 0;
                         appDataAttractiveLeds.pattern_one_led_groups[j] = 0;
                     }
+                        /* Otherwise */
                     else
                     {
-                        s += appDataPitTag.numPitTagGroup[j-1];
-                        appDataAttractiveLeds.pattern_one_led_groups[j] = appDataAttractiveLeds.pattern_one_led_groups[j-1];
+                        cumulative_sum += appDataPitTag.num_pit_tag_per_group[j - 1];
+                        appDataAttractiveLeds.pattern_one_led_groups[j] = appDataAttractiveLeds.pattern_one_led_groups[j - 1];
                     }
                     continue;
                 }
-                
-                snprintf(buf, 13, "PTONE%d.TXT", j+1);
-                
+
+                /* Set the name of the file to read (e.g. PTONE1.TXT, PTONE2.TXT, PTONE3.TXT? */
+                snprintf( buf, 13, "PTONE%d.TXT", j + 1 );
+
+                /* Open file */
                 if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, buf, FILEIO_OPEN_READ ) )
                 {
                     errF = FILEIO_ErrorGet( 'A' );
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-                    printf( "unable to open PIT tags group %d file (%u)", j+1, errF );
-    #endif 
-                    sprintf( appError.message, "Unable to open PIT tags group %d file (%u)", j+1, errF );
-                    appError.currentLineNumber = __LINE__;
-                    sprintf( appError.currentFileName, "%s", __FILE__ );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+                    printf( "unable to open PIT tags group %d file (%u)", j + 1, errF );
+#endif 
+                    sprintf( appError.message, "Unable to open PIT tags group %d file (%u)", j + 1, errF );
+                    appError.current_line_number = __LINE__;
+                    sprintf( appError.current_file_name, "%s", __FILE__ );
                     FILEIO_ErrorClear( 'A' );
-                    if (0==j)
+                    if ( 0 == j )
                     {
                         appError.number = ERROR_PIT_TAGS_PTONE1_FILE_OPEN;
                     }
-                    else if (1==j)
+                    else if ( 1 == j )
                     {
                         appError.number = ERROR_PIT_TAGS_PTONE2_FILE_OPEN;
                     }
-                    else if (2==j)
+                    else if ( 2 == j )
                     {
                         appError.number = ERROR_PIT_TAGS_PTONE3_FILE_OPEN;
                     }
@@ -356,44 +364,44 @@ FILEIO_RESULT read_PIT_tags( void )
                     }
                     return FILEIO_RESULT_FAILURE;
                 }
-                
+
                 if ( 0 == j )
                 {
-                    s = 0;
-                    appDataAttractiveLeds.pattern_one_led_groups[j] = appDataPitTag.numPitTagGroup[j];
+                    cumulative_sum = 0;
+                    appDataAttractiveLeds.pattern_one_led_groups[j] = appDataPitTag.num_pit_tag_per_group[j];
                 }
                 else
                 {
-                    s += appDataPitTag.numPitTagGroup[j-1];
-                    appDataAttractiveLeds.pattern_one_led_groups[j] = appDataAttractiveLeds.pattern_one_led_groups[j-1] + appDataPitTag.numPitTagGroup[j];
+                    cumulative_sum += appDataPitTag.num_pit_tag_per_group[j - 1];
+                    appDataAttractiveLeds.pattern_one_led_groups[j] = appDataAttractiveLeds.pattern_one_led_groups[j - 1] + appDataPitTag.num_pit_tag_per_group[j];
                 }
 
-                for ( i = 0; i < appDataPitTag.numPitTagGroup[j]; i++ )
+                for ( i = 0; i < appDataPitTag.num_pit_tag_per_group[j]; i++ )
                 {
-                    FILEIO_Read( appDataPitTag.pit_tags_list[i+s], 1, 10, &file );
-                    appDataPitTag.pit_tags_list[i+s][11] = '\0';
-                    appDataPitTag.numPitTagStored += 1;
+                    FILEIO_Read( appDataPitTag.pit_tags_list[i + cumulative_sum], 1, 10, &file );
+                    appDataPitTag.pit_tags_list[i + cumulative_sum][11] = '\0';
+                    appDataPitTag.num_pit_tag_stored += 1;
                 }
 
                 if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
                 {
                     errF = FILEIO_ErrorGet( 'A' );
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
-                    printf( "unable to close PIT tags group %d file (%u)", j+1, errF );
-    #endif 
-                    sprintf( appError.message, "Unable to close PIT tags group %d file (%u)", j+1, errF );
-                    appError.currentLineNumber = __LINE__;
-                    sprintf( appError.currentFileName, "%s", __FILE__ );
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO)
+                    printf( "unable to close PIT tags group %d file (%u)", j + 1, errF );
+#endif 
+                    sprintf( appError.message, "Unable to close PIT tags group %d file (%u)", j + 1, errF );
+                    appError.current_line_number = __LINE__;
+                    sprintf( appError.current_file_name, "%s", __FILE__ );
                     FILEIO_ErrorClear( 'A' );
-                    if (0==j)
+                    if ( 0 == j )
                     {
                         appError.number = ERROR_PIT_TAGS_PTONE1_FILE_CLOSE;
                     }
-                    else if (1==j)
+                    else if ( 1 == j )
                     {
                         appError.number = ERROR_PIT_TAGS_PTONE2_FILE_CLOSE;
                     }
-                    else if (2==j)
+                    else if ( 2 == j )
                     {
                         appError.number = ERROR_PIT_TAGS_PTONE3_FILE_CLOSE;
                     }
@@ -403,13 +411,13 @@ FILEIO_RESULT read_PIT_tags( void )
                     }
                     return FILEIO_RESULT_FAILURE;
                 }
-                
+
             }
         }
     }
     else if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number )
     {
-        if ( appDataPitTag.numPitTagDeniedOrColorA > 0 )
+        if ( ALL_PIT_TAG_DENIED != appDataPitTag.num_pit_tag_denied_or_color_A && ALL_PIT_TAG_ACCEPTED != appDataPitTag.num_pit_tag_denied_or_color_A )
         {
 
             if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "PTCOLORA.TXT", FILEIO_OPEN_READ ) )
@@ -419,18 +427,18 @@ FILEIO_RESULT read_PIT_tags( void )
                 printf( "unable to open PIT tags color A file (%u)", errF );
 #endif 
                 sprintf( appError.message, "Unable to open PIT tags color A file (%u)", errF );
-                appError.currentLineNumber = __LINE__;
-                sprintf( appError.currentFileName, "%s", __FILE__ );
+                appError.current_line_number = __LINE__;
+                sprintf( appError.current_file_name, "%s", __FILE__ );
                 FILEIO_ErrorClear( 'A' );
                 appError.number = ERROR_PIT_TAGS_COLOR_A_FILE_OPEN;
                 return FILEIO_RESULT_FAILURE;
             }
 
-            for ( i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; i++ )
+            for ( i = 0; i < appDataPitTag.num_pit_tag_denied_or_color_A; i++ )
             {
                 FILEIO_Read( appDataPitTag.pit_tags_list[i], 1, 10, &file );
                 appDataPitTag.pit_tags_list[i][11] = '\0';
-                appDataPitTag.numPitTagStored += 1;
+                appDataPitTag.num_pit_tag_stored += 1;
             }
 
             if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
@@ -440,8 +448,8 @@ FILEIO_RESULT read_PIT_tags( void )
                 printf( "unable to close PIT tags color A file (%u)", errF );
 #endif 
                 sprintf( appError.message, "Unable to close PIT tags color A file (%u)", errF );
-                appError.currentLineNumber = __LINE__;
-                sprintf( appError.currentFileName, "%s", __FILE__ );
+                appError.current_line_number = __LINE__;
+                sprintf( appError.current_file_name, "%s", __FILE__ );
                 FILEIO_ErrorClear( 'A' );
                 appError.number = ERROR_PIT_TAGS_COLOR_A_FILE_CLOSE;
                 return FILEIO_RESULT_FAILURE;
@@ -449,7 +457,7 @@ FILEIO_RESULT read_PIT_tags( void )
 
         }
 
-        if ( appDataPitTag.numPitTagAcceptedOrColorB > 0 )
+        if ( ALL_PIT_TAG_DENIED != appDataPitTag.num_pit_tag_accepted_or_color_B && ALL_PIT_TAG_ACCEPTED != appDataPitTag.num_pit_tag_accepted_or_color_B )
         {
 
             if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "PTCOLORB.TXT", FILEIO_OPEN_READ ) )
@@ -459,18 +467,18 @@ FILEIO_RESULT read_PIT_tags( void )
                 printf( "unable to open PIT tags color B file (%u)", errF );
 #endif 
                 sprintf( appError.message, "Unable to open PIT tags color B file (%u)", errF );
-                appError.currentLineNumber = __LINE__;
-                sprintf( appError.currentFileName, "%s", __FILE__ );
+                appError.current_line_number = __LINE__;
+                sprintf( appError.current_file_name, "%s", __FILE__ );
                 FILEIO_ErrorClear( 'A' );
                 appError.number = ERROR_PIT_TAGS_COLOR_B_FILE_OPEN;
                 return FILEIO_RESULT_FAILURE;
             }
 
-            for ( i = 0; i < appDataPitTag.numPitTagAcceptedOrColorB; i++ )
+            for ( i = 0; i < appDataPitTag.num_pit_tag_accepted_or_color_B; i++ )
             {
-                FILEIO_Read( appDataPitTag.pit_tags_list[i + appDataPitTag.numPitTagDeniedOrColorA], 1, 10, &file );
-                appDataPitTag.pit_tags_list[i + appDataPitTag.numPitTagDeniedOrColorA][11] = '\0';
-                appDataPitTag.numPitTagStored += 1;
+                FILEIO_Read( appDataPitTag.pit_tags_list[i + appDataPitTag.num_pit_tag_denied_or_color_A], 1, 10, &file );
+                appDataPitTag.pit_tags_list[i + appDataPitTag.num_pit_tag_denied_or_color_A][11] = '\0';
+                appDataPitTag.num_pit_tag_stored += 1;
             }
 
             if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
@@ -480,8 +488,8 @@ FILEIO_RESULT read_PIT_tags( void )
                 printf( "unable to close PIT tags color B file (%u)", errF );
 #endif 
                 sprintf( appError.message, "Unable to close PIT tags color B file (%u)", errF );
-                appError.currentLineNumber = __LINE__;
-                sprintf( appError.currentFileName, "%s", __FILE__ );
+                appError.current_line_number = __LINE__;
+                sprintf( appError.current_file_name, "%s", __FILE__ );
                 FILEIO_ErrorClear( 'A' );
                 appError.number = ERROR_PIT_TAGS_COLOR_B_FILE_CLOSE;
                 return FILEIO_RESULT_FAILURE;
@@ -490,7 +498,7 @@ FILEIO_RESULT read_PIT_tags( void )
     }
     else
     {
-        if ( appDataPitTag.numPitTagDeniedOrColorA > 0 )
+        if ( ALL_PIT_TAG_DENIED != appDataPitTag.num_pit_tag_denied_or_color_A && ALL_PIT_TAG_ACCEPTED != appDataPitTag.num_pit_tag_denied_or_color_A )
         {
 
             if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "PTDENIED.TXT", FILEIO_OPEN_READ ) )
@@ -500,18 +508,18 @@ FILEIO_RESULT read_PIT_tags( void )
                 printf( "unable to open PIT tags denied file (%u)", errF );
 #endif 
                 sprintf( appError.message, "Unable to open PIT tags denied file (%u)", errF );
-                appError.currentLineNumber = __LINE__;
-                sprintf( appError.currentFileName, "%s", __FILE__ );
+                appError.current_line_number = __LINE__;
+                sprintf( appError.current_file_name, "%s", __FILE__ );
                 FILEIO_ErrorClear( 'A' );
                 appError.number = ERROR_PIT_TAGS_DENIED_FILE_OPEN;
                 return FILEIO_RESULT_FAILURE;
             }
 
-            for ( i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; i++ )
+            for ( i = 0; i < appDataPitTag.num_pit_tag_denied_or_color_A; i++ )
             {
                 FILEIO_Read( appDataPitTag.pit_tags_list[i], 1, 10, &file );
                 appDataPitTag.pit_tags_list[i][11] = '\0';
-                appDataPitTag.numPitTagStored += 1;
+                appDataPitTag.num_pit_tag_stored += 1;
             }
 
             if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
@@ -521,8 +529,8 @@ FILEIO_RESULT read_PIT_tags( void )
                 printf( "unable to close PIT tags denied file (%u)", errF );
 #endif 
                 sprintf( appError.message, "Unable to close PIT tags denied file (%u)", errF );
-                appError.currentLineNumber = __LINE__;
-                sprintf( appError.currentFileName, "%s", __FILE__ );
+                appError.current_line_number = __LINE__;
+                sprintf( appError.current_file_name, "%s", __FILE__ );
                 FILEIO_ErrorClear( 'A' );
                 appError.number = ERROR_PIT_TAGS_DENIED_FILE_CLOSE;
                 return FILEIO_RESULT_FAILURE;
@@ -530,7 +538,7 @@ FILEIO_RESULT read_PIT_tags( void )
 
         }
 
-        if ( appDataPitTag.numPitTagAcceptedOrColorB > 0 )
+        if ( ALL_PIT_TAG_DENIED != appDataPitTag.num_pit_tag_accepted_or_color_B && ALL_PIT_TAG_ACCEPTED != appDataPitTag.num_pit_tag_accepted_or_color_B )
         {
 
             if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, "PTACCEPT.TXT", FILEIO_OPEN_READ ) )
@@ -540,18 +548,18 @@ FILEIO_RESULT read_PIT_tags( void )
                 printf( "unable to open PIT tags accepted file (%u)", errF );
 #endif 
                 sprintf( appError.message, "Unable to open PIT tags accepted file (%u)", errF );
-                appError.currentLineNumber = __LINE__;
-                sprintf( appError.currentFileName, "%s", __FILE__ );
+                appError.current_line_number = __LINE__;
+                sprintf( appError.current_file_name, "%s", __FILE__ );
                 FILEIO_ErrorClear( 'A' );
                 appError.number = ERROR_PIT_TAGS_ACCEPTED_FILE_OPEN;
                 return FILEIO_RESULT_FAILURE;
             }
 
-            for ( i = 0; i < appDataPitTag.numPitTagAcceptedOrColorB; i++ )
+            for ( i = 0; i < appDataPitTag.num_pit_tag_accepted_or_color_B; i++ )
             {
-                FILEIO_Read( appDataPitTag.pit_tags_list[i + appDataPitTag.numPitTagDeniedOrColorA], 1, 10, &file );
-                appDataPitTag.pit_tags_list[i + appDataPitTag.numPitTagDeniedOrColorA][11] = '\0';
-                appDataPitTag.numPitTagStored += 1;
+                FILEIO_Read( appDataPitTag.pit_tags_list[i + appDataPitTag.num_pit_tag_denied_or_color_A], 1, 10, &file );
+                appDataPitTag.pit_tags_list[i + appDataPitTag.num_pit_tag_denied_or_color_A][11] = '\0';
+                appDataPitTag.num_pit_tag_stored += 1;
             }
 
             if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
@@ -561,15 +569,15 @@ FILEIO_RESULT read_PIT_tags( void )
                 printf( "unable to close PIT tags accepted file (%u)", errF );
 #endif 
                 sprintf( appError.message, "Unable to close PIT tags accepted file (%u)", errF );
-                appError.currentLineNumber = __LINE__;
-                sprintf( appError.currentFileName, "%s", __FILE__ );
+                appError.current_line_number = __LINE__;
+                sprintf( appError.current_file_name, "%s", __FILE__ );
                 FILEIO_ErrorClear( 'A' );
                 appError.number = ERROR_PIT_TAGS_ACCEPTED_FILE_CLOSE;
                 return FILEIO_RESULT_FAILURE;
             }
         }
     }
-    
+
     return FILEIO_RESULT_SUCCESS;
 
 }
@@ -580,11 +588,12 @@ FILEIO_RESULT config_find_ini( void )
 
     FILEIO_SEARCH_RECORD searchRecord;
 
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
-        store_event(OF_FIND_INI);
+        store_event( OF_FIND_INI );
     }
-    
+
     return FILEIO_Find( "CONFIG.INI", FILEIO_ATTRIBUTE_ARCHIVE, &searchRecord, true );
 }
 
@@ -596,12 +605,13 @@ INI_READ_STATE config_read_ini( void )
     int s, i;
     char str[20];
     bool flag = false;
-    
+
+    /* Log event if required */
     if ( true == appDataLog.log_events )
     {
-        store_event(OF_READ_INI);
+        store_event( OF_READ_INI );
     }
-    
+
     /* Scenario number */
     read_parameter = ini_getl( "scenario", "num", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
@@ -611,14 +621,14 @@ INI_READ_STATE config_read_ini( void )
     else
     {
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
-    printf( "\tScenario number... read.\n" );
+        printf( "\tScenario number... read.\n" );
 #endif 
         appData.scenario_number = ( uint8_t ) read_parameter;
     }
 
     /* Site identification. */
     s = ini_gets( "siteid", "zone", "XXXX", appData.siteid, sizearray( appData.siteid ), "CONFIG.INI" );
-    for ( i=s; i<4; i++ )
+    for ( i = s; i < 4; i++ )
     {
         appData.siteid[i] = 'X';
     }
@@ -626,7 +636,7 @@ INI_READ_STATE config_read_ini( void )
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
     printf( "\tSite ID... read.\n" );
 #endif 
-    
+
     /* Wake up time. */
     read_parameter = ini_getl( "time", "wakeup_hour", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
@@ -683,16 +693,16 @@ INI_READ_STATE config_read_ini( void )
 
     /* Attractive LEDs Color. */
     appData.flags.bit_value.attractive_leds_status = 0;
-    /* Check if "attractiveleds" is present in the INI file */ 
-    for (s = 0; ini_getsection(s, str, 20, "CONFIG.INI") > 0; s++)
+    /* Check if "attractiveleds" is present in the INI file */
+    for ( s = 0; ini_getsection( s, str, 20, "CONFIG.INI" ) > 0; s++ )
     {
         if ( 0 == strcmp( str, "attractiveleds" ) )
         {
             appData.flags.bit_value.attractive_leds_status = true;
         }
     }
-        
-    if (true == appData.flags.bit_value.attractive_leds_status)
+
+    if ( true == appData.flags.bit_value.attractive_leds_status )
     {
         read_parameter = ini_getl( "attractiveleds", "red_a", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
@@ -730,8 +740,8 @@ INI_READ_STATE config_read_ini( void )
             printf( "\tAttractive LEDs blue A... read.\n" );
 #endif
         }
-        
-        if (appData.scenario_number == COLOR_ASSOCIATIVE_LEARNING)
+
+        if ( appData.scenario_number == COLOR_ASSOCIATIVE_LEARNING )
         {
             read_parameter = ini_getl( "attractiveleds", "red_b", -1, "CONFIG.INI" );
             if ( -1 == read_parameter )
@@ -741,9 +751,9 @@ INI_READ_STATE config_read_ini( void )
             else
             {
                 appDataAttractiveLeds.red[1] = ( uint8_t ) read_parameter;
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
                 printf( "\tAttractive LEDs red B... read.\n" );
-    #endif
+#endif
             }
             read_parameter = ini_getl( "attractiveleds", "green_b", -1, "CONFIG.INI" );
             if ( -1 == read_parameter )
@@ -753,9 +763,9 @@ INI_READ_STATE config_read_ini( void )
             else
             {
                 appDataAttractiveLeds.green[1] = ( uint8_t ) read_parameter;
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
                 printf( "\tAttractive LEDs green B... read.\n" );
-    #endif
+#endif
             }
             read_parameter = ini_getl( "attractiveleds", "blue_b", -1, "CONFIG.INI" );
             if ( -1 == read_parameter )
@@ -765,13 +775,13 @@ INI_READ_STATE config_read_ini( void )
             else
             {
                 appDataAttractiveLeds.blue[1] = ( uint8_t ) read_parameter;
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
                 printf( "\tAttractive LEDs blue B... read.\n" );
-    #endif
+#endif
             }
         }
-        
-        if (GO_NO_GO == appData.scenario_number || COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number)
+
+        if ( GO_NO_GO == appData.scenario_number || COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number )
         {
             /* Attractive LEDs alternate delay. */
             read_parameter = ini_getl( "attractiveleds", "alt_delay", -1, "CONFIG.INI" );
@@ -782,12 +792,12 @@ INI_READ_STATE config_read_ini( void )
             else
             {
                 appDataAttractiveLeds.alt_delay = ( uint8_t ) read_parameter;
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
                 printf( "\tAttractive LEDs alternate delay... read.\n" );
-    #endif
+#endif
             }
         }
-        
+
         /* Attractive LEDs wake up time. */
         read_parameter = ini_getl( "attractiveleds", "on_hour", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
@@ -842,7 +852,7 @@ INI_READ_STATE config_read_ini( void )
 #endif
         }
         appDataAttractiveLeds.sleep_time.tm_sec = 0;
-        
+
         if ( GO_NO_GO == appData.scenario_number )
         {
             read_parameter = ini_getl( "attractiveleds", "pattern", -1, "CONFIG.INI" );
@@ -857,10 +867,10 @@ INI_READ_STATE config_read_ini( void )
                 printf( "\tAttractive LEDs pattern number... read.\n" );
 #endif
             }
-            
+
             if ( ALL_LEDS == appDataAttractiveLeds.pattern_number )
             {
-                
+
                 read_parameter = ini_getl( "attractiveleds", "pattern_percent", -1, "CONFIG.INI" );
                 if ( read_parameter == -1 )
                 {
@@ -869,16 +879,16 @@ INI_READ_STATE config_read_ini( void )
                 else
                 {
                     appDataAttractiveLeds.pattern_percent = ( uint8_t ) read_parameter;
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
                     printf( "\tAttractive LEDs pattern percent... read.\n" );
-    #endif
+#endif
                 }
-            
-//                ini_gets( "attractiveleds", "pattern_percent", "1.0", str, sizearray( str ), "CONFIG.INI" );
-//                appDataAttractiveLeds.pattern_percent = atof(str);
-//#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
-//                printf( "\tAttractive LEDs pattern percent... read.\n" );
-//#endif
+
+                //                ini_gets( "attractiveleds", "pattern_percent", "1.0", str, sizearray( str ), "CONFIG.INI" );
+                //                appDataAttractiveLeds.pattern_percent = atof(str);
+                //#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+                //                printf( "\tAttractive LEDs pattern percent... read.\n" );
+                //#endif
             }
 
         }
@@ -890,7 +900,7 @@ INI_READ_STATE config_read_ini( void )
         {
             if ( LEFT_RIGHT_LEDS == appDataAttractiveLeds.pattern_number )
             {
-               /* PIT tags associated with left LEDs. */
+                /* PIT tags associated with left LEDs. */
                 read_parameter = ini_getl( "pittags", "num_left", -1, "CONFIG.INI" );
                 if ( -1 == read_parameter )
                 {
@@ -898,10 +908,10 @@ INI_READ_STATE config_read_ini( void )
                 }
                 else
                 {
-                    appDataPitTag.numPitTagDeniedOrColorA = ( uint16_t ) read_parameter;
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
-                printf( "\tPIT tags number of left... read.\n" );
-    #endif
+                    appDataPitTag.num_pit_tag_denied_or_color_A = ( int16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+                    printf( "\tPIT tags number of left... read.\n" );
+#endif
                 }
                 /* PIT tags associated with left LEDs. */
                 read_parameter = ini_getl( "pittags", "num_right", -1, "CONFIG.INI" );
@@ -911,20 +921,23 @@ INI_READ_STATE config_read_ini( void )
                 }
                 else
                 {
-                    appDataPitTag.numPitTagAcceptedOrColorB = ( uint16_t ) read_parameter;
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
-                printf( "\tPIT tags number of right... read.\n" );
-    #endif
+                    appDataPitTag.num_pit_tag_accepted_or_color_B = ( int16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+                    printf( "\tPIT tags number of right... read.\n" );
+#endif
                 }
 
-                for (i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; i++)
+                if ( ALL_PIT_TAG_DENIED != appDataPitTag.num_pit_tag_denied_or_color_A && ALL_PIT_TAG_ACCEPTED != appDataPitTag.num_pit_tag_denied_or_color_A )
                 {
-                    appDataPitTag.isPitTagdeniedOrColorA[i] = true;
-                } 
+                    for ( i = 0; i < appDataPitTag.num_pit_tag_denied_or_color_A; i++ )
+                    {
+                        appDataPitTag.is_pit_tag_denied_or_color_A[i] = true;
+                    }
+                }
             }
             else if ( TOP_BOTTOM_LEDS == appDataAttractiveLeds.pattern_number )
             {
-               /* PIT tags associated with top LEDs. */
+                /* PIT tags associated with top LEDs. */
                 read_parameter = ini_getl( "pittags", "num_top", -1, "CONFIG.INI" );
                 if ( -1 == read_parameter )
                 {
@@ -932,10 +945,10 @@ INI_READ_STATE config_read_ini( void )
                 }
                 else
                 {
-                    appDataPitTag.numPitTagDeniedOrColorA = ( uint16_t ) read_parameter;
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
-                printf( "\tPIT tags number of top... read.\n" );
-    #endif
+                    appDataPitTag.num_pit_tag_denied_or_color_A = ( int16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+                    printf( "\tPIT tags number of top... read.\n" );
+#endif
                 }
                 /* PIT tags associated with bottom LEDs. */
                 read_parameter = ini_getl( "pittags", "num_bottom", -1, "CONFIG.INI" );
@@ -945,23 +958,26 @@ INI_READ_STATE config_read_ini( void )
                 }
                 else
                 {
-                    appDataPitTag.numPitTagAcceptedOrColorB = ( uint16_t ) read_parameter;
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
-                printf( "\tPIT tags number of bottom... read.\n" );
-    #endif
+                    appDataPitTag.num_pit_tag_accepted_or_color_B = ( int16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+                    printf( "\tPIT tags number of bottom... read.\n" );
+#endif
                 }
 
-                for (i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; i++)
+                if ( ALL_PIT_TAG_DENIED != appDataPitTag.num_pit_tag_denied_or_color_A && ALL_PIT_TAG_ACCEPTED != appDataPitTag.num_pit_tag_denied_or_color_A )
                 {
-                    appDataPitTag.isPitTagdeniedOrColorA[i] = true;
-                } 
-            }    
+                    for ( i = 0; i < appDataPitTag.num_pit_tag_denied_or_color_A; i++ )
+                    {
+                        appDataPitTag.is_pit_tag_denied_or_color_A[i] = true;
+                    }
+                }
+            }
             else if ( ONE_LED == appDataAttractiveLeds.pattern_number )
             {
-                appDataPitTag.numPitTagGroup[0] = 0;
-                appDataPitTag.numPitTagGroup[1] = 0;
-                appDataPitTag.numPitTagGroup[2] = 0;
-                appDataPitTag.numPitTagGroup[3] = 0;
+                appDataPitTag.num_pit_tag_per_group[0] = 0;
+                appDataPitTag.num_pit_tag_per_group[1] = 0;
+                appDataPitTag.num_pit_tag_per_group[2] = 0;
+                appDataPitTag.num_pit_tag_per_group[3] = 0;
 
                 /* PIT tags associated with group LEDs 1. */
                 read_parameter = ini_getl( "pittags", "num_led_1", -1, "CONFIG.INI" );
@@ -971,10 +987,10 @@ INI_READ_STATE config_read_ini( void )
                 }
                 else
                 {
-                    appDataPitTag.numPitTagGroup[0] = ( uint16_t ) read_parameter;
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
-                printf( "\tPIT tags group 1 number... read.\n" );
-    #endif
+                    appDataPitTag.num_pit_tag_per_group[0] = ( int16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+                    printf( "\tPIT tags group 1 number... read.\n" );
+#endif
                 }
                 /* PIT tags associated with group LEDs 2. */
                 read_parameter = ini_getl( "pittags", "num_led_2", -1, "CONFIG.INI" );
@@ -984,10 +1000,10 @@ INI_READ_STATE config_read_ini( void )
                 }
                 else
                 {
-                    appDataPitTag.numPitTagGroup[1] = ( uint16_t ) read_parameter;
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
-                printf( "\tPIT tags group 2 number... read.\n" );
-    #endif
+                    appDataPitTag.num_pit_tag_per_group[1] = ( int16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+                    printf( "\tPIT tags group 2 number... read.\n" );
+#endif
                 }
                 /* PIT tags associated with group LEDs 3. */
                 read_parameter = ini_getl( "pittags", "num_led_3", -1, "CONFIG.INI" );
@@ -997,10 +1013,10 @@ INI_READ_STATE config_read_ini( void )
                 }
                 else
                 {
-                    appDataPitTag.numPitTagGroup[2] = ( uint16_t ) read_parameter;
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
-                printf( "\tPIT tags group 3 number... read.\n" );
-    #endif
+                    appDataPitTag.num_pit_tag_per_group[2] = ( int16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+                    printf( "\tPIT tags group 3 number... read.\n" );
+#endif
                 }
                 /* PIT tags associated with group LEDs 4. */
                 read_parameter = ini_getl( "pittags", "num_led_4", -1, "CONFIG.INI" );
@@ -1010,11 +1026,11 @@ INI_READ_STATE config_read_ini( void )
                 }
                 else
                 {
-                    appDataPitTag.numPitTagGroup[3] = ( uint16_t ) read_parameter;
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
-                printf( "\tPIT tags group 4 number... read.\n" );
-    #endif
-                }   
+                    appDataPitTag.num_pit_tag_per_group[3] = ( int16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+                    printf( "\tPIT tags group 4 number... read.\n" );
+#endif
+                }
             }
         }
         else if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number )
@@ -1027,10 +1043,10 @@ INI_READ_STATE config_read_ini( void )
             }
             else
             {
-                appDataPitTag.numPitTagDeniedOrColorA = ( uint16_t ) read_parameter;
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+                appDataPitTag.num_pit_tag_denied_or_color_A = ( int16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
                 printf( "\tPIT tags number of color A... read.\n" );
-    #endif
+#endif
             }
             /* PIT tags associated with color B. */
             read_parameter = ini_getl( "pittags", "num_color_B", -1, "CONFIG.INI" );
@@ -1040,16 +1056,20 @@ INI_READ_STATE config_read_ini( void )
             }
             else
             {
-                appDataPitTag.numPitTagAcceptedOrColorB = ( uint16_t ) read_parameter;
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+                appDataPitTag.num_pit_tag_accepted_or_color_B = ( int16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
                 printf( "\tPIT tags number of color B... read.\n" );
-    #endif
+#endif
             }
 
-            for (i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; i++)
+            if ( ALL_PIT_TAG_DENIED != appDataPitTag.num_pit_tag_denied_or_color_A && ALL_PIT_TAG_ACCEPTED != appDataPitTag.num_pit_tag_denied_or_color_A )
             {
-                appDataPitTag.isPitTagdeniedOrColorA[i] = true;
+                for ( i = 0; i < appDataPitTag.num_pit_tag_denied_or_color_A; i++ )
+                {
+                    appDataPitTag.is_pit_tag_denied_or_color_A[i] = true;
+                }
             }
+
         }
         else
         {
@@ -1061,10 +1081,10 @@ INI_READ_STATE config_read_ini( void )
             }
             else
             {
-                appDataPitTag.numPitTagDeniedOrColorA = ( uint16_t ) read_parameter;
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+                appDataPitTag.num_pit_tag_denied_or_color_A = ( int16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
                 printf( "\tPIT tags number of denied... read.\n" );
-    #endif
+#endif
             }
             /* PIT tags accepted. */
             read_parameter = ini_getl( "pittags", "num_accepted", -1, "CONFIG.INI" );
@@ -1074,19 +1094,22 @@ INI_READ_STATE config_read_ini( void )
             }
             else
             {
-                appDataPitTag.numPitTagAcceptedOrColorB = ( uint16_t ) read_parameter;
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+                appDataPitTag.num_pit_tag_accepted_or_color_B = ( int16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
                 printf( "\tPIT tags number of accepted... read.\n" );
-    #endif
+#endif
             }
 
-            for (i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; i++)
+            if ( ALL_PIT_TAG_DENIED != appDataPitTag.num_pit_tag_denied_or_color_A && ALL_PIT_TAG_ACCEPTED != appDataPitTag.num_pit_tag_denied_or_color_A )
             {
-                appDataPitTag.isPitTagdeniedOrColorA[i] = true;
+                for ( i = 0; i < appDataPitTag.num_pit_tag_denied_or_color_A; i++ )
+                {
+                    appDataPitTag.is_pit_tag_denied_or_color_A[i] = true;
+                }
             }
         }
     }
-    
+
     /* Door/servomotor configuration. */
     read_parameter = ini_getl( "door", "close_position", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
@@ -1180,9 +1203,9 @@ INI_READ_STATE config_read_ini( void )
         printf( "\tDoor close delay... read.\n" );
 #endif
     }
-    
+
     /* Door habituation */
-    if (DOOR_HABITUATION == appData.scenario_number)
+    if ( DOOR_HABITUATION == appData.scenario_number )
     {
         read_parameter = ini_getl( "door", "habituation", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
@@ -1192,8 +1215,8 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appDataDoor.habituation_percent = ( uint8_t ) read_parameter;
-//            appDataServo.ton_max = (appDataServo.ton_max-appDataServo.ton_min)/100*appDataDoor.habituation_percent+appDataServo.ton_min;
-            appDataServo.ton_min = (appDataServo.ton_max-appDataServo.ton_min)/100*appDataDoor.habituation_percent+appDataServo.ton_min;
+            //            appDataServo.ton_max = (appDataServo.ton_max-appDataServo.ton_min)/100*appDataDoor.habituation_percent+appDataServo.ton_min;
+            appDataServo.ton_min = ( appDataServo.ton_max - appDataServo.ton_min ) / 100 * appDataDoor.habituation_percent + appDataServo.ton_min;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
             printf( "\tDoor habituation... read.\n" );
 #endif
@@ -1209,13 +1232,13 @@ INI_READ_STATE config_read_ini( void )
     {
         appDataDoor.remain_open = ( uint8_t ) read_parameter;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
-            printf( "\tDoor remain opened... read.\n" );
+        printf( "\tDoor remain opened... read.\n" );
 #endif
     }
-//    /* Door reward probability */
-////    read_parameter = ini_getf( "door", "reward_probability", -1, "CONFIG.INI" );
-//    ini_gets( "door", "reward_probability", "1.0", str, sizearray( str ), "CONFIG.INI" );
-//    appDataDoor.reward_probability = atof(str);
+    //    /* Door reward probability */
+    ////    read_parameter = ini_getf( "door", "reward_probability", -1, "CONFIG.INI" );
+    //    ini_gets( "door", "reward_probability", "1.0", str, sizearray( str ), "CONFIG.INI" );
+    //    appDataDoor.reward_probability = atof(str);
 
     /* Door open time. */
     read_parameter = ini_getl( "door", "open_hour", -1, "CONFIG.INI" );
@@ -1227,7 +1250,7 @@ INI_READ_STATE config_read_ini( void )
     {
         appDataDoor.open_time.tm_hour = ( int ) read_parameter;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
-            printf( "\tDoor open hour... read.\n" );
+        printf( "\tDoor open hour... read.\n" );
 #endif
     }
     read_parameter = ini_getl( "door", "open_minute", -1, "CONFIG.INI" );
@@ -1239,7 +1262,7 @@ INI_READ_STATE config_read_ini( void )
     {
         appDataDoor.open_time.tm_min = ( int ) read_parameter;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
-            printf( "\tDoor open minute... read.\n" );
+        printf( "\tDoor open minute... read.\n" );
 #endif
     }
     appDataDoor.open_time.tm_sec = 0;
@@ -1254,7 +1277,7 @@ INI_READ_STATE config_read_ini( void )
     {
         appDataDoor.close_time.tm_hour = ( int ) read_parameter;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
-            printf( "\tDoor close hour... read.\n" );
+        printf( "\tDoor close hour... read.\n" );
 #endif
     }
     read_parameter = ini_getl( "door", "close_minute", -1, "CONFIG.INI" );
@@ -1266,43 +1289,43 @@ INI_READ_STATE config_read_ini( void )
     {
         appDataDoor.close_time.tm_min = ( int ) read_parameter;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
-            printf( "\tDoor close minute... read.\n" );
+        printf( "\tDoor close minute... read.\n" );
 #endif
     }
     appDataDoor.close_time.tm_sec = 0;
 
     /* Logs */
-    /* Check if "logs" section is present in the INI file */ 
+    /* Check if "logs" section is present in the INI file */
     flag = false;
-    for (s = 0; ini_getsection(s, str, 20, "CONFIG.INI") > 0; s++)
+    for ( s = 0; ini_getsection( s, str, 20, "CONFIG.INI" ) > 0; s++ )
     {
         if ( 0 == strcmp( str, "logs" ) )
         {
             flag = true;
         }
     }
-    
-    if (flag)
+
+    if ( flag )
     {
         /* Data separator in the log file. */
         ini_gets( "logs", "separator", DEFAULT_LOG_SEPARATOR, appDataLog.separator, sizearray( appDataLog.separator ), "CONFIG.INI" );
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
-            printf( "\tLogs separator... read.\n" );
+        printf( "\tLogs separator... read.\n" );
 #endif
-//        read_parameter = ini_getl( "logs", "birds", -1, "CONFIG.INI" );
-//        if ( -1 == read_parameter )
-//        {
-//            return INI_PB_LOGS_BIRDS;
-//        }
-//        else
-//        {
-//            appDataLog.log_data = ( bool ) read_parameter;
-//        }
+        //        read_parameter = ini_getl( "logs", "birds", -1, "CONFIG.INI" );
+        //        if ( -1 == read_parameter )
+        //        {
+        //            return INI_PB_LOGS_BIRDS;
+        //        }
+        //        else
+        //        {
+        //            appDataLog.log_data = ( bool ) read_parameter;
+        //        }
         read_parameter = ini_getl( "logs", "udid", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
         {
             appDataLog.log_udid = true;
-//            return INI_PB_LOGS_UDID;
+            //            return INI_PB_LOGS_UDID;
         }
         else
         {
@@ -1315,7 +1338,7 @@ INI_READ_STATE config_read_ini( void )
         if ( -1 == read_parameter )
         {
             appDataLog.log_events = true;
-//            return INI_PB_LOGS_EVENTS;
+            //            return INI_PB_LOGS_EVENTS;
         }
         else
         {
@@ -1328,7 +1351,7 @@ INI_READ_STATE config_read_ini( void )
         if ( -1 == read_parameter )
         {
             appDataLog.log_errors = true;
-//            return INI_PB_LOGS_ERRORS;
+            //            return INI_PB_LOGS_ERRORS;
         }
         else
         {
@@ -1341,7 +1364,7 @@ INI_READ_STATE config_read_ini( void )
         if ( -1 == read_parameter )
         {
             appDataLog.log_battery = true;
-//            return INI_PB_LOGS_BATTERY;
+            //            return INI_PB_LOGS_BATTERY;
         }
         else
         {
@@ -1354,7 +1377,7 @@ INI_READ_STATE config_read_ini( void )
         if ( -1 == read_parameter )
         {
             appDataLog.log_rfid = true;
-//            return INI_PB_LOGS_RFID;
+            //            return INI_PB_LOGS_RFID;
         }
         else
         {
@@ -1366,7 +1389,7 @@ INI_READ_STATE config_read_ini( void )
         read_parameter = ini_getl( "logs", "temperature", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
         {
-//            return INI_PB_LOGS_RFID;
+            //            return INI_PB_LOGS_RFID;
             appDataLog.log_temp = true;
         }
         else
@@ -1379,7 +1402,7 @@ INI_READ_STATE config_read_ini( void )
         read_parameter = ini_getl( "logs", "calibration", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
         {
-//            return INI_PB_LOGS_RFID;
+            //            return INI_PB_LOGS_RFID;
             appDataLog.log_calibration = true;
         }
         else
@@ -1403,45 +1426,45 @@ INI_READ_STATE config_read_ini( void )
         appDataLog.log_temp = true;
         appDataLog.log_calibration = true;
     }
-    
-    /* Reward. */
-     read_parameter = ini_getl( "reward", "enable", -1, "CONFIG.INI" );
-     if ( -1 == read_parameter )
-     {
-         return INI_PB_REWARD_ENABLE;
-     }
-     else
-     {
-         appData.reward_enable = ( uint8_t ) read_parameter;
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
-         printf( "\tReward enable... read.\n" );
-#endif
-     }
 
-     if (1 == appData.reward_enable)
-     {
-         /* Timeout taking reward. */
-         read_parameter = ini_getl( "reward", "timeout", -1, "CONFIG.INI" );
-         if ( -1 == read_parameter )
-         {
-             return INI_PB_REWARD_TIMEOUT;
-         }
-         else
-         {
-             appData.timeout_taking_reward = ( uint16_t ) read_parameter * 1000;
-     #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
-             printf( "\tReward timeout... read.\n" );
-     #endif
-         }
-     }
-     else
-     {
-         appData.timeout_taking_reward = 0;    
-     }
+    /* Reward. */
+    read_parameter = ini_getl( "reward", "enable", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
+    {
+        return INI_PB_REWARD_ENABLE;
+    }
+    else
+    {
+        appData.reward_enable = ( uint8_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+        printf( "\tReward enable... read.\n" );
+#endif
+    }
+
+    if ( 1 == appData.reward_enable )
+    {
+        /* Timeout taking reward. */
+        read_parameter = ini_getl( "reward", "timeout", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_REWARD_TIMEOUT;
+        }
+        else
+        {
+            appData.timeout_taking_reward = ( uint16_t ) read_parameter * 1000;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\tReward timeout... read.\n" );
+#endif
+        }
+    }
+    else
+    {
+        appData.timeout_taking_reward = 0;
+    }
 
     if ( appData.scenario_number > DOOR_HABITUATION && appData.scenario_number != PATCH_PROBABILITY )
     {
-        /* Reward probability */ 
+        /* Reward probability */
         read_parameter = ini_getl( "reward", "probability", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
         {
@@ -1450,23 +1473,23 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appDataDoor.reward_probability = ( uint8_t ) read_parameter;
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
             printf( "\tReward probability... read.\n" );
-    #endif
+#endif
         }
     }
     else
     {
-       appDataDoor.reward_probability = 100; 
+        appDataDoor.reward_probability = 100;
     }
-            
+
     /* Timeout before standby. */
-     appData.timeout_standby = 0;
-     appData.timeout_pir = 0;
-     
-     if ( appData.scenario_number == PATCH_PROBABILITY )
-     {
-         /* Reward probability */ 
+    appData.timeout_standby = 0;
+    appData.timeout_pir = 0;
+
+    if ( appData.scenario_number == PATCH_PROBABILITY )
+    {
+        /* Reward probability */
         read_parameter = ini_getl( "timeouts", "unique_visit", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
         {
@@ -1475,41 +1498,41 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appDataPitTag.timeout_unique_visit = ( uint8_t ) read_parameter;
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
             printf( "\tTimeout unique visit... read.\n" );
-    #endif
+#endif
         }
-     }
-         
-//    read_parameter = ini_getl( "timeouts", "sleep", -1, "CONFIG.INI" );
-//    if ( -1 == read_parameter )
-//    {
-//        return INI_PB_TIMEOUTS_SLEEP;
-//    }
-//    else
-//    {
-//        appData.timeout_standby = ( uint16_t ) read_parameter * 1000;
-//#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
-//        printf( "\tTimeout standby... read.\n" );
-//#endif
-//    }
-//    /* Timeout before pir. */
-//    read_parameter = ini_getl( "timeouts", "pir", -1, "CONFIG.INI" );
-//    if ( -1 == read_parameter )
-//    {
-//        return INI_PB_TIMEOUTS_PIR;
-//    }
-//    else
-//    {
-//        appData.timeout_pir = ( uint16_t ) read_parameter * 1000;
-//#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
-//        printf( "\tTimeout problem PIR... read.\n" );
-//#endif
-//    }
-    
+    }
+
+    //    read_parameter = ini_getl( "timeouts", "sleep", -1, "CONFIG.INI" );
+    //    if ( -1 == read_parameter )
+    //    {
+    //        return INI_PB_TIMEOUTS_SLEEP;
+    //    }
+    //    else
+    //    {
+    //        appData.timeout_standby = ( uint16_t ) read_parameter * 1000;
+    //#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+    //        printf( "\tTimeout standby... read.\n" );
+    //#endif
+    //    }
+    //    /* Timeout before pir. */
+    //    read_parameter = ini_getl( "timeouts", "pir", -1, "CONFIG.INI" );
+    //    if ( -1 == read_parameter )
+    //    {
+    //        return INI_PB_TIMEOUTS_PIR;
+    //    }
+    //    else
+    //    {
+    //        appData.timeout_pir = ( uint16_t ) read_parameter * 1000;
+    //#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+    //        printf( "\tTimeout problem PIR... read.\n" );
+    //#endif
+    //    }
+
     /* Timeout guillotine. */
-    appData.timeout_guillotine = (appDataServo.ton_max - appDataServo.ton_min)/appDataServo.closing_speed*(PR3/1000)+500;
-        
+    appData.timeout_guillotine = ( appDataServo.ton_max - appDataServo.ton_min ) / appDataServo.closing_speed * ( PR3 / 1000 ) + 500;
+
     if ( appData.scenario_number > DOOR_HABITUATION )
     {
         /* Punishment delay. */
@@ -1525,10 +1548,10 @@ INI_READ_STATE config_read_ini( void )
             printf( "\tPunishment delay... read.\n" );
 #endif
         }
-        
+
         if ( PATCH_PROBABILITY == appData.scenario_number )
         {
-            /* Punishment probability treshold */ 
+            /* Punishment probability treshold */
             read_parameter = ini_getl( "punishment", "proba_threshold", -1, "CONFIG.INI" );
             if ( -1 == read_parameter )
             {
@@ -1537,29 +1560,29 @@ INI_READ_STATE config_read_ini( void )
             else
             {
                 appData.punishment_proba_thresh = ( uint8_t ) read_parameter;
-        #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
                 printf( "\tPunishment probability threshold... read.\n" );
-        #endif
+#endif
             }
         }
         else
         {
-           appData.punishment_proba_thresh = 0; 
+            appData.punishment_proba_thresh = 0;
         }
     }
-    
+
     /* Security */
-    /* Check if "security" section is present in the INI file */ 
+    /* Check if "security" section is present in the INI file */
     flag = false;
-    for (s = 0; ini_getsection(s, str, 20, "CONFIG.INI") > 0; s++)
+    for ( s = 0; ini_getsection( s, str, 20, "CONFIG.INI" ) > 0; s++ )
     {
         if ( 0 == strcmp( str, "security" ) )
         {
             flag = true;
         }
     }
-    
-    if (flag)
+
+    if ( flag )
     {
         read_parameter = ini_getl( "security", "bird_reward_reopen", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
@@ -1569,28 +1592,28 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appData.secu_bird_reward_reopen = ( bool ) read_parameter;
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
             printf( "\tSecurity bird reward reopen... read.\n" );
-    #endif
-        } 
+#endif
+        }
     }
     else
     {
         appData.secu_bird_reward_reopen = true;
     }
-    
+
     /* Check */
-    /* Check if "check" section is present in the INI file */ 
+    /* Check if "check" section is present in the INI file */
     flag = false;
-    for (s = 0; ini_getsection(s, str, 20, "CONFIG.INI") > 0; s++)
+    for ( s = 0; ini_getsection( s, str, 20, "CONFIG.INI" ) > 0; s++ )
     {
         if ( 0 == strcmp( str, "check" ) )
         {
             flag = true;
         }
     }
-    
-    if (flag)
+
+    if ( flag )
     {
         read_parameter = ini_getl( "check", "food_level", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
@@ -1600,11 +1623,11 @@ INI_READ_STATE config_read_ini( void )
         else
         {
             appData.chk_food_level = ( bool ) read_parameter;
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
             printf( "\tCheck food level... read.\n" );
-    #endif
-        } 
-    }    
+#endif
+        }
+    }
     else
     {
         appData.chk_food_level = false;
@@ -1621,7 +1644,7 @@ void config_print( void )
     printf( "Configuration parameters\n" );
 
     printf( "\tScenario\n\t\tNumber: %u\n\t\tTitle:",
-            getCompletScenarioNumber() );
+            getCompletScenarioNumber( ) );
     switch ( appData.scenario_number )
     {
         case NO_SCENARIO:
@@ -1646,7 +1669,7 @@ void config_print( void )
             else if ( 3 == appDataAttractiveLeds.pattern_number )
             {
                 printf( " go-no go, one LED (pattern 3)\n" );
-            }            
+            }
             break;
         case LONG_TERM_SPATIAL_MEMORY:
             printf( " long term spatial memory\n" );
@@ -1679,106 +1702,106 @@ void config_print( void )
             appDataAlarmSleep.time.tm_hour,
             appDataAlarmSleep.time.tm_min );
 
-    
-    
+
+
     printf( "\tLoggers\n" );
     printf( "\t\tSeparator: %s\n", appDataLog.separator );
-    if ( true == appDataLog.log_birds)
+    if ( true == appDataLog.log_birds )
     {
-        printf( "\t\tBirds: enable - %s\n", appDataLog.filename );   
+        printf( "\t\tBirds: enable - %s\n", appDataLog.filename );
     }
     else
     {
-        printf( "\t\tBirds: disable\n");
+        printf( "\t\tBirds: disable\n" );
     }
-    if ( true == appDataLog.log_battery)
+    if ( true == appDataLog.log_battery )
     {
-        printf( "\t\tBattery: enable - %s\n", BATTERY_LOG_FILE );   
-    }
-    else
-    {
-        printf( "\t\tBattery: disable\n");
-    }  
-    if ( true == appDataLog.log_rfid)
-    {
-        printf( "\t\tRfid: enable - %s\n", RFID_LOG_FILE );   
+        printf( "\t\tBattery: enable - %s\n", BATTERY_LOG_FILE );
     }
     else
     {
-        printf( "\t\tRfid: disable\n");
+        printf( "\t\tBattery: disable\n" );
     }
-    if ( true == appDataLog.log_temp)
+    if ( true == appDataLog.log_rfid )
     {
-        printf( "\t\tTemperature: enable - %s\n", EXT_TEMP_LOG_FILE );   
+        printf( "\t\tRfid: enable - %s\n", RFID_LOG_FILE );
     }
     else
     {
-        printf( "\t\tTemperature: disable\n");
+        printf( "\t\tRfid: disable\n" );
     }
-    if ( true == appDataLog.log_calibration)
+    if ( true == appDataLog.log_temp )
     {
-        printf( "\t\tCalibration: enable - %s\n", CALIBRATION_LOG_FILE );   
+        printf( "\t\tTemperature: enable - %s\n", EXT_TEMP_LOG_FILE );
     }
     else
     {
-        printf( "\t\tTemperature: disable\n");
+        printf( "\t\tTemperature: disable\n" );
     }
-    if ( true == appDataLog.log_udid)
+    if ( true == appDataLog.log_calibration )
     {
-        printf( "\t\tUdid: enable - %s\n", UDID_LOG_FILE );   
+        printf( "\t\tCalibration: enable - %s\n", CALIBRATION_LOG_FILE );
     }
     else
     {
-        printf( "\t\tUdid: disable\n");
+        printf( "\t\tTemperature: disable\n" );
     }
-    if ( true == appDataLog.log_errors)
+    if ( true == appDataLog.log_udid )
     {
-        printf( "\t\tErrors: enable - %s\n", ERRORS_LOG_FILE );   
+        printf( "\t\tUdid: enable - %s\n", UDID_LOG_FILE );
     }
     else
     {
-        printf( "\t\tErrors: disable\n");
+        printf( "\t\tUdid: disable\n" );
     }
-    if ( true == appDataLog.log_events)
+    if ( true == appDataLog.log_errors )
+    {
+        printf( "\t\tErrors: enable - %s\n", ERRORS_LOG_FILE );
+    }
+    else
+    {
+        printf( "\t\tErrors: disable\n" );
+    }
+    if ( true == appDataLog.log_events )
     {
         if ( EVENT_FILE_BINARY == appDataEvent.file_type )
         {
             printf( "\t\tEvents: enable - %s\n", appDataEvent.binfilename );
-        } 
+        }
         else if ( EVENT_FILE_TEXT == appDataEvent.file_type )
         {
-            printf( "\t\tEvents: enable - %s\n", appDataEvent.filename );   
+            printf( "\t\tEvents: enable - %s\n", appDataEvent.filename );
         }
         else
         {
-           printf( "\t\tEvents: enable - %s - %s\n", appDataEvent.filename, appDataEvent.binfilename ); 
+            printf( "\t\tEvents: enable - %s - %s\n", appDataEvent.filename, appDataEvent.binfilename );
         }
     }
     else
     {
-        printf( "\t\tEvents: disable\n");
+        printf( "\t\tEvents: disable\n" );
     }
-    
+
     printf( "\tChecks\n" );
     if ( true == appData.chk_food_level )
     {
-        printf( "\t\tFood level: enable\n" );   
+        printf( "\t\tFood level: enable\n" );
     }
     else
     {
-        printf( "\t\tFood level: disable\n");
+        printf( "\t\tFood level: disable\n" );
     }
-    
-    if (true == appData.flags.bit_value.attractive_leds_status)
+
+    if ( true == appData.flags.bit_value.attractive_leds_status )
     {
 
         printf( "\tAttractive LEDs\n" );
-        
-        printf( "\t\tLEDs order: %u %u %u %u\n", 
-               appDataAttractiveLeds.leds_order[0], appDataAttractiveLeds.leds_order[1], 
-               appDataAttractiveLeds.leds_order[2], appDataAttractiveLeds.leds_order[3]);
-    
-        if (COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number)
+
+        printf( "\t\tLEDs order: %u %u %u %u\n",
+                appDataAttractiveLeds.leds_order[0], appDataAttractiveLeds.leds_order[1],
+                appDataAttractiveLeds.leds_order[2], appDataAttractiveLeds.leds_order[3] );
+
+        if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number )
         {
 
             printf( "\t\tColor A: RGB(%d, %d, %d)\n",
@@ -1791,22 +1814,22 @@ void config_print( void )
                     appDataAttractiveLeds.blue[1] );
             printf( "\t\tAlternate delay: %us\n", appDataAttractiveLeds.alt_delay );
         }
-        else if (DOOR_HABITUATION == appData.scenario_number ||  RISK_AVERSION == appData.scenario_number) 
+        else if ( DOOR_HABITUATION == appData.scenario_number || RISK_AVERSION == appData.scenario_number )
         {
             printf( "\t\tColor: RGB(%d, %d, %d)\n",
                     appDataAttractiveLeds.red[0],
                     appDataAttractiveLeds.green[0],
                     appDataAttractiveLeds.blue[0] );
-        }            
-        else if (GO_NO_GO == appData.scenario_number)
+        }
+        else if ( GO_NO_GO == appData.scenario_number )
         {
             printf( "\t\tColor: RGB(%d, %d, %d)\n",
                     appDataAttractiveLeds.red[0],
                     appDataAttractiveLeds.green[0],
-                    appDataAttractiveLeds.blue[0] );   
+                    appDataAttractiveLeds.blue[0] );
             printf( "\t\tAlternate delay: %us\n", appDataAttractiveLeds.alt_delay );
         }
-        
+
         printf( "\t\tOn time: %02d:%02d\n",
                 appDataAttractiveLeds.wake_up_time.tm_hour,
                 appDataAttractiveLeds.wake_up_time.tm_min );
@@ -1833,24 +1856,24 @@ void config_print( void )
     printf( "\t\tClose time: %02d:%02d\n",
             appDataDoor.close_time.tm_hour,
             appDataDoor.close_time.tm_min );
-   
-    if (DOOR_HABITUATION == appData.scenario_number)
+
+    if ( DOOR_HABITUATION == appData.scenario_number )
     {
         printf( "\t\tDoor habituation: %d%%\n", appDataDoor.habituation_percent );
     }
-    
+
     printf( "\tServo\n\t\tPosition full closed: %d\n", appDataServo.ton_min_night );
     printf( "\t\tPosition full opened: %d\n", appDataServo.ton_max );
-    
-    if (DOOR_HABITUATION == appData.scenario_number)
+
+    if ( DOOR_HABITUATION == appData.scenario_number )
     {
         printf( "\t\tPosition habituation closed: %d\n", appDataServo.ton_min );
     }
-    printf( "\t\tFull closing time: %.3fs\n", ((float)(appDataServo.ton_max-appDataServo.ton_min_night))/((float)appDataServo.closing_speed)*0.02 );
-    printf( "\t\tFull opening time: %.3fs\n", ((float)(appDataServo.ton_max-appDataServo.ton_min_night))/((float)appDataServo.opening_speed)*0.02 );
+    printf( "\t\tFull closing time: %.3fs\n", ( ( float ) ( appDataServo.ton_max - appDataServo.ton_min_night ) ) / ( ( float ) appDataServo.closing_speed )*0.02 );
+    printf( "\t\tFull opening time: %.3fs\n", ( ( float ) ( appDataServo.ton_max - appDataServo.ton_min_night ) ) / ( ( float ) appDataServo.opening_speed )*0.02 );
     printf( "\t\tClosing speed factor: %d\n", appDataServo.closing_speed );
     printf( "\t\tOpening speed factor: %d\n", appDataServo.opening_speed );
-    
+
     printf( "\tReward\n" );
     if ( 0 == appData.reward_enable )
     {
@@ -1861,93 +1884,93 @@ void config_print( void )
         printf( "\t\tEnable: yes\n" );
     }
     printf( "\t\tTimeout: %us\n", appData.timeout_taking_reward / 1000 );
-    
-    if (appData.scenario_number > DOOR_HABITUATION && PATCH_PROBABILITY != appData.scenario_number )
+
+    if ( appData.scenario_number > DOOR_HABITUATION && PATCH_PROBABILITY != appData.scenario_number )
     {
         printf( "\t\tProbability: %u%%\n", appDataDoor.reward_probability );
     }
-    
+
     printf( "\tTimeouts\n" );
-//    printf( "\t\tSleep: %us\n", appData.timeout_standby / 1000 );
-//    printf( "\t\tPIR: %us\n", appData.timeout_pir / 1000 );    
-    printf( "\t\tGuillotine: %.3fs\n", (float)appData.timeout_guillotine * 0.001 ); 
-    
+    //    printf( "\t\tSleep: %us\n", appData.timeout_standby / 1000 );
+    //    printf( "\t\tPIR: %us\n", appData.timeout_pir / 1000 );    
+    printf( "\t\tGuillotine: %.3fs\n", ( float ) appData.timeout_guillotine * 0.001 );
+
     if ( appData.scenario_number == PATCH_PROBABILITY )
     {
-        printf( "\t\tUnique visit: %ds\n", appDataPitTag.timeout_unique_visit );  
-    }                
-                
-    if (true == appData.flags.bit_value.attractive_leds_status)
+        printf( "\t\tUnique visit: %ds\n", appDataPitTag.timeout_unique_visit );
+    }
+
+    if ( true == appData.flags.bit_value.attractive_leds_status )
     {
         printf( "\tPunishment\n" );
         printf( "\t\tDelay: %us\n", appData.punishment_delay / 1000 );
-        
-        if ( PATCH_PROBABILITY == appData.scenario_number ) 
+
+        if ( PATCH_PROBABILITY == appData.scenario_number )
         {
-          printf( "\t\tProbability threshold: %u%%\n", appData.punishment_proba_thresh );  
+            printf( "\t\tProbability threshold: %u%%\n", appData.punishment_proba_thresh );
         }
     }
-      
+
     if ( appData.scenario_number > DOOR_HABITUATION )
     {
-        
+
         if ( GO_NO_GO == appData.scenario_number && ONE_LED == appDataAttractiveLeds.pattern_number )
-        {        
-            
-//            for (i=0;i<appDataPitTag.numPitTagStored;i++)
-//            {
-//              printf( "\t\tSN%d: %s\n", i + 1, appDataPitTag.pit_tags_list[i] );  
-//            }
- 
-            for ( i=0; i<4; i++)
+        {
+
+            //            for (i=0;i<appDataPitTag.numPitTagStored;i++)
+            //            {
+            //              printf( "\t\tSN%d: %s\n", i + 1, appDataPitTag.pit_tags_list[i] );  
+            //            }
+
+            for ( i = 0; i < 4; i++ )
             {
-                printf( "\tPIT tags associated with LED %d\n", i+1);
-                if (0==i)
+                printf( "\tPIT tags associated with LED %d\n", i + 1 );
+                if ( 0 == i )
                 {
-                    for (j=0;j<appDataAttractiveLeds.pattern_one_led_groups[0];j++)
+                    for ( j = 0; j < appDataAttractiveLeds.pattern_one_led_groups[0]; j++ )
                     {
                         printf( "\t\t%03d: %s\n", j + 1, appDataPitTag.pit_tags_list[j] );
                     }
                 }
                 else
                 {
-                   for (j=appDataAttractiveLeds.pattern_one_led_groups[i-1];j<appDataAttractiveLeds.pattern_one_led_groups[i];j++)
+                    for ( j = appDataAttractiveLeds.pattern_one_led_groups[i - 1]; j < appDataAttractiveLeds.pattern_one_led_groups[i]; j++ )
                     {
                         printf( "\t\t%03d: %s\n", j + 1, appDataPitTag.pit_tags_list[j] );
-                    } 
+                    }
                 }
             }
-            
+
         }
-        else if ( PATCH_PROBABILITY == appData.scenario_number)
+        else if ( PATCH_PROBABILITY == appData.scenario_number )
         {
 
             printf( "\tPIT tags denied\n" );
-            if ( appDataPitTag.numPitTagDeniedOrColorA > 0 )
+            if ( appDataPitTag.num_pit_tag_denied_or_color_A > 0 )
             {
-                for ( i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; ++i )
+                for ( i = 0; i < appDataPitTag.num_pit_tag_denied_or_color_A; ++i )
                 {
                     printf( "\t\t%03d: %s\n", i + 1, appDataPitTag.pit_tags_list[i] );
                 }
             }
-            
+
             printf( "\tPIT tags accepted and associated reward probability\n" );
-            if ( appDataPitTag.numPitTagAcceptedOrColorB > 0 )
+            if ( appDataPitTag.num_pit_tag_accepted_or_color_B > 0 )
             {
-                for ( i = appDataPitTag.numPitTagDeniedOrColorA; i < ( appDataPitTag.numPitTagDeniedOrColorA + appDataPitTag.numPitTagAcceptedOrColorB ); ++i )
+                for ( i = appDataPitTag.num_pit_tag_denied_or_color_A; i < ( appDataPitTag.num_pit_tag_denied_or_color_A + appDataPitTag.num_pit_tag_accepted_or_color_B ); ++i )
                 {
-                    printf( "\t\t%03d: %s - %u%%\n", i + 1 - appDataPitTag.numPitTagDeniedOrColorA, appDataPitTag.pit_tags_list[i], appDataPitTag.reward_probability[i] );
+                    printf( "\t\t%03d: %s - %u%%\n", i + 1 - appDataPitTag.num_pit_tag_denied_or_color_A, appDataPitTag.pit_tags_list[i], appDataPitTag.reward_probability[i] );
                 }
-            } 
-            
+            }
+
         }
         else
-        {        
-            if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number)
+        {
+            if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number )
             {
                 printf( "\tPIT tags associated with color A\n" );
             }
-            else if ( GO_NO_GO == appData.scenario_number)
+            else if ( GO_NO_GO == appData.scenario_number )
             {
                 if ( LEFT_RIGHT_LEDS == appDataAttractiveLeds.pattern_number )
                 {
@@ -1957,29 +1980,37 @@ void config_print( void )
                 {
                     printf( "\tPIT tags associated with top attractive LEDs\n" );
                 }
-                else if ( appDataAttractiveLeds.pattern_number > ALL_LEDS)
+                else if ( appDataAttractiveLeds.pattern_number > ALL_LEDS )
                 {
                     printf( "\tPIT tags associated with pattern 1/2\n" );
                 }
             }
-            else 
+            else
             {
                 printf( "\tPIT tags denied\n" );
             }
 
-            if ( appDataPitTag.numPitTagDeniedOrColorA > 0 )
+            if ( ALL_PIT_TAG_DENIED != appDataPitTag.num_pit_tag_denied_or_color_A && ALL_PIT_TAG_ACCEPTED != appDataPitTag.num_pit_tag_denied_or_color_A )
             {
-                for ( i = 0; i < appDataPitTag.numPitTagDeniedOrColorA; ++i )
+                for ( i = 0; i < appDataPitTag.num_pit_tag_denied_or_color_A; ++i )
                 {
                     printf( "\t\t%03d: %s\n", i + 1, appDataPitTag.pit_tags_list[i] );
                 }
             }
+            else if ( ALL_PIT_TAG_DENIED == appDataPitTag.num_pit_tag_denied_or_color_A )
+            {
+                printf( "\t\tnone (%d)\n", ALL_PIT_TAG_DENIED );
+            }
+            else if ( ALL_PIT_TAG_ACCEPTED == appDataPitTag.num_pit_tag_denied_or_color_A )
+            {
+                printf( "\t\tall (%d)\n", ALL_PIT_TAG_ACCEPTED );
+            }
 
-            if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number)
+            if ( COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number )
             {
                 printf( "\tPIT tags associated with color B\n" );
             }
-            else if ( GO_NO_GO == appData.scenario_number)
+            else if ( GO_NO_GO == appData.scenario_number )
             {
                 if ( LEFT_RIGHT_LEDS == appDataAttractiveLeds.pattern_number )
                 {
@@ -1989,7 +2020,7 @@ void config_print( void )
                 {
                     printf( "\tPIT tags associated with bottom attractive LEDs\n" );
                 }
-                else if ( appDataAttractiveLeds.pattern_number > ALL_LEDS)
+                else if ( appDataAttractiveLeds.pattern_number > ALL_LEDS )
                 {
                     printf( "\tPIT tags associated with pattern 2/2\n" );
                 }
@@ -1999,15 +2030,23 @@ void config_print( void )
                 printf( "\tPIT tags accepted\n" );
             }
 
-            if ( appDataPitTag.numPitTagAcceptedOrColorB > 0 )
+            if ( ALL_PIT_TAG_DENIED != appDataPitTag.num_pit_tag_accepted_or_color_B && ALL_PIT_TAG_ACCEPTED != appDataPitTag.num_pit_tag_accepted_or_color_B )
             {
-                for ( i = appDataPitTag.numPitTagDeniedOrColorA; i < ( appDataPitTag.numPitTagDeniedOrColorA + appDataPitTag.numPitTagAcceptedOrColorB ); ++i )
+                for ( i = appDataPitTag.num_pit_tag_denied_or_color_A; i < ( appDataPitTag.num_pit_tag_denied_or_color_A + appDataPitTag.num_pit_tag_accepted_or_color_B ); ++i )
                 {
-                    printf( "\t\t%03d: %s\n", i + 1 - appDataPitTag.numPitTagDeniedOrColorA, appDataPitTag.pit_tags_list[i] );
+                    printf( "\t\t%03d: %s\n", i + 1 - appDataPitTag.num_pit_tag_denied_or_color_A, appDataPitTag.pit_tags_list[i] );
                 }
             }
+            else if ( ALL_PIT_TAG_DENIED == appDataPitTag.num_pit_tag_accepted_or_color_B )
+            {
+                printf( "\t\tnone (%d)\n", ALL_PIT_TAG_DENIED );
+            }
+            else if ( ALL_PIT_TAG_ACCEPTED == appDataPitTag.num_pit_tag_accepted_or_color_B )
+            {
+                printf( "\t\tall (%d)\n", ALL_PIT_TAG_ACCEPTED );
+            }
         }
-        
+
     }
 
     printf( "\n" );
@@ -2091,10 +2130,10 @@ void getIniPbChar( INI_READ_STATE state, char *buf, uint8_t n )
             break;
         case INI_PB_ATTRACTIVE_LEDS_PATTERN:
             snprintf( buf, n, "Attractive LEDs: pattern" );
-            break;    
+            break;
         case INI_PB_ATTRACTIVE_LEDS_PATTERN_PERCENT:
             snprintf( buf, n, "Attractive LEDs: pattern percent" );
-            break; 
+            break;
         case INI_PB_PIT_TAG_LEFT:
             snprintf( buf, n, "PIT tags: left LEDs" );
             break;
@@ -2109,28 +2148,28 @@ void getIniPbChar( INI_READ_STATE state, char *buf, uint8_t n )
             break;
         case INI_PB_PIT_TAG_LED_1:
             snprintf( buf, n, "PIT tags: LED 1" );
-            break;   
+            break;
         case INI_PB_PIT_TAG_LED_2:
             snprintf( buf, n, "PIT tags: LED 2" );
-            break; 
+            break;
         case INI_PB_PIT_TAG_LED_3:
             snprintf( buf, n, "PIT tags: LED 3" );
-            break; 
+            break;
         case INI_PB_PIT_TAG_LED_4:
             snprintf( buf, n, "PIT tags: LED 4" );
-            break;  
+            break;
         case INI_PB_PIT_TAG_COLOR_A:
             snprintf( buf, n, "PIT tags: color A" );
             break;
         case INI_PB_PIT_TAG_COLOR_B:
             snprintf( buf, n, "PIT tags: color B" );
-            break;   
+            break;
         case INI_PB_PIT_TAG_DENIED:
             snprintf( buf, n, "PIT tags: denied" );
             break;
         case INI_PB_PIT_TAG_ACCEPTED:
             snprintf( buf, n, "PIT tags: accepted" );
-            break; 
+            break;
         case INI_PB_DOOR_CLOSE_POSITION:
             snprintf( buf, n, "Door: close position" );
             break;
@@ -2181,23 +2220,23 @@ void getIniPbChar( INI_READ_STATE state, char *buf, uint8_t n )
             break;
         case INI_PB_TIMEOUTS_PIR:
             snprintf( buf, n, "Timeouts: pir" );
-            break;   
+            break;
         case INI_PB_TIMEOUTS_UNIQUE_VISIT:
             snprintf( buf, n, "Timeouts: unique visit" );
-            break;         
+            break;
         case INI_PB_PUNISHMENT_DELAY:
             snprintf( buf, n, "Punishment: delay" );
             break;
         case INI_PB_PUNISHMENT_PROBA_THRESH:
             snprintf( buf, n, "Punishment: probability threshold" );
-            break;   
+            break;
         case INI_PB_CHECK_FOOD_LEVEL:
             snprintf( buf, n, "Check: food level" );
-            break;    
+            break;
         case INI_PB_SECURITY_BIRD_REWARD_REOPEN:
             snprintf( buf, n, "Security: reopen x10" );
-            break; 
-            
+            break;
+
         default:
             snprintf( buf, n, "Error not listed" );
             break;

@@ -1,34 +1,3 @@
-/**
-  Generated Main Source File
-
-  Company:
-    Microchip Technology Inc.
-
-  File Name:
-    main.c
-
-  Summary:
-    This is the main file generated using MPLAB(c) Code Configurator
-    Implement on OpenFeeder board02
-    Configure firmware option in \firmwares\fw02\src\app\app.h
-
-  Description:
-    This header file provides implementations for driver APIs for all modules selected in the GUI.
-    Generation Information :
-        Product Revision  :  MPLAB(c) Code Configurator - pic24-dspic-pic32mm : v1.25
-        Device            :  PIC24FJ256GB406
-        Driver Version    :  0.5
-    The generated drivers are tested against the following:
-        Compiler          :  XC16 1.31
-        MPLAB             :  MPLAB X 3.55
- 
-  Source of inspiration:
-    Project "USB Host - MSD - Simple" from Microchip Libraries for Applications (MLA) 
-        C:\microchip\mla\v2016_11_07\apps\usb\host\msd_simple_demo\firmware\demo_src\main.c
-    Project "minIni" from http://www.compuphase.com/minini.htm
-        https://github.com/compuphase/minIni
- */
-
 /*
     (c) 2016 Microchip Technology Inc. and its subsidiaries. You may use this
     software and any derivatives exclusively with Microchip products.
@@ -60,116 +29,6 @@
  * @date 13/02/2017
  */
 
-/**
- * ------------------------------- Coding style -------------------------------
- * info: http://tdinfo.phelma.grenoble-inp.fr/2Aproj/fiches/coding_styles.pdf
- * 
- * Le passage de paramètres entre les différentes fonctions du sytème se fait
- * par variables globales. Par exemple la commande du servomoteur entre
- * servomotor, tmr3...
- * 
- */
-
-/**
- * ---------------------------- Naming convention -----------------------------
- * -WorkInProgress-
- * Variables glogales et fonctions
- *   Minuscule pour le premier mot, majuscule ensuite.
- * Ex: les noms des fonctions suivent la convention de nommage suivante:
- *   lowerCamelCase --> ceciEstUneFonction
- * 
- * Les noms des variables locales suivent la convention de nommage suivante:
- *   snake_case --> ceci_est_une_variable_locale
- * 
- * Les variables pointeur seront identifiées en placant "p_" au début de leurs noms.
- *   ex: p_tabPitTagsDenied
- * 
- */
-
-/**
- * --------------------------- Documentations links ----------------------------
- *  > OpenFeeder Board v2_0
- *    https://drive.google.com/open?id=1EUuRprU-K5NVF4FKyMJyoSdlVwXycWjznXlICHy2UsM
- * 
- *  > PIC24FJ256GB406 resources for proto v2_0
- *    https://drive.google.com/open?id=1iViNcH4uDjHy5RbMI0lRRTmK-bU2HOEeX6FlfLEffbg
- */
-
-/** 
- * ------------------ Definition and wiring for this project -------------------
- *  Debugging Interface:
- *  Used UART1 at 9600 bauds for communication (9600/8-N-1, see https://en.wikipedia.org/wiki/8-N-1)
- *  see https://fr.wikipedia.org/wiki/RS-232
- *  RB14/UART1_RX --> U1RX
- *  RB15/UART1_TX --> U1TX
- * 
- *  RFID with EM4095:
- *  . Output "RE00/EM4095_SHD" control EM4095 Shutdown
- *  25.5 ms is necessary for the module EM4095 to be activate, and function during 135 ms
- *  RE0 --> EM4095_SHD (toggle in tmr4.c)
- *  . Use INT4 to capture the falling edge of EM4095 DEMOD_OUT signal
- *  RD02/EM4095_DEMOD_OUT --> EXT_INT:INT4;
- *  . Use Timer4 to capture the value of EM4095 DEMOD_OUT signal every 442 us
- * 
- *  RGB LED status:
- *  RE05/LED_STATUS_R --> LED_STATUS_R
- *  RE06/LED_STATUS_G --> LED_STATUS_G
- *  RE07/LED_STATUS_B --> LED_STATUS_B
- * 
- *  --> 24-bit RGB
- *  256^3 = 16,777,216 colors (TrueColor)
- *  True color (24-bit) RGB24 color selected in file "CONFIG.INI".
- *  Each color ranges from 0 to 255, digital 8-bit per channel (R, G, B).
- *  Exemple "Red"   RGB triplet: (255, 0, 0) or Hex triplet: #FF0000
- *  Exemple "Green" RGB triplet: (0, 255, 0) or Hex triplet: #00FF00
- *  Exemple "Blue"  RGB triplet: (0, 0, 255) or Hex triplet: #0000FF
- *  https://en.wikipedia.org/wiki/List_of_colors_(compact)
- * 
- *  OC4 in PWM mode at 38 kHz (with TMR4 period 26.3 us)
- *  pin RD06/PWM_LED_IR --> BAR_IR_PWM
- * 
- *  OC5 in PWM mode at 50 Hz (with TMR3 period 20 ms)
- *  pin RD07/PWM_SERVO --> CMD_SERVO
- *  and RF01/CMD_VCC_SERVO use to command VDD_SERVO (5V)
- * 
- *  I2C Multiplexage of MCP23017 every 3.744 ms with TMR
- * 
- * C:\git\openfeeder\firmwares\fw02\src\driver\ir_sensor.c
- * IR2 take 50 ms to check food with 60 ms, and with 200 ms delay is taking 330 ms and powering for 585 ms
- * 
- * on PIC24FJ256GB406
- *   - RTCC_OUT --> Output of the RTCC clock signal = 1 Hz
- *   - Pins available:
- *      SPARE1: RE02/SPARE_4
- *      SPARE2: RE03/SPARE_5
- *      SPARE3: RE04
- *      SPARE4: RF00/PWM6
- */
-
-/**
- * ------------------------------ Demo OpenFeeder ------------------------------
- * > Interface firmware terminal (Debug)
- *   - RTCC module:
- *     . send 'T' --> Read date and time from the RTCC module
- *     . send 'S' --> Set RTCC module date and time (ex: 22/08/2016 15:59:30 --> 22 <CR> 8 <CR> 16 <CR> 15 <CR> 59 <CR> 30 <CR>)
- *   - Attractive RGB LED:
- *     . send 'R' --> Set PWM duty cycle of Red color (0-255, example for 50%: 128 <CR>)
- *     . send 'G' --> Set PWM duty cycle of Green color (0-255)
- *     . send 'B' --> Set PWM duty cycle of Blue color (0-255)
- *   - Servomotor:
- *     . send 'V' --> Powering servomotor enable/disable
- *     . send 'A' --> Measure analog servomotor position (ADC return analog value from 550 < HS-322HD < 2524, servomotor power must be enable)
- *     . send 'P' --> Change servomotor position (600 < HS-322HD < 2400, ex: 1500 <CR>)
- *     . send 'O' --> Open reward door
- *     . send 'C' --> Close reward door
- *   - IR sensor module (need TMR4 to generate 38 kHz from PWM4):
- *     . send 'I' --> IR power setting ON
- *     . send 'J' --> IR power setting OFF
- *   - RFID module reader:
- *     . send 'E' --> Measuring RDY/CLK period of EM4095 device
- *   - USB status:
- *     . send 'U': display USB device status 
- */
 
 #include "mcc.h"
 #include "app.h"
@@ -261,16 +120,19 @@ int main( void )
     /* Initialize the application. */
     APP_Initialize( );
       
+    /* If the user button is not pressed => enter normal mode */
     if ( BUTTON_NOT_PRESSED == USER_BUTTON_GetValue( ) )
     {
         
         store_event(OF_ENTER_NORMAL_MODE);
         
 #if defined (USE_UART1_SERIAL_INTERFACE)
-        /* Display information on serial terminal. */
+        /* Display boot message */
         displayBootMessage( );
 #endif
 
+        /* Blink status LEDs if reset ??? */
+        /* TODO */
         if ( 2101 == appData.reset_status_num || 2107 == appData.reset_status_num )
         {          
             setLedsStatusColor( LEDS_ON );
@@ -286,22 +148,23 @@ int main( void )
             USBTasks( );
 
             /* Maintain the application's state machine. */
-            APP_Tasks( ); /* application specific tasks */ 
-            
-#if defined (USE_UART1_SERIAL_INTERFACE)
-            /* Get interaction with the serial terminal. */
-            APP_SerialDebugTasks( );
-#endif
-            
+            APP_Tasks( ); /* application specific tasks */  
         }
     }
+    /* If the user button is pressed => enter debug mode */
     else
     {
         
         store_event(OF_ENTER_DEBUG_MODE);
         
-        printf( "\n\nEnter in serial debug mode...\n" );
+        printf( "\n\n/!\\ ...DEBUG MODE... /!\\\n\n" );
 
+ #if defined (USE_UART1_SERIAL_INTERFACE)
+        /* Display boot message */
+        displayBootMessage( );
+#endif
+        printf( "\n\n/!\\ ...DEBUG MODE... /!\\\n\n" );
+        
         /* Status LED blinks */
         TMR3_Start( );                
         for (i=0;i<3;i++)
@@ -314,11 +177,6 @@ int main( void )
             while ( 0 == isDelayMsEnding( ) ); 
         }
         TMR3_Stop( );
-                
-#if defined (DISPLAY_RESET_REGISTERS)
-        /* Display reset registers. */
-        displayResetRegisters( );
-#endif
 
         OC4_Stop( );
         OC5_Stop( );
@@ -336,14 +194,16 @@ int main( void )
         else
         {
             sprintf( appError.message, "Unable to initialize attractive LEDS via I2C" );
-            appError.currentLineNumber = __LINE__;
-            sprintf( appError.currentFileName, "%s", __FILE__ );
+            appError.current_line_number = __LINE__;
+            sprintf( appError.current_file_name, "%s", __FILE__ );
             appError.number = ERROR_ATTRACTIVE_LED_INIT;
             appData.state = APP_STATE_ERROR;
         }
         
         TMR3_Start( ); 
-
+        printf( "\tTimer 3 started\n" );
+        printf( "\tReady\n" );
+        
         while ( 1 )
         {
             /* Maintain Device Drivers. */

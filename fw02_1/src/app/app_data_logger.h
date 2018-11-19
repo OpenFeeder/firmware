@@ -24,6 +24,9 @@
 #define ERRORS_LOG_FILE "ERRORS.CSV"
 #define CALIBRATION_LOG_FILE "TIMCALIB.CSV"
 
+#define FLUSH_DATA_ON_USB_DEVICE_FAIL -1
+#define FLUSH_DATA_ON_USB_DEVICE_SUCCESS 0
+
 #define sizearray(a)  (sizeof(a) / sizeof((a)[0]))
 
 typedef struct
@@ -36,9 +39,9 @@ typedef struct
     /* Character buffer to store data before export to the log file */
     char buffer[MAX_CHAR_PER_LINE * MAX_NUM_DATA_TO_STORE];
     /* Number of written characters in the buffer */
-    unsigned int nCharBuffer;
+    unsigned int num_char_buffer;
     /* Number of line stored in the buffer */
-    uint8_t numDataStored;
+    uint8_t num_data_stored;
 
     /* Bird Data */
     struct tm bird_arrived_time;
@@ -56,16 +59,16 @@ typedef struct
     uint8_t door_status_when_bird_arrived;
 
     int16_t battery_level[24][2];
-    uint8_t numBatteryLevelStored;
+    uint8_t num_battery_level_stored;
 
     int16_t rfid_freq[96][3];
-    uint8_t numRfidFreqStored;
+    uint8_t num_rfid_freq_stored;
     
     double  time_calibration[96][3];
-    uint8_t numTimeCalibStored;
+    uint8_t num_time_calib_stored;
     
     float ds3231_temp[96][3];
-    uint8_t numDs3231TempStored;
+    uint8_t num_ds3231_temp_stored;
     
     bool data_flush_before_error;
     
@@ -89,6 +92,8 @@ void clearRfidFreqBuffer( void );
 void clearExtTemperatureBuffer(void);
 void clearBatteryBuffer( void );
 void clearCalibrationBuffer( void );
+
+int flushDataOnUsbDevice( void );
 
 FILEIO_RESULT logBatteryLevel( void );
 FILEIO_RESULT logRfidFreq( void );

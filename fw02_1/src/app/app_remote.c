@@ -107,7 +107,7 @@ void APP_remoteControlTask( void )
 #endif
             }
 
-            switch ( appData.buttonPressed )
+            switch ( appData.button_pressed )
             {
                 case BUTTON_DOWN:
                 case BUTTON_UP:
@@ -117,7 +117,7 @@ void APP_remoteControlTask( void )
                     print7Segments( menu.name );
                     displayDigitFixe( );
                     appDataRc.state = APP_STATE_RC_IDLE;
-                    appData.buttonPressed = BUTTON_READ;
+                    appData.button_pressed = BUTTON_READ;
                     break;
 
                 default:
@@ -136,7 +136,7 @@ void APP_remoteControlTask( void )
                 displayDigitFixe( );
             }
 
-            switch ( appData.buttonPressed )
+            switch ( appData.button_pressed )
             {
                 case BUTTON_DOWN:
                     if ( menu.nextMenu != NO )
@@ -147,7 +147,7 @@ void APP_remoteControlTask( void )
 
                     displayDigitFixe( );
                     appDataRc.state = APP_STATE_RC_IDLE;
-                    appData.buttonPressed = BUTTON_READ;
+                    appData.button_pressed = BUTTON_READ;
                     break;
 
                 case BUTTON_UP:
@@ -159,7 +159,7 @@ void APP_remoteControlTask( void )
 
                     displayDigitFixe( );
                     appDataRc.state = APP_STATE_RC_IDLE;
-                    appData.buttonPressed = BUTTON_READ;
+                    appData.button_pressed = BUTTON_READ;
                     break;
 
                 case BUTTON_RIGHT:
@@ -169,7 +169,7 @@ void APP_remoteControlTask( void )
                         printCurrentMenu( );
                         displayDigitFixe( );
                         appDataRc.state = APP_STATE_RC_IDLE;
-                        appData.buttonPressed = BUTTON_READ;
+                        appData.button_pressed = BUTTON_READ;
                         break;
                     }
 
@@ -187,13 +187,13 @@ void APP_remoteControlTask( void )
                         //#endif    
                         displayDigitBlink( currentDigitPosition );
                         appDataRc.state = APP_STATE_RC_MANIPULATE_DIGIT;
-                        appData.buttonPressed = BUTTON_READ;
+                        appData.button_pressed = BUTTON_READ;
                         break;
                     }
 
                     displayDigitFixe( );
                     appDataRc.state = APP_STATE_RC_IDLE;
-                    appData.buttonPressed = BUTTON_READ;
+                    appData.button_pressed = BUTTON_READ;
                     break;
 
                 case BUTTON_LEFT:
@@ -205,7 +205,7 @@ void APP_remoteControlTask( void )
 
                     displayDigitFixe( );
                     appDataRc.state = APP_STATE_RC_IDLE;
-                    appData.buttonPressed = BUTTON_READ;
+                    appData.button_pressed = BUTTON_READ;
                     break;
 
                 default:
@@ -222,20 +222,20 @@ void APP_remoteControlTask( void )
 #endif
             }
 
-            switch ( appData.buttonPressed )
+            switch ( appData.button_pressed )
             {
                 case BUTTON_UP:
                     currentDigitModificationDirection = 1;
                     modifyCurrentDigit( currentDigitPosition, currentDigitModificationDirection );
                     setCurrentMenuValue( );
-                    appData.buttonPressed = BUTTON_READ;
+                    appData.button_pressed = BUTTON_READ;
                     break;
 
                 case BUTTON_DOWN:
                     currentDigitModificationDirection = -1;
                     modifyCurrentDigit( currentDigitPosition, currentDigitModificationDirection );
                     setCurrentMenuValue( );
-                    appData.buttonPressed = BUTTON_READ;
+                    appData.button_pressed = BUTTON_READ;
                     break;
 
                 case BUTTON_RIGHT:
@@ -254,7 +254,7 @@ void APP_remoteControlTask( void )
                     //                    printf("Current digit position: %d (MANIPULATE_DIGIT)\n", currentDigitPosition);
                     //#endif 
 
-                    appData.buttonPressed = BUTTON_READ;
+                    appData.button_pressed = BUTTON_READ;
                     break;
 
                 case BUTTON_LEFT:
@@ -283,7 +283,7 @@ void APP_remoteControlTask( void )
                     //                    printf("Current digit position: %d (MANIPULATE_DIGIT)\n", currentDigitPosition);
                     //#endif 
 
-                    appData.buttonPressed = BUTTON_READ;
+                    appData.button_pressed = BUTTON_READ;
                     break;
 
                 default:

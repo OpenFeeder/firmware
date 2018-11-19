@@ -32,25 +32,25 @@ volatile uint8_t g_timeout_punishment_x20ms;
 
 void TMR2_CallBack( void )
 {
-    static volatile uint8_t CountCmdMultiplex = 0;
+    static volatile uint8_t count_cmd_multiplex = 0;
 
     /* Multiplexing LEDs, either every 3 ms, measuring = 3.744 ms */
     // ticker is 0.003/0.000031875= 94 -> Callback function gets called everytime this ISR executes
-    if ( appData.flags.bit_value.RemoteControlConnected )
+    if ( appData.flags.bit_value.remote_control_connected )
     {
         //        LED_STATUS_B_Toggle( ); // FIXME: Debug display
         //        if ( appData.mcp23017.status_bit.found )
         //        {
-        if ( ++CountCmdMultiplex > 94 )
+        if ( ++count_cmd_multiplex > 94 )
         {
-            CountCmdMultiplex = 0; /* reset ticker counter */
+            count_cmd_multiplex = 0; /* reset ticker counter */
             if ( APP_isRemoteControlConnected( ) )
             {
                 APP_MultiplexingLEDsTasks( ); /* Multiplexing LEDs on I2C Control Device board. (duration: 474 us) */
             }
             else
             {
-                appData.flags.bit_value.RemoteControlConnected = false;
+                appData.flags.bit_value.remote_control_connected = false;
                 //                    appData.mcp23017.status_bit.found = false;
                 appData.mcp23017.status_bit.initialized = false;
             }

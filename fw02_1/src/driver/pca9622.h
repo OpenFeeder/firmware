@@ -67,7 +67,7 @@ I2C1_MESSAGE_STATUS I2C1_MasterWritePCA9622( const uint16_t addr7bits,
                                              uint8_t *p_data,
                                              const uint8_t data_len );
 
-I2C1_MESSAGE_STATUS I2C1_PCA9622_SoftwareReset( void );
+bool I2C1_PCA9622_SoftwareReset( void );
 
 
 #endif	/* _PCA9622_HEADER_H */
