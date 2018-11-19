@@ -19,7 +19,7 @@ volatile bool g_new_value_of_em4095_rdyclk_measurement = false;
 RFID_STATES g_rfid_reading_status; // for serial display of state machine process of EM4095
 RFID_STATES g_rfid_reading_status_previous;
 volatile uint8_t g_timeout_reading_pit_tag;
-extern volatile uint16_t rdyclk_count_in_10ms;
+extern volatile uint16_t g_rdyclk_count_in_10ms;
 
 /* Binary to Ascii text converter with simple lookup array */
 const char bin2ascii_tab[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
