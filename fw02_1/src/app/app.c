@@ -242,6 +242,13 @@ void APP_Tasks( void )
                     break;
                 }
 
+                /* Flush data on USB device */
+                if ( FLUSH_DATA_ON_USB_DEVICE_SUCCESS != flushDataOnUsbDevice( ) )
+                {
+                    appData.state = APP_STATE_ERROR;
+                    break;
+                }
+                
                 /* Log the Unique Devide ID is required */
                 if ( true == appDataLog.log_udid )
                 {

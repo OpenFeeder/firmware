@@ -116,7 +116,8 @@ typedef enum
     OF_PUNISHMENT_STOP,
     OF_PIT_TAG_OK,
     OF_PIT_TAG_X,
-    OF_PIT_TAG_U
+    OF_PIT_TAG_U,
+    OF_FLUSH_DATA_ON_USB_DEVICE
         
 } APP_EVENT;
 

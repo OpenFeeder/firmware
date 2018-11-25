@@ -846,6 +846,12 @@ int flushDataOnUsbDevice( )
 {
     setLedsStatusColor( LED_USB_ACCESS );
 
+    /* Log event if required */
+    if ( true == appDataLog.log_events )
+    {
+        store_event( OF_FLUSH_DATA_ON_USB_DEVICE );
+    }
+    
     if ( USB_DRIVE_NOT_MOUNTED == usbMountDrive( ) )
     {
         appDataUsb.is_device_needed = false;

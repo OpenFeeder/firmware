@@ -105,6 +105,8 @@ void RTCC_Initialize(void)
    // RTCEN enabled; OUTSEL Seconds Clock; PWCPOE disabled; TSBEN disabled; PWCEN disabled; WRLOCK enabled; PWCPOL disabled; TSAEN enabled; RTCOE enabled; 
    RTCCON1L = 0x8B91; 
     
+   // Enable RTCC, clear RTCWREN 
+   RTCCON1Lbits.RTCEN = 1;
    RTCC_Lock();
 
    IEC3bits.RTCIE = 1;
@@ -129,7 +131,7 @@ bool RTCC_TimeGet(struct tm *currentTime)
     }
 
  
-    __builtin_write_RTCC_WRLOCK();
+//    __builtin_write_RTCC_WRLOCK();
  
     register_value = DATEH;
     currentTime->tm_year = ConvertBCDToHex((register_value & 0xFF00) >> 8);
@@ -146,7 +148,7 @@ bool RTCC_TimeGet(struct tm *currentTime)
     register_value = TIMEL;
     currentTime->tm_sec = ConvertBCDToHex((register_value & 0xFF00) >> 8);
 
-    RTCC_Lock();
+//    RTCC_Lock();
 
     return true;
 }
@@ -189,7 +191,7 @@ bool RTCC_BCDTimeGet(bcdTime_t *currentTime)
     }
 
 
-    __builtin_write_RTCC_WRLOCK();
+//    __builtin_write_RTCC_WRLOCK();
    
     register_value = DATEH;
     currentTime->tm_year = (register_value & 0xFF00) >> 8;
@@ -206,7 +208,7 @@ bool RTCC_BCDTimeGet(bcdTime_t *currentTime)
     register_value = TIMEL;
     currentTime->tm_sec = (register_value & 0xFF00) >> 8;
 
-    RTCC_Lock();
+//    RTCC_Lock();
 
     return true;
 }
