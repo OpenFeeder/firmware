@@ -428,48 +428,6 @@ void APP_Tasks( void )
                 break;
             }
 
-            /* If a new bird is detected by the PIR sensor */
-            if ( true == is_bird_detected )
-            {
-
-                /* Disable PIR sensor interruption */
-                EX_INT0_InterruptFlagClear( );
-                EX_INT0_InterruptDisable( );
-
-                /* Get landing time */
-                while ( !RTCC_TimeGet( &appDataLog.bird_arrived_time ) )
-                {
-                    Nop( );
-                }
-                
-#if defined ( USE_UART1_SERIAL_INTERFACE )
-                printf( "\tBird detected\n" );
-#endif                                
-                /* Initialised global variable datalogging. */
-                is_bird_detected = false;
-                appDataLog.is_reward_taken = false;
-                appDataLog.did_door_open = false;
-                clearPitTagBuffers( );
-
-                appDataLog.attractive_leds_current_color_index = appDataAttractiveLeds.current_color_index;
-
-                /* Get door position at landing time */
-                if ( DOOR_OPENED == appDataDoor.reward_door_status )
-                {
-                    appDataLog.door_status_when_bird_arrived = 1;
-                }
-                else
-                {
-                    appDataLog.door_status_when_bird_arrived = 0;
-                }
-
-                /* Go to RFID reading state */
-                appData.state = APP_STATE_RFID_READING_PIT_TAG;
-                break;
-            }
-            
-            /* Code below is executed only if no bird is detected */
-
 #if defined ( USE_UART1_SERIAL_INTERFACE )
             /* Get interaction with the serial terminal. */
             APP_SerialDebugTasks( );
@@ -541,6 +499,46 @@ void APP_Tasks( void )
             /* Green status LED blinks in idle mode. */
             LedsStatusBlink( LED_GREEN, LEDS_OFF, 25, 4975 );
 
+            /* If a new bird is detected by the PIR sensor */
+            if ( true == is_bird_detected )
+            {
+
+                /* Disable PIR sensor interruption */
+                EX_INT0_InterruptFlagClear( );
+                EX_INT0_InterruptDisable( );
+
+                /* Get landing time */
+                while ( !RTCC_TimeGet( &appDataLog.bird_arrived_time ) )
+                {
+                    Nop( );
+                }
+                
+#if defined ( USE_UART1_SERIAL_INTERFACE )
+                printf( "\tBird detected\n" );
+#endif                                
+                /* Initialised global variable datalogging. */
+                is_bird_detected = false;
+                appDataLog.is_reward_taken = false;
+                appDataLog.did_door_open = false;
+                clearPitTagBuffers( );
+
+                appDataLog.attractive_leds_current_color_index = appDataAttractiveLeds.current_color_index;
+
+                /* Get door position at landing time */
+                if ( DOOR_OPENED == appDataDoor.reward_door_status )
+                {
+                    appDataLog.door_status_when_bird_arrived = 1;
+                }
+                else
+                {
+                    appDataLog.door_status_when_bird_arrived = 0;
+                }
+
+                /* Go to RFID reading state */
+                appData.state = APP_STATE_RFID_READING_PIT_TAG;
+                break;
+            }
+            
             //#if defined (TEST_RTCC_SLEEP_WAKEUP)
             //            /* Next line for debugging sleep/wakeup only */
             //            /* Should be commented in normal mode */

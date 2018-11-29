@@ -170,9 +170,14 @@ void displayBootMessage( void )
     displayBuildDateTime( );
     printf( "\tFor board v3.0\n" );
     printf( "============================================\n\t" );
+    getDateTime( );
+    printDateTime( appData.current_time );
+    printf( "\n============================================\n\t" );
+    printResetSituation( );
+    printf( "============================================\n\t" );
     displayUniqueDeviceId( );
     printf( "============================================\n" );
-    printf( "\tWeb page: https://github.com/OpenFeeder\n" );
+    printf( "\tWeb: https://github.com/OpenFeeder\n" );
     printf( "\tMail: contact.openfeeder@gmail.com\n" );
     printf( "============================================\n" );
     printf( "\tType [?] key to display debug options.\n" );
@@ -252,7 +257,12 @@ void APP_SerialDebugTasks( void )
                 printf( "   - e or E: display errors file\n" );
                 printf( "   - i or I: display CONFIG.INI\n" );
                 printf( "   - l or L: list files\n" );
+                printf( "   - t or T: delete LOG files\n" );
+                printf( "   - u or U: delete CSV files\n" );
+                printf( "   - v or V: delete config files\n" );
+                printf( "   - w or W: delete BIN files\n" );
                 printf( "   - x or X: export files\n" );
+                printf( "   - z or Z: delete all files\n" );
                 printf( " k or K: USB device properties\n" );
                 printf( " l or L: scan I2C bus\n" ); //  --> 0x02, 0x06 and 0xE0
                 printf( " m or M: measure\n" );
@@ -695,11 +705,11 @@ void APP_SerialDebugTasks( void )
                 break;
                 /* -------------------------------------------------------------- */
 
-            case 'e':
-            case 'E':
-
-                /* Not used */
-                break;
+//            case 'e':
+//            case 'E':
+//
+//                /* Not used */
+//                break;
                 /* -------------------------------------------------------------- */
 
             case 'f':
@@ -712,10 +722,10 @@ void APP_SerialDebugTasks( void )
                 break;
                 /* -------------------------------------------------------------- */
 
-            case 'g':
-            case 'G':
-                /* Not used. */
-                break;
+//            case 'g':
+//            case 'G':
+//                /* Not used. */
+//                break;
                 /* -------------------------------------------------------------- */
 
             case 'h':
@@ -885,6 +895,15 @@ void APP_SerialDebugTasks( void )
                 switch ( user_choice )
                 {
 
+                    case 'a':
+                    case 'A':
+                        
+                        if ( FILEIO_RESULT_SUCCESS != importFiles( ) )
+                        {
+                            printf( appError.message );
+                        }
+                        break;
+                        
                     case 'C':
                     case 'c':
 
@@ -909,12 +928,141 @@ void APP_SerialDebugTasks( void )
                         listFilesOnUsbDevice( );
                         break;
 
+                    case 't':
+                    case 'T':
+                    {
+                        uint8_t user_choice;
+
+                        printf( "\tDo you really want to delete LOG files? (y/n)\r\n" );
+
+                        while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
+                        user_choice = UART1_Read( );
+
+                        switch ( user_choice )
+                        {
+                            case 'y':
+                            case 'Y':
+                            {
+                                deleteLogFiles( );
+                                break;
+                            }
+
+                            default:
+                                break;
+                        }
+                        
+                        break;
+                    }
+                    
+                    case 'u':
+                    case 'U':
+                    {
+                        uint8_t user_choice;
+
+                        printf( "\tDo you really want to delete CSV files? (y/n)\r\n" );
+
+                        while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
+                        user_choice = UART1_Read( );
+
+                        switch ( user_choice )
+                        {
+                            case 'y':
+                            case 'Y':
+                            {
+                                deleteCsvFiles( );
+                                break;
+                            }
+
+                            default:
+                                break;
+                        }
+                        
+                        break;
+                    }
+                        
+                    case 'v':
+                    case 'V':
+                    {
+                        uint8_t user_choice;
+
+                        printf( "\tDo you really want to delete configuration files? (y/n)\r\n" );
+
+                        while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
+                        user_choice = UART1_Read( );
+
+                        switch ( user_choice )
+                        {
+                            case 'y':
+                            case 'Y':
+                            {
+                                deleteConfigurationFiles( );
+                                break;
+                            }
+
+                            default:
+                                break;
+                        }
+                        
+                        break;
+                    }
+                    
+                    case 'w':
+                    case 'W':
+                    {
+                        uint8_t user_choice;
+
+                        printf( "\tDo you really want to delete BIN files? (y/n)\r\n" );
+
+                        while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
+                        user_choice = UART1_Read( );
+
+                        switch ( user_choice )
+                        {
+                            case 'y':
+                            case 'Y':
+                            {
+                                deleteEventFiles( );
+                                break;
+                            }
+
+                            default:
+                                break;
+                        }
+                        
+                        break;
+                    }
+
                     case 'x':
                     case 'X':
 
                         exportAllFiles( );
                         break;
+                        
+                    case 'z':
+                    case 'Z':
+                    {
+                        uint8_t user_choice;
 
+                        printf( "\tDo you really want to delete all files? (y/n)\r\n" );
+
+                        while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
+                        user_choice = UART1_Read( );
+
+                        switch ( user_choice )
+                        {
+                            case 'y':
+                            case 'Y':
+                            {
+                                deleteAllFiles( );
+                                break;
+                            }
+
+                            default:
+                                break;
+                        }
+                        
+                        break;
+                    }
                     default:
                         break;
 
@@ -1074,19 +1222,19 @@ void APP_SerialDebugTasks( void )
             }
                 /* -------------------------------------------------------------- */
 
-            case 'n':
-            case 'N':
-            {
-                /* Not used */
-                break;
-            }
-                /* -------------------------------------------------------------- */
-
-            case 'o':
-            case 'O':
-
-                /* Not used */
-                break;
+//            case 'n':
+//            case 'N':
+//            {
+//                /* Not used */
+//                break;
+//            }
+//                /* -------------------------------------------------------------- */
+//
+//            case 'o':
+//            case 'O':
+//
+//                /* Not used */
+//                break;
                 /* -------------------------------------------------------------- */
 
             case 'p':
@@ -1188,10 +1336,10 @@ void APP_SerialDebugTasks( void )
                 break;
                 /* -------------------------------------------------------------- */
 
-            case 'r':
-            case 'R':
-                /* Not used. */
-                break;
+//            case 'r':
+//            case 'R':
+//                /* Not used. */
+//                break;
                 /* -------------------------------------------------------------- */
 
             case 's':
@@ -1299,6 +1447,7 @@ void APP_SerialDebugTasks( void )
                 putchar( '\n' );
                 printf( "EXT: " );
                 printExtDateTime( );
+                putchar( '\r' );
                 putchar( '\n' );
                 break;
                 /* -------------------------------------------------------------- */
@@ -1340,16 +1489,16 @@ void APP_SerialDebugTasks( void )
                 break;
                 /* -------------------------------------------------------------- */
 
-            case 'v':
-            case 'V':
-                /* Not used */
-                break;
-                /* -------------------------------------------------------------- */
-
-            case 'w':
-            case 'W':
-                /* Not used */
-                break;
+//            case 'v':
+//            case 'V':
+//                /* Not used */
+//                break;
+//                /* -------------------------------------------------------------- */
+//
+//            case 'w':
+//            case 'W':
+//                /* Not used */
+//                break;
                 /* -------------------------------------------------------------- */
 
             case 'x':
@@ -1357,7 +1506,7 @@ void APP_SerialDebugTasks( void )
             {
                 uint8_t user_choice;
 
-                printf( "Do you really want to reset the system? (y/n)\r\n" );
+                printf( "\tDo you really want to reset the system? (y/n)\r\n" );
 
                 while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) );
                 user_choice = UART1_Read( );
@@ -1400,6 +1549,12 @@ void APP_SerialDebugTasks( void )
 
             default:
                 putchar( data_from_uart1 ); /* echo RX data if doesn't match */
+                putchar( ' ' );
+                putchar( '(' );
+                putchar( 'd' );
+                putchar( ')' );
+                putchar( 13 );
+                putchar( 10 );
                 break;
         }
     } /* end of if ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) */

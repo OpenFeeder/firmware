@@ -49,6 +49,8 @@
 //#define DISPLAY_PIT_TAG_INFO 
 //#define DEBUG_RFID_WORKING_ON_LED_STATUS // uncomment to display hardware trace in RFID decoding routine
 
+#define DISPLAY_RESET_INFORMATION
+
 #define DISPLAY_REWARD_PROBABILITY
 
 //#define DISPLAY_REMOTE_CONTROL_INFO 
@@ -269,7 +271,7 @@ typedef struct
         } bit_value;
     } reset_2;
     
-    uint16_t reset_status_num;
+//    uint16_t reset_status_num;
     
     /* Declaration of FLAGS type. */
     union

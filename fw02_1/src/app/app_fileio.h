@@ -33,16 +33,31 @@
 
 #include <xc.h> // include processor files - each processor file is guarded.  
 
-#define FILEIO_EXPORT_BUFFER_SIZE 200
+#define FILEIO_BUFFER_SIZE 200
 
 void listFilesOnUsbDevice( void );
+
 void displayIniFile( void );
 void displayErrorsFile( void );
 void displayCsvFiles( void );
+void displayFileErr( const char *, bool );
+
 void exportAllFiles( void );
 void exportFile( const char *, bool );
-void displayFileErr( const char *, bool );
-void daves_putU1( const char * , unsigned int );
+
+void deleteAllFiles( void );
+void deleteCsvFiles( void );
+void deleteEventFiles( void );
+void deleteLogFiles( void );
+void deleteConfigurationFiles( void );
+void deleteFile( const char * );
+
+FILEIO_RESULT importFiles( void );
+
+void updateConfigFiles( void );
+
+void write_on_UART1( const char * , unsigned int );
+void read_on_UART1( char *, unsigned int );
 
 #endif	/* APP_FILEIO_H */
 

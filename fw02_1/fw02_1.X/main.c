@@ -80,23 +80,23 @@ int main( void )
     getDeviceId();
     getUniqueDeviceId();
 
-    /* "dsPIC33/PIC24 Family Reference Manual", "Reset" (DS39712)
-     * 7.13 REGISTERS AND STATUS BIT VALUES, page 13 */
-    appData.reset_status_num = appData.reset_2.bit_value.vddbor +
-        (appData.reset_2.bit_value.vddpor<<1) +
-        (appData.reset_2.bit_value.vbpor<<2) +
-        (appData.reset_2.bit_value.vbat<<3) +
-        (appData.reset_1.bit_value.por<<4) +
-        (appData.reset_1.bit_value.bor<<5) +
-        (appData.reset_1.bit_value.cm<<6) +        
-        (appData.reset_1.bit_value.idle<<7) +
-        (appData.reset_1.bit_value.sleep<<8) +
-        (appData.reset_1.bit_value.wdto<<9) +
-        (appData.reset_1.bit_value.swr<<10) +
-        (appData.reset_1.bit_value.extr<<11) +
-        (appData.reset_1.bit_value.dpslp<<12) +
-        (appData.reset_1.bit_value.iopuwr<<13) +
-        (appData.reset_1.bit_value.trapr<<14);
+//    /* "dsPIC33/PIC24 Family Reference Manual", "Reset" (DS39712)
+//     * 7.13 REGISTERS AND STATUS BIT VALUES, page 13 */
+//    appData.reset_status_num = appData.reset_2.bit_value.vddbor +
+//        (appData.reset_2.bit_value.vddpor<<1) +
+//        (appData.reset_2.bit_value.vbpor<<2) +
+//        (appData.reset_2.bit_value.vbat<<3) +
+//        (appData.reset_1.bit_value.por<<4) +
+//        (appData.reset_1.bit_value.bor<<5) +
+//        (appData.reset_1.bit_value.cm<<6) +        
+//        (appData.reset_1.bit_value.idle<<7) +
+//        (appData.reset_1.bit_value.sleep<<8) +
+//        (appData.reset_1.bit_value.wdto<<9) +
+//        (appData.reset_1.bit_value.swr<<10) +
+//        (appData.reset_1.bit_value.extr<<11) +
+//        (appData.reset_1.bit_value.dpslp<<12) +
+//        (appData.reset_1.bit_value.iopuwr<<13) +
+//        (appData.reset_1.bit_value.trapr<<14);
 
     manageResetSituation( );
     
@@ -131,19 +131,12 @@ int main( void )
         displayBootMessage( );
 #endif
 
-        /* Blink status LEDs if reset ??? */
-        /* TODO */
-        if ( 2101 == appData.reset_status_num || 2107 == appData.reset_status_num )
-        {          
-            setLedsStatusColor( LEDS_ON );
-            setDelayMs( 5000 );
-            while ( 0 == isDelayMsEnding( ) ); 
-            setLedsStatusColor( LEDS_OFF );
-        }
-
         /* Main loop. */
         while ( 1 )
-        {            
+        {           
+            
+            ClrWdt();
+            
             /* Maintain Device Drivers. */
             USBTasks( );
 
@@ -200,12 +193,21 @@ int main( void )
             appData.state = APP_STATE_ERROR;
         }
         
+        /* Power USB device */
+        powerUsbRfidEnable( );
+        printf( "\tUSB power enable\n" );
+        /* Ask for the device */
+        appDataUsb.is_device_needed = true;
+                
         TMR3_Start( ); 
         printf( "\tTimer 3 started\n" );
         printf( "\tReady\n" );
         
         while ( 1 )
         {
+            
+            ClrWdt();
+            
             /* Maintain Device Drivers. */
             USBTasks( );
             

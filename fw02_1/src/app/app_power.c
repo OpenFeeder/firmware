@@ -158,102 +158,324 @@ void printBatteryLevel( void )
 
 void manageResetSituation( void )
 {
-    switch ( appData.reset_status_num)
+    
+    /* "dsPIC33/PIC24 Family Reference Manual", "Reset" (DS39712)
+     * 7.13 REGISTERS AND STATUS BIT VALUES, page 13 */
+    
+    /* Trap Event Reset */
+    if ( appData.reset_1.bit_value.trapr )
     {
-        case 1024: // Software reset
-            appData.dsgpr0.reg = DSGPR0;
-            store_event(OF_RESET_SWR);
-            break;
-            
-        case 2048:
-            store_event(OF_RESET_MCLR_RUN_MODE);
-            break;
-            
-        case 2101:
-            store_event(OF_RESET_POR);
-//#if defined (USE_UART1_SERIAL_INTERFACE) 
-//    printf( "\tWait %dms before stating application", DELAY_AFTER_POWERUP);
-//#endif 
-            setDelayMs( DELAY_AFTER_POWERUP );
-            while ( 0 == isDelayMsEnding( ) ); 
-            break;
-            
-        case 2107:
-            store_event(OF_RESET_VBAT);
-//#if defined (USE_UART1_SERIAL_INTERFACE) 
-//    printf( "\tWait %dms before stating application", DELAY_AFTER_POWERUP);
-//#endif 
-            setDelayMs( DELAY_AFTER_POWERUP );
-            while ( 0 == isDelayMsEnding( ) ); 
-            break;
-            
-        case 2176:
-            store_event(OF_RESET_MCLR_IDLE_MODE);
-            break;
-            
-        case 2304:
-            store_event(OF_RESET_MCLR_SLEEP_MODE);
-            break;
-            
-        default:
-            store_event(OF_RESET_OTHER);
-            break;
+        store_event(OF_RESET_TRAP_EVENT);
+        return;
     }
+    
+    /* Illegal Opcode / Uninitialized WREG */
+    if ( appData.reset_1.bit_value.iopuwr )
+    {
+        store_event(OF_RESET_ILLEGAL_OPCODE);
+        return;
+    }
+    
+    /* MCLR */
+    if ( appData.reset_1.bit_value.extr)
+    {
+        /* MCLR during Idle Mode */
+        if ( appData.reset_1.bit_value.idle )
+        {
+            store_event(OF_RESET_MCLR_IDLE_MODE);
+            return;
+        }
+        /* MCLR during Sleep Mode */
+        else if ( appData.reset_1.bit_value.sleep )
+        {
+            store_event(OF_RESET_MCLR_SLEEP_MODE);
+            return;
+        }
+        /* MCLR during Deep Sleep Mode */
+        else if ( appData.reset_1.bit_value.dpslp )
+        {
+            store_event(OF_RESET_MCLR_DEEP_SLEEP_MODE);
+            return;
+        }
+        /* MCLR during Run Mode */
+        else
+        {
+            store_event(OF_RESET_MCLR_RUN_MODE);
+            return; 
+        }
+    }
+    
+    /* SWR */
+    if ( appData.reset_1.bit_value.swr )
+    {
+        store_event(OF_RESET_SWR);
+        return;
+    }
+    
+    /* WDTO */
+    if ( appData.reset_1.bit_value.wdto )
+    {
+        /* WDT Time-out Reset during Idle Mode */
+        if ( appData.reset_1.bit_value.idle )
+        {
+            store_event(OF_RESET_WDT_IDLE_MODE);
+            return;
+        }
+        /* WDT Time-out Wake-up during Sleep Mode */
+        else if ( appData.reset_1.bit_value.sleep )
+        {
+            store_event(OF_RESET_WDT_SLEEP_MODE);
+            return;
+        }
+        /* WDT Time-out Reset during Run Mode */
+        else
+        {
+            store_event(OF_RESET_WDT_RUN_MODE);
+            return;
+        }
+    }
+    
+    /* Configuration Word Mismatch Reset */
+    if ( appData.reset_1.bit_value.cm )
+    {
+        store_event(OF_RESET_CONF_WORD_MISMATCH);
+        return;
+    }
+    
+    /* Deep Sleep Mode  */
+    if ( appData.reset_1.bit_value.dpslp )
+    {
+        store_event(OF_RESET_DEEP_SLEEP_MODE);
+        return;
+    }
+    
+    /* VBAT */
+    if ( appData.reset_2.bit_value.vbat )
+    {
+        /* Wake from VBAT mode with Discontinuous VBAT source */
+        if ( appData.reset_2.bit_value.vbpor )
+        {
+            store_event(OF_RESET_VBAT_DISCONT);
+            return;
+        }
+        /* Wake from Battery Backup with Continuous VBAT */
+        else
+        {
+            store_event(OF_RESET_VBAT_CONT);
+            return;
+        }
+    }
+    
+    /* POR */
+    if ( appData.reset_1.bit_value.bor && appData.reset_1.bit_value.por && appData.reset_2.bit_value.vddpor && appData.reset_2.bit_value.vddbor )
+    {
+        /* Power-on Reset */
+        if ( appData.reset_2.bit_value.vbpor )
+        {
+            store_event(OF_RESET_POR);
+#if defined (USE_UART1_SERIAL_INTERFACE) 
+            printf( "Wait %dms before starting application", DELAY_AFTER_POWERUP);
+#endif 
+            setDelayMs( DELAY_AFTER_POWERUP );
+            while ( 0 == isDelayMsEnding( ) );
+            return;
+        }
+        /* Power-on Reset on VDD */
+        else
+        {
+            store_event(OF_RESET_POR_VDD);
+#if defined (USE_UART1_SERIAL_INTERFACE) 
+            printf( "Wait %dms before starting application", DELAY_AFTER_POWERUP);
+#endif 
+            setDelayMs( DELAY_AFTER_POWERUP );
+            while ( 0 == isDelayMsEnding( ) );
+            return;
+        }
+    }
+    
+    /* Brown-out Reset */
+    if ( appData.reset_1.bit_value.bor && appData.reset_2.bit_value.vddbor )
+    {
+        store_event(OF_RESET_BROWN_OUT);
+        return;
+    }
+
+    /* Default */
+    store_event(OF_RESET_OTHER);
     
 }
     
 void printResetSituation( void )
 {
+    /* "dsPIC33/PIC24 Family Reference Manual", "Reset" (DS39712)
+     * 7.13 REGISTERS AND STATUS BIT VALUES, page 13 */
     
-//       printf("\n%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u\n", 
-//           appData.reset_1.bit_value.trapr,
-//           appData.reset_1.bit_value.iopuwr,
-//           appData.reset_1.bit_value.dpslp,
-//           appData.reset_1.bit_value.extr,
-//           appData.reset_1.bit_value.swr,
-//           appData.reset_1.bit_value.wdto,
-//           appData.reset_1.bit_value.sleep,
-//           appData.reset_1.bit_value.idle,
-//           appData.reset_1.bit_value.cm, 
-//           appData.reset_1.bit_value.bor,
-//           appData.reset_1.bit_value.por,
-//           appData.reset_2.bit_value.vbat,
-//           appData.reset_2.bit_value.vbpor,
-//           appData.reset_2.bit_value.vddpor,
-//           appData.reset_2.bit_value.vddbor);
-       
-//    printf("\nreset_status_num: %u\n", appData.reset_status_num);
-    
-    switch ( appData.reset_status_num)
+    /* Trap Event Reset */
+    if ( appData.reset_1.bit_value.trapr )
     {
-        case 1024:
-            printf( "\tSWR reset\n");
-            break;
-            
-        case 2048:
-            printf( "\tMCLR during Run Mode\n");
-            break;
-            
-        case 2101:
-            printf( "\tPOR reset\n");
-            break;
-            
-        case 2107:
-            printf( "\tVBAT reset\n");
-            break;
-            
-        case 2176:
-            printf( "\tMCLR during Idle Mode\n");
-            break;
-            
-        case 2304:
-            printf( "\tMCLR during Sleep Mode\n");
-            break;
-            
-        default:
-            printf("\tReset code not listed: %u\n", appData.reset_status_num);
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        printf( "Trap Event Reset\n");
+#endif 
+        return;
     }
     
+    /* Illegal Opcode / Uninitialized WREG */
+    if ( appData.reset_1.bit_value.iopuwr )
+    {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        printf( "Illegal Opcode / Uninitialized WREG\n");
+#endif 
+        return;
+    }
+    
+    /* MCLR */
+    if ( appData.reset_1.bit_value.extr)
+    {
+        /* MCLR during Idle Mode */
+        if ( appData.reset_1.bit_value.idle )
+        {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        printf( "MCLR during Idle Mode\n");
+#endif 
+            return;
+        }
+        /* MCLR during Sleep Mode */
+        else if ( appData.reset_1.bit_value.sleep )
+        {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        printf( "MCLR during Sleep Mode\n");
+#endif 
+            return;
+        }
+        /* MCLR during Deep Sleep Mode */
+        else if ( appData.reset_1.bit_value.dpslp )
+        {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        printf( "MCLR during Deep Sleep Mode\n");
+#endif 
+            return;
+        }
+        /* MCLR during Run Mode */
+        else
+        {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        printf( "MCLR during Run Mode\n");
+#endif 
+            return; 
+        }
+    }
+    
+    /* SWR */
+    if ( appData.reset_1.bit_value.swr )
+    {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        printf( "RESET Instruction\n");
+#endif 
+        return;
+    }
+    
+    /* WDTO */
+    if ( appData.reset_1.bit_value.wdto )
+    {
+        /* WDT Time-out Reset during Idle Mode */
+        if ( appData.reset_1.bit_value.idle )
+        {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        printf( "WDT Time-out Reset during Idle Mode\n");
+#endif 
+            return;
+        }
+        /* WDT Time-out Wake-up during Sleep Mode */
+        else if ( appData.reset_1.bit_value.sleep )
+        {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        printf( "WDT Time-out Wake-up during Sleep Mode\n");
+#endif 
+            return;
+        }
+        /* WDT Time-out Reset during Run Mode */
+        else
+        {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        printf( "WDT Time-out Reset during Run Mode\n");
+#endif 
+            return;
+        }
+    }
+    
+    /* Configuration Word Mismatch Reset */
+    if ( appData.reset_1.bit_value.cm )
+    {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        printf( "Configuration Word Mismatch Reset\n");
+#endif 
+        return;
+    }
+    
+    /* Deep Sleep Mode  */
+    if ( appData.reset_1.bit_value.dpslp )
+    {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        printf( "Deep Sleep Mode\n");
+#endif 
+        return;
+    }
+    
+    /* VBAT */
+    if ( appData.reset_2.bit_value.vbat )
+    {
+        /* Wake from VBAT mode with Discontinuous VBAT source */
+        if ( appData.reset_2.bit_value.vbpor )
+        {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        printf( "Wake from VBAT mode with Discontinuous VBAT source\n");
+#endif 
+            return;
+        }
+        /* Wake from Battery Backup with Continuous VBAT */
+        else
+        {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        printf( "Wake from Battery Backup with Continuous VBAT\n");
+#endif 
+            return;
+        }
+    }
+    
+    /* POR */
+    if ( appData.reset_1.bit_value.bor && appData.reset_1.bit_value.por && appData.reset_2.bit_value.vddpor && appData.reset_2.bit_value.vddbor )
+    {
+        /* Power-on Reset */
+        if ( appData.reset_2.bit_value.vbpor )
+        {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+            printf( "Power-on Reset\n");
+#endif 
+            return;
+        }
+        /* Power-on Reset on VDD */
+        else
+        {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+            printf( "Power-on Reset on VDD \n");
+#endif 
+            return;
+        }
+    }
+    
+    /* Brown-out Reset */
+    if ( appData.reset_1.bit_value.bor && appData.reset_2.bit_value.vddbor )
+    {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        printf( "Brown-out Reset\n");
+#endif 
+        return;
+    }
+
+    /* Default */
+#if defined (USE_UART1_SERIAL_INTERFACE)
+        printf( "Other Reset\n");
+#endif 
 }
 /*******************************************************************************
 End of File
