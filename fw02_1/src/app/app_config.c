@@ -692,7 +692,7 @@ INI_READ_STATE config_read_ini( void )
     appDataAlarmSleep.time.tm_sec = 0;
 
     /* Attractive LEDs Color. */
-    appData.flags.bit_value.attractive_leds_status = 0;
+    appData.flags.bit_value.attractive_leds_status = false;
     /* Check if "attractiveleds" is present in the INI file */
     for ( s = 0; ini_getsection( s, str, 20, "CONFIG.INI" ) > 0; s++ )
     {
@@ -879,6 +879,8 @@ INI_READ_STATE config_read_ini( void )
                 else
                 {
                     appDataAttractiveLeds.pattern_percent = ( uint8_t ) read_parameter;
+                    appDataAttractiveLeds.pattern_percent_bak = appDataAttractiveLeds.pattern_percent;
+                    
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
                     printf( "\tAttractive LEDs pattern percent... read.\n" );
 #endif
@@ -1828,6 +1830,11 @@ void config_print( void )
                     appDataAttractiveLeds.green[0],
                     appDataAttractiveLeds.blue[0] );
             printf( "\t\tAlternate delay: %us\n", appDataAttractiveLeds.alt_delay );
+            
+            if ( ALL_LEDS == appDataAttractiveLeds.pattern_number )
+            {
+                printf( "\t\tOn pattern percent: %u%%\n", appDataAttractiveLeds.pattern_percent_bak );
+            }
         }
 
         printf( "\t\tOn time: %02d:%02d\n",

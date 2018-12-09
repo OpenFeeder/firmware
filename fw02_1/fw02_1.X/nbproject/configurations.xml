@@ -183,7 +183,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>ICD3PlatformTool</platformTool>
         <languageToolchain>XC16</languageToolchain>
-        <languageToolchainVersion>1.35</languageToolchainVersion>
+        <languageToolchainVersion>5.77</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <packs>
@@ -382,6 +382,10 @@
         <property key="SPI 4" value="true"/>
         <property key="SecureSegment.SegmentProgramming" value="FullChipProgramming"/>
         <property key="TIMER 1" value="true"/>
+        <property key="TIMER 2" value="true"/>
+        <property key="TIMER 3" value="true"/>
+        <property key="TIMER 4" value="true"/>
+        <property key="TIMER 5" value="true"/>
         <property key="ToolFirmwareFilePath"
                   value="Press to browse for a specific firmware version"/>
         <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
@@ -526,7 +530,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>ICD3PlatformTool</platformTool>
         <languageToolchain>XC16</languageToolchain>
-        <languageToolchainVersion>1.35</languageToolchainVersion>
+        <languageToolchainVersion>5.77</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <packs>
@@ -725,6 +729,10 @@
         <property key="SPI 4" value="true"/>
         <property key="SecureSegment.SegmentProgramming" value="FullChipProgramming"/>
         <property key="TIMER 1" value="true"/>
+        <property key="TIMER 2" value="true"/>
+        <property key="TIMER 3" value="true"/>
+        <property key="TIMER 4" value="true"/>
+        <property key="TIMER 5" value="true"/>
         <property key="ToolFirmwareFilePath"
                   value="Press to browse for a specific firmware version"/>
         <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
@@ -736,7 +744,6 @@
         <property key="UART 6" value="true"/>
         <property key="USB" value="true"/>
         <property key="debugoptions.useswbreakpoints" value="false"/>
-        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="false"/>
@@ -1068,6 +1075,10 @@
         <property key="SPI 4" value="true"/>
         <property key="SecureSegment.SegmentProgramming" value="FullChipProgramming"/>
         <property key="TIMER 1" value="true"/>
+        <property key="TIMER 2" value="true"/>
+        <property key="TIMER 3" value="true"/>
+        <property key="TIMER 4" value="true"/>
+        <property key="TIMER 5" value="true"/>
         <property key="ToolFirmwareFilePath"
                   value="Press to browse for a specific firmware version"/>
         <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>

@@ -20,12 +20,9 @@
 #define ATTRACTIVE_LEDS_PATTERN_ON 0
 #define ATTRACTIVE_LEDS_PATTERN_OFF 1
 
-//#define MAX_NUMBER_OF_PATTERN 100
-//#define MAX_NUM_PATTERN_BEFORE_SAVE 50
-
 typedef struct
 {
-    uint8_t red[2]; // FIXME : uint16_t pass to uint8_t
+    uint8_t red[2];
     uint8_t green[2];
     uint8_t blue[2];
 
@@ -44,20 +41,11 @@ typedef struct
     bool pattern[4];    
     uint8_t leds_order[4];
     uint8_t leds_index[4];
-//    uint8_t pattern_one_led_num; // number in config.ini
-//    uint8_t pattern_one_led_idx; // index on the OF
     uint8_t pattern_one_led_current; // index on the OF
     uint8_t pattern_one_led_groups[3];
-    
-//    double pattern_percent;
+
     uint8_t pattern_percent;
-    
-//    uint8_t hours[MAX_NUMBER_OF_PATTERN];
-//    uint8_t minutes[MAX_NUMBER_OF_PATTERN];
-//    uint8_t seconds[MAX_NUMBER_OF_PATTERN];
-//    uint8_t patterns[4*MAX_NUMBER_OF_PATTERN];
-//    uint8_t num_patterns_stored;
-    
+    uint8_t pattern_percent_bak;    
 
 } APP_DATA_LEDS;
 

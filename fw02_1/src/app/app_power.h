@@ -13,24 +13,21 @@
  * si le pont de résistance fait une echelle de correspondance:
  * 16.0786 <--> 3.3
  * 16.0786/4096= 0.003925439453125
- * exemple: 12,11 V --> 3085
  * /!\ 11.5 V --> 2929 => mode SLEEP
  */
 
-#define DELAY_AFTER_POWERUP 2000
+#define DELAY_AFTER_POWERUP 1000
 
+/* 3145 --> 12.35 V */
 #define HIGH_BATTERY_LEVEL 3145
+/* 2929 --> 11.50 V */
 #define LOW_BATTERY_LEVEL 2929
 #define BATTERY_VOLTAGE_FACTOR 0.003925439453125
-// Change value 07/02/2017, but R20 and R21 not in place on PCB !!!
-//#define HIGH_BATTERY_LEVEL 3145
-//#define LOW_BATTERY_LEVEL 3783
-//#define BATTERY_VOLTAGE_FACTOR 0.00303951
 
 #define HIGH_VBAT_LEVEL 3830
 #define LOW_VBAT_LEVEL 3393
-//#define VBAT_VOLTAGE_FACTOR 0.000795827117474
-#define VBAT_VOLTAGE_FACTOR 0.0008056640625 // => 3.3/4096
+/* 3.3/4096 = 0.0008056640625 */
+#define VBAT_VOLTAGE_FACTOR 0.0008056640625 
 
 bool isPowerServoEnable( void );
 void powerPIREnable( void );

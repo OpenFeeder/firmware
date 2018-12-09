@@ -10,7 +10,7 @@
 
 
 /* Nb de caracteres max sur une ligne du fichier LOG. */
-#define MAX_CHAR_PER_LINE 70
+#define MAX_CHAR_PER_LINE 80
 
 /* Quantite de donnees a stocker dans le buffer avant ecriture dans le fichier LOG
  * --> donc nombre de passages d'oiseau
@@ -26,6 +26,11 @@
 
 #define FLUSH_DATA_ON_USB_DEVICE_FAIL -1
 #define FLUSH_DATA_ON_USB_DEVICE_SUCCESS 0
+
+#define NUM_BATTERY_LEVEL_TO_LOG 24
+#define NUM_RFID_FREQ_TO_LOG 96
+#define NUM_TIME_CALIBRATION_TO_LOG 96
+#define NUM_DS3231_TEMP_TO_LOG 96
 
 #define sizearray(a)  (sizeof(a) / sizeof((a)[0]))
 
@@ -47,7 +52,6 @@ typedef struct
     struct tm bird_arrived_time;
     struct tm bird_quit_time;
     char bird_pit_tag_str[11];
-//    bool bird_pir_sensor_status;
     bool is_pit_tag_denied;
     bool is_reward_taken;
     
@@ -58,16 +62,16 @@ typedef struct
 
     uint8_t door_status_when_bird_arrived;
 
-    int16_t battery_level[24][2];
+    int16_t battery_level[NUM_BATTERY_LEVEL_TO_LOG][2];
     uint8_t num_battery_level_stored;
 
-    int16_t rfid_freq[96][3];
+    int16_t rfid_freq[NUM_RFID_FREQ_TO_LOG][3];
     uint8_t num_rfid_freq_stored;
     
-    double  time_calibration[96][3];
+    double  time_calibration[NUM_TIME_CALIBRATION_TO_LOG][3];
     uint8_t num_time_calib_stored;
     
-    float ds3231_temp[96][3];
+    float ds3231_temp[NUM_DS3231_TEMP_TO_LOG][3];
     uint8_t num_ds3231_temp_stored;
     
     bool data_flush_before_error;

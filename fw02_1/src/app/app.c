@@ -310,11 +310,8 @@ void APP_Tasks( void )
                         /* Turn on attractive LEDs one by one in green */
                         testAttractiveLedsOrder( );
                     }
-
-                    initializeLedsScenario( );
-
-
-                    /* Turn attractive LEDs on if required */
+                    
+                    /* Turn on attractive LEDs if required */
                     getDateTime( );
                     
                     if ( ( appData.current_time.tm_hour * 60 + appData.current_time.tm_min ) >= ( appDataAttractiveLeds.wake_up_time.tm_hour * 60 + appDataAttractiveLeds.wake_up_time.tm_min ) &&
@@ -323,7 +320,6 @@ void APP_Tasks( void )
                         setAttractiveLedsOn( );
                     }
                 }
-
 
                 /* Set RTC alarm to raise every second */
                 rtcc_set_alarm( appDataAlarmWakeup.time.tm_hour, appDataAlarmWakeup.time.tm_min, appDataAlarmWakeup.time.tm_sec, EVERY_SECOND );
@@ -391,7 +387,7 @@ void APP_Tasks( void )
                 appData.test_rfid = false;
                 is_bird_detected = false;
 
-                if ( false == appData.punishment_state )
+                if ( false == appData.punishment_state && true == appData.flags.bit_value.attractive_leds_status )
                 {
                     if ( DOOR_HABITUATION == appData.scenario_number ||
                          LONG_TERM_SPATIAL_MEMORY == appData.scenario_number ||
@@ -402,9 +398,9 @@ void APP_Tasks( void )
                         appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_A;
                         setAttractiveLedsColor( );
                     }
-                    else if ( GO_NO_GO == appData.scenario_number )
+                    else if ( GO_NO_GO == appData.scenario_number || COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number )
                     {
-                        setAttractiveLedsPattern( );
+                        initializeLedsScenario( );
                     }
                 }
 
@@ -1338,6 +1334,12 @@ void APP_Tasks( void )
             {
                 appData.previous_state = appData.state;
 
+#if defined ( USE_UART1_SERIAL_INTERFACE ) && defined( DISPLAY_CURRENT_STATE )
+                printf( "> APP_STATE_REMOVE_USB_DEVICE\n" );
+#endif
+#if defined ( USE_UART1_SERIAL_INTERFACE ) && defined( DISPLAY_CURRENT_STATE )
+                printf( "\t/!\\ Don't remove the USB device yet.\n" );
+#endif
                 /* Log event if required */
                 if ( true == appDataLog.log_events )
                 {
@@ -1358,9 +1360,6 @@ void APP_Tasks( void )
                 powerUsbRfidDisable( );
 
                 setLedsStatusColor( LED_GREEN );
-#if defined ( USE_UART1_SERIAL_INTERFACE ) && defined( DISPLAY_CURRENT_STATE )
-                printf( "> APP_STATE_REMOVE_USB_DEVICE\n" );
-#endif
 #if defined ( USE_UART1_SERIAL_INTERFACE )
                 printf( "\tUSB device can be safely removed\n" );
 #endif
@@ -1405,11 +1404,13 @@ void APP_Tasks( void )
                 {
                     store_event( OF_STATE_FLUSH_DATA_TO_USB );
                 }
-
-#if defined ( USE_UART1_SERIAL_INTERFACE ) && defined( DISPLAY_CURRENT_STATE )
-                printf( "\t/!\\ Don't remove the USB device yet.\n" );
-#endif
-
+                
+                /* Disable PIR interruption */
+                EX_INT0_InterruptDisable( );
+                
+                /* Disable RTC alarm */
+                rtcc_stop_alarm( );
+                
                 setLedsStatusColor( LED_USB_ACCESS );
 
                 if ( appDataLog.num_data_stored > 0 ||
@@ -1425,7 +1426,7 @@ void APP_Tasks( void )
                 else
                 {
 #if defined ( USE_UART1_SERIAL_INTERFACE )  
-                    printf( "\tNo data stored.\n" );
+                    printf( "\tNo data to flush.\n" );
                     appData.state = APP_STATE_REMOVE_USB_DEVICE;
                     break;
 #endif

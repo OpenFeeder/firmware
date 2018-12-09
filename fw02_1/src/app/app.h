@@ -271,8 +271,6 @@ typedef struct
         } bit_value;
     } reset_2;
     
-//    uint16_t reset_status_num;
-    
     /* Declaration of FLAGS type. */
     union
     {

@@ -130,9 +130,6 @@ bool RTCC_TimeGet(struct tm *currentTime)
         return false;
     }
 
- 
-//    __builtin_write_RTCC_WRLOCK();
- 
     register_value = DATEH;
     currentTime->tm_year = ConvertBCDToHex((register_value & 0xFF00) >> 8);
     currentTime->tm_mon = ConvertBCDToHex(register_value & 0x00FF);
@@ -147,8 +144,6 @@ bool RTCC_TimeGet(struct tm *currentTime)
 
     register_value = TIMEL;
     currentTime->tm_sec = ConvertBCDToHex((register_value & 0xFF00) >> 8);
-
-//    RTCC_Lock();
 
     return true;
 }
@@ -189,9 +184,6 @@ bool RTCC_BCDTimeGet(bcdTime_t *currentTime)
     if(RTCSTATLbits.SYNC){
         return false;
     }
-
-
-//    __builtin_write_RTCC_WRLOCK();
    
     register_value = DATEH;
     currentTime->tm_year = (register_value & 0xFF00) >> 8;
@@ -207,8 +199,6 @@ bool RTCC_BCDTimeGet(bcdTime_t *currentTime)
 
     register_value = TIMEL;
     currentTime->tm_sec = (register_value & 0xFF00) >> 8;
-
-//    RTCC_Lock();
 
     return true;
 }
@@ -419,7 +409,7 @@ void __attribute__ ( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
         }
         else
         {
-//            getCurrentDate( );
+
             getDateTime( );
 
             if ( appData.current_time.tm_hour >= appDataAlarmSleep.time.tm_hour &&
@@ -504,7 +494,7 @@ void __attribute__ ( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
                     {
                         if ( appDataAttractiveLeds.alt_sec_elapsed == appDataAttractiveLeds.alt_delay - 1 )
                         {
-                            appData.rtcc_alarm_action = RTCC_ALARM_ALT_ATTRACTIVE_LEDS;
+                            appData.rtcc_alarm_action = RTCC_ALARM_ALT_ATTRACTIVE_LEDS_COLOR;
                             appDataAttractiveLeds.alt_sec_elapsed = 0;
                             IFS3bits.RTCIF = false;
                             return;

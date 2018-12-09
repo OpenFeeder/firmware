@@ -357,6 +357,12 @@ bool getExtDateTime( void )
     
     if (0 == APP_I2CMasterSeeksSlaveDevice(DS3231_I2C_ADDR, DS3231_I2C_ADDR))
     {
+        /* Log event if required */
+        if ( true == appDataLog.log_events )
+        {
+           store_event(OF_DS3231_NOT_FOUND); 
+        }
+        
         appData.i2c_current_time.year = 0;
         appData.i2c_current_time.year_s = 0;
         appData.i2c_current_time.mon = 0;

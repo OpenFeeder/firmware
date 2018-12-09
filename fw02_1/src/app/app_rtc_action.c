@@ -13,23 +13,27 @@ void manageRtcAction(  )
     bool flag;
     int i;
     
+    /* If the OF is awaken => go to sleep mode */
     if ( OPENFEEDER_IS_AWAKEN == appData.openfeeder_state && RTCC_ALARM_SLEEP_OPENFEEDER == appData.rtcc_alarm_action )
     {
         appData.state = APP_STATE_SLEEP;
         return;
     }
 
+    /* If the OF is sleeping => wake up */
     if ( OPENFEEDER_IS_SLEEPING == appData.openfeeder_state && RTCC_ALARM_WAKEUP_OPENFEEDER == appData.rtcc_alarm_action )
     {
         appData.state = APP_STATE_WAKE_UP;
         return;
     }
 
+    /* Calibrate date and time using the external RTC module */
     if ( RTCC_RTC_CALIBRATION == appData.rtcc_alarm_action )
     {
         calibrateDateTime( );
     }
 
+    /* Get temperature from the external RTC module */
     if ( RTCC_DS3231_TEMPERATURE == appData.rtcc_alarm_action )
     {
         if (0 < APP_I2CMasterSeeksSlaveDevice(DS3231_I2C_ADDR, DS3231_I2C_ADDR))
@@ -42,13 +46,26 @@ void manageRtcAction(  )
 
             getDateTime( );
             getDS3231Temperature( );
-            appDataLog.ds3231_temp[appDataLog.num_ds3231_temp_stored][0] = (float)appData.current_time.tm_hour;
-            appDataLog.ds3231_temp[appDataLog.num_ds3231_temp_stored][1] = (float)appData.current_time.tm_min;
-            appDataLog.ds3231_temp[appDataLog.num_ds3231_temp_stored][2] = appData.ext_temperature;
-            ++appDataLog.num_ds3231_temp_stored;
+            
+            if ( appDataLog.num_ds3231_temp_stored < NUM_DS3231_TEMP_TO_LOG )
+            {
+                appDataLog.ds3231_temp[appDataLog.num_ds3231_temp_stored][0] = (float)appData.current_time.tm_hour;
+                appDataLog.ds3231_temp[appDataLog.num_ds3231_temp_stored][1] = (float)appData.current_time.tm_min;
+                appDataLog.ds3231_temp[appDataLog.num_ds3231_temp_stored][2] = appData.ext_temperature;
+                ++appDataLog.num_ds3231_temp_stored;
+            }
+            else
+            {
+                /* Log event if required */
+                if ( true == appDataLog.log_events )
+                {
+                    store_event( OF_DS3231_TEMP_OVERFLOW );
+                }
+            }
         }
     }
 
+    /* Turn off the attractive LEDs */
     if ( RTCC_ALARM_SET_ATTRACTIVE_LEDS_OFF == appData.rtcc_alarm_action )
     {
         if ( ATTRACTIVE_LEDS_ON == appDataAttractiveLeds.status )
@@ -57,6 +74,7 @@ void manageRtcAction(  )
         }
     }
 
+    /* Turn on the attractive LEDs */
     if ( RTCC_ALARM_SET_ATTRACTIVE_LEDS_ON == appData.rtcc_alarm_action )
     {
         if ( ATTRACTIVE_LEDS_OFF == appDataAttractiveLeds.status )
@@ -65,7 +83,8 @@ void manageRtcAction(  )
         }
     }
 
-    if ( RTCC_ALARM_ALT_ATTRACTIVE_LEDS == appData.rtcc_alarm_action && false == appData.punishment_state )
+    /* Alternate attractive LEDs color (scenario 6 - Color Associative Learning) */
+    if ( RTCC_ALARM_ALT_ATTRACTIVE_LEDS_COLOR == appData.rtcc_alarm_action && false == appData.punishment_state )
     {
         if ( rand( ) > (RAND_MAX/2) ) // t / RAND_MAX ) > 0.5
         {
@@ -87,10 +106,12 @@ void manageRtcAction(  )
         }                                
     }
     
+    /* Alternate attractive LEDs pattern (scenario 3 - Go-No go) */
     if ( RTCC_ALARM_ALT_ATTRACTIVE_LEDS_PATTERN == appData.rtcc_alarm_action && false == appData.punishment_state )
     {
         int randomInteger = rand( );
 
+        /* If scenario 33 - One LED */
         if (ONE_LED == appDataAttractiveLeds.pattern_number)
         {
             for (i=0;i<4;i++)
@@ -143,6 +164,7 @@ void manageRtcAction(  )
 
            setAttractiveLedsPattern( );
         }
+        /* If scenario 30 - All LEDs */
         else if (ALL_LEDS == appDataAttractiveLeds.pattern_number)
         {
             if ( randomInteger > (RAND_MAX/100*appDataAttractiveLeds.pattern_percent) )
@@ -170,6 +192,7 @@ void manageRtcAction(  )
                 }                                
             }
         }
+         /* If scenario 31 - Left/Right or scenario 32 - Top/Bottom */
         else
         {
             if ( randomInteger > (RAND_MAX/2) )
@@ -255,9 +278,21 @@ void manageRtcAction(  )
     if ( RTCC_BATTERY_LEVEL_CHECK == appData.rtcc_alarm_action )
     {
         flag = isPowerBatteryGood( );
-        appDataLog.battery_level[appDataLog.num_battery_level_stored][0] = appData.current_time.tm_hour;
-        appDataLog.battery_level[appDataLog.num_battery_level_stored][1] = appData.battery_level;
-        ++appDataLog.num_battery_level_stored;
+        
+        if ( appDataLog.num_battery_level_stored < NUM_BATTERY_LEVEL_TO_LOG )
+        {
+            appDataLog.battery_level[appDataLog.num_battery_level_stored][0] = appData.current_time.tm_hour;
+            appDataLog.battery_level[appDataLog.num_battery_level_stored][1] = appData.battery_level;
+            ++appDataLog.num_battery_level_stored;
+        }
+        else
+        {
+            /* Log event if required */
+            if ( true == appDataLog.log_events )
+            {
+                store_event( OF_BATTERY_LEVEL_OVERFLOW );
+            }
+        }
 
         if ( false == flag )
         {
@@ -279,10 +314,22 @@ void manageRtcAction(  )
     if ( RTCC_RFID_FREQ_CHECK == appData.rtcc_alarm_action )
     {
         flag = isRfidFreqGood( );
-        appDataLog.rfid_freq[appDataLog.num_rfid_freq_stored][0] = appData.current_time.tm_hour;
-        appDataLog.rfid_freq[appDataLog.num_rfid_freq_stored][1] = appData.current_time.tm_min;
-        appDataLog.rfid_freq[appDataLog.num_rfid_freq_stored][2] = appData.rfid_rdyclk;
-        ++appDataLog.num_rfid_freq_stored;
+        
+        if ( appDataLog.num_rfid_freq_stored < NUM_RFID_FREQ_TO_LOG )
+        {
+            appDataLog.rfid_freq[appDataLog.num_rfid_freq_stored][0] = appData.current_time.tm_hour;
+            appDataLog.rfid_freq[appDataLog.num_rfid_freq_stored][1] = appData.current_time.tm_min;
+            appDataLog.rfid_freq[appDataLog.num_rfid_freq_stored][2] = appData.rfid_rdyclk;
+            ++appDataLog.num_rfid_freq_stored;
+        }
+        else
+        {
+            /* Log event if required */
+            if ( true == appDataLog.log_events )
+            {
+                store_event( OF_RFID_FREQ_OVERFLOW );
+            }
+        }
 
         if ( false == flag )
         {

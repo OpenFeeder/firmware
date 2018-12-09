@@ -15,9 +15,9 @@
 // *****************************************************************************
 
 
-static int populateLogBuffer( void )
+static bool populateLogBuffer( void )
 {
-    int flag;
+    int nChar;
     char line[MAX_CHAR_PER_LINE];
     unsigned long delayS;
 
@@ -51,7 +51,7 @@ static int populateLogBuffer( void )
         delayS = 0;
     }
 
-    flag = sprintf( line, "%02d/%02d/%02d%s%02d:%02d:%02d%s"
+    nChar = sprintf( line, "%02d/%02d/%02d%s%02d:%02d:%02d%s"
                     /* siteid               */ "%c%c"
                     /* separator            */ "%s"
                     /* OF                   */ "OF%c%c"
@@ -109,13 +109,39 @@ static int populateLogBuffer( void )
                     appDataLog.separator,
                     delayS );
 
-    if ( flag > 0 )
+    /* If sprintf success*/
+    if ( nChar > 0 )
     {
-        /* Concatenation de chaines de caracteres dans le buffer. */
-        strcat( appDataLog.buffer, line );
+        appDataLog.num_char_buffer += nChar;
+        
+        /* If data buffer not overflow */
+        if ( appDataLog.num_char_buffer < (MAX_CHAR_PER_LINE * MAX_NUM_DATA_TO_STORE - 1 ) )
+        {
+            /* Concatenation de chaines de caracteres dans le buffer. */
+            strcat( appDataLog.buffer, line );
+            ++appDataLog.num_data_stored;
+        }
+        /* If data buffer overflow */
+        else
+        {
+            sprintf( appError.message, "Overflow log buffer" );
+            appError.current_line_number = __LINE__;
+            sprintf( appError.current_file_name, "%s", __FILE__ );
+            appError.number = ERROR_OVERFLOW_DATA_BUFFER;
+            
+            nChar = -1;
+        }
+    }
+    /* If sprintf failed*/
+    else
+    {
+        sprintf( appError.message, "Unable to populate log buffer" );
+        appError.current_line_number = __LINE__;
+        sprintf( appError.current_file_name, "%s", __FILE__ );
+        appError.number = ERROR_POPULATE_DATA_BUFFER;
     }
 
-    return flag;
+    return nChar > 0;
 }
 
 // *****************************************************************************
@@ -182,27 +208,28 @@ static int writeLogFile( void )
 
 bool dataLog( bool newData )
 {
-    unsigned int nChar = 0;
+//    unsigned int nChar = 0;
     bool needToUnmount;
 
     /* Check if new data need to be added to the log buffer */
     if ( true == newData )
     {
 
-        nChar = populateLogBuffer( );
-
-        if ( nChar < 0 )
+//        nChar = populateLogBuffer( );
+//
+//        if ( nChar < 0 )
+        if ( false == populateLogBuffer( ) )    
         {
-            sprintf( appError.message, "Unable to populate log buffer" );
-            appError.current_line_number = __LINE__;
-            sprintf( appError.current_file_name, "%s", __FILE__ );
-            appError.number = ERROR_POPULATE_DATA_BUFFER;
+//            sprintf( appError.message, "Unable to populate log buffer" );
+//            appError.current_line_number = __LINE__;
+//            sprintf( appError.current_file_name, "%s", __FILE__ );
+//            appError.number = ERROR_POPULATE_DATA_BUFFER;
             return false;
         }
         else
         {
-            appDataLog.num_char_buffer += nChar;
-            appDataLog.num_data_stored += 1;
+//            appDataLog.num_char_buffer += nChar;
+//            appDataLog.num_data_stored += 1;
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO )
             printf( "\tPopulate data to buffer (%u/%u)\n", appDataLog.num_data_stored, MAX_NUM_DATA_TO_STORE );
 #endif 
@@ -293,18 +320,29 @@ bool setLogFileName( void )
     memset( appDataLog.filename, 0, sizeof (appDataLog.filename ) );
 
     /* Get current date */
-    getDateTime( );
-
-    /* Set log file name => 20yymmdd.CSV */
-    if ( snprintf( appDataLog.filename, 13, "20%02d%02d%02d.CSV",
-                   appData.current_time.tm_year,
-                   appData.current_time.tm_mon,
-                   appData.current_time.tm_mday ) <= 0 )
-
+    if ( true == getDateTime( ) )
     {
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO )
-        printf( "Unable to set log file name\n" );
-#endif 
+        /* Set log file name => 20yymmdd.CSV */
+        if ( snprintf( appDataLog.filename, 13, "%04d%02d%02d.CSV",
+                       2000 + appData.current_time.tm_year,
+                       appData.current_time.tm_mon,
+                       appData.current_time.tm_mday ) < 0 )
+        {
+    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO )
+            printf( "Unable to set log file name\n" );
+    #endif 
+            sprintf( appError.message, "Unable to set log file name" );
+            appError.current_line_number = __LINE__;
+            sprintf( appError.current_file_name, "%s", __FILE__ );
+            appError.number = ERROR_LOG_FILE_SET_NAME;
+            return false;
+        }
+    }
+    else
+    {
+    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO )
+            printf( "Unable to set log file name\n" );
+    #endif 
         sprintf( appError.message, "Unable to set log file name" );
         appError.current_line_number = __LINE__;
         sprintf( appError.current_file_name, "%s", __FILE__ );

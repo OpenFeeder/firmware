@@ -14,10 +14,23 @@ void store_event(APP_EVENT ev)
 
     getDateTime( );
    
-    appDataEvent.numbers[appDataEvent.num_events_stored] = ev;    
-    appDataEvent.hours[appDataEvent.num_events_stored] = appData.current_time.tm_hour;
-    appDataEvent.minutes[appDataEvent.num_events_stored] = appData.current_time.tm_min;
-    appDataEvent.seconds[appDataEvent.num_events_stored] = appData.current_time.tm_sec;
+    if ( appDataEvent.num_events_stored < MAX_NUMBER_OF_EVENT )
+    {
+        appDataEvent.numbers[appDataEvent.num_events_stored] = ev;    
+        appDataEvent.hours[appDataEvent.num_events_stored] = appData.current_time.tm_hour;
+        appDataEvent.minutes[appDataEvent.num_events_stored] = appData.current_time.tm_min;
+        appDataEvent.seconds[appDataEvent.num_events_stored] = appData.current_time.tm_sec;  
+        
+        ++appDataEvent.num_events_stored;
+        
+    }
+    else
+    {
+        appDataEvent.numbers[MAX_NUMBER_OF_EVENT - 1] = OF_EVENT_OVERFLOW;    
+        appDataEvent.hours[MAX_NUMBER_OF_EVENT - 1] = appData.current_time.tm_hour;
+        appDataEvent.minutes[MAX_NUMBER_OF_EVENT - 1] = appData.current_time.tm_min;
+        appDataEvent.seconds[MAX_NUMBER_OF_EVENT - 1] = appData.current_time.tm_sec;  
+    }
     
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_EVENT_INFO )
     printf("\t\tEvent %03d - %02d:%02d:%02d %03d\n", appDataEvent.num_events_stored, 
@@ -27,7 +40,7 @@ void store_event(APP_EVENT ev)
        appDataEvent.numbers[appDataEvent.num_events_stored]);
 #endif
     
-    appDataEvent.num_events_stored +=1;
+    
     
 }
 
@@ -191,7 +204,17 @@ bool setEventFileName(void)
     memset(appDataEvent.binfilename, 0, sizeof (appDataEvent.binfilename));
 
     /* Get current date */
-    getDateTime( );
+    if ( false == getDateTime( ) )
+    {
+    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_EVENT_INFO )
+        printf("Unable to set event file name\n");
+    #endif 
+        sprintf(appError.message, "Unable to set event file CSV name");
+        appError.current_line_number = __LINE__;
+        sprintf(appError.current_file_name, "%s", __FILE__);
+        appError.number = ERROR_EVENT_CSV_FILE_SET_NAME;
+        return false; 
+    }
 
     if (EVENT_FILE_TEXT == appDataEvent.file_type || EVENT_FILE_BINARY_AND_TEXT == appDataEvent.file_type )
     {
@@ -200,7 +223,7 @@ bool setEventFileName(void)
         if (snprintf(appDataEvent.filename, 13, "EV%02d%02d%02d.CSV",
                      appData.current_time.tm_year,
                      appData.current_time.tm_mon,
-                     appData.current_time.tm_mday) <= 0)
+                     appData.current_time.tm_mday) < 0)
 
         {
     #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_EVENT_INFO )
@@ -223,7 +246,7 @@ bool setEventFileName(void)
         if (snprintf(appDataEvent.binfilename, 13, "EV%02d%02d%02d.BIN",
                      appData.current_time.tm_year,
                      appData.current_time.tm_mon,
-                     appData.current_time.tm_mday) <= 0)
+                     appData.current_time.tm_mday) < 0)
 
         {
     #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_EVENT_INFO )

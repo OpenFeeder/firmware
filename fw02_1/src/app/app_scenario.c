@@ -11,84 +11,210 @@
 
 void initializeLedsScenario( )
 {
-    /* If scenario 3 or 6 => get current time */
-    if ( GO_NO_GO == appData.scenario_number || COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number )
-    {
-        getDateTime( );
-    }
+    
+    int i;
+    int randomInteger = rand( );
 
+    /* If scenario 3 */
     if ( GO_NO_GO == appData.scenario_number )
     {
         /* If scenario 30 - All LEDs */
         if ( ALL_LEDS == appDataAttractiveLeds.pattern_number )
         {
-            appDataAttractiveLeds.pattern[0] = 0;
-            appDataAttractiveLeds.pattern[1] = 0;
-            appDataAttractiveLeds.pattern[2] = 0;
-            appDataAttractiveLeds.pattern[3] = 0;
-
-            /* Log event if required */
-            if ( true == appDataLog.log_events )
+            if ( randomInteger > (RAND_MAX/2) )
             {
-                store_event( OF_GO_NO_GO_ALL_ON );
+                appDataAttractiveLeds.pattern[0] = 0;
+                appDataAttractiveLeds.pattern[1] = 0;
+                appDataAttractiveLeds.pattern[2] = 0;
+                appDataAttractiveLeds.pattern[3] = 0;
+                
+                appDataAttractiveLeds.pattern_idx = ATTRACTIVE_LEDS_PATTERN_ON;
+                
+                appDataAttractiveLeds.pattern_percent = appDataAttractiveLeds.pattern_percent_bak;
+                
+                /* Log event if required */
+                if ( true == appDataLog.log_events )
+                {
+                    store_event( OF_GO_NO_GO_ALL_ON );
+                }
             }
+            else
+            {
+                appDataAttractiveLeds.pattern[0] = 1;
+                appDataAttractiveLeds.pattern[1] = 1;
+                appDataAttractiveLeds.pattern[2] = 1;
+                appDataAttractiveLeds.pattern[3] = 1;
+                
+                appDataAttractiveLeds.pattern_idx = ATTRACTIVE_LEDS_PATTERN_OFF;
+                
+                appDataAttractiveLeds.pattern_percent = 100 - appDataAttractiveLeds.pattern_percent_bak;
+                    
+                /* Log event if required */
+                if ( true == appDataLog.log_events )
+                {
+                    store_event( OF_GO_NO_GO_ALL_OFF );
+                }
+            }
+            
+            setAttractiveLedsPattern( );
+            
         }
             /* If scenario 31 - Left/Right */
         else if ( LEFT_RIGHT_LEDS == appDataAttractiveLeds.pattern_number )
         {
-            appDataAttractiveLeds.pattern[0] = 1;
-            appDataAttractiveLeds.pattern[1] = 0;
-            appDataAttractiveLeds.pattern[2] = 0;
-            appDataAttractiveLeds.pattern[3] = 1;
-
-            /* Log event if required */
-            if ( true == appDataLog.log_events )
+            if ( randomInteger > (RAND_MAX/2) )
             {
-                store_event( OF_GO_NO_GO_LR_L );
+                appDataAttractiveLeds.pattern[0] = 1;
+                appDataAttractiveLeds.pattern[1] = 0;
+                appDataAttractiveLeds.pattern[2] = 0;
+                appDataAttractiveLeds.pattern[3] = 1;
+
+                appDataAttractiveLeds.pattern_idx = ATTRACTIVE_LEDS_PATTERN_A;
+                    
+                /* Log event if required */
+                if ( true == appDataLog.log_events )
+                {
+                    store_event( OF_GO_NO_GO_LR_L );
+                }
             }
+            else
+            {
+                appDataAttractiveLeds.pattern[0] = 0;
+                appDataAttractiveLeds.pattern[1] = 1;
+                appDataAttractiveLeds.pattern[2] = 1;
+                appDataAttractiveLeds.pattern[3] = 0;
+
+                appDataAttractiveLeds.pattern_idx = ATTRACTIVE_LEDS_PATTERN_B;
+                    
+                /* Log event if required */
+                if ( true == appDataLog.log_events )
+                {
+                    store_event( OF_GO_NO_GO_LR_R );
+                }
+            }
+            
+            setAttractiveLedsPattern( );
+            
         }
             /* If scenario 32 - Top/Bottom */
         else if ( TOP_BOTTOM_LEDS == appDataAttractiveLeds.pattern_number )
         {
-            appDataAttractiveLeds.pattern[0] = 1;
-            appDataAttractiveLeds.pattern[1] = 1;
-            appDataAttractiveLeds.pattern[2] = 0;
-            appDataAttractiveLeds.pattern[3] = 0;
-
-            /* Log event if required */
-            if ( true == appDataLog.log_events )
+            if ( randomInteger > (RAND_MAX/2) )
             {
-                store_event( OF_GO_NO_GO_TB_T );
+                appDataAttractiveLeds.pattern[0] = 1;
+                appDataAttractiveLeds.pattern[1] = 1;
+                appDataAttractiveLeds.pattern[2] = 0;
+                appDataAttractiveLeds.pattern[3] = 0;
+
+                appDataAttractiveLeds.pattern_idx = ATTRACTIVE_LEDS_PATTERN_A;
+                
+                /* Log event if required */
+                if ( true == appDataLog.log_events )
+                {
+                    store_event( OF_GO_NO_GO_TB_T );
+                }
             }
+            else
+            {
+                appDataAttractiveLeds.pattern[0] = 0;
+                appDataAttractiveLeds.pattern[1] = 0;
+                appDataAttractiveLeds.pattern[2] = 1;
+                appDataAttractiveLeds.pattern[3] = 1;
+
+                appDataAttractiveLeds.pattern_idx = ATTRACTIVE_LEDS_PATTERN_B;
+                
+                /* Log event if required */
+                if ( true == appDataLog.log_events )
+                {
+                    store_event( OF_GO_NO_GO_TB_B );
+                }
+            }
+            
+            setAttractiveLedsPattern( );
+            
         }
             /* If scenario 33 - One LED */
         else
         {
+            for (i=0;i<4;i++)
+            {
+               appDataAttractiveLeds.pattern[i] = 1; 
+            }
 
-            appDataAttractiveLeds.pattern[0] = 1;
-            appDataAttractiveLeds.pattern[1] = 1;
-            appDataAttractiveLeds.pattern[2] = 1;
-            appDataAttractiveLeds.pattern[3] = 1;
+            if ( randomInteger > (RAND_MAX/4*3) )
+            {
+                appDataAttractiveLeds.pattern_one_led_current = 0;
+
+                /* Log event if required */
+                if ( true == appDataLog.log_events )
+                {
+                    store_event( OF_GO_NO_GO_ONE_1 );
+                }
+            }                            
+            else if ( randomInteger > (RAND_MAX/2) )
+            {
+                appDataAttractiveLeds.pattern_one_led_current = 1;
+
+                /* Log event if required */
+                if ( true == appDataLog.log_events )
+                {
+                    store_event( OF_GO_NO_GO_ONE_2 );
+                }
+            }
+            else if ( randomInteger > (RAND_MAX/4) )
+            {
+                appDataAttractiveLeds.pattern_one_led_current = 2; 
+
+                /* Log event if required */
+                if ( true == appDataLog.log_events )
+                {
+                    store_event( OF_GO_NO_GO_ONE_3 );
+                }
+            }
+            else
+            {
+                appDataAttractiveLeds.pattern_one_led_current = 3;
+
+                /* Log event if required */
+                if ( true == appDataLog.log_events )
+                {
+                    store_event( OF_GO_NO_GO_ONE_4 );
+                }
+            }
+
+            appDataAttractiveLeds.pattern[appDataAttractiveLeds.pattern_one_led_current] = 0;      
+
+            setAttractiveLedsPattern( );
+            
+        }
+    
+    }
+    /* If scenario different than 3 Go-No Go*/
+    else
+    {
+        if ( randomInteger > (RAND_MAX/2) )
+        {
+            appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_A;
+            
+            /* Log event if required */
+            if ( true == appDataLog.log_events )
+            {
+                store_event( OF_CAL_A );
+            }
+        }
+        else
+        {
+            appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_B;
 
             /* Log event if required */
             if ( true == appDataLog.log_events )
             {
-                store_event( OF_GO_NO_GO_ONE_NONE );
+                store_event( OF_CAL_B );
             }
-
         }
-
-        appDataAttractiveLeds.pattern_idx = 0;
-    }
-    else
-    {
-        appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_A;
-
-        /* Log event if required */
-        if ( true == appDataLog.log_events )
-        {
-            store_event( OF_CAL_A );
-        }
+        
+        setAttractiveLedsColor( );
+       
     }
 }
 

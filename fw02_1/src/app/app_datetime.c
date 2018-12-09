@@ -19,6 +19,21 @@ bool setDateTime( int year, int month, int day, int hour, int minute, int second
 {
     struct tm date_time;
 
+    if ( day < 1 || day > 31 || 
+        month < 1 || month > 12 ||
+        year < MIN_ADMISSIBLE_YEAR || year > MAX_ADMISSIBLE_YEAR ||
+        hour < 0 || hour > 23 ||
+        minute < 0 || minute > 59 ||
+        second < 0 || second > 59)
+    {
+        /* Log event if required */
+        if ( true == appDataLog.log_events )
+        {
+           store_event(OF_SET_DATE_TIME_FAIL); 
+        }
+        return false;
+    }
+    
     date_time.tm_mday = day;
     date_time.tm_mon = month;
     date_time.tm_year = year;
@@ -39,7 +54,19 @@ bool getDateTime( void )
         Nop( );
     }
     
-    return true;
+    if ( appData.current_time.tm_mday < 1 || appData.current_time.tm_mday > 31 || 
+        appData.current_time.tm_mon < 1 || appData.current_time.tm_mon > 12 ||
+        appData.current_time.tm_year < MIN_ADMISSIBLE_YEAR || appData.current_time.tm_year > MAX_ADMISSIBLE_YEAR ||
+        appData.current_time.tm_hour < 0 || appData.current_time.tm_hour > 23 ||
+        appData.current_time.tm_min < 0 || appData.current_time.tm_min > 59 ||
+        appData.current_time.tm_sec < 0 || appData.current_time.tm_sec > 59)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 }
 
 void calibrateDateTime( void )
@@ -66,50 +93,78 @@ void calibrateDateTime( void )
         
         if ( getExtDateTime( ) )
         {
-            if ( 18 > appData.i2c_current_time.year_s ) {
+            if ( appData.i2c_current_time.mday < 1 || appData.i2c_current_time.mday > 31 || 
+                appData.i2c_current_time.mon < 1 || appData.i2c_current_time.mon > 12 ||
+                appData.i2c_current_time.year_s < MIN_ADMISSIBLE_YEAR || appData.i2c_current_time.year_s > MAX_ADMISSIBLE_YEAR ||
+                appData.i2c_current_time.hour < 0 || appData.i2c_current_time.hour > 23 ||
+                appData.i2c_current_time.min < 0 || appData.i2c_current_time.min > 59 ||
+                appData.i2c_current_time.sec < 0 || appData.i2c_current_time.sec > 59)
+            {
                 /* Log event if required */
                 if ( true == appDataLog.log_events )
                 {
                    store_event(OF_CALIBRATE_TIME_WRONG); 
                 }
             }
-            else {
+            else 
+            {
                 
-                setDateTime( appData.i2c_current_time.year_s, 
+                if ( true == setDateTime( appData.i2c_current_time.year_s, 
                              appData.i2c_current_time.mon, 
                              appData.i2c_current_time.mday, 
                              appData.i2c_current_time.hour, 
                              appData.i2c_current_time.min, 
-                             appData.i2c_current_time.sec );
-                
-                if ( true == appDataLog.log_calibration)
+                             appData.i2c_current_time.sec ) )
                 {
-                    
-                    tm1.tm_year += 100;
-                    tm1.tm_mon -= 1;
-                    tm2.tm_year = appData.i2c_current_time.year_s; 
-                    tm2.tm_mon = appData.i2c_current_time.mon; 
-                    tm2.tm_mday = appData.i2c_current_time.mday; 
-                    tm2.tm_hour = appData.i2c_current_time.hour; 
-                    tm2.tm_min = appData.i2c_current_time.min;
-                    tm2.tm_sec = appData.i2c_current_time.sec;                  
-                    tm2.tm_year += 100;
-                    tm2.tm_mon -= 1;
+                
+                    if ( true == appDataLog.log_calibration)
+                    {
 
-                    t1 = mktime(&tm1);
-                    t2 = mktime(&tm2);
+                        tm1.tm_year += 100;
+                        tm1.tm_mon -= 1;
+                        tm2.tm_year = appData.i2c_current_time.year_s; 
+                        tm2.tm_mon = appData.i2c_current_time.mon; 
+                        tm2.tm_mday = appData.i2c_current_time.mday; 
+                        tm2.tm_hour = appData.i2c_current_time.hour; 
+                        tm2.tm_min = appData.i2c_current_time.min;
+                        tm2.tm_sec = appData.i2c_current_time.sec;                  
+                        tm2.tm_year += 100;
+                        tm2.tm_mon -= 1;
 
-                    appDataLog.time_calibration[appDataLog.num_time_calib_stored][0] = appData.i2c_current_time.hour;
-                    appDataLog.time_calibration[appDataLog.num_time_calib_stored][1] = appData.i2c_current_time.min;
-                    appDataLog.time_calibration[appDataLog.num_time_calib_stored][2] = difftime(t1,t2);
-                    appDataLog.num_time_calib_stored++;
-       
+                        t1 = mktime(&tm1);
+                        t2 = mktime(&tm2);
+
+                        if ( appDataLog.num_time_calib_stored < NUM_TIME_CALIBRATION_TO_LOG )
+                        {
+                            appDataLog.time_calibration[appDataLog.num_time_calib_stored][0] = appData.i2c_current_time.hour;
+                            appDataLog.time_calibration[appDataLog.num_time_calib_stored][1] = appData.i2c_current_time.min;
+                            appDataLog.time_calibration[appDataLog.num_time_calib_stored][2] = difftime(t1,t2);
+                            appDataLog.num_time_calib_stored++;
+                        }
+                        else
+                        {
+                            /* Log event if required */
+                            if ( true == appDataLog.log_events )
+                            {
+                               store_event(OF_CALIBRATE_TIME_OVERFLOW); 
+                            }
+                        }
+
+                    }
+
+                    /* Log event if required */
+                    if ( true == appDataLog.log_events )
+                    {
+                       store_event(OF_CALIBRATE_TIME); 
+                    }
                 }
-                
-                /* Log event if required */
-                if ( true == appDataLog.log_events )
+                else
                 {
-                   store_event(OF_CALIBRATE_TIME); 
+                    /* Log event if required */
+                    if ( true == appDataLog.log_events )
+                    {
+                       store_event(OF_CALIBRATE_TIME_FAIL); 
+                    }
                 }
             }       
         }
@@ -128,10 +183,10 @@ void printDateTime( struct tm time )
 {
     // Print date and time on serial terminal (PC)
     
-        printf( "%02u/%02u/20%02u %02u:%02u:%02u",
+        printf( "%02u/%02u/%04u %02u:%02u:%02u",
             time.tm_mday,
             time.tm_mon,
-            time.tm_year,
+            2000 + time.tm_year,
             time.tm_hour,
             time.tm_min,
             time.tm_sec );

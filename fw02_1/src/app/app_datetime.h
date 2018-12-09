@@ -14,6 +14,9 @@
 #include <stdio.h>
 #include "rtcc.h"
 
+#define MIN_ADMISSIBLE_YEAR 18
+#define MAX_ADMISSIBLE_YEAR 25
+
 extern uint16_t current_millis; // global variable for current milliseconde capture
 
 bool setDateTime( int, int, int, int, int, int );
