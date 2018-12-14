@@ -14,6 +14,8 @@
 
 void setDelayMs( uint16_t );
 bool isDelayMsEnding( void );
+void setDelayMsReadFromUart( uint16_t );
+bool isDelayMsEndingReadFromUart( void );
 void setDelayMsStandBy( uint16_t );
 bool isDelayMsEndingStandBy( void );
 void setDelayMsEM4095( uint16_t );

@@ -159,12 +159,19 @@ void APP_Tasks( void )
 
                 /* Set timeout if USB device is not found */
                 setDelayMs( MAX_DELAY_TO_DETECT_USB_DEVICE );
+                
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                printf( "\tSearching USB device.\n\tThe system will restart if not found after %ldms.\r\n", ( long ) MAX_DELAY_TO_DETECT_USB_DEVICE );
+#endif
 
             }
 
             /* If USB device is plugged and a valid address is set */
             if ( appDataUsb.is_device_address_available )
             {
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                        printf( "\tUSB device found.\r\n\r\n" );
+#endif   
                 /* Mount drive on USB device */
                 if ( USB_DRIVE_NOT_MOUNTED == usbMountDrive( ) )
                 {
@@ -181,7 +188,7 @@ void APP_Tasks( void )
                 if ( true == isDelayMsEnding( ) )
                 {
                     appDataUsb.is_device_needed = false;
-                    sprintf( appError.message, "USB device detection took more than %ld ms", ( long ) MAX_DELAY_TO_DETECT_USB_DEVICE );
+                    sprintf( appError.message, "USB device detection took more than %ldms", ( long ) MAX_DELAY_TO_DETECT_USB_DEVICE );
                     appError.current_line_number = __LINE__;
                     sprintf( appError.current_file_name, "%s", __FILE__ );
                     appError.number = ERROR_USB_DEVICE_NOT_FOUND;
@@ -249,6 +256,9 @@ void APP_Tasks( void )
                     break;
                 }
                 
+                /* Log current firmware version */
+                logFirmware( );
+                    
                 /* Log the Unique Devide ID is required */
                 if ( true == appDataLog.log_udid )
                 {
@@ -367,7 +377,10 @@ void APP_Tasks( void )
 #if defined ( USE_UART1_SERIAL_INTERFACE ) && defined ( DISPLAY_CURRENT_STATE )
                 printf( "> APP_STATE_IDLE\n" );
 #endif              
-
+#if defined ( USE_UART1_SERIAL_INTERFACE )
+                printf( "\tUser button pressed briefly => flush data and eject USB device\n" );
+                printf( "\tUser button pressed longer => activate serial communication mode\n" );
+#endif   
                 /* Log event if required */
                 if ( true == appDataLog.log_events )
                 {
@@ -424,10 +437,10 @@ void APP_Tasks( void )
                 break;
             }
 
-#if defined ( USE_UART1_SERIAL_INTERFACE )
-            /* Get interaction with the serial terminal. */
-            APP_SerialDebugTasks( );
-#endif
+//#if defined ( USE_UART1_SERIAL_INTERFACE )
+//            /* Get interaction with the serial terminal. */
+//            APP_SerialDebugTasks( );
+//#endif
 
             /* If punishment timeout reached => remove punishment state */
             if ( true == appData.punishment_state && true == isDelayPunishmentMsEnding( ) )
@@ -483,11 +496,15 @@ void APP_Tasks( void )
 
                     if ( BUTTON_PRESSED == button_user_state )
                     {
-                        appData.state = APP_STATE_TEST_RFID;
+//                        appData.state = APP_STATE_TEST_RFID;
+                        appData.state = APP_STATE_SERIAL_COMMUNICATION;
+                        break;
                     }
                     else
                     {
                         appData.state = APP_STATE_FLUSH_DATA_TO_USB;
+//                        appData.state = APP_STATE_SERIAL_COMMUNICATION;
+                        break;
                     }
                 }
             }  
@@ -508,10 +525,7 @@ void APP_Tasks( void )
                 {
                     Nop( );
                 }
-                
-#if defined ( USE_UART1_SERIAL_INTERFACE )
-                printf( "\tBird detected\n" );
-#endif                                
+                                            
                 /* Initialised global variable datalogging. */
                 is_bird_detected = false;
                 appDataLog.is_reward_taken = false;
@@ -544,6 +558,51 @@ void APP_Tasks( void )
             break;
             /* -------------------------------------------------------------- */
 
+        case APP_STATE_SERIAL_COMMUNICATION:
+                
+            if ( appData.state != appData.previous_state )
+            {
+                appData.previous_state = appData.state;
+#if defined ( USE_UART1_SERIAL_INTERFACE ) && defined( DISPLAY_CURRENT_STATE )
+                printf( "> APP_STATE_SERIAL_COMMUNICATION\n" );
+#endif
+                
+                /* Disable PIR interruption */
+                EX_INT0_InterruptDisable( );
+                
+                /* Disable RTC alarm */
+                rtcc_stop_alarm( );
+                
+                if ( true == appData.flags.bit_value.attractive_leds_status )
+                {
+                    setAttractiveLedsNoColor( );
+                }
+                    
+                displayKeyMapping( );
+                
+                /* Log event if required */
+                if ( true == appDataLog.log_events )
+                {
+                    store_event( OF_STATE_SERIAL_COMMUNICATION );
+                }
+                
+                /* Empty UART RX buffer to avoid garbage value */
+                while ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) )
+                {
+                    UART1_Read( );                    
+                }
+
+            }
+
+            /* Green status LED blinks in idle mode. */
+            LedsStatusBlink( LED_SERIAL_COMMUNICATION, LEDS_OFF, 100, 4900 );
+            
+            /* Get interaction with the serial terminal. */
+            APP_SerialDebugTasks( );
+            
+            break;
+            /* -------------------------------------------------------------- */
+                        
         case APP_STATE_RFID_READING_PIT_TAG:
                         
             /*
@@ -561,6 +620,9 @@ void APP_Tasks( void )
 #if defined ( USE_UART1_SERIAL_INTERFACE ) && defined( DISPLAY_CURRENT_STATE )
                 printf( "> APP_STATE_RFID_READING_PIT_TAG\n" );
 #endif
+#if defined ( USE_UART1_SERIAL_INTERFACE )
+                printf( "\tBird detected\n" );
+#endif    
                 /* Log event if required */
                 if ( true == appDataLog.log_events )
                 {
@@ -1361,18 +1423,16 @@ void APP_Tasks( void )
 
                 setLedsStatusColor( LED_GREEN );
 #if defined ( USE_UART1_SERIAL_INTERFACE )
-                printf( "\tUSB device can be safely removed\n" );
+                printf( "\tUSB device can be safely removed\r\n" );
+                printf( "\tThe system will automatically restart in 60s\r\n" );
+                printf( "\tThe serial communication is off until the system reset\r\n" );
 #endif
-
                 setDelayMsStandBy( 60000 );
 
             }
 
             if ( true == isDelayMsEndingStandBy( ) )
             {
-#if defined ( USE_UART1_SERIAL_INTERFACE )
-                printf( "\tSystem will automatically restart\n" );
-#endif
                 appData.dsgpr0.bit_value.num_software_reset = 0;
                 DSGPR0 = appData.dsgpr0.reg;
                 DSGPR0 = appData.dsgpr0.reg;
@@ -1613,7 +1673,7 @@ void APP_Tasks( void )
             {
 
 #if defined ( USE_UART1_SERIAL_INTERFACE ) 
-                printf( "\tQuit RFID test mode => back to normal mode in 3s.\n" );
+                printf( "\tQuit RFID test mode\n\tBack to serial communication mode in 3s.\n" );
 #endif
                 RFID_Disable( );
 
@@ -1628,7 +1688,8 @@ void APP_Tasks( void )
                     setDelayMs( 500 );
                     while ( 0 == isDelayMsEnding( ) );
                 }
-                appData.state = APP_STATE_IDLE;
+//                appData.state = APP_STATE_IDLE;
+                appData.state = APP_STATE_SERIAL_COMMUNICATION;
             }
 
             break;
@@ -1696,64 +1757,77 @@ void APP_Tasks( void )
             {
                 if ( appDataUsb.is_device_address_available )
                 {
-                    if ( USB_DRIVE_NOT_MOUNTED == usbMountDrive( ) )
-                    {
-                        appDataUsb.is_device_needed = false;
-                        appData.state = APP_STATE_ERROR;
-                        break;
-                    }
+//                    if ( USB_DRIVE_NOT_MOUNTED == usbMountDrive( ) )
+//                    {
+//                        appDataUsb.is_device_needed = false;
+//                        appData.state = APP_STATE_ERROR;
+//                        break;
+//                    }
+                    
 
-                    if ( appDataLog.num_data_stored > 0 )
+//                    /* Log data if required */
+//                    if ( appDataLog.num_data_stored > 0 )
+//                    {
+//                        setLedsStatusColor( LED_USB_ACCESS );
+//                        /* Force data to be written on the USB device */
+//                        appDataLog.num_data_stored = MAX_NUM_DATA_TO_STORE;
+//                        if ( false == dataLog( false ) )
+//                        {
+//                            appDataUsb.is_device_needed = false;
+//                            appData.state = APP_STATE_ERROR;
+//                            break;
+//                        }
+//                    }
+//
+//                    /* Log battery level if required */
+//                    if ( true == appDataLog.log_battery && appDataLog.num_battery_level_stored > 0 )
+//                    {
+//                        setLedsStatusColor( LED_USB_ACCESS );
+//                        if ( FILEIO_RESULT_FAILURE == logBatteryLevel( ) )
+//                        {
+//                            appDataUsb.is_device_needed = false;
+//                            appData.state = APP_STATE_ERROR;
+//                            break;
+//                        }
+//                    }
+//
+//                    /* Log RFID frequency if required */
+//                    if ( true == appDataLog.log_rfid && appDataLog.num_rfid_freq_stored > 0 )
+//                    {
+//                        setLedsStatusColor( LED_USB_ACCESS );
+//                        if ( FILEIO_RESULT_FAILURE == logRfidFreq( ) )
+//                        {
+//                            appDataUsb.is_device_needed = false;
+//                            appData.state = APP_STATE_ERROR;
+//                            break;
+//                        }
+//                    }
+//
+//                    /* Log event if required */
+//                    if ( true == appDataLog.log_events && appDataEvent.num_events_stored > 0 )
+//                    {
+//                        setLedsStatusColor( LED_USB_ACCESS );
+//                        if ( FILEIO_RESULT_FAILURE == logEvents( ) )
+//                        {
+//                            appDataUsb.is_device_needed = false;
+//                            appData.state = APP_STATE_ERROR;
+//                            break;
+//                        }
+//                    }
+
+//                    /* Unmount drive on USB device before power it off. */
+//                    if ( USB_DRIVE_MOUNTED == appDataUsb.usb_drive_status )
+//                    {
+//                        usbUnmountDrive( );
+//                    }
+                    
+                    if ( FLUSH_DATA_ON_USB_DEVICE_SUCCESS != flushDataOnUsbDevice( ) )
                     {
-                        setLedsStatusColor( LED_USB_ACCESS );
-                        /* Force data to be written on the USB device */
-                        appDataLog.num_data_stored = MAX_NUM_DATA_TO_STORE;
-                        if ( false == dataLog( false ) )
+                        /* Unmount drive on USB device before power it off. */
+                        if ( USB_DRIVE_MOUNTED == appDataUsb.usb_drive_status )
                         {
-                            appDataUsb.is_device_needed = false;
-                            appData.state = APP_STATE_ERROR;
-                            break;
+                            usbUnmountDrive( );
                         }
-                    }
-
-                    if ( true == appDataLog.log_battery && appDataLog.num_battery_level_stored > 0 )
-                    {
-                        setLedsStatusColor( LED_USB_ACCESS );
-                        if ( FILEIO_RESULT_FAILURE == logBatteryLevel( ) )
-                        {
-                            appDataUsb.is_device_needed = false;
-                            appData.state = APP_STATE_ERROR;
-                            break;
-                        }
-                    }
-
-                    if ( true == appDataLog.log_rfid && appDataLog.num_rfid_freq_stored > 0 )
-                    {
-                        setLedsStatusColor( LED_USB_ACCESS );
-                        if ( FILEIO_RESULT_FAILURE == logRfidFreq( ) )
-                        {
-                            appDataUsb.is_device_needed = false;
-                            appData.state = APP_STATE_ERROR;
-                            break;
-                        }
-                    }
-
-                    /* Log event if required */
-                    if ( true == appDataLog.log_events && appDataEvent.num_events_stored > 0 )
-                    {
-                        setLedsStatusColor( LED_USB_ACCESS );
-                        if ( FILEIO_RESULT_FAILURE == logEvents( ) )
-                        {
-                            appDataUsb.is_device_needed = false;
-                            appData.state = APP_STATE_ERROR;
-                            break;
-                        }
-                    }
-
-                    /* Unmount drive on USB device before power it off. */
-                    if ( USB_DRIVE_MOUNTED == appDataUsb.usb_drive_status )
-                    {
-                        usbUnmountDrive( );
                     }
 
                     USBHostShutdown( );
@@ -1841,7 +1915,7 @@ void APP_Tasks( void )
 #if defined ( USE_UART1_SERIAL_INTERFACE ) && defined( DISPLAY_CURRENT_STATE )
                 printf( "> APP_STATE_FLUSH_DATA_BEFORE_ERROR\n" );
 #endif
-                appDataLog.data_flush_before_error = true;
+                appError.is_data_flush_before_error = true;
 
                 /* Log event if required */
                 if ( true == appDataLog.log_events )
@@ -1849,17 +1923,17 @@ void APP_Tasks( void )
                     store_event( OF_STATE_FLUSH_DATA_BEFORE_ERROR );
                 }
 
-                if ( appDataLog.num_data_stored == 0 &&
-                     appDataLog.num_battery_level_stored == 0 &&
-                     appDataLog.num_rfid_freq_stored == 0 &&
-                     appDataEvent.num_events_stored == 0 )
-                {
-#if defined ( USE_UART1_SERIAL_INTERFACE )
-                    printf( "\t No data stored.\n" );
-#endif
-                    appData.state = APP_STATE_ERROR;
-                    break;
-                }
+//                if ( appDataLog.num_data_stored == 0 &&
+//                     appDataLog.num_battery_level_stored == 0 &&
+//                     appDataLog.num_rfid_freq_stored == 0 &&
+//                     appDataEvent.num_events_stored == 0 )
+//                {
+//#if defined ( USE_UART1_SERIAL_INTERFACE )
+//                    printf( "\t No data stored.\n" );
+//#endif
+//                    appData.state = APP_STATE_ERROR;
+//                    break;
+//                }
 
                 appDataUsb.is_device_needed = true;
                 /* Log data on USB device */
@@ -1877,7 +1951,7 @@ void APP_Tasks( void )
                     break;
                 }
 
-                if ( appDataLog.num_data_stored > 0 )
+                if ( appDataLog.num_data_stored > 0 && true == appDataLog.is_file_name_set )
                 {
                     setLedsStatusColor( LED_USB_ACCESS );
                     /* Force data to be written on the USB device */
@@ -1890,7 +1964,8 @@ void APP_Tasks( void )
                     }
                 }
 
-                if ( true == appDataLog.log_battery && appDataLog.num_battery_level_stored > 0 )
+//                if ( true == appDataLog.log_battery && appDataLog.num_battery_level_stored > 0 )
+                if ( appDataLog.num_battery_level_stored > 0 )
                 {
                     setLedsStatusColor( LED_USB_ACCESS );
                     if ( FILEIO_RESULT_FAILURE == logBatteryLevel( ) )
@@ -1901,7 +1976,8 @@ void APP_Tasks( void )
                     }
                 }
 
-                if ( true == appDataLog.log_rfid && appDataLog.num_rfid_freq_stored > 0 )
+//                if ( true == appDataLog.log_rfid && appDataLog.num_rfid_freq_stored > 0 )
+                if ( appDataLog.num_rfid_freq_stored > 0 )
                 {
                     setLedsStatusColor( LED_USB_ACCESS );
                     if ( FILEIO_RESULT_FAILURE == logRfidFreq( ) )
@@ -1912,7 +1988,8 @@ void APP_Tasks( void )
                     }
                 }
 
-                if ( true == appDataLog.log_errors )
+//                if ( true == appDataLog.log_errors )
+                if ( ERROR_NONE < appError.number )
                 {
                     setLedsStatusColor( LED_USB_ACCESS );
                     if ( FILEIO_RESULT_FAILURE == logError( ) )
@@ -1924,15 +2001,19 @@ void APP_Tasks( void )
                 }
 
                 /* Log event if required */
-                if ( true == appDataLog.log_events && appDataEvent.num_events_stored > 0 )
+//                if ( true == appDataLog.log_events && appDataEvent.num_events_stored > 0 )
+                if ( appDataEvent.num_events_stored > 0 )
                 {
-                    setLedsStatusColor( LED_USB_ACCESS );
-                    if ( FILEIO_RESULT_FAILURE == logEvents( ) )
+                    if ( true == appDataEvent.is_bin_file_name_set  || true == appDataEvent.is_txt_file_name_set )
                     {
-                        appDataUsb.is_device_needed = false;
-                        appData.state = APP_STATE_ERROR;
-                        break;
-                    }
+                        setLedsStatusColor( LED_USB_ACCESS );
+                        if ( FILEIO_RESULT_FAILURE == logEvents( ) )
+                        {
+                            appDataUsb.is_device_needed = false;
+                            appData.state = APP_STATE_ERROR;
+                            break;
+                        }                        
+                    }                    
                 }
 
                 if ( USB_DRIVE_MOUNTED == usbUnmountDrive( ) )
@@ -1946,7 +2027,7 @@ void APP_Tasks( void )
                 if ( true == isDelayMsEnding( ) )
                 {
                     appDataUsb.is_device_needed = false;
-                    sprintf( appError.message, "USB device detection took more than %ld ms", ( long ) MAX_DELAY_TO_DETECT_USB_DEVICE );
+                    sprintf( appError.message, "USB device detection took more than %ldms", ( long ) MAX_DELAY_TO_DETECT_USB_DEVICE );
                     appError.current_line_number = __LINE__;
                     sprintf( appError.current_file_name, "%s", __FILE__ );
                     appError.number = ERROR_USB_DEVICE_NOT_FOUND;
@@ -1976,9 +2057,11 @@ void APP_Tasks( void )
                     store_event( OF_STATE_ERROR );
                 }
 
+                /* If the current error si not related to the USB device, try to log the error */
                 if ( appError.number < ERROR_USB || appError.number > ERROR_USB_SUSPEND_DEVICE )
                 {
-                    if ( false == appDataLog.data_flush_before_error )
+                    /* Flush data on USB device if necessary */
+                    if ( false == appError.is_data_flush_before_error )
                     {
                         appData.state = APP_STATE_FLUSH_DATA_BEFORE_ERROR;
                         break;
@@ -2078,7 +2161,7 @@ void APP_Tasks( void )
                     TMR3_Start( );
                     setDelayMs( DELAY_BEFORE_RESET );
 #if defined ( USE_UART1_SERIAL_INTERFACE ) 
-                    printf( "\t/!\\ The system will reset in %u milli-seconds\n", DELAY_BEFORE_RESET );
+                    printf( "\t/!\\ The system will reset in %ums\n", DELAY_BEFORE_RESET );
 #endif
                 }
                 else
@@ -2201,11 +2284,11 @@ void APP_Initialize( void )
     appData.button_pressed = BUTTON_READ; /* initialized button status */
 
     /* Data logger */
+    appDataLog.is_file_name_set = false;
     appDataLog.num_char_buffer = 0;
     appDataLog.num_data_stored = 0;
     appDataLog.attractive_leds_current_color_index = 0;
 
-    appDataLog.data_flush_before_error = false;
     appDataLog.log_birds = true;
     appDataLog.log_udid = false;
     appDataLog.log_events = true;
@@ -2280,6 +2363,15 @@ void APP_Initialize( void )
 
     appData.punishment_state = false;
 
+    appError.led_color_1 = LEDS_OFF;
+    appError.led_color_2 = LEDS_OFF;
+    appError.number = ERROR_NONE;
+    appError.current_line_number = 0;
+    appError.is_data_flush_before_error = false;
+    
+    appDataEvent.is_txt_file_name_set = false;
+    appDataEvent.is_bin_file_name_set = false;
+        
 }
 
 

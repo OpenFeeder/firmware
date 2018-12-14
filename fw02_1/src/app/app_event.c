@@ -33,11 +33,11 @@ void store_event(APP_EVENT ev)
     }
     
 #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_EVENT_INFO )
-    printf("\t\tEvent %03d - %02d:%02d:%02d %03d\n", appDataEvent.num_events_stored, 
-       appDataEvent.hours[appDataEvent.num_events_stored], 
-       appDataEvent.minutes[appDataEvent.num_events_stored], 
-       appDataEvent.seconds[appDataEvent.num_events_stored], 
-       appDataEvent.numbers[appDataEvent.num_events_stored]);
+    printf("\tEvent %03d - %02d:%02d:%02d %03d\n", appDataEvent.num_events_stored - 1, 
+       appDataEvent.hours[appDataEvent.num_events_stored - 1], 
+       appDataEvent.minutes[appDataEvent.num_events_stored - 1], 
+       appDataEvent.seconds[appDataEvent.num_events_stored - 1], 
+       appDataEvent.numbers[appDataEvent.num_events_stored - 1]);
 #endif
     
     
@@ -80,10 +80,10 @@ FILEIO_RESULT logEvents(void)
 
     if (EVENT_FILE_TEXT == appDataEvent.file_type || EVENT_FILE_BINARY_AND_TEXT == appDataEvent.file_type )
     {
-        if (FILEIO_RESULT_FAILURE == FILEIO_Open(&file, appDataEvent.filename, FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND))
+        if (FILEIO_RESULT_FAILURE == FILEIO_Open(&file, appDataEvent.txt_file_name, FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND))
         {
             errF = FILEIO_ErrorGet('A');
-            sprintf(appError.message, "Unable to open event log file \"%s\"(%u)", appDataEvent.filename, errF);
+            sprintf(appError.message, "Unable to open event log file \"%s\"(%u)", appDataEvent.txt_file_name, errF);
             appError.current_line_number = __LINE__;
             sprintf(appError.current_file_name, "%s", __FILE__);
             FILEIO_ErrorClear('A');
@@ -108,7 +108,7 @@ FILEIO_RESULT logEvents(void)
                 if (numDataWritten < flag)
                 {
                     errF = FILEIO_ErrorGet('A');
-                    sprintf(appError.message, "Unable to write event in log file \"%s\" (%u)", appDataEvent.filename , errF);
+                    sprintf(appError.message, "Unable to write event in log file \"%s\" (%u)", appDataEvent.txt_file_name , errF);
                     appError.current_line_number = __LINE__;
                     sprintf(appError.current_file_name, "%s", __FILE__);
                     FILEIO_ErrorClear('A');
@@ -121,7 +121,7 @@ FILEIO_RESULT logEvents(void)
         if (FILEIO_RESULT_FAILURE == FILEIO_Close(&file))
         {
             errF = FILEIO_ErrorGet('A');
-            sprintf(appError.message, "Unable to close event log file \"%s\" (%u)", appDataEvent.filename , errF);
+            sprintf(appError.message, "Unable to close event log file \"%s\" (%u)", appDataEvent.txt_file_name , errF);
             appError.current_line_number = __LINE__;
             sprintf(appError.current_file_name, "%s", __FILE__);
             FILEIO_ErrorClear('A');
@@ -132,10 +132,10 @@ FILEIO_RESULT logEvents(void)
     
     if (EVENT_FILE_BINARY == appDataEvent.file_type || EVENT_FILE_BINARY_AND_TEXT == appDataEvent.file_type )
     {
-        if (FILEIO_RESULT_FAILURE == FILEIO_Open(&file, appDataEvent.binfilename, FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND))
+        if (FILEIO_RESULT_FAILURE == FILEIO_Open(&file, appDataEvent.bin_file_name, FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND))
         {
             errF = FILEIO_ErrorGet('A');
-            sprintf(appError.message, "Unable to open event log file \"%s\"(%u)", appDataEvent.binfilename, errF);
+            sprintf(appError.message, "Unable to open event log file \"%s\"(%u)", appDataEvent.bin_file_name, errF);
             appError.current_line_number = __LINE__;
             sprintf(appError.current_file_name, "%s", __FILE__);
             FILEIO_ErrorClear('A');
@@ -157,7 +157,7 @@ FILEIO_RESULT logEvents(void)
             if (numDataWritten < 4)
             {
                 errF = FILEIO_ErrorGet('A');
-                sprintf(appError.message, "Unable to write event in log file \"%s\" (%u)", appDataEvent.binfilename , errF);
+                sprintf(appError.message, "Unable to write event in log file \"%s\" (%u)", appDataEvent.bin_file_name , errF);
                 appError.current_line_number = __LINE__;
                 sprintf(appError.current_file_name, "%s", __FILE__);
                 FILEIO_ErrorClear('A');
@@ -169,7 +169,7 @@ FILEIO_RESULT logEvents(void)
         if (FILEIO_RESULT_FAILURE == FILEIO_Close(&file))
         {
             errF = FILEIO_ErrorGet('A');
-            sprintf(appError.message, "Unable to close event log file \"%s\" (%u)", appDataEvent.binfilename , errF);
+            sprintf(appError.message, "Unable to close event log file \"%s\" (%u)", appDataEvent.bin_file_name , errF);
             appError.current_line_number = __LINE__;
             sprintf(appError.current_file_name, "%s", __FILE__);
             FILEIO_ErrorClear('A');
@@ -199,28 +199,32 @@ FILEIO_RESULT logEvents(void)
 bool setEventFileName(void)
 {
 
+    appDataEvent.is_txt_file_name_set = false;
+    appDataEvent.is_bin_file_name_set = false;
+    
     /* Clear filename buffer */
-    memset(appDataEvent.filename, 0, sizeof (appDataEvent.filename));
-    memset(appDataEvent.binfilename, 0, sizeof (appDataEvent.binfilename));
+    memset(appDataEvent.txt_file_name, 0, sizeof (appDataEvent.bin_file_name));
+    memset(appDataEvent.bin_file_name, 0, sizeof (appDataEvent.bin_file_name));
 
     /* Get current date */
-    if ( false == getDateTime( ) )
-    {
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_EVENT_INFO )
-        printf("Unable to set event file name\n");
-    #endif 
-        sprintf(appError.message, "Unable to set event file CSV name");
-        appError.current_line_number = __LINE__;
-        sprintf(appError.current_file_name, "%s", __FILE__);
-        appError.number = ERROR_EVENT_CSV_FILE_SET_NAME;
-        return false; 
-    }
+    getDateTime( );
+//    if ( false == getDateTime( ) )
+//    {
+//    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_EVENT_INFO )
+//        printf("Unable to set event file name\n");
+//    #endif 
+//        sprintf(appError.message, "Unable to set event file CSV name");
+//        appError.current_line_number = __LINE__;
+//        sprintf(appError.current_file_name, "%s", __FILE__);
+//        appError.number = ERROR_EVENT_CSV_FILE_SET_NAME;
+//        return false; 
+//    }
 
     if (EVENT_FILE_TEXT == appDataEvent.file_type || EVENT_FILE_BINARY_AND_TEXT == appDataEvent.file_type )
     {
         
         /* Set event log file name => EVyymmdd.CSV */
-        if (snprintf(appDataEvent.filename, 13, "EV%02d%02d%02d.CSV",
+        if (snprintf(appDataEvent.txt_file_name, 13, "EV%02d%02d%02d.CSV",
                      appData.current_time.tm_year,
                      appData.current_time.tm_mon,
                      appData.current_time.tm_mday) < 0)
@@ -235,6 +239,9 @@ bool setEventFileName(void)
             appError.number = ERROR_EVENT_CSV_FILE_SET_NAME;
             return false;
         }
+        
+        appDataEvent.is_txt_file_name_set = true;
+        
     #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_EVENT_INFO )
             printf("\tTXT event file name: %s\n", appDataEvent.filename);
     #endif      
@@ -243,7 +250,7 @@ bool setEventFileName(void)
     if (EVENT_FILE_BINARY == appDataEvent.file_type || EVENT_FILE_BINARY_AND_TEXT == appDataEvent.file_type )
     {
         /* Set event log file name => EVyymmdd.BIN */
-        if (snprintf(appDataEvent.binfilename, 13, "EV%02d%02d%02d.BIN",
+        if (snprintf(appDataEvent.bin_file_name, 13, "EV%02d%02d%02d.BIN",
                      appData.current_time.tm_year,
                      appData.current_time.tm_mon,
                      appData.current_time.tm_mday) < 0)
@@ -258,10 +265,14 @@ bool setEventFileName(void)
             appError.number = ERROR_EVENT_BIN_FILE_SET_NAME;
             return false;
         }
+        
+        appDataEvent.is_bin_file_name_set = true;
+        
     #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_EVENT_INFO )
             printf("\tBIN event file name: %s\n", appDataEvent.binfilename);
     #endif 
     }
+    
     return true;
 }
 

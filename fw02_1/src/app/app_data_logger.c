@@ -14,7 +14,6 @@
 // PopulateBuffer - Ajout de donnees dans le buffer
 // *****************************************************************************
 
-
 static bool populateLogBuffer( void )
 {
     int nChar;
@@ -316,40 +315,71 @@ void clearBatteryBuffer( void )
 bool setLogFileName( void )
 {
 
+    appDataLog.is_file_name_set = false;
+    
     /* Clear filename buffer */
     memset( appDataLog.filename, 0, sizeof (appDataLog.filename ) );
 
     /* Get current date */
-    if ( true == getDateTime( ) )
+    getDateTime( );
+    
+    /* Set log file name => 20yymmdd.CSV */
+    if ( snprintf( appDataLog.filename, 13, "%04d%02d%02d.CSV",
+                   2000 + appData.current_time.tm_year,
+                   appData.current_time.tm_mon,
+                   appData.current_time.tm_mday ) < 0 )
     {
-        /* Set log file name => 20yymmdd.CSV */
-        if ( snprintf( appDataLog.filename, 13, "%04d%02d%02d.CSV",
-                       2000 + appData.current_time.tm_year,
-                       appData.current_time.tm_mon,
-                       appData.current_time.tm_mday ) < 0 )
-        {
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO )
-            printf( "Unable to set log file name\n" );
-    #endif 
-            sprintf( appError.message, "Unable to set log file name" );
-            appError.current_line_number = __LINE__;
-            sprintf( appError.current_file_name, "%s", __FILE__ );
-            appError.number = ERROR_LOG_FILE_SET_NAME;
-            return false;
-        }
-    }
-    else
-    {
-    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO )
-            printf( "Unable to set log file name\n" );
-    #endif 
+
+        appDataLog.is_file_name_set = false;
+
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO )
+        printf( "Unable to set log file name\n" );
+#endif 
         sprintf( appError.message, "Unable to set log file name" );
         appError.current_line_number = __LINE__;
         sprintf( appError.current_file_name, "%s", __FILE__ );
         appError.number = ERROR_LOG_FILE_SET_NAME;
         return false;
     }
+    
+//    if ( true == getDateTime( ) )
+//    {
+//        /* Set log file name => 20yymmdd.CSV */
+//        if ( snprintf( appDataLog.filename, 13, "%04d%02d%02d.CSV",
+//                       2000 + appData.current_time.tm_year,
+//                       appData.current_time.tm_mon,
+//                       appData.current_time.tm_mday ) < 0 )
+//        {
+//            
+//            appDataLog.is_file_name_set = false;
+//            
+//    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO )
+//            printf( "Unable to set log file name\n" );
+//    #endif 
+//            sprintf( appError.message, "Unable to set log file name" );
+//            appError.current_line_number = __LINE__;
+//            sprintf( appError.current_file_name, "%s", __FILE__ );
+//            appError.number = ERROR_LOG_FILE_SET_NAME;
+//            return false;
+//        }
+//    }
+//    else
+//    {
+//        
+//        appDataLog.is_file_name_set = false;
+//        
+//    #if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_LOG_INFO )
+//            printf( "Unable to set log file name\n" );
+//    #endif 
+//        sprintf( appError.message, "Unable to set log file name" );
+//        appError.current_line_number = __LINE__;
+//        sprintf( appError.current_file_name, "%s", __FILE__ );
+//        appError.number = ERROR_LOG_FILE_SET_NAME;
+//        return false;
+//    }
 
+    appDataLog.is_file_name_set = true;
+    
     return true;
 }
 
@@ -368,6 +398,11 @@ FILEIO_RESULT logBatteryLevel( void )
     if ( USB_DRIVE_MOUNTED == appDataUsb.usb_drive_status )
     {
         needToUnmount = false;
+        /* Log event if required */
+        if ( true == appDataLog.log_events )
+        {
+           store_event(OF_ALREADY_MOUNTED_USB_DRIVE); 
+        }
     }
     else
     {
@@ -399,21 +434,16 @@ FILEIO_RESULT logBatteryLevel( void )
 
     for ( i = 0; i < appDataLog.num_battery_level_stored; i++ )
     {
-        flag = sprintf( buf, "%c%c%sOF%c%c%s%u%s%02d/%02d/%02d%s%02d:00%s%2.3f\n",
+        flag = sprintf( buf, "%c%c,OF%c%c,%u,%02d/%02d/%04d,%02d:00,%2.3f\n",
                         appData.siteid[0],
                         appData.siteid[1],
-                        appDataLog.separator,
                         appData.siteid[2],
                         appData.siteid[3],
-                        appDataLog.separator,
                         getCompletScenarioNumber( ),
-                        appDataLog.separator,
                         appData.current_time.tm_mday,
                         appData.current_time.tm_mon,
-                        appData.current_time.tm_year,
-                        appDataLog.separator,
+                        2000 + appData.current_time.tm_year,
                         appDataLog.battery_level[i][0],
-                        appDataLog.separator,
                         appDataLog.battery_level[i][1] * BATTERY_VOLTAGE_FACTOR );
 
         if ( flag > 0 )
@@ -474,6 +504,11 @@ FILEIO_RESULT logUdid( void )
     if ( USB_DRIVE_MOUNTED == appDataUsb.usb_drive_status )
     {
         needToUnmount = false;
+        /* Log event if required */
+        if ( true == appDataLog.log_events )
+        {
+           store_event(OF_ALREADY_MOUNTED_USB_DRIVE); 
+        }
     }
     else
     {
@@ -501,15 +536,11 @@ FILEIO_RESULT logUdid( void )
         return FILEIO_RESULT_FAILURE;
     }
 
-    flag = sprintf( buf, "%06lX%s%06lX%s%06lX%s%06lX%s%06lX\n",
+    flag = sprintf( buf, "%06lX,%06lX,%06lX,%06lX,%06lX\n",
                     appData.udid.words[0],
-                    appDataLog.separator,
                     appData.udid.words[1],
-                    appDataLog.separator,
                     appData.udid.words[2],
-                    appDataLog.separator,
                     appData.udid.words[3],
-                    appDataLog.separator,
                     appData.udid.words[4] );
 
     if ( flag > 0 )
@@ -519,7 +550,7 @@ FILEIO_RESULT logUdid( void )
         if ( numDataWritten < flag )
         {
             errF = FILEIO_ErrorGet( 'A' );
-            sprintf( appError.message, "Unable to write UDID frequency in log file (%u)", errF );
+            sprintf( appError.message, "Unable to write UDID in log file (%u)", errF );
             appError.current_line_number = __LINE__;
             sprintf( appError.current_file_name, "%s", __FILE__ );
             FILEIO_ErrorClear( 'A' );
@@ -551,6 +582,104 @@ FILEIO_RESULT logUdid( void )
 
 }
 
+FILEIO_RESULT logFirmware( void )
+{
+    FILEIO_OBJECT file;
+    FILEIO_ERROR_TYPE errF;
+    char buf[80];
+    size_t numDataWritten;
+    int flag;
+    bool needToUnmount;
+
+    if ( USB_DRIVE_MOUNTED == appDataUsb.usb_drive_status )
+    {
+        needToUnmount = false;
+        /* Log event if required */
+        if ( true == appDataLog.log_events )
+        {
+           store_event(OF_ALREADY_MOUNTED_USB_DRIVE); 
+        }
+    }
+    else
+    {
+        if ( USB_DRIVE_NOT_MOUNTED == usbMountDrive( ) )
+        {
+            return FILEIO_RESULT_FAILURE;
+        }
+        needToUnmount = true;
+    }
+
+    getDateTime( );
+    
+    /* Log event if required */
+    if ( true == appDataLog.log_events )
+    {
+        store_event( OF_WRITE_FIRMWARE_LOG );
+    }
+
+    if ( FILEIO_RESULT_FAILURE == FILEIO_Open( &file, FIRMWARE_LOG_FILE, FILEIO_OPEN_WRITE | FILEIO_OPEN_CREATE | FILEIO_OPEN_APPEND ) )
+    {
+        errF = FILEIO_ErrorGet( 'A' );
+        sprintf( appError.message, "Unable to open firmware log file (%u)", errF );
+        appError.current_line_number = __LINE__;
+        sprintf( appError.current_file_name, "%s", __FILE__ );
+        FILEIO_ErrorClear( 'A' );
+        appError.number = ERROR_FIRMWARE_FILE_OPEN;
+        return FILEIO_RESULT_FAILURE;
+    }       
+
+    flag = sprintf( buf, "%02d/%02d/%04d,%02d:%02d:%02d,\"%s %d.%d.%d\",\"%s\",%s\n",
+                    appData.current_time.tm_mday,
+                    appData.current_time.tm_mon,
+                    2000 + appData.current_time.tm_year,
+                    appData.current_time.tm_hour, 
+                    appData.current_time.tm_min,
+                    appData.current_time.tm_sec,
+                    FW_NAME, 
+                    FW_VERSION_MAJOR, 
+                    FW_VERSION_MINOR, 
+                    FW_VERSION_PATCH,
+                    __DATE__,
+                    __TIME__);
+
+    if ( flag > 0 )
+    {
+        numDataWritten = FILEIO_Write( buf, 1, flag, &file );
+
+        if ( numDataWritten < flag )
+        {
+            errF = FILEIO_ErrorGet( 'A' );
+            sprintf( appError.message, "Unable to write firmware in log file (%u)", errF );
+            appError.current_line_number = __LINE__;
+            sprintf( appError.current_file_name, "%s", __FILE__ );
+            FILEIO_ErrorClear( 'A' );
+            appError.number = ERROR_FIRMWARE_FILE_WRITE;
+            return FILEIO_RESULT_FAILURE;
+        }
+    }
+
+    if ( FILEIO_RESULT_FAILURE == FILEIO_Close( &file ) )
+    {
+        errF = FILEIO_ErrorGet( 'A' );
+        sprintf( appError.message, "Unable to close firmware log file (%u)", errF );
+        appError.current_line_number = __LINE__;
+        sprintf( appError.current_file_name, "%s", __FILE__ );
+        FILEIO_ErrorClear( 'A' );
+        appError.number = ERROR_FIRMWARE_FILE_CLOSE;
+        return FILEIO_RESULT_FAILURE;
+    }
+
+    if ( true == needToUnmount )
+    {
+        if ( USB_DRIVE_MOUNTED == usbUnmountDrive( ) )
+        {
+            return FILEIO_RESULT_FAILURE;
+        }
+    }
+
+    return FILEIO_RESULT_SUCCESS;
+
+}
 
 FILEIO_RESULT logRfidFreq( void )
 {
@@ -566,6 +695,11 @@ FILEIO_RESULT logRfidFreq( void )
     if ( USB_DRIVE_MOUNTED == appDataUsb.usb_drive_status )
     {
         needToUnmount = false;
+        /* Log event if required */
+        if ( true == appDataLog.log_events )
+        {
+           store_event(OF_ALREADY_MOUNTED_USB_DRIVE); 
+        }
     }
     else
     {
@@ -597,22 +731,17 @@ FILEIO_RESULT logRfidFreq( void )
 
     for ( i = 0; i < appDataLog.num_rfid_freq_stored; i++ )
     {
-        flag = sprintf( buf, "%c%c%sOF%c%c%s%u%s%02d/%02d/%02d%s%02d:%02d%s%ld\n",
+        flag = sprintf( buf, "%c%c,OF%c%c,%u,%02d/%02d/%04d,%02d:%02d,%ld\n",
                         appData.siteid[0],
                         appData.siteid[1],
-                        appDataLog.separator,
                         appData.siteid[2],
                         appData.siteid[3],
-                        appDataLog.separator,
                         getCompletScenarioNumber( ),
-                        appDataLog.separator,
                         appData.current_time.tm_mday,
                         appData.current_time.tm_mon,
-                        appData.current_time.tm_year,
-                        appDataLog.separator,
+                        2000 + appData.current_time.tm_year,
                         appDataLog.rfid_freq[i][0],
                         appDataLog.rfid_freq[i][1],
-                        appDataLog.separator,
                         ( long ) appDataLog.rfid_freq[i][2]*10 );
 
 
@@ -676,6 +805,11 @@ FILEIO_RESULT logDs3231Temp( void )
     if ( USB_DRIVE_MOUNTED == appDataUsb.usb_drive_status )
     {
         needToUnmount = false;
+        /* Log event if required */
+        if ( true == appDataLog.log_events )
+        {
+           store_event(OF_ALREADY_MOUNTED_USB_DRIVE); 
+        }
     }
     else
     {
@@ -707,22 +841,17 @@ FILEIO_RESULT logDs3231Temp( void )
 
     for ( i = 0; i < appDataLog.num_ds3231_temp_stored; i++ )
     {
-        flag = sprintf( buf, "%c%c%sOF%c%c%s%u%s%02d/%02d/%02d%s%02d:%02d%s%5.2f\n",
+        flag = sprintf( buf, "%c%c,OF%c%c,%u,%02d/%02d/%04d,%02d:%02d,%5.2f\n",
                         appData.siteid[0],
                         appData.siteid[1],
-                        appDataLog.separator,
                         appData.siteid[2],
                         appData.siteid[3],
-                        appDataLog.separator,
                         getCompletScenarioNumber( ),
-                        appDataLog.separator,
                         appData.current_time.tm_mday,
                         appData.current_time.tm_mon,
-                        appData.current_time.tm_year,
-                        appDataLog.separator,
+                        2000 + appData.current_time.tm_year,
                         ( int ) appDataLog.ds3231_temp[i][0],
                         ( int ) appDataLog.ds3231_temp[i][1],
-                        appDataLog.separator,
                         ( double ) appDataLog.ds3231_temp[i][2] );
 
         if ( flag > 0 )
@@ -785,6 +914,11 @@ FILEIO_RESULT logCalibration( void )
     if ( USB_DRIVE_MOUNTED == appDataUsb.usb_drive_status )
     {
         needToUnmount = false;
+        /* Log event if required */
+        if ( true == appDataLog.log_events )
+        {
+           store_event(OF_ALREADY_MOUNTED_USB_DRIVE); 
+        }
     }
     else
     {
@@ -816,22 +950,17 @@ FILEIO_RESULT logCalibration( void )
 
     for ( i = 0; i < appDataLog.num_time_calib_stored; i++ )
     {
-        flag = sprintf( buf, "%c%c%sOF%c%c%s%u%s%02d/%02d/20%02d%s%02d:%02d%s%.0f\n",
+        flag = sprintf( buf, "%c%c,OF%c%c,%u,%02d/%02d/%04d,%02d:%02d,%.0f\n",
                         appData.siteid[0],
                         appData.siteid[1],
-                        appDataLog.separator,
                         appData.siteid[2],
                         appData.siteid[3],
-                        appDataLog.separator,
                         getCompletScenarioNumber( ),
-                        appDataLog.separator,
                         appData.current_time.tm_mday,
                         appData.current_time.tm_mon,
-                        appData.current_time.tm_year,
-                        appDataLog.separator,
+                        2000 + appData.current_time.tm_year,
                         ( int ) appDataLog.time_calibration[i][0],
                         ( int ) appDataLog.time_calibration[i][1],
-                        appDataLog.separator,
                         appDataLog.time_calibration[i][2] );
 
         if ( flag > 0 )
@@ -882,6 +1011,8 @@ FILEIO_RESULT logCalibration( void )
 
 int flushDataOnUsbDevice( )
 {
+    bool needToUnmount;
+    
     setLedsStatusColor( LED_USB_ACCESS );
 
     /* Log event if required */
@@ -890,12 +1021,32 @@ int flushDataOnUsbDevice( )
         store_event( OF_FLUSH_DATA_ON_USB_DEVICE );
     }
     
-    if ( USB_DRIVE_NOT_MOUNTED == usbMountDrive( ) )
+    if ( USB_DRIVE_MOUNTED == appDataUsb.usb_drive_status )
     {
-        appDataUsb.is_device_needed = false;
-        return FLUSH_DATA_ON_USB_DEVICE_FAIL;
+        needToUnmount = false;
+        /* Log event if required */
+        if ( true == appDataLog.log_events )
+        {
+           store_event(OF_ALREADY_MOUNTED_USB_DRIVE); 
+        }
     }
+    else
+    {
+        if ( USB_DRIVE_NOT_MOUNTED == usbMountDrive( ) )
+        {
+            appDataUsb.is_device_needed = false;
+            return FLUSH_DATA_ON_USB_DEVICE_FAIL;
+        }
+        needToUnmount = true;
+    }
+    
+//    if ( USB_DRIVE_NOT_MOUNTED == usbMountDrive( ) )
+//    {
+//        appDataUsb.is_device_needed = false;
+//        return FLUSH_DATA_ON_USB_DEVICE_FAIL;
+//    }
 
+    /* Bird data */
     if ( appDataLog.num_data_stored > 0 )
     {
 #if defined (USE_UART1_SERIAL_INTERFACE) 
@@ -912,6 +1063,7 @@ int flushDataOnUsbDevice( )
 
     setLedsStatusColor( LED_USB_ACCESS );
 
+    /* Battery level */
     if ( true == appDataLog.log_battery && appDataLog.num_battery_level_stored > 0 )
     {
 #if defined (USE_UART1_SERIAL_INTERFACE) 
@@ -926,6 +1078,7 @@ int flushDataOnUsbDevice( )
 
     setLedsStatusColor( LED_USB_ACCESS );
 
+    /* RFID frequency */
     if ( true == appDataLog.log_rfid && appDataLog.num_rfid_freq_stored > 0 )
     {
 #if defined (USE_UART1_SERIAL_INTERFACE) 
@@ -940,6 +1093,7 @@ int flushDataOnUsbDevice( )
 
     setLedsStatusColor( LED_USB_ACCESS );
 
+    /* Date and time calibration */
     if ( true == appDataLog.log_calibration && appDataLog.num_time_calib_stored > 0 )
     {
 #if defined (USE_UART1_SERIAL_INTERFACE) 
@@ -954,6 +1108,7 @@ int flushDataOnUsbDevice( )
 
     setLedsStatusColor( LED_USB_ACCESS );
 
+    /* DS3231 temperature */
     if ( true == appDataLog.log_temp && appDataLog.num_ds3231_temp_stored > 0 )
     {
 #if defined (USE_UART1_SERIAL_INTERFACE) 
@@ -981,10 +1136,18 @@ int flushDataOnUsbDevice( )
         }
     }
 
-    if ( USB_DRIVE_MOUNTED == appDataUsb.usb_drive_status )
+    if ( true == needToUnmount )
     {
-        usbUnmountDrive( );
+        if ( USB_DRIVE_MOUNTED == usbUnmountDrive( ) )
+        {
+            return FLUSH_DATA_ON_USB_DEVICE_FAIL;
+        }
     }
+    
+//    if ( USB_DRIVE_MOUNTED == appDataUsb.usb_drive_status )
+//    {
+//        usbUnmountDrive( );
+//    }
 
     setLedsStatusColor( LEDS_OFF );
 

@@ -192,6 +192,7 @@ void exportAllFiles( )
     exportFile( "20??????.CSV", 'T' );
     exportFile( "EV??????.BIN", 'B' );
     exportFile( "CONFIG.INI", 'T' );
+    exportFile( FIRMWARE_LOG_FILE, 'T' );
     exportFile( BATTERY_LOG_FILE, 'T' );
     exportFile( ERRORS_LOG_FILE, 'T' );
     exportFile( RFID_LOG_FILE, 'T' );
@@ -240,7 +241,8 @@ void deleteLogFiles( )
 
     usbMountDrive( );
     
-        deleteFile( BATTERY_LOG_FILE );
+    deleteFile( FIRMWARE_LOG_FILE );
+    deleteFile( BATTERY_LOG_FILE );
     deleteFile( ERRORS_LOG_FILE );
     deleteFile( RFID_LOG_FILE );
     deleteFile( CALIBRATION_LOG_FILE );
@@ -274,6 +276,7 @@ void deleteAllFiles( )
     deleteFile( "20??????.CSV" );
     deleteFile( "EV??????.BIN" );
     deleteFile( "CONFIG.INI" );
+    deleteFile( FIRMWARE_LOG_FILE );
     deleteFile( BATTERY_LOG_FILE );
     deleteFile( ERRORS_LOG_FILE );
     deleteFile( RFID_LOG_FILE );

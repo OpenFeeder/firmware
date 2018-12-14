@@ -37,6 +37,30 @@ bool isDelayMsEnding( void )
     }
 }
 
+void setDelayMsReadFromUart( uint16_t timeout_ms )
+{
+    if ( timeout_ms < 20 )
+    {
+        g_timeout_read_from_uart_x20ms = 1;
+    }
+    else
+    {
+        g_timeout_read_from_uart_x20ms = timeout_ms / 20;
+    }
+}
+
+bool isDelayMsEndingReadFromUart( void )
+{
+    if ( g_timeout_read_from_uart_x20ms == 0 )
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 void setDelayMsStandBy( uint16_t timeout_ms )
 {
     if ( timeout_ms < 20 )

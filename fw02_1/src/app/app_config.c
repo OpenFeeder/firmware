@@ -1768,15 +1768,15 @@ void config_print( void )
     {
         if ( EVENT_FILE_BINARY == appDataEvent.file_type )
         {
-            printf( "\t\tEvents: enable - %s\n", appDataEvent.binfilename );
+            printf( "\t\tEvents: enable - %s\n", appDataEvent.bin_file_name );
         }
         else if ( EVENT_FILE_TEXT == appDataEvent.file_type )
         {
-            printf( "\t\tEvents: enable - %s\n", appDataEvent.filename );
+            printf( "\t\tEvents: enable - %s\n", appDataEvent.txt_file_name );
         }
         else
         {
-            printf( "\t\tEvents: enable - %s - %s\n", appDataEvent.filename, appDataEvent.binfilename );
+            printf( "\t\tEvents: enable - %s - %s\n", appDataEvent.txt_file_name, appDataEvent.bin_file_name );
         }
     }
     else

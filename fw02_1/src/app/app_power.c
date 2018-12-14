@@ -162,6 +162,12 @@ void manageResetSituation( void )
     /* "dsPIC33/PIC24 Family Reference Manual", "Reset" (DS39712)
      * 7.13 REGISTERS AND STATUS BIT VALUES, page 13 */
     
+#if defined (USE_UART1_SERIAL_INTERFACE) 
+    printf( "\r\n\tWait %dms before starting application\r\n", DELAY_AFTER_POWERUP);
+#endif 
+    setDelayMs( DELAY_AFTER_POWERUP );
+    while ( 0 == isDelayMsEnding( ) );
+    
     /* Trap Event Reset */
     if ( appData.reset_1.bit_value.trapr )
     {
@@ -273,22 +279,12 @@ void manageResetSituation( void )
         if ( appData.reset_2.bit_value.vbpor )
         {
             store_event(OF_RESET_POR);
-#if defined (USE_UART1_SERIAL_INTERFACE) 
-            printf( "Wait %dms before starting application", DELAY_AFTER_POWERUP);
-#endif 
-            setDelayMs( DELAY_AFTER_POWERUP );
-            while ( 0 == isDelayMsEnding( ) );
             return;
         }
         /* Power-on Reset on VDD */
         else
         {
             store_event(OF_RESET_POR_VDD);
-#if defined (USE_UART1_SERIAL_INTERFACE) 
-            printf( "Wait %dms before starting application", DELAY_AFTER_POWERUP);
-#endif 
-            setDelayMs( DELAY_AFTER_POWERUP );
-            while ( 0 == isDelayMsEnding( ) );
             return;
         }
     }

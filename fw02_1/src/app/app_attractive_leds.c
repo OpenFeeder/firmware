@@ -451,6 +451,10 @@ void testAttractiveLeds( void )
         store_event(OF_ATTRACTIVE_LEDS_TEST);
     }
     
+#if defined ( USE_UART1_SERIAL_INTERFACE )
+    printf( "\tTest attractive LEDs\n" );
+#endif
+                        
     setAttractiveLedsOn( );
     setAttractiveLedsNoColor( );
     
@@ -529,6 +533,10 @@ void testAttractiveLedsOrder( void )
         store_event( OF_ATTRACTIVE_LEDS_CHECK_INDEX );
     }
 
+#if defined ( USE_UART1_SERIAL_INTERFACE )
+    printf( "\tTest attractive LEDs order\n" );
+#endif
+    
     for ( i = 0; i < 4; i++ )
     {
         setOneAttractiveLedColor( appDataAttractiveLeds.leds_index[i], 0, 35, 0 );

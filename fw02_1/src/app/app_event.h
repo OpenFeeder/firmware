@@ -8,8 +8,8 @@
 #ifndef _APP_EVENT_HEADER_H
 #define _APP_EVENT_HEADER_H
 
-#define MAX_NUMBER_OF_EVENT 200
-#define MAX_NUM_EVENT_BEFORE_SAVE 100
+#define MAX_NUMBER_OF_EVENT 100
+#define MAX_NUM_EVENT_BEFORE_SAVE 40
 
 typedef enum
 {
@@ -135,7 +135,12 @@ typedef enum
     OF_BATTERY_LEVEL_OVERFLOW,
     OF_RFID_FREQ_OVERFLOW,
     OF_DS3231_TEMP_OVERFLOW,
-    OF_SET_DATE_TIME_FAIL
+    OF_SET_DATE_TIME_FAIL,
+    OF_DEBUG_SET_DATE_TIME_FAIL,
+    OF_DEBUG_GET_PIC_DATE_TIME_FAIL,
+    OF_DEBUG_GET_EXT_DATE_TIME_FAIL,
+    OF_STATE_SERIAL_COMMUNICATION,
+    OF_WRITE_FIRMWARE_LOG
         
 } APP_EVENT;
 
@@ -150,8 +155,12 @@ typedef enum
 typedef struct
 {
     /* Log file name - 8.3 convention - Upper case only */
-    char filename[13];
-    char binfilename[13];
+    char txt_file_name[13];
+    char bin_file_name[13];
+    
+    bool is_txt_file_name_set;
+    bool is_bin_file_name_set;
+    
     /* Data separator in log file */
     char separator[2];
     

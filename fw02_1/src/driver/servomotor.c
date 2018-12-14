@@ -149,6 +149,11 @@ void servomotorPowerDisable( void )
 
 void testServomotor()
 {
+    
+#if defined ( USE_UART1_SERIAL_INTERFACE )
+    printf( "\tTest servomotor.\n" );
+#endif
+    
     /* Servomotor power command enable. */
     servomotorPowerEnable( );
 

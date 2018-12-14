@@ -91,7 +91,7 @@ void PIN_MANAGER_Initialize(void)
     IOCPUA = 0x0000;
     IOCPUB = 0x0000;
     IOCPUC = 0x0000;
-    IOCPUD = 0x0800;
+    IOCPUD = 0x0000;
     IOCPUE = 0x0000;
     IOCPUF = 0x0000;
     IOCPUG = 0x0000;

@@ -82,6 +82,9 @@ typedef enum
     ERROR_UDID_FILE_OPEN,
     ERROR_UDID_FILE_WRITE,
     ERROR_UDID_FILE_CLOSE,
+    ERROR_FIRMWARE_FILE_OPEN,
+    ERROR_FIRMWARE_FILE_WRITE,
+    ERROR_FIRMWARE_FILE_CLOSE,
     ERROR_ERROR_FILE_OPEN,
     ERROR_ERROR_FILE_WRITE,
     ERROR_ERROR_FILE_CLOSE,
@@ -118,6 +121,8 @@ typedef struct
     ERROR_NUMBER number;
     
     struct tm time;
+    
+    bool is_data_flush_before_error;
 
 } APP_ERROR;
 

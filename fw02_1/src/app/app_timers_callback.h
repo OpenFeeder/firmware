@@ -40,6 +40,7 @@ extern volatile uint16_t g_timeout_em4095_x20ms;
 extern volatile uint16_t g_timeout_leds_status_x20ms;
 extern volatile uint8_t g_timeout_taking_reward;
 extern volatile uint8_t g_timeout_punishment_x20ms;
+extern volatile uint8_t g_timeout_read_from_uart_x20ms;
 
 
 // *****************************************************************************

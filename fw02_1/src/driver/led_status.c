@@ -113,6 +113,7 @@ void setLedsStatusColor( LED_STATUS status )
             LED_STATUS_Y_SetLow( );
             break;
         
+        case LED_SERIAL_COMMUNICATION:
         case LED_PITTAG_ACCEPTED:
         case LEDS_ERROR_RFID_TIMEOUT:
             LED_STATUS_R_SetLow( );

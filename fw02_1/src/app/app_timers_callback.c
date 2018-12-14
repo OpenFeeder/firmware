@@ -22,6 +22,7 @@ volatile uint16_t g_timeout_em4095_x20ms;
 volatile uint16_t g_timeout_leds_status_x20ms;
 volatile uint8_t g_timeout_taking_reward;
 volatile uint8_t g_timeout_punishment_x20ms;
+volatile uint8_t g_timeout_read_from_uart_x20ms;
 
 
 //******************************************************************************
@@ -103,6 +104,11 @@ void TMR3_CallBack( void )
     if ( g_timeout_x20ms )
     {
         --g_timeout_x20ms;
+    }
+    
+    if ( g_timeout_read_from_uart_x20ms )
+    {
+        --g_timeout_read_from_uart_x20ms;
     }
 
     if ( g_timeout_em4095_x20ms )

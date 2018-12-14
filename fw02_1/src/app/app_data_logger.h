@@ -19,6 +19,7 @@
 
 #define BATTERY_LOG_FILE "BATTERY.CSV"
 #define RFID_LOG_FILE "RFIDFREQ.CSV"
+#define FIRMWARE_LOG_FILE "FIRMWARE.CSV"
 #define UDID_LOG_FILE "UDID.CSV"
 #define EXT_TEMP_LOG_FILE "EXTTEMP.CSV"
 #define ERRORS_LOG_FILE "ERRORS.CSV"
@@ -38,6 +39,9 @@ typedef struct
 {
     /* Log file name - 8.3 convention - Upper case only */
     char filename[13];
+    
+    bool is_file_name_set;
+    
     /* Data separator in log file */
     char separator[2];
 
@@ -74,8 +78,6 @@ typedef struct
     float ds3231_temp[NUM_DS3231_TEMP_TO_LOG][3];
     uint8_t num_ds3231_temp_stored;
     
-    bool data_flush_before_error;
-    
     bool log_birds;
     bool log_udid;
     bool log_events;
@@ -99,6 +101,7 @@ void clearCalibrationBuffer( void );
 
 int flushDataOnUsbDevice( void );
 
+FILEIO_RESULT logFirmware( void );
 FILEIO_RESULT logBatteryLevel( void );
 FILEIO_RESULT logRfidFreq( void );
 FILEIO_RESULT logDs3231Temp( void );
