@@ -566,7 +566,7 @@ void APP_Tasks( void )
 #if defined ( USE_UART1_SERIAL_INTERFACE ) && defined( DISPLAY_CURRENT_STATE )
                 printf( "> APP_STATE_SERIAL_COMMUNICATION\n" );
 #endif
-                
+
                 /* Disable PIR interruption */
                 EX_INT0_InterruptDisable( );
                 
@@ -580,6 +580,10 @@ void APP_Tasks( void )
                     
                 displayKeyMapping( );
                 
+#if defined ( USE_UART1_SERIAL_INTERFACE ) && defined( DISPLAY_CURRENT_STATE )
+                printf( "\n\t/!\\ The system will reset after 60s of inactivity.\n" );
+#endif   
+                
                 /* Log event if required */
                 if ( true == appDataLog.log_events )
                 {
@@ -591,6 +595,8 @@ void APP_Tasks( void )
                 {
                     UART1_Read( );                    
                 }
+                
+                setDelayMsStandBy( 60000 );
 
             }
 
@@ -599,6 +605,43 @@ void APP_Tasks( void )
             
             /* Get interaction with the serial terminal. */
             APP_SerialDebugTasks( );
+
+            /* If more than 60s of inactivity => reset the system */
+            if ( true == isDelayMsEndingStandBy( ) )
+            {
+
+#if defined ( USE_UART1_SERIAL_INTERFACE ) 
+                printf( "\tMore than 60s of inactivity.\n\tThe system will reset in 3s.\n" );
+#endif
+                for ( i = 0; i < 3; i++ )
+                {
+                    setLedsStatusColor( LEDS_ON );
+                    setDelayMs( 500 );
+                    while ( 0 == isDelayMsEnding( ) );
+                    setLedsStatusColor( LEDS_OFF );
+                    setDelayMs( 500 );
+                    while ( 0 == isDelayMsEnding( ) );
+                }
+                
+                /* Set peripherals Off */
+                setAttractiveLedsOff( );
+                powerPIRDisable( );
+                EX_INT0_InterruptDisable( );
+                RFID_Disable( );
+                IRSensorDisable( );
+                servomotorPowerDisable( );
+
+                /* Unmount drive on USB device before power it off. */
+                if ( USB_DRIVE_MOUNTED == appDataUsb.usb_drive_status )
+                {
+                    usbUnmountDrive( );
+                }
+                USBHostShutdown( );
+                powerUsbRfidDisable( );
+                
+                __asm__ volatile ( "reset" );
+                
+            }
             
             break;
             /* -------------------------------------------------------------- */

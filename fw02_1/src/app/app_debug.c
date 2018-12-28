@@ -21,68 +21,68 @@ const uint8_t BUILD_TIME[] = { __TIME__ };
 void displayKeyMapping( void )
 {
     /* Interface firmware terminal (Debug) */
-    printf( "Key mapping:\n" );
-    printf( " a or A: attractive LEDs\n" );
-    printf( "   - b or B: set blue component\n" );
-    printf( "   - g or G: set green component\n" );
-    printf( "   - i or I: initialize LEDs command\n" );
-    printf( "   - r or R: set red component\n" );
-    printf( "   - t or T: test LEDs\n" );
-    printf( " b or B: data buffers\n" );
-    printf( " c or C: manage configuration\n" );
-    printf( "   - d or D: display configuration parameters\n" );
-    printf( "   - r or R: reconfigure the system\n" );
-    printf( " d or D: door\n" );
-    printf( "   - c or C: close door\n" );
-    printf( "   - o or O: open door\n" );
-    printf( "   - p or P: set door position\n" );
-    printf( "   - r or R: toggle remain open parameter\n" );
-    printf( " e or E: check status LEDs\n" );
-    printf( " f or F: flush data on USB device\n" );
-//                printf( " g or G: NOT USED\n" );
-    printf( " h or H: firmware & hardware information\n" );
-    printf( " i or I: IR barriers\n" );
-    printf( "   - p or P: toggle IR barriers power\n" );
-    printf( "   - s or S: get IR barriers status\n" );
-    printf( " j or J: files I/O on USB device\n" );
-    printf( "   - c or C: display CSV files\n" );
-    printf( "   - e or E: display errors file\n" );
-    printf( "   - i or I: display CONFIG.INI\n" );
-    printf( "   - l or L: list files\n" );
-    printf( "   - t or T: delete LOG files\n" );
-    printf( "   - u or U: delete CSV files\n" );
-    printf( "   - v or V: delete config files\n" );
-    printf( "   - w or W: delete BIN files\n" );
-    printf( "   - x or X: export files\n" );
-    printf( "   - z or Z: delete all files\n" );
-    printf( " k or K: USB device properties\n" );
-    printf( " l or L: scan I2C bus\n" ); //  --> 0x02, 0x06 and 0xE0
-    printf( " m or M: measure\n" );
-    printf( "   - b or B: battery level\n" );
-    printf( "   - c or C: CTMU\n" );
-    printf( "   - d or D: servomotor position\n" );
-    printf( "   - r or R: RFID frequency\n" );
-    printf( "   - t or T: external temperature\n" );
-    printf( "   - v or V: VBat level\n" );
-//                printf( " n or N: NOT USED\n" );
-//                printf( " o or O: NOT USED\n" );                
-    printf( " p or P: power\n" );
-    printf( "   - 1: toggle servomotor power\n" );
-    printf( "   - 2: toggle CMD_ACC_PIR power\n" );
-    printf( "   - 3: toggle CMD_VDD_APP_V_USB power\n" );
-    printf( "   - 4: toggle IR barriers power\n" );
-    printf( " q or Q: quit serial communication state\n" );
-    printf( " r or R: system reset\n" );
-    printf( " s     : set date and time (string)\n" );
-    printf( " S     : set date and time (numerical)\n" );
-    printf( " t     : get date and time (string)\n" );
-    printf( " T     : get date and time (numerical)\n" );
-    printf( " u or U: Unique Device Id (UDID)\n" );
-//                printf( " v or V: NOT USED\n" );
-//                printf( " w or W: NOT USED\n" );
-//                printf( " x or X: NOT USED\n" );
-    printf( " y or Y: display reset registers\n" );
-    printf( " z or Z: test RFID\n" );
+    printf( "\tKey mapping:\n" );
+    printf( "\t a or A: attractive LEDs\n" );
+    printf( "\t   - b or B: set blue component\n" );
+    printf( "\t   - g or G: set green component\n" );
+    printf( "\t   - i or I: initialize LEDs command\n" );
+    printf( "\t   - r or R: set red component\n" );
+    printf( "\t   - t or T: test LEDs\n" );
+    printf( "\t b or B: data buffers\n" );
+    printf( "\t c or C: manage configuration\n" );
+    printf( "\t   - d or D: display configuration parameters\n" );
+    printf( "\t   - r or R: reconfigure the system\n" );
+    printf( "\t d or D: door\n" );
+    printf( "\t   - c or C: close door\n" );
+    printf( "\t   - o or O: open door\n" );
+    printf( "\t   - p or P: set door position\n" );
+    printf( "\t   - r or R: toggle remain open parameter\n" );
+    printf( "\t e or E: check status LEDs\n" );
+    printf( "\t f or F: flush data on USB device\n" );
+//                printf( "\t g or G: NOT USED\n" );
+    printf( "\t h or H: firmware & hardware information\n" );
+    printf( "\t i or I: IR barriers\n" );
+    printf( "\t   - p or P: toggle IR barriers power\n" );
+    printf( "\t   - s or S: get IR barriers status\n" );
+    printf( "\t j or J: files I/O on USB device\n" );
+    printf( "\t   - c or C: display CSV files\n" );
+    printf( "\t   - e or E: display errors file\n" );
+    printf( "\t   - i or I: display CONFIG.INI\n" );
+    printf( "\t   - l or L: list files\n" );
+    printf( "\t   - t or T: delete LOG files\n" );
+    printf( "\t   - u or U: delete CSV files\n" );
+    printf( "\t   - v or V: delete config files\n" );
+    printf( "\t   - w or W: delete BIN files\n" );
+    printf( "\t   - x or X: export files\n" );
+    printf( "\t   - z or Z: delete all files\n" );
+    printf( "\t k or K: USB device properties\n" );
+    printf( "\t l or L: scan I2C bus\n" ); //  --> 0x02, 0x06 and 0xE0
+    printf( "\t m or M: measure\n" );
+    printf( "\t   - b or B: battery level\n" );
+    printf( "\t   - c or C: CTMU\n" );
+    printf( "\t   - d or D: servomotor position\n" );
+    printf( "\t   - r or R: RFID frequency\n" );
+    printf( "\t   - t or T: external temperature\n" );
+    printf( "\t   - v or V: VBat level\n" );
+//                printf( "\t n or N: NOT USED\n" );
+//                printf( "\t o or O: NOT USED\n" );                
+    printf( "\t p or P: power\n" );
+    printf( "\t   - 1: toggle servomotor power\n" );
+    printf( "\t   - 2: toggle CMD_ACC_PIR power\n" );
+    printf( "\t   - 3: toggle CMD_VDD_APP_V_USB power\n" );
+    printf( "\t   - 4: toggle IR barriers power\n" );
+    printf( "\t q or Q: quit serial communication state\n" );
+    printf( "\t r or R: system reset\n" );
+    printf( "\t s     : set date and time (string)\n" );
+    printf( "\t S     : set date and time (numerical)\n" );
+    printf( "\t t     : get date and time (string)\n" );
+    printf( "\t T     : get date and time (numerical)\n" );
+    printf( "\t u or U: Unique Device Id (UDID)\n" );
+//                printf( "\t v or V: NOT USED\n" );
+//                printf( "\t w or W: NOT USED\n" );
+//                printf( "\t x or X: NOT USED\n" );
+    printf( "\t y or Y: display reset registers\n" );
+    printf( "\t z or Z: test RFID\n" );
 }
 
 void APP_SerialDebugTasks( void )
@@ -93,7 +93,10 @@ void APP_SerialDebugTasks( void )
 
     if ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) )
     {
-        /* If there is at least one byte of data has been received. */
+        /* Re-enable 60s max dely of inactivity to prevent system reset */
+        setDelayMsStandBy( 60000 );
+        
+        /* If at least one byte of data has been received. */
         uint8_t data_from_uart1 = UART1_Read( );
 
         switch ( data_from_uart1 )
@@ -1315,11 +1318,25 @@ void APP_SerialDebugTasks( void )
                     case 'Y':
                     {
                         /* Reset */
-                        appData.dsgpr0.bit_value.num_software_reset = 0;
-                        DSGPR0 = appData.dsgpr0.reg;
-                        DSGPR0 = appData.dsgpr0.reg;
+                        
+                        /* Set peripherals Off */
+                        setAttractiveLedsOff( );
+                        powerPIRDisable( );
+                        EX_INT0_InterruptDisable( );
+                        RFID_Disable( );
+                        IRSensorDisable( );
+                        servomotorPowerDisable( );
+
+                        /* Unmount drive on USB device before power it off. */
+                        if ( USB_DRIVE_MOUNTED == appDataUsb.usb_drive_status )
+                        {
+                            usbUnmountDrive( );
+                        }
+                        USBHostShutdown( );
+                        powerUsbRfidDisable( );
 
                         __asm__ volatile ( "reset" );
+                        
                         break;
                     }
 
@@ -1799,7 +1816,7 @@ void displayBootMessage( void )
     printf( "============================================\n\t" );
     getDateTime( );
     printDateTime( appData.current_time );
-    printf( "\n============================================\n\t" );
+    printf( " (PIC)\n============================================\n\t" );
     printResetSituation( );
     printf( "============================================\n\t" );
     displayUniqueDeviceId( );
@@ -1807,8 +1824,6 @@ void displayBootMessage( void )
     printf( "\tWeb: https://github.com/OpenFeeder\n" );
     printf( "\tMail: contact.openfeeder@gmail.com\n" );
     printf( "============================================\n" );
-    printf( "\tType [?] key to display debug options.\n" );
-    printf( "============================================\n\n" );
 }
 
 
