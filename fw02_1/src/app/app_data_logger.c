@@ -19,6 +19,7 @@ static bool populateLogBuffer( void )
     int nChar;
     char line[MAX_CHAR_PER_LINE];
     unsigned long delayS;
+    char leds_pattern;
 
     /* Log event if required */
     if ( true == appDataLog.log_events )
@@ -26,19 +27,21 @@ static bool populateLogBuffer( void )
         store_event( OF_POPULATE_LOG_BUFFER );
     }
 
+    /* If false bird detection => no reward and door did not open */
     if ( 0 == strcmp( appDataLog.bird_pit_tag_str, "XXXXXXXXXX" ) )
     {
         appDataLog.is_reward_taken = false;
         appDataLog.did_door_open = false;
     }
 
+    /* If PIT tag denied => no reward and door did not open */
     if ( true == appDataLog.is_pit_tag_denied )
     {
         appDataLog.is_reward_taken = false;
         appDataLog.did_door_open = false;
     }
 
-    /* Durée stationnement oiseau en secondes */
+    /* If reward is taken => compute bird landing time in seconds */
     if ( true == appDataLog.is_reward_taken )
     {
         delayS = ( appDataLog.bird_quit_time.tm_hour - appDataLog.bird_arrived_time.tm_hour )*60 * 60 +
@@ -48,6 +51,71 @@ static bool populateLogBuffer( void )
     else
     {
         delayS = 0;
+    }
+    
+    /* If scenario 3 => get attractive LEDs pattern */
+    if ( GO_NO_GO == appData.scenario_number )
+    {
+        /* If scenario 33 */
+        if ( ONE_LED == appDataAttractiveLeds.pattern_number )
+        {
+            if ( 0 == appDataAttractiveLeds.pattern_one_led_current )
+            {
+                leds_pattern = '1';
+            }
+            else if ( 1 == appDataAttractiveLeds.pattern_one_led_current )
+            {
+                leds_pattern = '2';
+            }
+            else if ( 2 == appDataAttractiveLeds.pattern_one_led_current )
+            {
+                leds_pattern = '3';
+            }
+            else if ( 3 == appDataAttractiveLeds.pattern_one_led_current )
+            {
+                leds_pattern = '4';
+            }
+        }
+        /* If scenario 30 */
+        else if (ALL_LEDS == appDataAttractiveLeds.pattern_number)
+        {
+            if ( 0 == appDataAttractiveLeds.pattern_idx )
+            {
+                leds_pattern = '0';
+            }
+            else 
+            {
+                leds_pattern = '1';
+            }
+        }
+        /* If scenario 31 */
+        else if (LEFT_RIGHT_LEDS == appDataAttractiveLeds.pattern_number)
+        {
+            if ( 0 == appDataAttractiveLeds.pattern_idx )
+            {
+                leds_pattern = 'L';
+            }
+            else 
+            {
+                leds_pattern = 'R';
+            }
+        }
+        /* If scenario 32 */
+        else if (TOP_BOTTOM_LEDS == appDataAttractiveLeds.pattern_number)
+        {
+            if ( 0 == appDataAttractiveLeds.pattern_idx )
+            {
+                leds_pattern = 'T';
+            }
+            else 
+            {
+                leds_pattern = 'B';
+            }
+        }
+    }
+    else
+    {
+        leds_pattern = '0';
     }
 
     nChar = sprintf( line, "%02d/%02d/%02d%s%02d:%02d:%02d%s"
@@ -72,6 +140,8 @@ static bool populateLogBuffer( void )
                     /* door_status_when_bird_arrived */ "%d"
                     /* separator                     */ "%s"
                     /* did_door_open                 */ "%d"
+                    /* separator                     */ "%s"
+                    /* leds_pattern                  */ "%c"
                     /* separator                     */ "%s"
                     /* delayS                        */ "%lu\n",
                     appDataLog.bird_arrived_time.tm_mday,
@@ -105,6 +175,8 @@ static bool populateLogBuffer( void )
                     appDataLog.door_status_when_bird_arrived,
                     appDataLog.separator,
                     appDataLog.did_door_open,
+                    appDataLog.separator,
+                    leds_pattern,
                     appDataLog.separator,
                     delayS );
 

@@ -604,14 +604,48 @@ INI_READ_STATE config_read_ini( void )
     int32_t read_parameter;
     int s, i;
     char str[20];
-    bool flag = false;
-
+    bool security_found = false;
+    bool logs_found = false;
+    bool check_found = false;
+    bool attractiveleds_found = false;
+     
     /* Log event if required */
     if ( true == appDataLog.log_events )
     {
         store_event( OF_READ_INI );
     }
+    
+    /* Clear watch-dog timer because INI read take time */
+    ClrWdt();
+    
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+        printf( "\tReading CONFIG.INI.\n" );
+#endif 
 
+    for ( s = 0; ini_getsection( s, str, 20, "CONFIG.INI" ) > 0; s++ )
+    {
+        /* Check if "security" section is present in the INI file */
+        if ( 0 == strcmp( str, "security" ) )
+        {
+            security_found = true;
+        }
+        /* Check if "logs" section is present in the INI file */
+        if ( 0 == strcmp( str, "logs" ) )
+        {
+            logs_found = true;
+        }
+        /* Check if "check" section is present in the INI file */
+        if ( 0 == strcmp( str, "check" ) )
+        {
+            check_found = true;
+        }
+        /* Check if "attractiveleds" is present in the INI file */
+        if ( 0 == strcmp( str, "attractiveleds" ) )
+        {
+            attractiveleds_found = true;
+        }
+    }       
+        
     /* Scenario number */
     read_parameter = ini_getl( "scenario", "num", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
@@ -691,19 +725,13 @@ INI_READ_STATE config_read_ini( void )
     }
     appDataAlarmSleep.time.tm_sec = 0;
 
-    /* Attractive LEDs Color. */
-    appData.flags.bit_value.attractive_leds_status = false;
-    /* Check if "attractiveleds" is present in the INI file */
-    for ( s = 0; ini_getsection( s, str, 20, "CONFIG.INI" ) > 0; s++ )
+    /* Clear watch-dog timer because INI read take time */
+    ClrWdt();
+   
+    if ( true == attractiveleds_found )
     {
-        if ( 0 == strcmp( str, "attractiveleds" ) )
-        {
-            appData.flags.bit_value.attractive_leds_status = true;
-        }
-    }
-
-    if ( true == appData.flags.bit_value.attractive_leds_status )
-    {
+        appData.flags.bit_value.attractive_leds_status = true;
+        
         read_parameter = ini_getl( "attractiveleds", "red_a", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
         {
@@ -1112,6 +1140,9 @@ INI_READ_STATE config_read_ini( void )
         }
     }
 
+    /* Clear watch-dog timer because INI read take time */
+    ClrWdt();
+    
     /* Door/servomotor configuration. */
     read_parameter = ini_getl( "door", "close_position", -1, "CONFIG.INI" );
     if ( -1 == read_parameter )
@@ -1296,18 +1327,26 @@ INI_READ_STATE config_read_ini( void )
     }
     appDataDoor.close_time.tm_sec = 0;
 
-    /* Logs */
-    /* Check if "logs" section is present in the INI file */
-    flag = false;
-    for ( s = 0; ini_getsection( s, str, 20, "CONFIG.INI" ) > 0; s++ )
+    
+    /* Door max offset position */
+    read_parameter = ini_getl( "door", "max_position_offset", -1, "CONFIG.INI" );
+    if ( -1 == read_parameter )
     {
-        if ( 0 == strcmp( str, "logs" ) )
-        {
-            flag = true;
-        }
+        return INI_PB_DOOR_MAX_OFFSET;
     }
-
-    if ( flag )
+    else
+    {
+        appDataDoor.max_pos_offset = ( uint16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+        printf( "\tDoor max position offset... read.\n" );
+#endif
+    }
+    
+    /* Clear watch-dog timer because INI read take time */
+    ClrWdt();
+    
+    /* Logs */
+    if ( logs_found )
     {
         /* Data separator in the log file. */
         ini_gets( "logs", "separator", DEFAULT_LOG_SEPARATOR, appDataLog.separator, sizearray( appDataLog.separator ), "CONFIG.INI" );
@@ -1489,7 +1528,7 @@ INI_READ_STATE config_read_ini( void )
     appData.timeout_standby = 0;
     appData.timeout_pir = 0;
 
-    if ( appData.scenario_number == PATCH_PROBABILITY )
+    if ( PATCH_PROBABILITY == appData.scenario_number )
     {
         /* Reward probability */
         read_parameter = ini_getl( "timeouts", "unique_visit", -1, "CONFIG.INI" );
@@ -1532,9 +1571,6 @@ INI_READ_STATE config_read_ini( void )
     //#endif
     //    }
 
-    /* Timeout guillotine. */
-    appData.timeout_guillotine = ( appDataServo.ton_max - appDataServo.ton_min ) / appDataServo.closing_speed * ( PR3 / 1000 ) + 500;
-
     if ( appData.scenario_number > DOOR_HABITUATION )
     {
         /* Punishment delay. */
@@ -1573,19 +1609,13 @@ INI_READ_STATE config_read_ini( void )
         }
     }
 
+    /* Clear watch-dog timer because INI read take time */
+    ClrWdt();
+    
     /* Security */
-    /* Check if "security" section is present in the INI file */
-    flag = false;
-    for ( s = 0; ini_getsection( s, str, 20, "CONFIG.INI" ) > 0; s++ )
+    if ( security_found )
     {
-        if ( 0 == strcmp( str, "security" ) )
-        {
-            flag = true;
-        }
-    }
-
-    if ( flag )
-    {
+        /* Bird reward reopen. */
         read_parameter = ini_getl( "security", "bird_reward_reopen", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
         {
@@ -1598,24 +1628,69 @@ INI_READ_STATE config_read_ini( void )
             printf( "\tSecurity bird reward reopen... read.\n" );
 #endif
         }
+        
+        /* Guillotine. */
+        read_parameter = ini_getl( "security", "guillotine", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_SECURITY_GUILLOTINE;
+        }
+        else
+        {
+            appData.secu_guillotine = ( bool ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\tSecurity guillotine... read.\n" );
+#endif
+            /* Guillotine time offset. */
+            if ( true == appData.secu_guillotine )
+            {
+
+                read_parameter = ini_getl( "security", "guillotine_offset", -1, "CONFIG.INI" );
+                if ( -1 == read_parameter )
+                {
+                    return INI_PB_SECURITY_GUILLOTINE_OFFSET;
+                }
+                else
+                {
+                    appData.secu_guillotine_offset = ( uint16_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+                    printf( "\tSecurity guillotine offset... read.\n" );
+#endif
+                }
+
+            }
+            else
+            {
+                appData.secu_guillotine_offset = 0;
+            }
+        }
     }
+    /* Security section not found */
     else
     {
-        appData.secu_bird_reward_reopen = true;
-    }
-
-    /* Check */
-    /* Check if "check" section is present in the INI file */
-    flag = false;
-    for ( s = 0; ini_getsection( s, str, 20, "CONFIG.INI" ) > 0; s++ )
-    {
-        if ( 0 == strcmp( str, "check" ) )
+        /* If scenario is Open bar => no security needed */
+        if ( OPEN_BAR == appData.scenario_number )
         {
-            flag = true;
+            appData.secu_bird_reward_reopen = false;
+            appData.secu_guillotine = false; 
+            appData.secu_guillotine_offset = 0;
+        }
+        else
+        {
+            appData.secu_bird_reward_reopen = true;
+            appData.secu_guillotine = true;
+            appData.secu_guillotine_offset = DEFAULT_GUILLOTINE_TIME_OFFSET;
         }
     }
 
-    if ( flag )
+    /* Clear watch-dog timer because INI read take time */
+    ClrWdt();
+    
+    /* Compute guillotine timeout with values previouly read */
+    appData.timeout_guillotine = ( appDataServo.ton_max - appDataServo.ton_min ) / appDataServo.closing_speed * ( PR3 / 1000 ) + appData.secu_guillotine_offset;
+    
+    /* Check */
+    if ( check_found )
     {
         read_parameter = ini_getl( "check", "food_level", -1, "CONFIG.INI" );
         if ( -1 == read_parameter )
@@ -1634,7 +1709,7 @@ INI_READ_STATE config_read_ini( void )
     {
         appData.chk_food_level = false;
     }
-
+        
     return INI_READ_OK;
 }
 
@@ -1863,7 +1938,7 @@ void config_print( void )
     printf( "\t\tClose time: %02d:%02d\n",
             appDataDoor.close_time.tm_hour,
             appDataDoor.close_time.tm_min );
-
+    
     if ( DOOR_HABITUATION == appData.scenario_number )
     {
         printf( "\t\tDoor habituation: %d%%\n", appDataDoor.habituation_percent );
@@ -1880,7 +1955,8 @@ void config_print( void )
     printf( "\t\tFull opening time: %.3fs\n", ( ( float ) ( appDataServo.ton_max - appDataServo.ton_min_night ) ) / ( ( float ) appDataServo.opening_speed )*0.02 );
     printf( "\t\tClosing speed factor: %d\n", appDataServo.closing_speed );
     printf( "\t\tOpening speed factor: %d\n", appDataServo.opening_speed );
-
+    printf( "\t\tMax position offset: %d\n", appDataDoor.max_pos_offset );
+    
     printf( "\tReward\n" );
     if ( 0 == appData.reward_enable )
     {
@@ -1897,10 +1973,31 @@ void config_print( void )
         printf( "\t\tProbability: %u%%\n", appDataDoor.reward_probability );
     }
 
-    printf( "\tTimeouts\n" );
-    //    printf( "\t\tSleep: %us\n", appData.timeout_standby / 1000 );
-    //    printf( "\t\tPIR: %us\n", appData.timeout_pir / 1000 );    
-    printf( "\t\tGuillotine: %.3fs\n", ( float ) appData.timeout_guillotine * 0.001 );
+    printf( "\tSecurity\n" );
+    if ( true == appData.secu_guillotine )
+    {
+        printf( "\t\tGuillotine: enable\n");        
+        printf( "\t\tGuillotine offset: %dms\n", appData.secu_guillotine_offset );            
+        printf( "\t\tGuillotine timeout: %.3fs\n", ( float ) appData.timeout_guillotine * 0.001 );
+    }
+    else
+    {
+        printf( "\t\tGuillotine: disable\n");
+    }
+    
+    if ( true == appData.secu_bird_reward_reopen )
+    {
+        printf( "\t\tBird reward reopen: enable\n");
+    }
+    else
+    {
+        printf( "\t\tBird reward reopen: disable\n");
+    }
+    
+//    printf( "\tTimeouts\n" );
+//    //    printf( "\t\tSleep: %us\n", appData.timeout_standby / 1000 );
+//    //    printf( "\t\tPIR: %us\n", appData.timeout_pir / 1000 );    
+//    printf( "\t\tGuillotine: %.3fs\n", ( float ) appData.timeout_guillotine * 0.001 );
 
     if ( appData.scenario_number == PATCH_PROBABILITY )
     {
@@ -2213,6 +2310,9 @@ void getIniPbChar( INI_READ_STATE state, char *buf, uint8_t n )
         case INI_PB_DOOR_HABITUATION:
             snprintf( buf, n, "Door: habituation" );
             break;
+        case INI_PB_DOOR_MAX_OFFSET:
+            snprintf( buf, n, "Door: max position offset" );
+            break;   
         case INI_PB_REWARD_ENABLE:
             snprintf( buf, n, "Reward: enable" );
             break;
@@ -2242,6 +2342,12 @@ void getIniPbChar( INI_READ_STATE state, char *buf, uint8_t n )
             break;
         case INI_PB_SECURITY_BIRD_REWARD_REOPEN:
             snprintf( buf, n, "Security: reopen x10" );
+            break;
+        case INI_PB_SECURITY_GUILLOTINE:
+            snprintf( buf, n, "Security: guillotine" );
+            break;
+        case INI_PB_SECURITY_GUILLOTINE_OFFSET:
+            snprintf( buf, n, "Security: guillotine offset" );
             break;
 
         default:

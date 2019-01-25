@@ -26,6 +26,7 @@ void displayKeyMapping( void )
     printf( "\t   - b or B: set blue component\n" );
     printf( "\t   - g or G: set green component\n" );
     printf( "\t   - i or I: initialize LEDs command\n" );
+    printf( "\t   - t or T: test LEDs order\n" );
     printf( "\t   - r or R: set red component\n" );
     printf( "\t   - t or T: test LEDs\n" );
     printf( "\t b or B: data buffers\n" );
@@ -80,7 +81,9 @@ void displayKeyMapping( void )
     printf( "\t u or U: Unique Device Id (UDID)\n" );
 //                printf( "\t v or V: NOT USED\n" );
 //                printf( "\t w or W: NOT USED\n" );
-//                printf( "\t x or X: NOT USED\n" );
+    printf( "\t x or X: security\n" );
+    printf( "\t   - g or G: guillotine\n" );
+    printf( "\t   - r or R: reward reopen\n" );
     printf( "\t y or Y: display reset registers\n" );
     printf( "\t z or Z: test RFID\n" );
 }
@@ -180,6 +183,12 @@ void APP_SerialDebugTasks( void )
                     case 'I':
                     {
                         initAttractiveLeds( );
+                        break;
+                    }
+                    case 'o':
+                    case 'O':
+                    {
+                        testAttractiveLedsOrder( );
                         break;
                     }
                     case 'r':
@@ -1629,10 +1638,83 @@ void APP_SerialDebugTasks( void )
 //                break;
                 /* -------------------------------------------------------------- */
 
-//            case 'x':
-//            case 'X':
-//            
-//                break;
+            case 'x':
+            case 'X':
+            {
+                uint8_t user_choice;
+
+                setDelayMsReadFromUart( MAX_READ_FROM_UART_DELAY );
+                    
+                while ( false == ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) ) && false == isDelayMsEndingReadFromUart( ) );
+                if (true == isDelayMsEndingReadFromUart( ) )
+                {
+                    printf( "\n\tToo slow entering value => command aborted\n" );
+                    break;
+                }
+                user_choice = UART1_Read( );
+
+                switch ( user_choice )
+                {
+                    case 'g':
+                    case 'G':
+                    {
+                        appData.secu_guillotine = !appData.secu_guillotine;
+                        
+                        if ( true == appData.secu_guillotine )
+                        {
+                           printf( "\n\tGuillotine security enable\n" ); 
+                        }
+                        else
+                        {
+                           printf( "\n\tGuillotine security disable\n" ); 
+                        }
+                        break;
+                    }
+                    
+                    case 'o':
+                    case 'O':
+                    {
+                        /* Read uint16_t from terminal. */
+                        appData.secu_guillotine_offset = readIntFromUart1( );
+                        appData.timeout_guillotine = ( appDataServo.ton_max - appDataServo.ton_min ) / appDataServo.closing_speed * ( PR3 / 1000 ) + appData.secu_guillotine_offset;
+                        
+                        printf( "\n\tGuillotine offset set to: %dms\n", appData.secu_guillotine_offset );
+                        printf( "\tGuillotine timeout set to: %dms\n", appData.timeout_guillotine );
+                        break;
+                    }
+                    
+                    case 'p':
+                    case 'P':
+                    {
+                        /* Read uint16_t from terminal. */
+                        appDataDoor.max_pos_offset = readIntFromUart1( );
+                        
+                        printf( "\n\tMax position offset set to: %d\n", appDataDoor.max_pos_offset );
+                        break;
+                    }
+                    
+                    case 'r':
+                    case 'R':
+                    {
+                        
+                        appData.secu_bird_reward_reopen = !appData.secu_bird_reward_reopen;
+                        
+                        if ( true == appData.secu_bird_reward_reopen )
+                        {
+                           printf( "\n\tReward reopen security enable\n" ); 
+                        }
+                        else
+                        {
+                           printf( "\n\tReward reopen security disable\n" ); 
+                        }
+                            
+                        break;
+                    }
+                }
+                
+                break;
+            }
+                
                 /* -------------------------------------------------------------- */
 
             case 'y':
@@ -1808,22 +1890,47 @@ void displayFirmwareVersion( void )
 
 void displayBootMessage( void )
 {
-    printf( "\n\n================ OpenFeeder ================\n\t" );
+    printf( "\t              OpenFeeder\n\t=========================================\n\t" );
     displayFirmwareVersion( );
     printf( "\t" );
     displayBuildDateTime( );
     printf( "\tFor board v3.0\n" );
-    printf( "============================================\n\t" );
+    printf( "\t=========================================\n\t" );
     getDateTime( );
     printDateTime( appData.current_time );
-    printf( " (PIC)\n============================================\n\t" );
+    printf( " (PIC)\n\t" );
+    if ( getExtDateTime( ) )
+    {
+        printExtDateTime();
+        printf( " (EXT)\n" );
+    }
+    else
+    {
+        printf( "XX/XX/XXXX XX:XX:XX (EXT)\n" );
+    }
+#if defined (USE_UART1_SERIAL_INTERFACE)
+    printf( "\t=========================================\n" );
+#endif     
+    getBatteryLevel( );
+    printBatteryLevel( );
+    getVBatLevel( );
+    printVBatLevel( );
+#if defined (USE_UART1_SERIAL_INTERFACE)
+    printf( "\t=========================================\n\t" );
+#endif  
+    
+    
+    
+//    getDateTime( );
+//    printDateTime( appData.current_time );
+//    printf( " (PIC)\n\t=========================================\n\t" );
     printResetSituation( );
-    printf( "============================================\n\t" );
+    printf( "\t=========================================\n\t" );
     displayUniqueDeviceId( );
-    printf( "============================================\n" );
+    printf( "\t=========================================\n" );
     printf( "\tWeb: https://github.com/OpenFeeder\n" );
     printf( "\tMail: contact.openfeeder@gmail.com\n" );
-    printf( "============================================\n" );
+    printf( "\t=========================================\n" );
 }
 
 

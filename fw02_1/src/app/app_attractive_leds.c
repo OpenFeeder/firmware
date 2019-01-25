@@ -26,39 +26,30 @@ bool initAttractiveLeds( void )
     writeBuffer[1] = NORMAL_MODE;
     i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
 
-    //    writeBuffer[0] = CTRLREG_LEDOUT0 || CTRLREG_AUTO_INC_ENABLE;
-    //    writeBuffer[1] = 0b10101010; // CTRLREG PWM on all output for LEDOUT0
-    //    writeBuffer[2] = 0b10101010; // CTRLREG PWM on all output for LEDOUT1
-    //    writeBuffer[3] = 0b10101010; // CTRLREG PWM on all output for LEDOUT2
-    //    writeBuffer[4] = 0b10101010; // CTRLREG PWM on all output for LEDOUT3
-    //    i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 5 );
-
+    /* Attractive LEDs brightness are controlled by their own PWM signals */
     writeBuffer[0] = CTRLREG_LEDOUT0;
-    writeBuffer[1] = 0b10101010; // CTRLREG PWM on all output for LEDOUT0
+    writeBuffer[1] = 0b10101010; 
     i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
     if ( I2C1_MESSAGE_COMPLETE != i2c_status )
     {
         return false;
     }
-
     writeBuffer[0] = CTRLREG_LEDOUT1;
-    writeBuffer[1] = 0b10101010; // CTRLREG PWM on all output for LEDOUT1
     i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
     if ( I2C1_MESSAGE_COMPLETE != i2c_status )
     {
         return false;
     }
-
     writeBuffer[0] = CTRLREG_LEDOUT2;
-    writeBuffer[3] = 0b10101010; // CTRLREG PWM on all output for LEDOUT2
     i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
     if ( I2C1_MESSAGE_COMPLETE != i2c_status )
     {
         return false;
     }
 
+    /* Battery level bar graph is off */
     writeBuffer[0] = CTRLREG_LEDOUT3;
-    writeBuffer[4] = 0b10101010; // CTRLREG PWM on all output for LEDOUT3
+    writeBuffer[1] = 0b00000000;
     i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
     if ( I2C1_MESSAGE_COMPLETE != i2c_status )
     {
@@ -452,7 +443,7 @@ void testAttractiveLeds( void )
     }
     
 #if defined ( USE_UART1_SERIAL_INTERFACE )
-    printf( "\tTest attractive LEDs\n" );
+    printf( "\tTest attractive LEDs.\n" );
 #endif
                         
     setAttractiveLedsOn( );
@@ -534,7 +525,7 @@ void testAttractiveLedsOrder( void )
     }
 
 #if defined ( USE_UART1_SERIAL_INTERFACE )
-    printf( "\tTest attractive LEDs order\n" );
+    printf( "\tTest attractive LEDs order.\n" );
 #endif
     
     for ( i = 0; i < 4; i++ )

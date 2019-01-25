@@ -57,6 +57,8 @@ typedef struct
     uint8_t habituation_percent;
     
     uint8_t num_reopen_attempt;
+    
+    uint16_t max_pos_offset;
 
 } APP_DATA_DOOR;
 

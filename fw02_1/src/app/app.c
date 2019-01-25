@@ -92,7 +92,7 @@ void APP_Tasks( void )
                 {
                     store_event( OF_STATE_INITIALIZE );
                 }
-
+                                
             }
 
             /* Date & time calibration using external RTC module */
@@ -170,7 +170,7 @@ void APP_Tasks( void )
             if ( appDataUsb.is_device_address_available )
             {
 #if defined (USE_UART1_SERIAL_INTERFACE)
-                        printf( "\tUSB device found.\r\n\r\n" );
+                printf( "\tUSB device found.\n\t=========================================\n" );
 #endif   
                 /* Mount drive on USB device */
                 if ( USB_DRIVE_NOT_MOUNTED == usbMountDrive( ) )
@@ -228,6 +228,10 @@ void APP_Tasks( void )
                 /* Check all status LEDs */
                 checkLedsStatus( );
 
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                printf( "\t=========================================\n" );
+#endif  
+                
                 /* Check mandatory parameters */
                 chk = checkImportantParameters( );
                 switch ( chk )
@@ -248,7 +252,11 @@ void APP_Tasks( void )
                 {
                     break;
                 }
-
+                
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                printf( "\t=========================================\n" );
+#endif  
+                
                 /* Flush data on USB device */
                 if ( FLUSH_DATA_ON_USB_DEVICE_SUCCESS != flushDataOnUsbDevice( ) )
                 {
@@ -268,6 +276,9 @@ void APP_Tasks( void )
                 /* Turn on LEDs status while servo is moved */
                 setLedsStatusColor( LED_SERVO );
 
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                printf( "\t=========================================\n" );
+#endif  
                 /* Test servomotor by opening and closing the door */
                 testServomotor();
 
@@ -275,23 +286,23 @@ void APP_Tasks( void )
                 if ( true == appData.flags.bit_value.attractive_leds_status )
                 {
 
-                    /* Reset the attractive LEDs driver */                    
-                    if ( I2C1_PCA9622_SoftwareReset( ) )
-                    {
-#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_PCA9622_STATUS)
-                        printf( "\tAttractive LEDs driver OK\n" );
-#endif
-                    }
-                    /* If LEDs driver reset failed => error*/
-                    else
-                    {
-                        sprintf( appError.message, "Unable to reset the attractive LEDS driver" );
-                        appError.current_line_number = __LINE__;
-                        sprintf( appError.current_file_name, "%s", __FILE__ );
-                        appError.number = ERROR_ATTRACTIVE_LED_DRIVER_RESET;
-                        appData.state = APP_STATE_ERROR;
-                        break;
-                    }
+//                    /* Reset the attractive LEDs driver */                    
+//                    if ( I2C1_PCA9622_SoftwareReset( ) )
+//                    {
+//#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_PCA9622_STATUS)
+//                        printf( "\tAttractive LEDs driver OK\n" );
+//#endif
+//                    }
+//                    /* If LEDs driver reset failed => error*/
+//                    else
+//                    {
+//                        sprintf( appError.message, "Unable to reset the attractive LEDS driver" );
+//                        appError.current_line_number = __LINE__;
+//                        sprintf( appError.current_file_name, "%s", __FILE__ );
+//                        appError.number = ERROR_ATTRACTIVE_LED_DRIVER_RESET;
+//                        appData.state = APP_STATE_ERROR;
+//                        break;
+//                    }
 
                     /* If LEDs initialization OK => test LEDs */
                     if ( initAttractiveLeds( ) )
@@ -579,17 +590,102 @@ void APP_Tasks( void )
                 }
                     
                 displayKeyMapping( );
+
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                printf( "\t=========================================\n" );
+#endif  
+                getDateTime( );
+                printf( "\t" );
+                printDateTime( appData.current_time );
+                printf( " (PIC)\n\t" );
+                if ( getExtDateTime( ) )
+                {
+                    printExtDateTime();
+                    printf( " (EXT)\n" );
+                }
+                else
+                {
+                    printf( "XX/XX/XXXX XX:XX:XX (EXT)\n" );
+                }
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                printf( "\t=========================================\n" );
+#endif     
+                getBatteryLevel( );
+                printBatteryLevel( );
+                getVBatLevel( );
+                printVBatLevel( );
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                printf( "\t=========================================\n" );
+#endif    
                 
 #if defined ( USE_UART1_SERIAL_INTERFACE ) && defined( DISPLAY_CURRENT_STATE )
                 printf( "\n\t/!\\ The system will reset after 60s of inactivity.\n" );
-#endif   
-                
+#endif  
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                printf( "\t=========================================\n" );
+#endif  
                 /* Log event if required */
                 if ( true == appDataLog.log_events )
                 {
                     store_event( OF_STATE_SERIAL_COMMUNICATION );
                 }
-                
+
+//                /* Display battery level using 4 LEDs bar graph */
+//                I2C1_MESSAGE_STATUS i2c_status = I2C1_MESSAGE_COMPLETE; // the status of write data on I2C bus
+//                uint8_t writeBuffer[2]; // data to transmit
+//
+//                getBatteryLevel( );
+//                
+//                uint16_t step = (uint16_t)(HIGH_BATTERY_LEVEL-LOW_BATTERY_LEVEL)/4;
+//
+//                if ( 1 == PCA9622_OE_GetValue() )
+//                {
+//                    /* Enable PCA9622 device in Normal mode */
+//                    PCA9622_OE_SetLow( ); // output enable pin is active LOW
+//                }                
+//    
+//                writeBuffer[0] = CTRLREG_LEDOUT3;
+//                writeBuffer[1] = 0b10101010; // CTRLREG PWM on all output for LEDOUT3
+//                i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+//
+//                writeBuffer[0] = CTRLREG_PWM12;
+//                writeBuffer[1] = 0; // PWM0 Individual Duty Cycle for LED_RGB1_R
+//                i2c_status = I2C1_MasterWritePCA9622(PCA9622_ADDRESS, writeBuffer, 2);
+//                writeBuffer[0] = CTRLREG_PWM13;
+//                writeBuffer[1] = 0; // PWM0 Individual Duty Cycle for LED_RGB1_R
+//                i2c_status = I2C1_MasterWritePCA9622(PCA9622_ADDRESS, writeBuffer, 2);
+//                writeBuffer[0] = CTRLREG_PWM14;
+//                writeBuffer[1] = 0; // PWM0 Individual Duty Cycle for LED_RGB1_R
+//                i2c_status = I2C1_MasterWritePCA9622(PCA9622_ADDRESS, writeBuffer, 2);
+//                writeBuffer[0] = CTRLREG_PWM15;
+//                writeBuffer[1] = 0; // PWM0 Individual Duty Cycle for LED_RGB1_R
+//                i2c_status = I2C1_MasterWritePCA9622(PCA9622_ADDRESS, writeBuffer, 2);
+//                    
+//                if ( appData.battery_level > LOW_BATTERY_LEVEL )
+//                {
+//                    writeBuffer[0] = CTRLREG_PWM12;
+//                    writeBuffer[1] = 25; // PWM0 Individual Duty Cycle for LED_RGB1_R
+//                    i2c_status = I2C1_MasterWritePCA9622(PCA9622_ADDRESS, writeBuffer, 2);
+//                }
+//                if ( appData.battery_level > ( LOW_BATTERY_LEVEL + step ) )
+//                {
+//                    writeBuffer[0] = CTRLREG_PWM13;
+//                    writeBuffer[1] = 25; // PWM0 Individual Duty Cycle for LED_RGB1_R
+//                    i2c_status = I2C1_MasterWritePCA9622(PCA9622_ADDRESS, writeBuffer, 2);
+//                }
+//                if ( appData.battery_level > ( LOW_BATTERY_LEVEL + 2*step ) )
+//                {
+//                    writeBuffer[0] = CTRLREG_PWM14;
+//                    writeBuffer[1] = 25; // PWM0 Individual Duty Cycle for LED_RGB1_R
+//                    i2c_status = I2C1_MasterWritePCA9622(PCA9622_ADDRESS, writeBuffer, 2);
+//                }
+//                if ( appData.battery_level > ( LOW_BATTERY_LEVEL + 3*step ) )
+//                {
+//                    writeBuffer[0] = CTRLREG_PWM15;
+//                    writeBuffer[1] = 25; // PWM0 Individual Duty Cycle for LED_RGB1_R
+//                    i2c_status = I2C1_MasterWritePCA9622(PCA9622_ADDRESS, writeBuffer, 2);
+//                }
+//                
                 /* Empty UART RX buffer to avoid garbage value */
                 while ( UART1_TRANSFER_STATUS_RX_DATA_PRESENT & UART1_TransferStatusGet( ) )
                 {
@@ -609,10 +705,15 @@ void APP_Tasks( void )
             /* If more than 60s of inactivity => reset the system */
             if ( true == isDelayMsEndingStandBy( ) )
             {
-
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                printf( "\t=========================================\n" );
+#endif 
 #if defined ( USE_UART1_SERIAL_INTERFACE ) 
-                printf( "\tMore than 60s of inactivity.\n\tThe system will reset in 3s.\n" );
+                printf( "\t/!\\ More than 60s of inactivity.\n\tThe system will reset in 3s.\n" );
 #endif
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                printf( "\t=========================================\n" );
+#endif 
                 for ( i = 0; i < 3; i++ )
                 {
                     setLedsStatusColor( LEDS_ON );
@@ -641,6 +742,38 @@ void APP_Tasks( void )
                 
                 __asm__ volatile ( "reset" );
                 
+            }
+            
+            /* If the user press "q" to quit serial communication mode */
+            if ( APP_STATE_SERIAL_COMMUNICATION != appData.state )
+            {
+//                /* Turn off battery level bar graph */
+//                I2C1_MESSAGE_STATUS i2c_status = I2C1_MESSAGE_COMPLETE; // the status of write data on I2C bus
+//                uint8_t writeBuffer[2]; // data to transmit
+//                
+//                writeBuffer[0] = CTRLREG_LEDOUT3;
+//                writeBuffer[1] = 0b00000000; // CTRLREG PWM on all output for LEDOUT3
+//                i2c_status = I2C1_MasterWritePCA9622( PCA9622_ADDRESS, writeBuffer, 2 );
+//                
+//                writeBuffer[0] = CTRLREG_PWM12;
+//                writeBuffer[1] = 0; // PWM0 Individual Duty Cycle for LED_RGB1_R
+//                i2c_status = I2C1_MasterWritePCA9622(PCA9622_ADDRESS, writeBuffer, 2);
+//                writeBuffer[0] = CTRLREG_PWM13;
+//                writeBuffer[1] = 0; // PWM0 Individual Duty Cycle for LED_RGB1_R
+//                i2c_status = I2C1_MasterWritePCA9622(PCA9622_ADDRESS, writeBuffer, 2);
+//                writeBuffer[0] = CTRLREG_PWM14;
+//                writeBuffer[1] = 0; // PWM0 Individual Duty Cycle for LED_RGB1_R
+//                i2c_status = I2C1_MasterWritePCA9622(PCA9622_ADDRESS, writeBuffer, 2);
+//                writeBuffer[0] = CTRLREG_PWM15;
+//                writeBuffer[1] = 0; // PWM0 Individual Duty Cycle for LED_RGB1_R
+//                i2c_status = I2C1_MasterWritePCA9622(PCA9622_ADDRESS, writeBuffer, 2);
+//                
+//                /* Deactivate PCA9622 if attractive LEDs not used */
+//                if ( false == appData.flags.bit_value.attractive_leds_status )
+//                {
+//                    /* Disable PCA9622 device */
+//                    PCA9622_OE_SetHigh( );
+//                }
             }
             
             break;
@@ -1214,7 +1347,10 @@ void APP_Tasks( void )
                     }
                 }
 
-                setDelayMsStandBy( appData.timeout_guillotine );
+                if ( true == appData.secu_guillotine )
+                {
+                    setDelayMsStandBy( appData.timeout_guillotine );                    
+                }
 
             }
 
@@ -1260,7 +1396,7 @@ void APP_Tasks( void )
                         }
                     }
                     /* Check if door take too much time to close */
-                    if ( true == isDelayMsEndingStandBy( ) )
+                    if ( true == appData.secu_guillotine && true == isDelayMsEndingStandBy( ) )
                     {
                         /* Log event if required */
                         if ( true == appDataLog.log_events )
@@ -1286,7 +1422,7 @@ void APP_Tasks( void )
 
             uint16_t pos = servomotorGetDoorPosition( );
 
-            if ( pos > appDataServo.ton_goal && ( pos - appDataServo.ton_goal ) > 150 )
+            if ( pos > appDataServo.ton_goal && ( pos - appDataServo.ton_goal ) > appDataDoor.max_pos_offset )
             {
                 /* Log event if required */
                 if ( true == appDataLog.log_events )
@@ -1731,7 +1867,6 @@ void APP_Tasks( void )
                     setDelayMs( 500 );
                     while ( 0 == isDelayMsEnding( ) );
                 }
-//                appData.state = APP_STATE_IDLE;
                 appData.state = APP_STATE_SERIAL_COMMUNICATION;
             }
 
@@ -1799,71 +1934,7 @@ void APP_Tasks( void )
             if ( true == appDataUsb.is_device_needed )
             {
                 if ( appDataUsb.is_device_address_available )
-                {
-//                    if ( USB_DRIVE_NOT_MOUNTED == usbMountDrive( ) )
-//                    {
-//                        appDataUsb.is_device_needed = false;
-//                        appData.state = APP_STATE_ERROR;
-//                        break;
-//                    }
-                    
-
-//                    /* Log data if required */
-//                    if ( appDataLog.num_data_stored > 0 )
-//                    {
-//                        setLedsStatusColor( LED_USB_ACCESS );
-//                        /* Force data to be written on the USB device */
-//                        appDataLog.num_data_stored = MAX_NUM_DATA_TO_STORE;
-//                        if ( false == dataLog( false ) )
-//                        {
-//                            appDataUsb.is_device_needed = false;
-//                            appData.state = APP_STATE_ERROR;
-//                            break;
-//                        }
-//                    }
-//
-//                    /* Log battery level if required */
-//                    if ( true == appDataLog.log_battery && appDataLog.num_battery_level_stored > 0 )
-//                    {
-//                        setLedsStatusColor( LED_USB_ACCESS );
-//                        if ( FILEIO_RESULT_FAILURE == logBatteryLevel( ) )
-//                        {
-//                            appDataUsb.is_device_needed = false;
-//                            appData.state = APP_STATE_ERROR;
-//                            break;
-//                        }
-//                    }
-//
-//                    /* Log RFID frequency if required */
-//                    if ( true == appDataLog.log_rfid && appDataLog.num_rfid_freq_stored > 0 )
-//                    {
-//                        setLedsStatusColor( LED_USB_ACCESS );
-//                        if ( FILEIO_RESULT_FAILURE == logRfidFreq( ) )
-//                        {
-//                            appDataUsb.is_device_needed = false;
-//                            appData.state = APP_STATE_ERROR;
-//                            break;
-//                        }
-//                    }
-//
-//                    /* Log event if required */
-//                    if ( true == appDataLog.log_events && appDataEvent.num_events_stored > 0 )
-//                    {
-//                        setLedsStatusColor( LED_USB_ACCESS );
-//                        if ( FILEIO_RESULT_FAILURE == logEvents( ) )
-//                        {
-//                            appDataUsb.is_device_needed = false;
-//                            appData.state = APP_STATE_ERROR;
-//                            break;
-//                        }
-//                    }
-
-//                    /* Unmount drive on USB device before power it off. */
-//                    if ( USB_DRIVE_MOUNTED == appDataUsb.usb_drive_status )
-//                    {
-//                        usbUnmountDrive( );
-//                    }
-                    
+                {                    
                     if ( FLUSH_DATA_ON_USB_DEVICE_SUCCESS != flushDataOnUsbDevice( ) )
                     {
                         /* Unmount drive on USB device before power it off. */
@@ -1966,18 +2037,6 @@ void APP_Tasks( void )
                     store_event( OF_STATE_FLUSH_DATA_BEFORE_ERROR );
                 }
 
-//                if ( appDataLog.num_data_stored == 0 &&
-//                     appDataLog.num_battery_level_stored == 0 &&
-//                     appDataLog.num_rfid_freq_stored == 0 &&
-//                     appDataEvent.num_events_stored == 0 )
-//                {
-//#if defined ( USE_UART1_SERIAL_INTERFACE )
-//                    printf( "\t No data stored.\n" );
-//#endif
-//                    appData.state = APP_STATE_ERROR;
-//                    break;
-//                }
-
                 appDataUsb.is_device_needed = true;
                 /* Log data on USB device */
                 powerUsbRfidEnable( );
@@ -1994,6 +2053,7 @@ void APP_Tasks( void )
                     break;
                 }
 
+                /* Bird data */
                 if ( appDataLog.num_data_stored > 0 && true == appDataLog.is_file_name_set )
                 {
                     setLedsStatusColor( LED_USB_ACCESS );
@@ -2007,7 +2067,7 @@ void APP_Tasks( void )
                     }
                 }
 
-//                if ( true == appDataLog.log_battery && appDataLog.num_battery_level_stored > 0 )
+                /* Battery level */
                 if ( appDataLog.num_battery_level_stored > 0 )
                 {
                     setLedsStatusColor( LED_USB_ACCESS );
@@ -2019,7 +2079,7 @@ void APP_Tasks( void )
                     }
                 }
 
-//                if ( true == appDataLog.log_rfid && appDataLog.num_rfid_freq_stored > 0 )
+                /* RFID frequency */
                 if ( appDataLog.num_rfid_freq_stored > 0 )
                 {
                     setLedsStatusColor( LED_USB_ACCESS );
@@ -2031,7 +2091,7 @@ void APP_Tasks( void )
                     }
                 }
 
-//                if ( true == appDataLog.log_errors )
+                /* Error */
                 if ( ERROR_NONE < appError.number )
                 {
                     setLedsStatusColor( LED_USB_ACCESS );
@@ -2043,8 +2103,7 @@ void APP_Tasks( void )
                     }
                 }
 
-                /* Log event if required */
-//                if ( true == appDataLog.log_events && appDataEvent.num_events_stored > 0 )
+                /* Events */
                 if ( appDataEvent.num_events_stored > 0 )
                 {
                     if ( true == appDataEvent.is_bin_file_name_set  || true == appDataEvent.is_txt_file_name_set )
@@ -2057,6 +2116,28 @@ void APP_Tasks( void )
                             break;
                         }                        
                     }                    
+                }
+                
+                /* Date and time calibration */
+                if ( appDataLog.num_time_calib_stored > 0 )
+                {
+                    if ( FILEIO_RESULT_FAILURE == logCalibration( ) )
+                    {
+                        appDataUsb.is_device_needed = false;
+                        appData.state = APP_STATE_ERROR;
+                        break;
+                    }
+                }
+                
+                /* DS3231 temperature */
+                if ( appDataLog.num_ds3231_temp_stored > 0 )
+                {
+                    if ( FILEIO_RESULT_FAILURE == logDs3231Temp( ) )
+                    {
+                        appDataUsb.is_device_needed = false;
+                        appData.state = APP_STATE_ERROR;
+                        break;
+                    }
                 }
 
                 if ( USB_DRIVE_MOUNTED == usbUnmountDrive( ) )
@@ -2415,6 +2496,10 @@ void APP_Initialize( void )
     appDataEvent.is_txt_file_name_set = false;
     appDataEvent.is_bin_file_name_set = false;
         
+    appData.secu_bird_reward_reopen = true;
+    appData.secu_guillotine = true;
+    appData.secu_guillotine_offset = DEFAULT_GUILLOTINE_TIME_OFFSET;
+    
 }
 
 

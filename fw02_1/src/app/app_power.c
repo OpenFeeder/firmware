@@ -163,7 +163,10 @@ void manageResetSituation( void )
      * 7.13 REGISTERS AND STATUS BIT VALUES, page 13 */
     
 #if defined (USE_UART1_SERIAL_INTERFACE) 
-    printf( "\r\n\tWait %dms before starting application\r\n", DELAY_AFTER_POWERUP);
+    printf( "\n\tWait %dms before starting the application...\n", DELAY_AFTER_POWERUP);
+#endif 
+#if defined (USE_UART1_SERIAL_INTERFACE)
+                printf( "\t=========================================\n" );
 #endif 
     setDelayMs( DELAY_AFTER_POWERUP );
     while ( 0 == isDelayMsEnding( ) );

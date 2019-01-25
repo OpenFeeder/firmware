@@ -360,6 +360,8 @@ typedef struct
     bool chk_food_level;
     
     bool secu_bird_reward_reopen;
+    bool secu_guillotine;
+    uint16_t secu_guillotine_offset;
     
     float ext_temperature;
     
