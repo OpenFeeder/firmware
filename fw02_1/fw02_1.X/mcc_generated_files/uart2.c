@@ -130,8 +130,8 @@ void UART2_Initialize (void)
    U2MODE = (0x8008 & ~(1<<15));  // disabling UARTEN bit   
    // UTXISEL0 TX_ONE_CHAR; UTXINV disabled; OERR NO_ERROR_cleared; URXISEL RX_ONE_CHAR; UTXBRK COMPLETED; UTXEN disabled; ADDEN disabled; 
    U2STA = 0x0000;
-   // BaudRate = 9600; Frequency = 8000000 Hz; U2BRG 207; 
-   U2BRG = 0x00CF;
+   // BaudRate = 115200; Frequency = 8000000 Hz; U2BRG 16; 
+   U2BRG = 0x0010;
    // ADMADDR 0; ADMMASK 0; 
    U2ADMD = 0x0000;
    // T0PD 1 ETU; PTRCL T0; TXRPT Retransmits the error byte once; CONV Direct; SCEN disabled; 

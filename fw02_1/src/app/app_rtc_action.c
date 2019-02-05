@@ -337,6 +337,15 @@ void manageRtcAction(  )
             return;
         }
     }
+    
+    /* Alternate video */
+    if ( RTCC_ALARM_STIMULI_ALT == appData.rtcc_alarm_action )
+    {
+//        appDataStimuli.current_stimuli = (int)(rand() / (double)RAND_MAX * (appDataStimuli.max_stimuli - 1));
+        appDataStimuli.current_stimuli = rand() % ( appDataStimuli.max_stimuli );
+
+        UART2_Write( appDataStimuli.current_stimuli );
+    }
 
     appData.rtcc_alarm_action = RTCC_ALARM_IDLE;
 }

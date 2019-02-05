@@ -79,6 +79,8 @@ void storeAttractiveLedsPattern( void );
 
 void testAttractiveLedsOrder( void );
 
+void testAttractiveLedsColor( void );
+    
 #endif /* _APP_ATTRACTIVE_LEDS_HEADER_H */
 
 

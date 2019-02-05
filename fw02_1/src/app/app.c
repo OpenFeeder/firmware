@@ -48,6 +48,7 @@ APP_DATA_SERVO appDataServo; /* Servomotor application data */
 APP_DATA_RC appDataRc; /* Remote control application data */
 APP_DATA_EVENT appDataEvent; /* Events application data */
 APP_DATA_DOOR appDataDoor; /* Door application data */
+APP_DATA_STIMULI appDataStimuli; /* Stimuli application data */
 
 
 /******************************************************************************
@@ -331,7 +332,7 @@ void APP_Tasks( void )
                         /* Turn on attractive LEDs one by one in green */
                         testAttractiveLedsOrder( );
                     }
-                    
+                        
                     /* Turn on attractive LEDs if required */
                     getDateTime( );
                     
@@ -2500,6 +2501,12 @@ void APP_Initialize( void )
     appData.secu_guillotine = true;
     appData.secu_guillotine_offset = DEFAULT_GUILLOTINE_TIME_OFFSET;
     
+    /* Stimuli */
+    appDataStimuli.enable = false; 
+    appDataStimuli.alt_sec_elapsed = 0;
+    appDataStimuli.alt_delay = 0;
+    appDataStimuli.max_stimuli = 0;   
+    appDataStimuli.current_stimuli = 0;
 }
 
 

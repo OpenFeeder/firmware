@@ -487,6 +487,22 @@ void __attribute__ ( ( interrupt, no_auto_psv ) ) _ISR _RTCCInterrupt( void )
                     return;
                 }
                 
+                /* Alternate videos */
+                if ( appDataStimuli.enable )
+                {
+                    if ( appDataStimuli.alt_sec_elapsed == appDataStimuli.alt_delay - 1 )
+                    {
+                        appData.rtcc_alarm_action = RTCC_ALARM_STIMULI_ALT;
+                        appDataStimuli.alt_sec_elapsed = 0;
+                        IFS3bits.RTCIF = false;
+                        return;
+                    }
+                    else
+                    {
+                        ++appDataStimuli.alt_sec_elapsed;
+                    }
+                }
+                
                 /* Alternate LEDs color */
                 if ( ATTRACTIVE_LEDS_ON == appDataAttractiveLeds.status )
                 {

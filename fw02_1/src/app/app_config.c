@@ -608,6 +608,7 @@ INI_READ_STATE config_read_ini( void )
     bool logs_found = false;
     bool check_found = false;
     bool attractiveleds_found = false;
+    bool stimuli_found = false;
      
     /* Log event if required */
     if ( true == appDataLog.log_events )
@@ -643,6 +644,11 @@ INI_READ_STATE config_read_ini( void )
         if ( 0 == strcmp( str, "attractiveleds" ) )
         {
             attractiveleds_found = true;
+        }
+        /* Check if "stimuli" is present in the INI file */
+        if ( 0 == strcmp( str, "stimuli" ) )
+        {
+            stimuli_found = true;
         }
     }       
         
@@ -1709,6 +1715,39 @@ INI_READ_STATE config_read_ini( void )
     {
         appData.chk_food_level = false;
     }
+    
+    
+    /* Stimuli */
+    if ( stimuli_found )
+    {
+        read_parameter = ini_getl( "stimuli", "alt_delay", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_STIMULI_ALT_DELAY;
+        }
+        else
+        {
+            appDataStimuli.alt_delay = ( uint8_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\tStimuli alternate delay... read.\n" );
+#endif
+        }
+        read_parameter = ini_getl( "stimuli", "max_stimuli", -1, "CONFIG.INI" );
+        if ( -1 == read_parameter )
+        {
+            return INI_PB_STIMULI_NUM;
+        }
+        else
+        {
+            appDataStimuli.max_stimuli = ( uint8_t ) read_parameter;
+#if defined (USE_UART1_SERIAL_INTERFACE) && defined (DISPLAY_INI_READ_DATA)
+            printf( "\tStimuli number... read.\n" );
+#endif
+        }
+        
+        appDataStimuli.enable = true; 
+        
+    }
         
     return INI_READ_OK;
 }
@@ -2015,6 +2054,13 @@ void config_print( void )
         }
     }
 
+    if ( appDataStimuli.enable )
+    {
+        printf( "\tStimuli\n" ); 
+        printf( "\t\tAlt. delay: %us\n", appDataStimuli.alt_delay );
+        printf( "\t\tMax stimuli: %u\n", appDataStimuli.max_stimuli );        
+    }
+    
     if ( appData.scenario_number > DOOR_HABITUATION )
     {
 
@@ -2349,7 +2395,12 @@ void getIniPbChar( INI_READ_STATE state, char *buf, uint8_t n )
         case INI_PB_SECURITY_GUILLOTINE_OFFSET:
             snprintf( buf, n, "Security: guillotine offset" );
             break;
-
+        case INI_PB_STIMULI_ALT_DELAY:
+            snprintf( buf, n, "Stimuli: alt. delay" );
+            break;
+        case INI_PB_STIMULI_NUM:
+            snprintf( buf, n, "Stimuli: number" );
+            break;
         default:
             snprintf( buf, n, "Error not listed" );
             break;

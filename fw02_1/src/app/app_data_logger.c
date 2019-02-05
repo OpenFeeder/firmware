@@ -118,67 +118,138 @@ static bool populateLogBuffer( void )
         leds_pattern = '0';
     }
 
-    nChar = sprintf( line, "%02d/%02d/%02d%s%02d:%02d:%02d%s"
-                    /* siteid               */ "%c%c"
-                    /* separator            */ "%s"
-                    /* OF                   */ "OF%c%c"
-                    /* separator            */ "%s"
-                    /* scenario_number      */ "%u"
-                    /* separator            */ "%s"
-                    /* bird_pit_tag_str     */ "%s"
-                    /* separator            */ "%s"
-                    /* is_pit_tag_denied    */ "%u"
-                    /* separator            */ "%s"
-                    /* is_reward_taken      */ "%u"
-                    /* separator            */ "%s"
-                    /* attractive LED red   */ "%d"
-                    /* separator            */ "%s"
-                    /* attractive LED green */ "%d"
-                    /* separator            */ "%s"
-                    /* attractive LED blue           */ "%d"
-                    /* separator                     */ "%s"
-                    /* door_status_when_bird_arrived */ "%d"
-                    /* separator                     */ "%s"
-                    /* did_door_open                 */ "%d"
-                    /* separator                     */ "%s"
-                    /* leds_pattern                  */ "%c"
-                    /* separator                     */ "%s"
-                    /* delayS                        */ "%lu\n",
-                    appDataLog.bird_arrived_time.tm_mday,
-                    appDataLog.bird_arrived_time.tm_mon,
-                    appDataLog.bird_arrived_time.tm_year,
-                    appDataLog.separator,
-                    appDataLog.bird_arrived_time.tm_hour,
-                    appDataLog.bird_arrived_time.tm_min,
-                    appDataLog.bird_arrived_time.tm_sec,
-                    appDataLog.separator,
-                    appData.siteid[0],
-                    appData.siteid[1],
-                    appDataLog.separator,
-                    appData.siteid[2],
-                    appData.siteid[3],
-                    appDataLog.separator,
-                    getCompletScenarioNumber( ),
-                    appDataLog.separator,
-                    appDataLog.bird_pit_tag_str,
-                    appDataLog.separator,
-                    appDataLog.is_pit_tag_denied,
-                    appDataLog.separator,
-                    appDataLog.is_reward_taken,
-                    appDataLog.separator,
-                    appDataAttractiveLeds.red[appDataLog.attractive_leds_current_color_index],
-                    appDataLog.separator,
-                    appDataAttractiveLeds.green[appDataLog.attractive_leds_current_color_index],
-                    appDataLog.separator,
-                    appDataAttractiveLeds.blue[appDataLog.attractive_leds_current_color_index],
-                    appDataLog.separator,
-                    appDataLog.door_status_when_bird_arrived,
-                    appDataLog.separator,
-                    appDataLog.did_door_open,
-                    appDataLog.separator,
-                    leds_pattern,
-                    appDataLog.separator,
-                    delayS );
+    if ( false == appDataStimuli.enable )
+    {
+        nChar = sprintf( line, "%02d/%02d/%02d%s%02d:%02d:%02d%s"
+                /* siteid               */ "%c%c"
+                /* separator            */ "%s"
+                /* OF                   */ "OF%c%c"
+                /* separator            */ "%s"
+                /* scenario_number      */ "%u"
+                /* separator            */ "%s"
+                /* bird_pit_tag_str     */ "%s"
+                /* separator            */ "%s"
+                /* is_pit_tag_denied    */ "%u"
+                /* separator            */ "%s"
+                /* is_reward_taken      */ "%u"
+                /* separator            */ "%s"
+                /* attractive LED red   */ "%d"
+                /* separator            */ "%s"
+                /* attractive LED green */ "%d"
+                /* separator            */ "%s"
+                /* attractive LED blue           */ "%d"
+                /* separator                     */ "%s"
+                /* door_status_when_bird_arrived */ "%d"
+                /* separator                     */ "%s"
+                /* did_door_open                 */ "%d"
+                /* separator                     */ "%s"
+                /* leds_pattern                  */ "%c"
+                /* separator                     */ "%s"
+                /* delayS                        */ "%lu\n",
+                appDataLog.bird_arrived_time.tm_mday,
+                appDataLog.bird_arrived_time.tm_mon,
+                appDataLog.bird_arrived_time.tm_year,
+                appDataLog.separator,
+                appDataLog.bird_arrived_time.tm_hour,
+                appDataLog.bird_arrived_time.tm_min,
+                appDataLog.bird_arrived_time.tm_sec,
+                appDataLog.separator,
+                appData.siteid[0],
+                appData.siteid[1],
+                appDataLog.separator,
+                appData.siteid[2],
+                appData.siteid[3],
+                appDataLog.separator,
+                getCompletScenarioNumber( ),
+                appDataLog.separator,
+                appDataLog.bird_pit_tag_str,
+                appDataLog.separator,
+                appDataLog.is_pit_tag_denied,
+                appDataLog.separator,
+                appDataLog.is_reward_taken,
+                appDataLog.separator,
+                appDataAttractiveLeds.red[appDataLog.attractive_leds_current_color_index],
+                appDataLog.separator,
+                appDataAttractiveLeds.green[appDataLog.attractive_leds_current_color_index],
+                appDataLog.separator,
+                appDataAttractiveLeds.blue[appDataLog.attractive_leds_current_color_index],
+                appDataLog.separator,
+                appDataLog.door_status_when_bird_arrived,
+                appDataLog.separator,
+                appDataLog.did_door_open,
+                appDataLog.separator,
+                leds_pattern,
+                appDataLog.separator,
+                delayS );
+    }
+    else
+    {
+        nChar = sprintf( line, "%02d/%02d/%02d%s%02d:%02d:%02d%s"
+                /* siteid               */ "%c%c"
+                /* separator            */ "%s"
+                /* OF                   */ "OF%c%c"
+                /* separator            */ "%s"
+                /* scenario_number      */ "%u"
+                /* separator            */ "%s"
+                /* bird_pit_tag_str     */ "%s"
+                /* separator            */ "%s"
+                /* is_pit_tag_denied    */ "%u"
+                /* separator            */ "%s"
+                /* is_reward_taken      */ "%u"
+                /* separator            */ "%s"
+                /* attractive LED red   */ "%d"
+                /* separator            */ "%s"
+                /* attractive LED green */ "%d"
+                /* separator            */ "%s"
+                /* attractive LED blue           */ "%d"
+                /* separator                     */ "%s"
+                /* door_status_when_bird_arrived */ "%d"
+                /* separator                     */ "%s"
+                /* did_door_open                 */ "%d"
+                /* separator                     */ "%s"
+                /* leds_pattern                  */ "%c"
+                /* separator                     */ "%s"
+                /* currznt_stimuli               */ "%u"
+                /* separator                     */ "%s"
+                /* delayS                        */ "%lu\n",
+                appDataLog.bird_arrived_time.tm_mday,
+                appDataLog.bird_arrived_time.tm_mon,
+                appDataLog.bird_arrived_time.tm_year,
+                appDataLog.separator,
+                appDataLog.bird_arrived_time.tm_hour,
+                appDataLog.bird_arrived_time.tm_min,
+                appDataLog.bird_arrived_time.tm_sec,
+                appDataLog.separator,
+                appData.siteid[0],
+                appData.siteid[1],
+                appDataLog.separator,
+                appData.siteid[2],
+                appData.siteid[3],
+                appDataLog.separator,
+                getCompletScenarioNumber( ),
+                appDataLog.separator,
+                appDataLog.bird_pit_tag_str,
+                appDataLog.separator,
+                appDataLog.is_pit_tag_denied,
+                appDataLog.separator,
+                appDataLog.is_reward_taken,
+                appDataLog.separator,
+                appDataAttractiveLeds.red[appDataLog.attractive_leds_current_color_index],
+                appDataLog.separator,
+                appDataAttractiveLeds.green[appDataLog.attractive_leds_current_color_index],
+                appDataLog.separator,
+                appDataAttractiveLeds.blue[appDataLog.attractive_leds_current_color_index],
+                appDataLog.separator,
+                appDataLog.door_status_when_bird_arrived,
+                appDataLog.separator,
+                appDataLog.did_door_open,
+                appDataLog.separator,
+                leds_pattern,
+                appDataLog.separator,
+                appDataStimuli.current_stimuli,
+                appDataLog.separator,
+                delayS );
+    }
 
     /* If sprintf success*/
     if ( nChar > 0 )

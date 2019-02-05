@@ -153,6 +153,14 @@ void APP_SerialDebugTasks( void )
                         setAttractiveLedsOn( );
                         break;
                     }
+                    
+                    case 'c':
+                    case 'C':
+                    {
+                        testAttractiveLedsColor( );
+                        break;
+                    }
+                    
                     case 'g':
                     case 'G':
                     {

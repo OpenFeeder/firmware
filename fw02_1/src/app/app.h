@@ -106,6 +106,7 @@
 #include "app_scenario.h"
 #include "app_rtc_action.h"
 #include "app_version.h"
+#include "app_stimuli.h"
 
 #include "oc5.h"
 
@@ -387,6 +388,7 @@ extern APP_DATA_SERVO appDataServo; /* Servomotor application data. */
 extern APP_DATA_RC appDataRc; /* Remote control application data. */
 extern APP_DATA_EVENT appDataEvent;
 extern APP_DATA_DOOR appDataDoor;
+extern APP_DATA_STIMULI appDataStimuli; /* Stimuli application data */
 
 extern volatile bool is_bird_detected;
 

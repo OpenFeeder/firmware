@@ -511,6 +511,60 @@ void testAttractiveLeds( void )
     
 }
 
+void testAttractiveLedsColor( void )
+{
+    uint16_t delay = 2;
+    int i, j;
+    uint8_t max_rgb = 25;
+
+    setAttractiveLedsOn( );
+    setAttractiveLedsNoColor( );
+
+    for (i=1; i<5; i++)
+    {
+        for (j=0; j<=max_rgb; j++)
+        {
+            setOneAttractiveLedColor( i, j, 0, 0 );
+            setDelayMs( delay );
+            while ( 0 == isDelayMsEnding( ) );
+        }
+        for (j=max_rgb; j>=0; j--)
+        {
+            setOneAttractiveLedColor( i, j, 0, 0 );
+            setDelayMs( delay );
+            while ( 0 == isDelayMsEnding( ) );
+        }
+        for (j=0; j<=max_rgb; j++)
+        {
+            setOneAttractiveLedColor( i, 0, j, 0 );
+            setDelayMs( delay );
+            while ( 0 == isDelayMsEnding( ) );
+        }
+        for (j=max_rgb; j>=0; j--)
+        {
+            setOneAttractiveLedColor( i, 0, j, 0 );
+            setDelayMs( delay );
+            while ( 0 == isDelayMsEnding( ) );
+        }
+        for (j=0; j<=max_rgb; j++)
+        {
+            setOneAttractiveLedColor( i, 0, 0, j );
+            setDelayMs( delay );
+            while ( 0 == isDelayMsEnding( ) );
+        }
+        for (j=max_rgb; j>=0; j--)
+        {
+            setOneAttractiveLedColor( i, 0, 0, j );
+            setDelayMs( delay );
+            while ( 0 == isDelayMsEnding( ) );
+        }
+    }
+ 
+    setAttractiveLedsNoColor( );
+    setAttractiveLedsOff( );
+    
+}
+
 void testAttractiveLedsOrder( void )
 {
     int i;

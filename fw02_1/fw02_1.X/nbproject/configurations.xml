@@ -25,6 +25,7 @@
         <itemPath>../src/app/app_fileio.h</itemPath>
         <itemPath>../src/app/app_scenario.h</itemPath>
         <itemPath>../src/app/app_rtc_action.h</itemPath>
+        <itemPath>../src/app/app_stimuli.h</itemPath>
       </logicalFolder>
       <logicalFolder name="driver" displayName="driver" projectFiles="true">
         <itemPath>../src/driver/buttons.h</itemPath>
