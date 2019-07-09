@@ -184,11 +184,11 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>ICD3PlatformTool</platformTool>
         <languageToolchain>XC16</languageToolchain>
-        <languageToolchainVersion>5.77</languageToolchainVersion>
+        <languageToolchainVersion>1.36</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="PIC24F-GA-GB_DFP" vendor="Microchip" version="1.0.28"/>
+        <pack name="PIC24F-GA-GB_DFP" vendor="Microchip" version="1.0.41"/>
       </packs>
       <compileType>
         <linkerTool>
@@ -530,11 +530,11 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>ICD3PlatformTool</platformTool>
         <languageToolchain>XC16</languageToolchain>
-        <languageToolchainVersion>5.77</languageToolchainVersion>
+        <languageToolchainVersion>1.36</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="PIC24F-GA-GB_DFP" vendor="Microchip" version="1.0.28"/>
+        <pack name="PIC24F-GA-GB_DFP" vendor="Microchip" version="1.0.41"/>
       </packs>
       <compileType>
         <linkerTool>
@@ -877,11 +877,11 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>XC16</languageToolchain>
-        <languageToolchainVersion>1.35</languageToolchainVersion>
+        <languageToolchainVersion>1.36</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="PIC24F-GA-GB_DFP" vendor="Microchip" version="1.0.28"/>
+        <pack name="PIC24F-GA-GB_DFP" vendor="Microchip" version="1.0.41"/>
       </packs>
       <compileType>
         <linkerTool>

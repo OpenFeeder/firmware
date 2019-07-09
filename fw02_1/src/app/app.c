@@ -414,16 +414,31 @@ void APP_Tasks( void )
 
                 if ( false == appData.punishment_state && true == appData.flags.bit_value.attractive_leds_status )
                 {
-                    if ( DOOR_HABITUATION == appData.scenario_number ||
-                         LONG_TERM_SPATIAL_MEMORY == appData.scenario_number ||
-                         WORKING_SPATIAL_MEMORY == appData.scenario_number ||
-                         RISK_AVERSION == appData.scenario_number ||
-                         PATCH_PROBABILITY == appData.scenario_number )
+//                    if ( DOOR_HABITUATION == appData.scenario_number ||
+//                         LONG_TERM_SPATIAL_MEMORY == appData.scenario_number ||
+//                         WORKING_SPATIAL_MEMORY == appData.scenario_number ||
+//                         RISK_AVERSION == appData.scenario_number ||
+//                         PATCH_PROBABILITY == appData.scenario_number )
+//                    {
+//                        appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_A;
+//                        setAttractiveLedsColor( );
+//                    }
+//                    else if ( GO_NO_GO == appData.scenario_number || 
+//                             COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number )
+//                    {
+//                        initializeLedsScenario( );
+//                    }
+                    if ( DOOR_HABITUATION == appData.scenario_number )
                     {
                         appDataAttractiveLeds.current_color_index = ATTRACTIVE_LEDS_COLOR_A;
                         setAttractiveLedsColor( );
                     }
-                    else if ( GO_NO_GO == appData.scenario_number || COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number )
+                    else if ( GO_NO_GO == appData.scenario_number || 
+                             COLOR_ASSOCIATIVE_LEARNING == appData.scenario_number ||
+                         LONG_TERM_SPATIAL_MEMORY == appData.scenario_number ||
+                         WORKING_SPATIAL_MEMORY == appData.scenario_number ||
+                         RISK_AVERSION == appData.scenario_number ||
+                         PATCH_PROBABILITY == appData.scenario_number )
                     {
                         initializeLedsScenario( );
                     }
